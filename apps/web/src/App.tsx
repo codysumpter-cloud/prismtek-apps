@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   LayoutDashboard, 
   PlusCircle, 
@@ -10,12 +10,81 @@ import {
   Activity,
   Shield,
   Zap,
-  ChevronRight
+  ChevronRight,
+  Loader2
 } from 'lucide-react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
+
+interface Template {
+  id: string;
+  name: string;
+  description: string;
+  version: string;
+}
+
+interface Job {
+  id: string;
+  status: 'queued' | 'processing' | 'completed' | 'failed';
+  progress: number;
+}
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [templates, setTemplates] = useState<Template[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [generating, setGenerating] = useState(false);
+  const [currentJob, setCurrentJob] = useState<Job | null>(null);
+
+  useEffect(() => {
+    fetchTemplates();
+  }, []);
+
+  const fetchTemplates = async () => {
+    try {
+      const res = await fetch('http://localhost:3001/api/factory/templates');
+      const data = await res.json();
+      setTemplates(data);
+    } catch (err) {
+      console.error('Failed to fetch templates', err);
+    }
+  };
+
+  const handleGenerate = async (description: string, templateId: string, target: string) => {
+    setGenerating(true);
+    try {
+      const res = await fetch('http://localhost:3001/api/factory/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ description, templateId, target })
+      });
+      const job = await res.json();
+      setCurrentJob(job);
+      pollJob(job.id);
+    } catch (err) {
+      console.error('Generation failed', err);
+      setGenerating(false);
+    }
+  };
+
+  const pollJob = async (jobId: string) => {
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`http://localhost:3001/api/factory/jobs/${jobId}`);
+        const job = await res.json();
+        setCurrentJob(job);
+        if (job.status === 'completed' || job.status === 'failed') {
+          clearInterval(interval);
+          setGenerating(false);
+          if (job.status === 'completed') {
+            setActiveTab('workspaces');
+          }
+        }
+      } catch (err) {
+        clearInterval(interval);
+        setGenerating(false);
+      }
+    }, 1000);
+  };
 
   return (
     <div className="flex h-screen bg-[#0a0a0a] text-white font-sans selection:bg-blue-500/30">
@@ -81,10 +150,27 @@ export default function App() {
         </header>
 
         <div className="p-8 max-w-7xl mx-auto">
-          {activeTab === 'dashboard' && <DashboardView />}
-          {activeTab === 'workspaces' && <WorkspacesView />}
-          {activeTab === 'factory' && <AppFactoryView />}
-          {activeTab === 'sandbox' && <SandboxView />}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+            >
+              {activeTab === 'dashboard' && <DashboardView />}
+              {activeTab === 'workspaces' && <WorkspacesView />}
+              {activeTab === 'factory' && (
+                <AppFactoryView 
+                  templates={templates} 
+                  onGenerate={handleGenerate} 
+                  generating={generating}
+                  currentJob={currentJob}
+                />
+              )}
+              {activeTab === 'sandbox' && <SandboxView />}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </main>
     </div>
@@ -197,7 +283,16 @@ function WorkspaceCard({ name, template, status }: { name: string, template: str
   );
 }
 
-function AppFactoryView() {
+function AppFactoryView({ templates, onGenerate, generating, currentJob }: { 
+  templates: Template[], 
+  onGenerate: (desc: string, templateId: string, target: string) => void,
+  generating: boolean,
+  currentJob: Job | null
+}) {
+  const [description, setDescription] = useState('');
+  const [templateId, setTemplateId] = useState(templates[0]?.id || '');
+  const [target, setTarget] = useState('Cloud Run (GCP)');
+
   return (
     <div className="max-w-3xl mx-auto space-y-8">
       <div className="text-center">
@@ -209,6 +304,8 @@ function AppFactoryView() {
         <div className="space-y-2">
           <label className="text-sm font-medium text-white/70">What would you like to build?</label>
           <textarea 
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
             className="w-full bg-black/50 border border-white/10 rounded-xl p-4 h-32 focus:outline-none focus:border-blue-500/50 transition-colors placeholder:text-white/20"
             placeholder="e.g. A customer support agent that integrates with Slack and handles refund requests..."
           />
@@ -217,15 +314,23 @@ function AppFactoryView() {
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <label className="text-sm font-medium text-white/70">Base Template</label>
-            <select className="w-full bg-black/50 border border-white/10 rounded-xl p-3 focus:outline-none focus:border-blue-500/50 transition-colors">
-              <option>BMO Agent</option>
-              <option>OpenClaw Harness</option>
-              <option>Omni-OpenClaw Starter</option>
+            <select 
+              value={templateId}
+              onChange={(e) => setTemplateId(e.target.value)}
+              className="w-full bg-black/50 border border-white/10 rounded-xl p-3 focus:outline-none focus:border-blue-500/50 transition-colors"
+            >
+              {templates.map(t => (
+                <option key={t.id} value={t.id}>{t.name}</option>
+              ))}
             </select>
           </div>
           <div className="space-y-2">
             <label className="text-sm font-medium text-white/70">Deployment Target</label>
-            <select className="w-full bg-black/50 border border-white/10 rounded-xl p-3 focus:outline-none focus:border-blue-500/50 transition-colors">
+            <select 
+              value={target}
+              onChange={(e) => setTarget(e.target.value)}
+              className="w-full bg-black/50 border border-white/10 rounded-xl p-3 focus:outline-none focus:border-blue-500/50 transition-colors"
+            >
               <option>Cloud Run (GCP)</option>
               <option>Vercel</option>
               <option>Edge (Local)</option>
@@ -233,10 +338,30 @@ function AppFactoryView() {
           </div>
         </div>
 
-        <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98]">
-          <Zap size={20} />
-          Generate Application
+        <button 
+          disabled={generating || !description}
+          onClick={() => onGenerate(description, templateId, target)}
+          className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 disabled:cursor-not-allowed text-white py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+        >
+          {generating ? <Loader2 size={20} className="animate-spin" /> : <Zap size={20} />}
+          {generating ? 'Generating...' : 'Generate Application'}
         </button>
+
+        {currentJob && (
+          <div className="space-y-2">
+            <div className="flex justify-between text-xs font-medium text-white/50">
+              <span>{currentJob.status === 'completed' ? 'Generation Complete' : 'Generating Application...'}</span>
+              <span>{currentJob.progress}%</span>
+            </div>
+            <div className="w-full bg-white/5 rounded-full h-1.5 overflow-hidden">
+              <motion.div 
+                className="bg-blue-500 h-full"
+                initial={{ width: 0 }}
+                animate={{ width: `${currentJob.progress}%` }}
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

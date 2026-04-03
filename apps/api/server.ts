@@ -3,6 +3,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { AppFactory } from '@prismtek/app-factory';
+import { SandboxManager } from '@prismtek/sandbox';
 
 dotenv.config();
 
@@ -11,6 +13,9 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+const appFactory = new AppFactory();
+const sandboxManager = new SandboxManager(process.env.SANDBOX_DOCKER_IMAGE || 'prismtek/sandbox:latest');
 
 app.use(cors());
 app.use(express.json());
@@ -34,17 +39,40 @@ app.get('/api/workspaces', (req, res) => {
 });
 
 // App Factory Service Interface
-app.post('/api/factory/generate', (req, res) => {
-  const { description, template, target } = req.body;
-  console.log(`Generating app: ${description} using ${template} for ${target}`);
-  res.json({ jobId: 'job_123', status: 'queued' });
+app.get('/api/factory/templates', (req, res) => {
+  res.json(appFactory.getTemplates());
+});
+
+app.post('/api/factory/generate', async (req, res) => {
+  const { description, templateId, target } = req.body;
+  try {
+    const job = await appFactory.generate({ description, templateId, target });
+    res.json(job);
+  } catch (error) {
+    res.status(400).json({ error: (error as Error).message });
+  }
+});
+
+app.get('/api/factory/jobs/:id', async (req, res) => {
+  const job = await appFactory.getJobStatus(req.params.id);
+  if (!job) return res.status(404).json({ error: 'Job not found' });
+  res.json(job);
 });
 
 // Sandbox Service Interface
-app.post('/api/sandbox/launch', (req, res) => {
+app.post('/api/sandbox/launch', async (req, res) => {
   const { workspaceId } = req.body;
-  console.log(`Launching sandbox for workspace: ${workspaceId}`);
-  res.json({ sandboxId: 'sb_456', url: 'https://sandbox.prismtek.dev/sb_456' });
+  try {
+    const session = await sandboxManager.launch(workspaceId);
+    res.json(session);
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+});
+
+app.get('/api/sandbox/sessions', async (req, res) => {
+  const sessions = await sandboxManager.listActiveSessions();
+  res.json(sessions);
 });
 
 app.listen(PORT, () => {
