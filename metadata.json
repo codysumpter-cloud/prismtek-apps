@@ -1,5 +1,0 @@
-{
-  "name": "Prismtek Platform",
-  "description": "Production-grade OpenClaw/NemoClaw-powered application platform with Enterprise App Factory and sandboxed runtime.",
-  "requestFramePermissions": ["camera", "microphone", "geolocation"]
-}
