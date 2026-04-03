@@ -32,14 +32,37 @@ export interface SandboxSession {
     cpu: number;
     memory: string;
   };
+  logs?: string[];
 }
 
 export interface AppGenerationJob {
   id: string;
   workspaceId: string;
+  templateId: string;
   status: 'queued' | 'processing' | 'completed' | 'failed';
   progress: number;
   error?: string;
+}
+
+export interface SystemStats {
+  totalUsers: number;
+  activeSessions: number;
+  appGenerations: number;
+  systemLoad: number;
+  trends: {
+    users: string;
+    sessions: string;
+    generations: string;
+    load: string;
+  };
+}
+
+export interface SystemLog {
+  id: string;
+  event: string;
+  user: string;
+  time: string;
+  type: 'info' | 'warning' | 'error' | 'success';
 }
 
 export type OperationType = 'create' | 'update' | 'delete' | 'list' | 'get' | 'write';

@@ -219,7 +219,7 @@ export default function App() {
               )}
               {activeTab === 'sandbox' && <SandboxView token={token} />}
               {activeTab === 'billing' && <BillingView />}
-              {activeTab === 'admin' && <AdminView />}
+              {activeTab === 'admin' && <AdminView token={token} />}
             </motion.div>
           </AnimatePresence>
         </div>
@@ -391,16 +391,35 @@ function BillingView() {
   );
 }
 
-function AdminView() {
+function AdminView({ token }: { token: string }) {
+  const [stats, setStats] = useState<any>(null);
+  const [logs, setLogs] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch('http://localhost:3001/api/admin/stats', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+      .then(res => res.json())
+      .then(data => setStats(data));
+
+    fetch('http://localhost:3001/api/admin/logs', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+      .then(res => res.json())
+      .then(data => setLogs(data));
+  }, [token]);
+
+  if (!stats) return <div className="flex items-center justify-center h-64"><Loader2 className="animate-spin text-blue-500" /></div>;
+
   return (
     <div className="space-y-8">
       <h2 className="text-2xl font-bold">Platform Administration</h2>
       
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <AdminStat label="Total Users" value="1,284" trend="+12%" />
-        <AdminStat label="Active Sessions" value="84" trend="+5%" />
-        <AdminStat label="App Generations" value="3,492" trend="+24%" />
-        <AdminStat label="System Load" value="14%" trend="-2%" />
+        <AdminStat label="Total Users" value={stats.totalUsers.toLocaleString()} trend={stats.trends.users} />
+        <AdminStat label="Active Sessions" value={stats.activeSessions.toString()} trend={stats.trends.sessions} />
+        <AdminStat label="App Generations" value={stats.appGenerations.toLocaleString()} trend={stats.trends.generations} />
+        <AdminStat label="System Load" value={`${stats.systemLoad}%`} trend={stats.trends.load} />
       </div>
 
       <div className="bg-[#0f0f0f] border border-white/10 rounded-2xl overflow-hidden">
@@ -409,10 +428,9 @@ function AdminView() {
           <button className="text-xs text-blue-400 hover:underline">View All Logs</button>
         </div>
         <div className="divide-y divide-white/5">
-          <AdminLog event="New User Registration" user="sarah.j@example.com" time="2m ago" />
-          <AdminLog event="Sandbox Launch" user="mike.r@prismtek.dev" time="5m ago" />
-          <AdminLog event="App Generation Success" user="dev-team-alpha" time="12m ago" />
-          <AdminLog event="System Backup Completed" user="System" time="1h ago" />
+          {logs.map(log => (
+            <AdminLog key={log.id} event={log.event} user={log.user} time={log.time} type={log.type} />
+          ))}
         </div>
       </div>
     </div>
@@ -431,11 +449,13 @@ function AdminStat({ label, value, trend }: { label: string, value: string, tren
   );
 }
 
-function AdminLog({ event, user, time }: { event: string, user: string, time: string }) {
+function AdminLog({ event, user, time, type }: { event: string, user: string, time: string, type: string }) {
   return (
     <div className="p-4 flex items-center justify-between hover:bg-white/5 transition-colors">
       <div className="flex items-center gap-3">
-        <div className="w-2 h-2 rounded-full bg-blue-500" />
+        <div className={`w-2 h-2 rounded-full ${
+          type === 'success' ? 'bg-green-500' : type === 'warning' ? 'bg-yellow-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+        }`} />
         <div>
           <p className="text-sm font-medium">{event}</p>
           <p className="text-xs text-white/40">{user}</p>
@@ -515,14 +535,33 @@ function ActivityItem({ title, time, status }: { title: string, time: string, st
 function WorkspacesView({ token }: { token: string }) {
   const [workspaces, setWorkspaces] = useState<any[]>([]);
 
+  const fetchWorkspaces = async () => {
+    try {
+      const res = await fetch('http://localhost:3001/api/workspaces', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      setWorkspaces(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
-    fetch('http://localhost:3001/api/workspaces', {
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
-      .then(res => res.json())
-      .then(data => setWorkspaces(data))
-      .catch(err => console.error(err));
+    fetchWorkspaces();
   }, [token]);
+
+  const handleDelete = async (id: string) => {
+    try {
+      await fetch(`http://localhost:3001/api/workspaces/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      fetchWorkspaces();
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -536,16 +575,31 @@ function WorkspacesView({ token }: { token: string }) {
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {workspaces.map(ws => (
-          <WorkspaceCard key={ws.id} name={ws.name} template={ws.template} status={ws.status} />
+          <WorkspaceCard 
+            key={ws.id} 
+            name={ws.name} 
+            template={ws.template} 
+            status={ws.status} 
+            onDelete={() => handleDelete(ws.id)}
+          />
         ))}
       </div>
     </div>
   );
 }
 
-function WorkspaceCard({ name, template, status }: { name: string, template: string, status: string }) {
+function WorkspaceCard({ name, template, status, onDelete }: { name: string, template: string, status: string, onDelete: () => void }) {
   return (
-    <div className="bg-[#0f0f0f] border border-white/10 p-6 rounded-xl hover:border-white/20 transition-all cursor-pointer group">
+    <div className="bg-[#0f0f0f] border border-white/10 p-6 rounded-xl hover:border-white/20 transition-all cursor-pointer group relative">
+      <button 
+        onClick={(e) => {
+          e.stopPropagation();
+          onDelete();
+        }}
+        className="absolute top-4 right-4 text-white/20 hover:text-red-500 transition-colors"
+      >
+        <LogOut size={14} />
+      </button>
       <div className="flex items-center justify-between mb-4">
         <div className="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center group-hover:bg-blue-600/20 group-hover:text-blue-400 transition-colors">
           <Box size={20} />
@@ -673,15 +727,42 @@ function FeatureHighlight({ icon, title, description }: { icon: React.ReactNode,
 
 function SandboxView({ token }: { token: string }) {
   const [sessions, setSessions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchSessions = async () => {
+    try {
+      const res = await fetch('http://localhost:3001/api/sandbox/sessions', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      setSessions(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   useEffect(() => {
-    fetch('http://localhost:3001/api/sandbox/sessions', {
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
-      .then(res => res.json())
-      .then(data => setSessions(data))
-      .catch(err => console.error(err));
+    fetchSessions();
   }, [token]);
+
+  const handleLaunch = async () => {
+    setLoading(true);
+    try {
+      await fetch('http://localhost:3001/api/sandbox/launch', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ workspaceId: 'default' })
+      });
+      await fetchSessions();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -691,7 +772,12 @@ function SandboxView({ token }: { token: string }) {
           <button className="bg-white/5 hover:bg-white/10 text-white px-4 py-2 rounded-lg font-medium transition-colors">
             Reset Environment
           </button>
-          <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+          <button 
+            onClick={handleLaunch}
+            disabled={loading}
+            className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
+          >
+            {loading ? <Loader2 size={18} className="animate-spin" /> : <PlusCircle size={18} />}
             New Session
           </button>
         </div>
@@ -704,7 +790,22 @@ function SandboxView({ token }: { token: string }) {
               <div className="text-sm font-bold">{session.id}</div>
               <div className="text-xs text-white/40">Expires: {new Date(session.expiresAt).toLocaleTimeString()}</div>
             </div>
-            <a href={session.url} target="_blank" rel="noopener noreferrer" className="text-blue-400 text-xs hover:underline">Connect</a>
+            <div className="flex items-center gap-3">
+              <span className="text-[10px] px-2 py-0.5 bg-green-500/10 text-green-400 rounded-full uppercase font-bold">{session.status}</span>
+              <a href={session.url} target="_blank" rel="noopener noreferrer" className="text-blue-400 text-xs hover:underline">Connect</a>
+              <button 
+                onClick={async () => {
+                  await fetch(`http://localhost:3001/api/sandbox/sessions/${session.id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                  });
+                  fetchSessions();
+                }}
+                className="text-red-500/60 hover:text-red-500 transition-colors"
+              >
+                <LogOut size={14} />
+              </button>
+            </div>
           </div>
         ))}
       </div>
@@ -719,15 +820,22 @@ function SandboxView({ token }: { token: string }) {
           <div className="text-xs font-mono text-white/40">prismtek-sandbox-v1.0.4</div>
         </div>
         <div className="flex-1 p-6 font-mono text-sm text-green-400/90 overflow-y-auto space-y-2">
-          <p className="text-white/40"># Initializing Prismtek Sandbox...</p>
-          <p className="text-white/40"># Mounting virtual filesystem...</p>
-          <p className="text-white/40"># Loading OpenClaw harness...</p>
-          <p className="text-white/40"># Environment ready.</p>
-          <p><span className="text-blue-400">prismtek@sandbox</span>:<span className="text-yellow-400">~</span>$ openclaw status</p>
-          <p className="text-white">OpenClaw v2.4.0 - Active</p>
-          <p className="text-white">Uptime: 0h 14m</p>
-          <p className="text-white">Memory: 124MB / 512MB</p>
-          <p><span className="text-blue-400">prismtek@sandbox</span>:<span className="text-yellow-400">~</span>$ _</p>
+          {sessions.length > 0 && sessions[0].logs ? (
+            sessions[0].logs.map((log: string, i: number) => (
+              <p key={i} className={log.startsWith('#') ? 'text-white/40' : 'text-white'}>{log}</p>
+            ))
+          ) : (
+            <p className="text-white/40"># No active session logs. Launch a new session to begin.</p>
+          )}
+          {sessions.length > 0 && (
+            <>
+              <p><span className="text-blue-400">prismtek@sandbox</span>:<span className="text-yellow-400">~</span>$ openclaw status</p>
+              <p className="text-white">OpenClaw v2.4.0 - Active</p>
+              <p className="text-white">Uptime: 0h 14m</p>
+              <p className="text-white">Memory: 124MB / 512MB</p>
+              <p><span className="text-blue-400">prismtek@sandbox</span>:<span className="text-yellow-400">~</span>$ _</p>
+            </>
+          )}
         </div>
       </div>
     </div>

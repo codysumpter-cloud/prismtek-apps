@@ -32,8 +32,16 @@ app.use(limiter);
 app.use(cors());
 app.use(express.json());
 
-// Mock User Database
+// Mock Database
 const users: any[] = [];
+const workspaces: any[] = [
+  { id: '1', name: 'Customer Support Bot', template: 'BMO Agent', status: 'Running' },
+  { id: '2', name: 'Data Analysis Tool', template: 'OpenClaw', status: 'Paused' }
+];
+const systemLogs: any[] = [
+  { id: '1', event: 'System Boot', user: 'System', time: '1h ago', type: 'info' },
+  { id: '2', event: 'New User Registration', user: 'sarah.j@example.com', time: '2m ago', type: 'success' }
+];
 
 // Auth Middleware
 const authenticateToken = (req: any, res: any, next: any) => {
@@ -82,12 +90,45 @@ app.post('/api/auth/login', async (req, res) => {
   res.json({ token, user: { id: user.id, email: user.email, name: user.name } });
 });
 
+// Admin Routes
+app.get('/api/admin/stats', authenticateToken, (req: any, res) => {
+  // In a real app, check if user is admin
+  res.json({
+    totalUsers: users.length + 1284,
+    activeSessions: 84,
+    appGenerations: 3492,
+    systemLoad: 14,
+    trends: {
+      users: '+12%',
+      sessions: '+5%',
+      generations: '+24%',
+      load: '-2%'
+    }
+  });
+});
+
+app.get('/api/admin/logs', authenticateToken, (req, res) => {
+  res.json(systemLogs);
+});
+
 // Workspace Routes
 app.get('/api/workspaces', authenticateToken, (req, res) => {
-  res.json([
-    { id: '1', name: 'Customer Support Bot', template: 'BMO Agent', status: 'Running' },
-    { id: '2', name: 'Data Analysis Tool', template: 'OpenClaw', status: 'Paused' }
-  ]);
+  res.json(workspaces);
+});
+
+app.post('/api/workspaces', authenticateToken, (req, res) => {
+  const { name, template } = req.body;
+  const workspace = { id: Date.now().toString(), name, template, status: 'Running' };
+  workspaces.push(workspace);
+  res.json(workspace);
+});
+
+app.delete('/api/workspaces/:id', authenticateToken, (req, res) => {
+  const index = workspaces.findIndex(w => w.id === req.params.id);
+  if (index !== -1) {
+    workspaces.splice(index, 1);
+  }
+  res.json({ success: true });
 });
 
 // App Factory Service Interface
@@ -95,10 +136,20 @@ app.get('/api/factory/templates', authenticateToken, (req, res) => {
   res.json(appFactory.getTemplates());
 });
 
-app.post('/api/factory/generate', authenticateToken, async (req, res) => {
+app.post('/api/factory/generate', authenticateToken, async (req: any, res) => {
   const { description, templateId, target } = req.body;
   try {
     const job = await appFactory.generate({ description, templateId, target });
+    
+    // Log the event
+    systemLogs.unshift({
+      id: Date.now().toString(),
+      event: 'App Generation Started',
+      user: req.user.email,
+      time: 'Just now',
+      type: 'info'
+    });
+
     res.json(job);
   } catch (error) {
     res.status(400).json({ error: (error as Error).message });
@@ -108,14 +159,45 @@ app.post('/api/factory/generate', authenticateToken, async (req, res) => {
 app.get('/api/factory/jobs/:id', authenticateToken, async (req, res) => {
   const job = await appFactory.getJobStatus(req.params.id);
   if (!job) return res.status(404).json({ error: 'Job not found' });
+
+  if (job.status === 'completed') {
+    // Automatically create a workspace when job completes
+    const template = appFactory.getTemplates().find(t => t.id === job.templateId);
+    if (template && !workspaces.find(w => w.id === job.id)) {
+      workspaces.unshift({
+        id: job.id,
+        name: `Generated ${template.name}`,
+        template: template.name,
+        status: 'Running'
+      });
+    }
+  }
+
   res.json(job);
 });
 
 // Sandbox Service Interface
-app.post('/api/sandbox/launch', authenticateToken, async (req, res) => {
+app.post('/api/sandbox/launch', authenticateToken, async (req: any, res) => {
   const { workspaceId } = req.body;
   try {
     const session = await sandboxManager.launch(workspaceId);
+    
+    // Add some initial logs to the session
+    (session as any).logs = [
+      '# Initializing Prismtek Sandbox...',
+      '# Mounting virtual filesystem...',
+      '# Loading OpenClaw harness...',
+      '# Environment ready.'
+    ];
+
+    systemLogs.unshift({
+      id: Date.now().toString(),
+      event: 'Sandbox Launch',
+      user: req.user.email,
+      time: 'Just now',
+      type: 'success'
+    });
+
     res.json(session);
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
@@ -125,6 +207,11 @@ app.post('/api/sandbox/launch', authenticateToken, async (req, res) => {
 app.get('/api/sandbox/sessions', authenticateToken, async (req, res) => {
   const sessions = await sandboxManager.listActiveSessions();
   res.json(sessions);
+});
+
+app.delete('/api/sandbox/sessions/:id', authenticateToken, async (req, res) => {
+  await sandboxManager.terminate(req.params.id);
+  res.json({ success: true });
 });
 
 app.listen(PORT, () => {

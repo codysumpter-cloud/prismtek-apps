@@ -6,10 +6,10 @@ Production-grade OpenClaw/NemoClaw-powered application platform with Enterprise 
 
 This is a monorepo managed by **Turbo** and **npm Workspaces**.
 
-- `apps/web`: Vite + React frontend (React 19, Tailwind CSS, Framer Motion).
+- `apps/web`: Next.js frontend (React 19, Tailwind CSS, Framer Motion).
 - `apps/api`: Express.js backend (Node.js, TypeScript).
 - `packages/core`: Shared types and utilities.
-- `packages/app-factory`: Scaffolding engine plus imported prototype apps.
+- `packages/app-factory`: Scaffolding engine for generating applications.
 - `packages/sandbox`: Logic for managing isolated Docker containers.
 
 ## Prerequisites
@@ -50,50 +50,23 @@ This is a monorepo managed by **Turbo** and **npm Workspaces**.
 ```
 /prismtek-monorepo
   /apps
-    /web (Vite frontend)
+    /web (Next.js frontend)
     /api (Express backend)
   /packages
     /core (Shared types)
-    /app-factory
-      /apps (imported app-factory prototypes)
-      apps.manifest.json
+    /app-factory (App Factory logic)
     /sandbox (Sandbox logic)
+  /docker (Dockerfile for sandboxes)
+  /templates (App Factory templates)
 ```
-
-## Imported App Factory Prototypes
-
-The repo now includes imported prototypes from `~/Desktop/app factory` under:
-
-- `packages/app-factory/apps/`
-- `packages/app-factory/apps.manifest.json`
-- `packages/app-factory/README.md`
-
-Imported apps currently include:
-
-- `ai-edge-gallery`
-- `cosmic-flow`
-- `function-call-kitchen`
-- `gemini-runner`
-- `gemini-slingshot`
-- `image-to-voxel-art`
-- `infinite-heroes`
-- `infogenius`
-- `lumina-festival`
-- `massive-multiplayer-laser-tag`
-- `multiplayer-neon-snake`
-- `svg-generator`
-- `synthwave-space`
-- `type-motion`
-- `voxel-toy-box`
-- `voxel-toy-box-2`
 
 ## Key Features
 
-- **Auth + Rate Limiting**: API protection and session control.
+- **Secure Auth**: Firebase-powered authentication.
 - **Sandboxed Runtime**: Isolated Docker containers for safe code execution.
-- **Enterprise App Factory**: Scaffolding production-grade apps from templates and imported prototypes.
-- **Cross-Platform**: Responsive web platform for desktop and mobile.
-- **OpenClaw Integration**: Support for OpenClaw/NemoClaw-powered workflows.
+- **Enterprise App Factory**: Scaffolding production-grade apps from templates.
+- **Cross-Platform**: Responsive PWA for mobile and desktop.
+- **OpenClaw Integration**: Full support for OpenClaw/NemoClaw agents.
 
 ## License
 

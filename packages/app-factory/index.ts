@@ -53,6 +53,7 @@ export class AppFactory {
     const job: AppGenerationJob = {
       id: jobId,
       workspaceId: `ws_${Math.random().toString(36).substring(2, 9)}`,
+      templateId: options.templateId,
       status: 'queued',
       progress: 0
     };
