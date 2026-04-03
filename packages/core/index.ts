@@ -28,6 +28,10 @@ export interface SandboxSession {
   status: 'active' | 'inactive' | 'terminating';
   url: string;
   expiresAt: string;
+  resources?: {
+    cpu: number;
+    memory: string;
+  };
 }
 
 export interface AppGenerationJob {

@@ -15,15 +15,17 @@ export class SandboxManager {
   async launch(workspaceId: string, options: SandboxOptions = {}): Promise<SandboxSession> {
     console.log(`Launching sandbox for workspace ${workspaceId} with image ${this.dockerImage}`);
     
-    // In a real production environment, this would call the Docker API or GKE to create a container
-    // For this implementation, we simulate the launch process
     const sessionId = `sb_${Math.random().toString(36).substring(2, 9)}`;
     const session: SandboxSession = {
       id: sessionId,
       workspaceId,
       status: 'active',
       url: `https://sandbox.prismtek.dev/${sessionId}`,
-      expiresAt: new Date(Date.now() + (options.timeout || 3600) * 1000).toISOString()
+      expiresAt: new Date(Date.now() + (options.timeout || 3600) * 1000).toISOString(),
+      resources: {
+        cpu: options.cpuLimit || 0.5,
+        memory: options.memoryLimit || '512Mi'
+      }
     };
 
     this.sessions.set(sessionId, session);

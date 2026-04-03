@@ -1,0 +1,21 @@
+{
+  "name": "Prismtek Platform",
+  "short_name": "Prismtek",
+  "description": "Production-grade OpenClaw/NemoClaw-powered application platform.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "https://picsum.photos/seed/prismtek/192/192",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://picsum.photos/seed/prismtek/512/512",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -11,7 +11,10 @@ import {
   Shield,
   Zap,
   ChevronRight,
-  Loader2
+  Loader2,
+  CreditCard,
+  ShieldCheck,
+  CheckCircle2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -29,19 +32,28 @@ interface Job {
 }
 
 export default function App() {
+  const [user, setUser] = useState<any>(null);
+  const [token, setToken] = useState<string | null>(localStorage.getItem('prismtek_token'));
   const [activeTab, setActiveTab] = useState('dashboard');
   const [templates, setTemplates] = useState<Template[]>([]);
-  const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [currentJob, setCurrentJob] = useState<Job | null>(null);
 
   useEffect(() => {
-    fetchTemplates();
-  }, []);
+    if (token) {
+      fetchTemplates();
+    }
+  }, [token]);
 
   const fetchTemplates = async () => {
     try {
-      const res = await fetch('http://localhost:3001/api/factory/templates');
+      const res = await fetch('http://localhost:3001/api/factory/templates', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.status === 401 || res.status === 403) {
+        handleLogout();
+        return;
+      }
       const data = await res.json();
       setTemplates(data);
     } catch (err) {
@@ -49,12 +61,29 @@ export default function App() {
     }
   };
 
+  const handleLogin = (userData: any, userToken: string) => {
+    setUser(userData);
+    setToken(userToken);
+    localStorage.setItem('prismtek_token', userToken);
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    setToken(null);
+    localStorage.removeItem('prismtek_token');
+  };
+
+  const isAdmin = user?.role === 'admin' || user?.email === 'Cody.Sumpter@gmail.com';
+
   const handleGenerate = async (description: string, templateId: string, target: string) => {
     setGenerating(true);
     try {
       const res = await fetch('http://localhost:3001/api/factory/generate', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ description, templateId, target })
       });
       const job = await res.json();
@@ -69,7 +98,9 @@ export default function App() {
   const pollJob = async (jobId: string) => {
     const interval = setInterval(async () => {
       try {
-        const res = await fetch(`http://localhost:3001/api/factory/jobs/${jobId}`);
+        const res = await fetch(`http://localhost:3001/api/factory/jobs/${jobId}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
         const job = await res.json();
         setCurrentJob(job);
         if (job.status === 'completed' || job.status === 'failed') {
@@ -85,6 +116,10 @@ export default function App() {
       }
     }, 1000);
   };
+
+  if (!token) {
+    return <AuthView onLogin={handleLogin} />;
+  }
 
   return (
     <div className="flex h-screen bg-[#0a0a0a] text-white font-sans selection:bg-blue-500/30">
@@ -123,13 +158,27 @@ export default function App() {
               active={activeTab === 'sandbox'} 
               onClick={() => setActiveTab('sandbox')}
             />
+            <SidebarItem 
+              icon={<CreditCard size={20} />} 
+              label="Billing" 
+              active={activeTab === 'billing'} 
+              onClick={() => setActiveTab('billing')}
+            />
+            {isAdmin && (
+              <SidebarItem 
+                icon={<ShieldCheck size={20} />} 
+                label="Admin" 
+                active={activeTab === 'admin'} 
+                onClick={() => setActiveTab('admin')}
+              />
+            )}
           </nav>
         </div>
 
         <div className="mt-auto p-6 border-t border-white/10">
           <nav className="space-y-1">
             <SidebarItem icon={<Settings size={20} />} label="Settings" onClick={() => {}} />
-            <SidebarItem icon={<LogOut size={20} />} label="Logout" onClick={() => {}} />
+            <SidebarItem icon={<LogOut size={20} />} label="Logout" onClick={handleLogout} />
           </nav>
         </div>
       </aside>
@@ -159,7 +208,7 @@ export default function App() {
               transition={{ duration: 0.2 }}
             >
               {activeTab === 'dashboard' && <DashboardView />}
-              {activeTab === 'workspaces' && <WorkspacesView />}
+              {activeTab === 'workspaces' && <WorkspacesView token={token} />}
               {activeTab === 'factory' && (
                 <AppFactoryView 
                   templates={templates} 
@@ -168,7 +217,9 @@ export default function App() {
                   currentJob={currentJob}
                 />
               )}
-              {activeTab === 'sandbox' && <SandboxView />}
+              {activeTab === 'sandbox' && <SandboxView token={token} />}
+              {activeTab === 'billing' && <BillingView />}
+              {activeTab === 'admin' && <AdminView />}
             </motion.div>
           </AnimatePresence>
         </div>
@@ -177,6 +228,223 @@ export default function App() {
   );
 }
 
+function AuthView({ onLogin }: { onLogin: (user: any, token: string) => void }) {
+  const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
+    try {
+      const res = await fetch(`http://localhost:3001${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, name })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        onLogin(data.user, data.token);
+      } else {
+        setError(data.error || 'Something went wrong');
+      }
+    } catch (err) {
+      setError('Failed to connect to server');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="w-full max-w-md bg-[#0f0f0f] border border-white/10 p-8 rounded-2xl shadow-2xl"
+      >
+        <div className="flex items-center gap-2 mb-8 justify-center">
+          <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
+            <Zap className="w-6 h-6 text-white" />
+          </div>
+          <span className="font-bold text-2xl tracking-tight text-white">Prismtek</span>
+        </div>
+
+        <h2 className="text-xl font-bold text-center mb-2">{isLogin ? 'Welcome Back' : 'Create Account'}</h2>
+        <p className="text-white/40 text-center text-sm mb-8">
+          {isLogin ? 'Sign in to manage your AI agents' : 'Join Prismtek to build production-grade apps'}
+        </p>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {!isLogin && (
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-white/50 ml-1">Full Name</label>
+              <input 
+                type="text" 
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500/50 transition-colors text-white"
+                placeholder="John Doe"
+              />
+            </div>
+          )}
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-white/50 ml-1">Email Address</label>
+            <input 
+              type="email" 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500/50 transition-colors text-white"
+              placeholder="name@example.com"
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-white/50 ml-1">Password</label>
+            <input 
+              type="password" 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500/50 transition-colors text-white"
+              placeholder="••••••••"
+            />
+          </div>
+
+          {error && <p className="text-red-500 text-xs text-center">{error}</p>}
+
+          <button 
+            disabled={loading}
+            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 text-white py-3 rounded-xl font-bold transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+          >
+            {loading && <Loader2 size={18} className="animate-spin" />}
+            {isLogin ? 'Sign In' : 'Create Account'}
+          </button>
+        </form>
+
+        <div className="mt-6 text-center">
+          <button 
+            onClick={() => setIsLogin(!isLogin)}
+            className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+          >
+            {isLogin ? "Don't have an account? Sign Up" : "Already have an account? Sign In"}
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+function BillingView() {
+  return (
+    <div className="space-y-8">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold">Billing & Subscription</h2>
+        <div className="px-4 py-2 bg-blue-600/20 border border-blue-500/30 rounded-lg text-blue-400 text-sm font-medium">
+          Pro Plan Active
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-[#0f0f0f] border border-white/10 p-6 rounded-2xl">
+          <p className="text-white/40 text-sm mb-1">Current Usage</p>
+          <h3 className="text-3xl font-bold mb-4">$42.50</h3>
+          <div className="w-full bg-white/5 h-2 rounded-full overflow-hidden">
+            <div className="bg-blue-600 h-full w-[40%]" />
+          </div>
+          <p className="text-xs text-white/40 mt-2">40% of $100.00 soft limit</p>
+        </div>
+        <div className="bg-[#0f0f0f] border border-white/10 p-6 rounded-2xl">
+          <p className="text-white/40 text-sm mb-1">Active Sandboxes</p>
+          <h3 className="text-3xl font-bold mb-4">4 / 10</h3>
+          <p className="text-xs text-white/40">Pro plan allows up to 10 concurrent sessions</p>
+        </div>
+        <div className="bg-[#0f0f0f] border border-white/10 p-6 rounded-2xl">
+          <p className="text-white/40 text-sm mb-1">Next Invoice</p>
+          <h3 className="text-3xl font-bold mb-4">May 1, 2026</h3>
+          <button className="text-blue-400 text-sm hover:underline">View Invoices</button>
+        </div>
+      </div>
+
+      <div className="bg-[#0f0f0f] border border-white/10 rounded-2xl overflow-hidden">
+        <div className="p-6 border-b border-white/10">
+          <h3 className="font-bold">Payment Methods</h3>
+        </div>
+        <div className="p-6 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-8 bg-white/5 rounded border border-white/10 flex items-center justify-center text-[10px] font-bold">VISA</div>
+            <div>
+              <p className="text-sm font-medium">Visa ending in 4242</p>
+              <p className="text-xs text-white/40">Expires 12/28</p>
+            </div>
+          </div>
+          <button className="text-white/60 hover:text-white transition-colors text-sm">Edit</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AdminView() {
+  return (
+    <div className="space-y-8">
+      <h2 className="text-2xl font-bold">Platform Administration</h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <AdminStat label="Total Users" value="1,284" trend="+12%" />
+        <AdminStat label="Active Sessions" value="84" trend="+5%" />
+        <AdminStat label="App Generations" value="3,492" trend="+24%" />
+        <AdminStat label="System Load" value="14%" trend="-2%" />
+      </div>
+
+      <div className="bg-[#0f0f0f] border border-white/10 rounded-2xl overflow-hidden">
+        <div className="p-6 border-b border-white/10 flex items-center justify-between">
+          <h3 className="font-bold">Recent System Events</h3>
+          <button className="text-xs text-blue-400 hover:underline">View All Logs</button>
+        </div>
+        <div className="divide-y divide-white/5">
+          <AdminLog event="New User Registration" user="sarah.j@example.com" time="2m ago" />
+          <AdminLog event="Sandbox Launch" user="mike.r@prismtek.dev" time="5m ago" />
+          <AdminLog event="App Generation Success" user="dev-team-alpha" time="12m ago" />
+          <AdminLog event="System Backup Completed" user="System" time="1h ago" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AdminStat({ label, value, trend }: { label: string, value: string, trend: string }) {
+  return (
+    <div className="bg-[#0f0f0f] border border-white/10 p-4 rounded-xl">
+      <p className="text-white/40 text-xs mb-1">{label}</p>
+      <div className="flex items-end justify-between">
+        <h4 className="text-xl font-bold">{value}</h4>
+        <span className={`text-[10px] font-bold ${trend.startsWith('+') ? 'text-green-500' : 'text-red-500'}`}>{trend}</span>
+      </div>
+    </div>
+  );
+}
+
+function AdminLog({ event, user, time }: { event: string, user: string, time: string }) {
+  return (
+    <div className="p-4 flex items-center justify-between hover:bg-white/5 transition-colors">
+      <div className="flex items-center gap-3">
+        <div className="w-2 h-2 rounded-full bg-blue-500" />
+        <div>
+          <p className="text-sm font-medium">{event}</p>
+          <p className="text-xs text-white/40">{user}</p>
+        </div>
+      </div>
+      <span className="text-xs text-white/40">{time}</span>
+    </div>
+  );
+}
 function SidebarItem({ icon, label, active, onClick }: { icon: React.ReactNode, label: string, active?: boolean, onClick: () => void }) {
   return (
     <button 
@@ -244,7 +512,18 @@ function ActivityItem({ title, time, status }: { title: string, time: string, st
   );
 }
 
-function WorkspacesView() {
+function WorkspacesView({ token }: { token: string }) {
+  const [workspaces, setWorkspaces] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch('http://localhost:3001/api/workspaces', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+      .then(res => res.json())
+      .then(data => setWorkspaces(data))
+      .catch(err => console.error(err));
+  }, [token]);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -256,9 +535,9 @@ function WorkspacesView() {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <WorkspaceCard name="Customer Support Bot" template="BMO Agent" status="Running" />
-        <WorkspaceCard name="Data Analysis Tool" template="OpenClaw" status="Paused" />
-        <WorkspaceCard name="Prismtek Site Dev" template="Static Site" status="Running" />
+        {workspaces.map(ws => (
+          <WorkspaceCard key={ws.id} name={ws.name} template={ws.template} status={ws.status} />
+        ))}
       </div>
     </div>
   );
@@ -392,7 +671,18 @@ function FeatureHighlight({ icon, title, description }: { icon: React.ReactNode,
   );
 }
 
-function SandboxView() {
+function SandboxView({ token }: { token: string }) {
+  const [sessions, setSessions] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch('http://localhost:3001/api/sandbox/sessions', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+      .then(res => res.json())
+      .then(data => setSessions(data))
+      .catch(err => console.error(err));
+  }, [token]);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -407,7 +697,19 @@ function SandboxView() {
         </div>
       </div>
 
-      <div className="bg-black rounded-xl border border-white/10 overflow-hidden h-[600px] flex flex-col">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        {sessions.map(session => (
+          <div key={session.id} className="bg-[#0f0f0f] border border-white/10 p-4 rounded-xl flex items-center justify-between">
+            <div>
+              <div className="text-sm font-bold">{session.id}</div>
+              <div className="text-xs text-white/40">Expires: {new Date(session.expiresAt).toLocaleTimeString()}</div>
+            </div>
+            <a href={session.url} target="_blank" rel="noopener noreferrer" className="text-blue-400 text-xs hover:underline">Connect</a>
+          </div>
+        ))}
+      </div>
+
+      <div className="bg-black rounded-xl border border-white/10 overflow-hidden h-[500px] flex flex-col">
         <div className="bg-[#0f0f0f] border-b border-white/10 p-3 flex items-center gap-4">
           <div className="flex gap-1.5">
             <div className="w-3 h-3 rounded-full bg-red-500/50" />
