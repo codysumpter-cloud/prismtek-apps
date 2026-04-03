@@ -1,0 +1,97 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "name": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "user"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "Workspace": {
+      "title": "Workspace",
+      "description": "User workspace information",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "name": { "type": "string" },
+        "templateId": { "type": "string" },
+        "status": { "type": "string", "enum": ["running", "paused", "syncing", "error"] },
+        "repoUrl": { "type": "string" },
+        "lastSyncedAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "ownerId", "name", "templateId", "status"]
+    },
+    "AppTemplate": {
+      "title": "AppTemplate",
+      "description": "Application template definition",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "repoUrl": { "type": "string" },
+        "version": { "type": "string" },
+        "supportedModels": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["id", "name", "description"]
+    },
+    "SandboxSession": {
+      "title": "SandboxSession",
+      "description": "Active sandbox session",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "workspaceId": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "status": { "type": "string", "enum": ["starting", "running", "terminated"] },
+        "expiresAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "workspaceId", "ownerId", "status"]
+    },
+    "SystemLog": {
+      "title": "SystemLog",
+      "description": "Platform-wide system log",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "event": { "type": "string" },
+        "user": { "type": "string" },
+        "time": { "type": "string", "format": "date-time" },
+        "type": { "type": "string", "enum": ["info", "success", "warning", "error"] }
+      },
+      "required": ["id", "event", "time", "type"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": "User",
+      "description": "User profile documents"
+    },
+    "/workspaces/{workspaceId}": {
+      "schema": "Workspace",
+      "description": "Workspace documents"
+    },
+    "/templates/{templateId}": {
+      "schema": "AppTemplate",
+      "description": "App template documents"
+    },
+    "/sandbox_sessions/{sessionId}": {
+      "schema": "SandboxSession",
+      "description": "Sandbox session documents"
+    },
+    "/system_logs/{logId}": {
+      "schema": "SystemLog",
+      "description": "System log documents"
+    }
+  }
+}

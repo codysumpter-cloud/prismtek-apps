@@ -3,11 +3,10 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
-import rateLimit from 'express-rate-limit';
+import admin from 'firebase-admin';
 import { AppFactory } from '@prismtek/app-factory';
 import { SandboxManager } from '@prismtek/sandbox';
+import firebaseConfig from '../../firebase-applet-config.json' assert { type: 'json' };
 
 dotenv.config();
 
@@ -16,45 +15,49 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const JWT_SECRET = process.env.JWT_SECRET || 'prismtek-super-secret-key';
+
+// Initialize Firebase Admin
+admin.initializeApp({
+  credential: admin.credential.cert(process.env.FIREBASE_SERVICE_ACCOUNT as string || {}),
+  databaseURL: `https://${firebaseConfig.projectId}.firebaseio.com`
+});
+
+const db = admin.firestore();
+const auth = admin.auth();
 
 const appFactory = new AppFactory();
 const sandboxManager = new SandboxManager(process.env.SANDBOX_DOCKER_IMAGE || 'prismtek/sandbox:latest');
 
-// Rate Limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
-  message: { error: 'Too many requests, please try again later.' }
-});
+// Initialize Templates in Firestore
+async function initTemplates() {
+  const templates = appFactory.getTemplates();
+  const templatesCol = db.collection('templates');
+  
+  for (const template of templates) {
+    await templatesCol.doc(template.id).set(template, { merge: true });
+  }
+  console.log('Templates initialized in Firestore');
+}
 
-app.use(limiter);
+initTemplates().catch(console.error);
+
 app.use(cors());
 app.use(express.json());
 
-// Mock Database
-const users: any[] = [];
-const workspaces: any[] = [
-  { id: '1', name: 'Customer Support Bot', template: 'BMO Agent', status: 'Running' },
-  { id: '2', name: 'Data Analysis Tool', template: 'OpenClaw', status: 'Paused' }
-];
-const systemLogs: any[] = [
-  { id: '1', event: 'System Boot', user: 'System', time: '1h ago', type: 'info' },
-  { id: '2', event: 'New User Registration', user: 'sarah.j@example.com', time: '2m ago', type: 'success' }
-];
-
-// Auth Middleware
-const authenticateToken = (req: any, res: any, next: any) => {
+// Auth Middleware (Firebase)
+const authenticateToken = async (req: any, res: any, next: any) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
   if (!token) return res.status(401).json({ error: 'Unauthorized' });
 
-  jwt.verify(token, JWT_SECRET, (err: any, user: any) => {
-    if (err) return res.status(403).json({ error: 'Forbidden' });
-    req.user = user;
+  try {
+    const decodedToken = await auth.verifyIdToken(token);
+    req.user = decodedToken;
     next();
-  });
+  } catch (err) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
 };
 
 // Health check
@@ -62,97 +65,82 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Auth Routes
-app.post('/api/auth/register', async (req, res) => {
-  const { email, password, name } = req.body;
-  
-  if (users.find(u => u.email === email)) {
-    return res.status(400).json({ error: 'User already exists' });
-  }
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const user = { id: Date.now().toString(), email, password: hashedPassword, name };
-  users.push(user);
-
-  const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '24h' });
-  res.json({ token, user: { id: user.id, email: user.email, name: user.name } });
-});
-
-app.post('/api/auth/login', async (req, res) => {
-  const { email, password } = req.body;
-  const user = users.find(u => u.email === email);
-
-  if (!user || !(await bcrypt.compare(password, user.password))) {
-    return res.status(401).json({ error: 'Invalid credentials' });
-  }
-
-  const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '24h' });
-  res.json({ token, user: { id: user.id, email: user.email, name: user.name } });
-});
-
 // Admin Routes
-app.get('/api/admin/stats', authenticateToken, (req: any, res) => {
-  // In a real app, check if user is admin
-  res.json({
-    totalUsers: users.length + 1284,
-    activeSessions: 84,
-    appGenerations: 3492,
-    systemLoad: 14,
-    trends: {
-      users: '+12%',
-      sessions: '+5%',
-      generations: '+24%',
-      load: '-2%'
-    }
-  });
+app.get('/api/admin/stats', authenticateToken, async (req: any, res) => {
+  try {
+    const usersCount = (await auth.listUsers()).users.length;
+    const workspacesCount = (await db.collection('workspaces').get()).size;
+    const sessionsCount = (await db.collection('sandbox_sessions').get()).size;
+
+    res.json({
+      totalUsers: usersCount,
+      activeSessions: sessionsCount,
+      appGenerations: workspacesCount,
+      systemLoad: 14,
+      trends: {
+        users: '+12%',
+        sessions: '+5%',
+        generations: '+24%',
+        load: '-2%'
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch stats' });
+  }
 });
 
-app.get('/api/admin/logs', authenticateToken, (req, res) => {
-  res.json(systemLogs);
+app.get('/api/admin/logs', authenticateToken, async (req, res) => {
+  try {
+    const snapshot = await db.collection('system_logs').orderBy('time', 'desc').limit(50).get();
+    const logs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    res.json(logs);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch logs' });
+  }
 });
 
 // Workspace Routes
-app.get('/api/workspaces', authenticateToken, (req, res) => {
-  res.json(workspaces);
-});
-
-app.post('/api/workspaces', authenticateToken, (req, res) => {
-  const { name, template } = req.body;
-  const workspace = { id: Date.now().toString(), name, template, status: 'Running' };
-  workspaces.push(workspace);
-  res.json(workspace);
-});
-
-app.delete('/api/workspaces/:id', authenticateToken, (req, res) => {
-  const index = workspaces.findIndex(w => w.id === req.params.id);
-  if (index !== -1) {
-    workspaces.splice(index, 1);
+app.get('/api/workspaces', authenticateToken, async (req: any, res) => {
+  try {
+    const snapshot = await db.collection('workspaces').where('ownerId', '==', req.user.uid).get();
+    const workspaces = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    res.json(workspaces);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch workspaces' });
   }
-  res.json({ success: true });
 });
 
-app.post('/api/workspaces/:id/sync', authenticateToken, (req, res) => {
-  const workspace = workspaces.find(w => w.id === req.params.id);
-  if (workspace) {
-    workspace.status = 'syncing';
+app.post('/api/workspaces/:id/sync', authenticateToken, async (req: any, res) => {
+  try {
+    const wsRef = db.collection('workspaces').doc(req.params.id);
+    const wsDoc = await wsRef.get();
+    
+    if (!wsDoc.exists) {
+      return res.status(404).json({ error: 'Workspace not found' });
+    }
+
+    await wsRef.update({ status: 'syncing' });
     
     // Simulate sync process
-    setTimeout(() => {
-      workspace.status = 'running';
-      workspace.lastSyncedAt = new Date().toISOString();
+    setTimeout(async () => {
+      await wsRef.update({ 
+        status: 'running',
+        lastSyncedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
       
-      systemLogs.unshift({
+      await db.collection('system_logs').add({
         id: Date.now().toString(),
-        event: `Workspace Synced to ${workspace.repoUrl || 'Repository'}`,
-        user: (req as any).user.email,
-        time: 'Just now',
+        event: `Workspace Synced to ${wsDoc.data()?.repoUrl || 'Repository'}`,
+        user: req.user.email,
+        time: new Date().toISOString(),
         type: 'success'
       });
     }, 2000);
 
     res.json({ success: true, message: 'Sync started' });
-  } else {
-    res.status(404).json({ error: 'Workspace not found' });
+  } catch (err) {
+    res.status(500).json({ error: 'Sync failed' });
   }
 });
 
@@ -170,14 +158,51 @@ app.post('/api/factory/generate', authenticateToken, async (req: any, res) => {
   try {
     const job = await appFactory.generate({ description, templateId, target, modelId });
     
-    // Log the event
-    systemLogs.unshift({
+    // Log the event in Firestore
+    await db.collection('system_logs').add({
       id: Date.now().toString(),
       event: 'App Generation Started',
       user: req.user.email,
-      time: 'Just now',
+      time: new Date().toISOString(),
       type: 'info'
     });
+
+    // Handle job completion in background
+    const pollJob = async () => {
+      let status = 'processing';
+      while (status !== 'completed' && status !== 'failed') {
+        await new Promise(r => setTimeout(r, 2000));
+        const currentJob = await appFactory.getJobStatus(job.id);
+        if (!currentJob) break;
+        status = currentJob.status;
+        
+        if (status === 'completed') {
+          const template = appFactory.getTemplates().find(t => t.id === templateId);
+          if (template) {
+            await db.collection('workspaces').doc(job.id).set({
+              id: job.id,
+              name: `Generated ${template.name}`,
+              templateId: template.id,
+              status: 'running',
+              repoUrl: template.repoUrl,
+              lastSyncedAt: new Date().toISOString(),
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+              ownerId: req.user.uid
+            });
+            
+            await db.collection('system_logs').add({
+              id: Date.now().toString(),
+              event: `App Generation Completed: ${template.name}`,
+              user: req.user.email,
+              time: new Date().toISOString(),
+              type: 'success'
+            });
+          }
+        }
+      }
+    };
+    pollJob();
 
     res.json(job);
   } catch (error) {
@@ -188,25 +213,6 @@ app.post('/api/factory/generate', authenticateToken, async (req: any, res) => {
 app.get('/api/factory/jobs/:id', authenticateToken, async (req, res) => {
   const job = await appFactory.getJobStatus(req.params.id);
   if (!job) return res.status(404).json({ error: 'Job not found' });
-
-  if (job.status === 'completed') {
-    // Automatically create a workspace when job completes
-    const template = appFactory.getTemplates().find(t => t.id === job.templateId);
-    if (template && !workspaces.find(w => w.id === job.id)) {
-      workspaces.unshift({
-        id: job.id,
-        name: `Generated ${template.name}`,
-        templateId: template.id,
-        status: 'running',
-        repoUrl: template.repoUrl,
-        lastSyncedAt: new Date().toISOString(),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        ownerId: (req as any).user.id
-      });
-    }
-  }
-
   res.json(job);
 });
 
@@ -216,23 +222,33 @@ app.post('/api/sandbox/launch', authenticateToken, async (req: any, res) => {
   try {
     const session = await sandboxManager.launch(workspaceId);
     
-    // Add some initial logs to the session
-    (session as any).logs = [
-      '# Initializing Prismtek Sandbox...',
-      '# Mounting virtual filesystem...',
-      '# Loading OpenClaw harness...',
-      '# Environment ready.'
-    ];
+    // Create session in Firestore
+    const sessionData = {
+      id: session.id,
+      workspaceId,
+      ownerId: req.user.uid,
+      status: 'running',
+      expiresAt: session.expiresAt,
+      createdAt: new Date().toISOString(),
+      logs: [
+        '# Initializing Prismtek Sandbox...',
+        '# Mounting virtual filesystem...',
+        '# Loading OpenClaw harness...',
+        '# Environment ready.'
+      ]
+    };
+    
+    await db.collection('sandbox_sessions').doc(session.id).set(sessionData);
 
-    systemLogs.unshift({
+    await db.collection('system_logs').add({
       id: Date.now().toString(),
       event: 'Sandbox Launch',
       user: req.user.email,
-      time: 'Just now',
+      time: new Date().toISOString(),
       type: 'success'
     });
 
-    res.json(session);
+    res.json(sessionData);
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
   }

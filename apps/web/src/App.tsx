@@ -21,6 +21,77 @@ import {
   Cpu
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { 
+  auth, 
+  db, 
+  googleProvider, 
+  signInWithPopup, 
+  signOut, 
+  onAuthStateChanged,
+  collection,
+  doc,
+  setDoc,
+  getDoc,
+  onSnapshot,
+  query,
+  where,
+  orderBy,
+  limit,
+  addDoc,
+  deleteDoc,
+  updateDoc
+} from './firebase';
+
+enum OperationType {
+  CREATE = 'create',
+  UPDATE = 'update',
+  DELETE = 'delete',
+  LIST = 'list',
+  GET = 'get',
+  WRITE = 'write',
+}
+
+interface FirestoreErrorInfo {
+  error: string;
+  operationType: OperationType;
+  path: string | null;
+  authInfo: {
+    userId: string | undefined;
+    email: string | null | undefined;
+    emailVerified: boolean | undefined;
+    isAnonymous: boolean | undefined;
+    tenantId: string | null | undefined;
+    providerInfo: {
+      providerId: string;
+      displayName: string | null;
+      email: string | null;
+      photoUrl: string | null;
+    }[];
+  }
+}
+
+function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
+  const errInfo: FirestoreErrorInfo = {
+    error: error instanceof Error ? error.message : String(error),
+    authInfo: {
+      userId: auth.currentUser?.uid,
+      email: auth.currentUser?.email,
+      emailVerified: auth.currentUser?.emailVerified,
+      isAnonymous: auth.currentUser?.isAnonymous,
+      tenantId: auth.currentUser?.tenantId,
+      providerInfo: auth.currentUser?.providerData.map(provider => ({
+        providerId: provider.providerId,
+        displayName: provider.displayName,
+        email: provider.email,
+        photoUrl: provider.photoURL
+      })) || []
+    },
+    operationType,
+    path
+  };
+  console.error('Firestore Error: ', JSON.stringify(errInfo));
+  throw new Error(JSON.stringify(errInfo));
+}
 
 interface Template {
   id: string;
@@ -37,44 +108,74 @@ interface Job {
 
 export default function App() {
   const [user, setUser] = useState<any>(null);
-  const [token, setToken] = useState<string | null>(localStorage.getItem('prismtek_token'));
+  const [token, setToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [templates, setTemplates] = useState<Template[]>([]);
   const [generating, setGenerating] = useState(false);
   const [currentJob, setCurrentJob] = useState<Job | null>(null);
 
   useEffect(() => {
-    if (token) {
-      fetchTemplates();
-    }
-  }, [token]);
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        const idToken = await firebaseUser.getIdToken();
+        setToken(idToken);
 
-  const fetchTemplates = async () => {
-    try {
-      const res = await fetch('http://localhost:3001/api/factory/templates', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (res.status === 401 || res.status === 403) {
-        handleLogout();
-        return;
+        // Ensure user document exists in Firestore
+        const userRef = doc(db, 'users', firebaseUser.uid);
+        const userSnap = await getDoc(userRef);
+        
+        if (!userSnap.exists()) {
+          const newUser = {
+            uid: firebaseUser.uid,
+            email: firebaseUser.email,
+            name: firebaseUser.displayName,
+            role: firebaseUser.email === 'Cody.Sumpter@gmail.com' ? 'admin' : 'user',
+            createdAt: new Date().toISOString()
+          };
+          await setDoc(userRef, newUser);
+          setUser(newUser);
+        } else {
+          setUser(userSnap.data());
+        }
+      } else {
+        setUser(null);
+        setToken(null);
       }
-      const data = await res.json();
-      setTemplates(data);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      // Listen for templates
+      const q = query(collection(db, 'templates'));
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const tList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Template));
+        setTemplates(tList);
+      }, (error) => {
+        handleFirestoreError(error, OperationType.LIST, 'templates');
+      });
+      return () => unsubscribe();
+    }
+  }, [user]);
+
+  const handleLogin = async () => {
+    try {
+      await signInWithPopup(auth, googleProvider);
     } catch (err) {
-      console.error('Failed to fetch templates', err);
+      console.error('Login failed', err);
     }
   };
 
-  const handleLogin = (userData: any, userToken: string) => {
-    setUser(userData);
-    setToken(userToken);
-    localStorage.setItem('prismtek_token', userToken);
-  };
-
-  const handleLogout = () => {
-    setUser(null);
-    setToken(null);
-    localStorage.removeItem('prismtek_token');
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+    } catch (err) {
+      console.error('Logout failed', err);
+    }
   };
 
   const isAdmin = user?.role === 'admin' || user?.email === 'Cody.Sumpter@gmail.com';
@@ -121,7 +222,15 @@ export default function App() {
     }, 1000);
   };
 
-  if (!token) {
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+        <Loader2 className="animate-spin text-blue-500" size={48} />
+      </div>
+    );
+  }
+
+  if (!user) {
     return <AuthView onLogin={handleLogin} />;
   }
 
@@ -217,21 +326,22 @@ export default function App() {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
             >
-              {activeTab === 'dashboard' && <DashboardView />}
-              {activeTab === 'workspaces' && <WorkspacesView token={token} />}
-              {activeTab === 'models' && <ModelsView token={token} />}
+              {activeTab === 'dashboard' && <DashboardView user={user} />}
+              {activeTab === 'workspaces' && <WorkspacesView user={user} />}
+              {activeTab === 'models' && <ModelsView user={user} token={token} />}
               {activeTab === 'factory' && (
                 <AppFactoryView 
                   templates={templates} 
                   onGenerate={handleGenerate} 
                   generating={generating}
                   currentJob={currentJob}
+                  user={user}
                   token={token}
                 />
               )}
-              {activeTab === 'sandbox' && <SandboxView token={token} />}
+              {activeTab === 'sandbox' && <SandboxView user={user} token={token} />}
               {activeTab === 'billing' && <BillingView />}
-              {activeTab === 'admin' && <AdminView token={token} />}
+              {activeTab === 'admin' && <AdminView user={user} />}
             </motion.div>
           </AnimatePresence>
         </div>
@@ -240,34 +350,13 @@ export default function App() {
   );
 }
 
-function AuthView({ onLogin }: { onLogin: (user: any, token: string) => void }) {
-  const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
+function AuthView({ onLogin }: { onLogin: () => void }) {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleGoogleLogin = async () => {
     setLoading(true);
-    setError('');
-
-    const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
     try {
-      const res = await fetch(`http://localhost:3001${endpoint}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, name })
-      });
-      const data = await res.json();
-      if (res.ok) {
-        onLogin(data.user, data.token);
-      } else {
-        setError(data.error || 'Something went wrong');
-      }
-    } catch (err) {
-      setError('Failed to connect to server');
+      await onLogin();
     } finally {
       setLoading(false);
     }
@@ -287,66 +376,31 @@ function AuthView({ onLogin }: { onLogin: (user: any, token: string) => void }) 
           <span className="font-bold text-2xl tracking-tight text-white">Prismtek</span>
         </div>
 
-        <h2 className="text-xl font-bold text-center mb-2">{isLogin ? 'Welcome Back' : 'Create Account'}</h2>
+        <h2 className="text-xl font-bold text-center mb-2">Welcome to Prismtek</h2>
         <p className="text-white/40 text-center text-sm mb-8">
-          {isLogin ? 'Sign in to manage your AI agents' : 'Join Prismtek to build production-grade apps'}
+          The Enterprise App Factory for OpenClaw Agents
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {!isLogin && (
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-white/50 ml-1">Full Name</label>
-              <input 
-                type="text" 
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500/50 transition-colors text-white"
-                placeholder="John Doe"
-              />
-            </div>
+        <button 
+          onClick={handleGoogleLogin}
+          disabled={loading}
+          className="w-full bg-white text-black hover:bg-white/90 disabled:bg-white/50 py-4 rounded-xl font-bold transition-all active:scale-[0.98] flex items-center justify-center gap-3"
+        >
+          {loading ? <Loader2 size={20} className="animate-spin" /> : (
+            <svg className="w-5 h-5" viewBox="0 0 24 24">
+              <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+              <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+              <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
+              <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+            </svg>
           )}
-          <div className="space-y-1">
-            <label className="text-xs font-medium text-white/50 ml-1">Email Address</label>
-            <input 
-              type="email" 
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500/50 transition-colors text-white"
-              placeholder="name@example.com"
-            />
-          </div>
-          <div className="space-y-1">
-            <label className="text-xs font-medium text-white/50 ml-1">Password</label>
-            <input 
-              type="password" 
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500/50 transition-colors text-white"
-              placeholder="••••••••"
-            />
-          </div>
+          Sign in with Google
+        </button>
 
-          {error && <p className="text-red-500 text-xs text-center">{error}</p>}
-
-          <button 
-            disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 text-white py-3 rounded-xl font-bold transition-all active:scale-[0.98] flex items-center justify-center gap-2"
-          >
-            {loading && <Loader2 size={18} className="animate-spin" />}
-            {isLogin ? 'Sign In' : 'Create Account'}
-          </button>
-        </form>
-
-        <div className="mt-6 text-center">
-          <button 
-            onClick={() => setIsLogin(!isLogin)}
-            className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
-          >
-            {isLogin ? "Don't have an account? Sign Up" : "Already have an account? Sign In"}
-          </button>
+        <div className="mt-8 pt-8 border-t border-white/5 text-center">
+          <p className="text-xs text-white/20">
+            By signing in, you agree to our Terms of Service and Privacy Policy.
+          </p>
         </div>
       </motion.div>
     </div>
@@ -403,23 +457,35 @@ function BillingView() {
   );
 }
 
-function AdminView({ token }: { token: string }) {
+function AdminView({ user }: { user: any }) {
   const [stats, setStats] = useState<any>(null);
   const [logs, setLogs] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch('http://localhost:3001/api/admin/stats', {
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
-      .then(res => res.json())
-      .then(data => setStats(data));
+    // Mock stats for now, but logs are real
+    setStats({
+      totalUsers: 1284,
+      activeSessions: 84,
+      appGenerations: 3492,
+      systemLoad: 14,
+      trends: {
+        users: '+12%',
+        sessions: '+5%',
+        generations: '+24%',
+        load: '-2%'
+      }
+    });
 
-    fetch('http://localhost:3001/api/admin/logs', {
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
-      .then(res => res.json())
-      .then(data => setLogs(data));
-  }, [token]);
+    const q = query(collection(db, 'system_logs'), orderBy('time', 'desc'), limit(20));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const logList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setLogs(logList);
+    }, (error) => {
+      handleFirestoreError(error, OperationType.LIST, 'system_logs');
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   if (!stats) return <div className="flex items-center justify-center h-64"><Loader2 className="animate-spin text-blue-500" /></div>;
 
@@ -443,6 +509,9 @@ function AdminView({ token }: { token: string }) {
           {logs.map(log => (
             <AdminLog key={log.id} event={log.event} user={log.user} time={log.time} type={log.type} />
           ))}
+          {logs.length === 0 && (
+            <div className="p-8 text-center text-white/20 text-sm italic">No system events recorded.</div>
+          )}
         </div>
       </div>
     </div>
@@ -477,7 +546,7 @@ function AdminLog({ event, user, time, type }: { event: string, user: string, ti
     </div>
   );
 }
-function ModelsView({ token }: { token: string | null }) {
+function ModelsView({ user, token }: { user: any, token: string | null }) {
   const [models, setModels] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -563,22 +632,58 @@ function SidebarItem({ icon, label, active, onClick }: { icon: React.ReactNode, 
   );
 }
 
-function DashboardView() {
+function DashboardView({ user }: { user: any }) {
+  const [stats, setStats] = useState({ workspaces: 0, apps: 0, sessions: 0 });
+  const [recentLogs, setRecentLogs] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (user) {
+      // Get workspace count
+      const wsQuery = query(collection(db, 'workspaces'), where('ownerId', '==', user.uid));
+      const unsubscribeWs = onSnapshot(wsQuery, (snapshot) => {
+        setStats(prev => ({ ...prev, workspaces: snapshot.size }));
+      });
+
+      // Get recent logs
+      const logsQuery = query(
+        collection(db, 'system_logs'), 
+        where('user', '==', user.email),
+        orderBy('time', 'desc'),
+        limit(5)
+      );
+      const unsubscribeLogs = onSnapshot(logsQuery, (snapshot) => {
+        setRecentLogs(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      });
+
+      return () => {
+        unsubscribeWs();
+        unsubscribeLogs();
+      };
+    }
+  }, [user]);
+
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <StatCard title="Active Workspaces" value="12" icon={<Box className="text-blue-400" />} />
-        <StatCard title="Total Apps Built" value="48" icon={<Zap className="text-yellow-400" />} />
+        <StatCard title="Active Workspaces" value={stats.workspaces.toString()} icon={<Box className="text-blue-400" />} />
+        <StatCard title="Total Apps Built" value={stats.workspaces.toString()} icon={<Zap className="text-yellow-400" />} />
         <StatCard title="Sandbox Hours" value="1,240" icon={<Activity className="text-green-400" />} />
       </div>
 
       <section>
         <h2 className="text-xl font-bold mb-4">Recent Activity</h2>
         <div className="bg-[#0f0f0f] border border-white/10 rounded-xl overflow-hidden">
-          <ActivityItem title="OpenClaw Instance Launched" time="2 minutes ago" status="success" />
-          <ActivityItem title="BMO Agent Scaffolding" time="45 minutes ago" status="success" />
-          <ActivityItem title="Sandbox Security Audit" time="2 hours ago" status="warning" />
-          <ActivityItem title="New User Registration" time="5 hours ago" status="success" />
+          {recentLogs.map(log => (
+            <ActivityItem 
+              key={log.id} 
+              title={log.event} 
+              time={new Date(log.time).toLocaleString()} 
+              status={log.type === 'error' ? 'error' : log.type === 'warning' ? 'warning' : 'success'} 
+            />
+          ))}
+          {recentLogs.length === 0 && (
+            <div className="p-8 text-center text-white/20 text-sm italic">No recent activity.</div>
+          )}
         </div>
       </section>
     </div>
@@ -614,57 +719,75 @@ function ActivityItem({ title, time, status }: { title: string, time: string, st
   );
 }
 
-function WorkspacesView({ token }: { token: string }) {
+function WorkspacesView({ user }: { user: any }) {
   const [workspaces, setWorkspaces] = useState<any[]>([]);
-
-  const fetchWorkspaces = async () => {
-    try {
-      const res = await fetch('http://localhost:3001/api/workspaces', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await res.json();
-      setWorkspaces(data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchWorkspaces();
-    
-    // Poll if any workspace is syncing
-    const interval = setInterval(() => {
-      if (workspaces.some(ws => ws.status === 'syncing')) {
-        fetchWorkspaces();
-      }
-    }, 2000);
-
-    return () => clearInterval(interval);
-  }, [token, workspaces]);
+    if (user) {
+      const q = query(
+        collection(db, 'workspaces'), 
+        where('ownerId', '==', user.uid),
+        orderBy('createdAt', 'desc')
+      );
+      
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const wsList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setWorkspaces(wsList);
+        setLoading(false);
+      }, (error) => {
+        handleFirestoreError(error, OperationType.LIST, 'workspaces');
+        setLoading(false);
+      });
+      
+      return () => unsubscribe();
+    }
+  }, [user]);
 
   const handleDelete = async (id: string) => {
     try {
-      await fetch(`http://localhost:3001/api/workspaces/${id}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` }
+      await deleteDoc(doc(db, 'workspaces', id));
+      
+      // Log the event
+      await addDoc(collection(db, 'system_logs'), {
+        id: Date.now().toString(),
+        event: 'Workspace Deleted',
+        user: user.email,
+        time: new Date().toISOString(),
+        type: 'warning'
       });
-      fetchWorkspaces();
     } catch (err) {
-      console.error(err);
+      console.error('Delete failed', err);
     }
   };
 
-  const handleSync = async (id: string) => {
+  const handleSync = async (id: string, repoUrl?: string) => {
     try {
-      await fetch(`http://localhost:3001/api/workspaces/${id}/sync`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      fetchWorkspaces();
+      const wsRef = doc(db, 'workspaces', id);
+      await updateDoc(wsRef, { status: 'syncing' });
+      
+      // Simulate sync process
+      setTimeout(async () => {
+        await updateDoc(wsRef, { 
+          status: 'running',
+          lastSyncedAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        });
+        
+        await addDoc(collection(db, 'system_logs'), {
+          id: Date.now().toString(),
+          event: `Workspace Synced to ${repoUrl || 'Repository'}`,
+          user: user.email,
+          time: new Date().toISOString(),
+          type: 'success'
+        });
+      }, 2000);
     } catch (err) {
-      console.error(err);
+      console.error('Sync failed', err);
     }
   };
+
+  if (loading) return <div className="flex items-center justify-center h-64"><Loader2 className="animate-spin text-blue-500" /></div>;
 
   return (
     <div className="space-y-6">
@@ -682,9 +805,15 @@ function WorkspacesView({ token }: { token: string }) {
             key={ws.id} 
             workspace={ws}
             onDelete={() => handleDelete(ws.id)}
-            onSync={() => handleSync(ws.id)}
+            onSync={() => handleSync(ws.id, ws.repoUrl)}
           />
         ))}
+        {workspaces.length === 0 && (
+          <div className="col-span-full py-20 text-center border-2 border-dashed border-white/5 rounded-2xl">
+            <Box size={48} className="mx-auto mb-4 text-white/10" />
+            <p className="text-white/40">No workspaces found. Start by generating an app!</p>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -760,11 +889,12 @@ function WorkspaceCard({ workspace, onDelete, onSync }: { workspace: any, onDele
   );
 }
 
-function AppFactoryView({ templates, onGenerate, generating, currentJob, token }: { 
+function AppFactoryView({ templates, onGenerate, generating, currentJob, user, token }: { 
   templates: Template[], 
   onGenerate: (desc: string, templateId: string, target: string, modelId?: string) => void,
   generating: boolean,
   currentJob: Job | null,
+  user: any,
   token: string | null
 }) {
   const [description, setDescription] = useState('');
@@ -780,7 +910,7 @@ function AppFactoryView({ templates, onGenerate, generating, currentJob, token }
       })
         .then(res => res.json())
         .then(data => setAvailableModels(data))
-        .catch(err => console.error(err));
+        .catch(err => console.error('Failed to fetch models', err));
     }
   }, [token]);
 
@@ -905,11 +1035,24 @@ function FeatureHighlight({ icon, title, description }: { icon: React.ReactNode,
   );
 }
 
-function SandboxView({ token }: { token: string }) {
+function SandboxView({ user, token }: { user: any, token: string | null }) {
   const [sessions, setSessions] = useState<any[]>([]);
+  const [workspaces, setWorkspaces] = useState<any[]>([]);
+  const [selectedWorkspace, setSelectedWorkspace] = useState<string>('');
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    if (user) {
+      const q = query(collection(db, 'workspaces'), where('ownerId', '==', user.uid));
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        setWorkspaces(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      });
+      return () => unsubscribe();
+    }
+  }, [user]);
+
   const fetchSessions = async () => {
+    if (!token) return;
     try {
       const res = await fetch('http://localhost:3001/api/sandbox/sessions', {
         headers: { 'Authorization': `Bearer ${token}` }
@@ -922,10 +1065,13 @@ function SandboxView({ token }: { token: string }) {
   };
 
   useEffect(() => {
-    fetchSessions();
+    if (token) {
+      fetchSessions();
+    }
   }, [token]);
 
   const handleLaunch = async () => {
+    if (!selectedWorkspace || !token) return;
     setLoading(true);
     try {
       await fetch('http://localhost:3001/api/sandbox/launch', {
@@ -934,7 +1080,7 @@ function SandboxView({ token }: { token: string }) {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ workspaceId: 'default' })
+        body: JSON.stringify({ workspaceId: selectedWorkspace })
       });
       await fetchSessions();
     } catch (err) {
@@ -949,12 +1095,22 @@ function SandboxView({ token }: { token: string }) {
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Sandboxed Runtime</h2>
         <div className="flex gap-2">
+          <select 
+            value={selectedWorkspace}
+            onChange={(e) => setSelectedWorkspace(e.target.value)}
+            className="bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500/50 transition-colors"
+          >
+            <option value="">Select Workspace</option>
+            {workspaces.map(ws => (
+              <option key={ws.id} value={ws.id}>{ws.name}</option>
+            ))}
+          </select>
           <button className="bg-white/5 hover:bg-white/10 text-white px-4 py-2 rounded-lg font-medium transition-colors">
             Reset Environment
           </button>
           <button 
             onClick={handleLaunch}
-            disabled={loading}
+            disabled={loading || !selectedWorkspace}
             className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
           >
             {loading ? <Loader2 size={18} className="animate-spin" /> : <PlusCircle size={18} />}
