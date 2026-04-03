@@ -1,0 +1,8 @@
+{
+  "name": "AI Edge Gallery",
+  "description": "A curated showcase of edge AI capabilities and skills, featuring real-time demonstrations and interactive models.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
