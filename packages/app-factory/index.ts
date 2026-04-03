@@ -1,17 +1,35 @@
-import { AppTemplate, AppGenerationJob } from '@prismtek/core';
+import { AppTemplate, AppGenerationJob, AIModel } from '@prismtek/core';
 
 export interface ScaffoldingOptions {
   description: string;
   templateId: string;
   target: string;
   env?: Record<string, string>;
+  modelId?: string;
 }
 
 export class AppFactory {
   private templates: Map<string, AppTemplate> = new Map();
   private jobs: Map<string, AppGenerationJob> = new Map();
+  private models: Map<string, AIModel> = new Map();
 
   constructor() {
+    this.registerTemplate({
+      id: 'bmo-stack-full',
+      name: 'BMO Stack Full',
+      description: 'Complete BMO Stack deployment with agent framework and local model support.',
+      repoUrl: 'https://github.com/codysumpter-cloud/bmo-stack',
+      version: '2.0.0',
+      supportedModels: ['gemma4-e2b', 'gemma4-2b', 'gemma4-7b', 'gemma4-27b', 'nemotron3-120b', 'nemotron3-8b']
+    });
+    this.registerTemplate({
+      id: 'prismtek-site-pro',
+      name: 'Prismtek Site Pro',
+      description: 'Advanced site template based on the Prismtek-site repository.',
+      repoUrl: 'https://github.com/prismtek-dev/prismtek-site',
+      version: '1.5.0',
+      supportedModels: ['gemma4-7b', 'gemma4-27b']
+    });
     this.registerTemplate({
       id: 'bmo-agent',
       name: 'BMO Agent',
@@ -26,12 +44,55 @@ export class AppFactory {
       repoUrl: 'https://github.com/ultraworkers/claw-code',
       version: '2.4.0'
     });
-    this.registerTemplate({
-      id: 'omni-openclaw',
-      name: 'Omni-OpenClaw Starter',
-      description: 'Clean, brand-neutral starter for OpenClaw with local Omni models.',
-      repoUrl: 'https://github.com/codysumpter-cloud/omni-openclaw-starter',
-      version: '1.2.0'
+
+    // Register Models
+    this.registerModel({
+      id: 'gemma4-e2b',
+      name: 'Gemma 4 E2B',
+      provider: 'Google',
+      parameters: '2B',
+      description: 'Optimized for edge and browser-based inference.',
+      isFree: true
+    });
+    this.registerModel({
+      id: 'gemma4-2b',
+      name: 'Gemma 4 2B',
+      provider: 'Google',
+      parameters: '2B',
+      description: 'Lightweight model for mobile and edge devices.',
+      isFree: true
+    });
+    this.registerModel({
+      id: 'gemma4-7b',
+      name: 'Gemma 4 7B',
+      provider: 'Google',
+      parameters: '7B',
+      description: 'Balanced performance for general-purpose AI tasks.',
+      isFree: true
+    });
+    this.registerModel({
+      id: 'gemma4-27b',
+      name: 'Gemma 4 27B',
+      provider: 'Google',
+      parameters: '27B',
+      description: 'High-performance model for complex reasoning and coding.',
+      isFree: true
+    });
+    this.registerModel({
+      id: 'nemotron3-120b',
+      name: 'Nemotron-3 120B Super Cloud',
+      provider: 'NVIDIA',
+      parameters: '120B',
+      description: 'High-performance model for complex reasoning and cloud-scale apps.',
+      isFree: true
+    });
+    this.registerModel({
+      id: 'nemotron3-8b',
+      name: 'Nemotron-3 8B',
+      provider: 'NVIDIA',
+      parameters: '8B',
+      description: 'Efficient model for real-time applications and low-latency tasks.',
+      isFree: true
     });
   }
 
@@ -39,8 +100,16 @@ export class AppFactory {
     this.templates.set(template.id, template);
   }
 
+  registerModel(model: AIModel) {
+    this.models.set(model.id, model);
+  }
+
   getTemplates(): AppTemplate[] {
     return Array.from(this.templates.values());
+  }
+
+  getModels(): AIModel[] {
+    return Array.from(this.models.values());
   }
 
   async generate(options: ScaffoldingOptions): Promise<AppGenerationJob> {

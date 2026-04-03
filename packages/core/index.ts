@@ -4,6 +4,15 @@ export interface User {
   name?: string;
 }
 
+export interface AIModel {
+  id: string;
+  name: string;
+  provider: 'Google' | 'NVIDIA' | 'Meta' | 'Mistral';
+  parameters: string;
+  description: string;
+  isFree: boolean;
+}
+
 export interface Workspace {
   id: string;
   name: string;
@@ -12,6 +21,9 @@ export interface Workspace {
   status: 'running' | 'paused' | 'stopped' | 'error';
   createdAt: string;
   updatedAt: string;
+  lastSyncedAt?: string;
+  repoUrl?: string;
+  activeModelId?: string;
 }
 
 export interface AppTemplate {
@@ -20,6 +32,7 @@ export interface AppTemplate {
   description: string;
   repoUrl: string;
   version: string;
+  supportedModels?: string[];
 }
 
 export interface SandboxSession {

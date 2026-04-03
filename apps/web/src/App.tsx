@@ -14,7 +14,11 @@ import {
   Loader2,
   CreditCard,
   ShieldCheck,
-  CheckCircle2
+  CheckCircle2,
+  RefreshCw,
+  Globe,
+  Clock,
+  Cpu
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -75,7 +79,7 @@ export default function App() {
 
   const isAdmin = user?.role === 'admin' || user?.email === 'Cody.Sumpter@gmail.com';
 
-  const handleGenerate = async (description: string, templateId: string, target: string) => {
+  const handleGenerate = async (description: string, templateId: string, target: string, modelId?: string) => {
     setGenerating(true);
     try {
       const res = await fetch('http://localhost:3001/api/factory/generate', {
@@ -84,7 +88,7 @@ export default function App() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ description, templateId, target })
+        body: JSON.stringify({ description, templateId, target, modelId })
       });
       const job = await res.json();
       setCurrentJob(job);
@@ -145,6 +149,12 @@ export default function App() {
               label="Workspaces" 
               active={activeTab === 'workspaces'} 
               onClick={() => setActiveTab('workspaces')}
+            />
+            <SidebarItem 
+              icon={<Cpu size={20} />} 
+              label="Model Hub" 
+              active={activeTab === 'models'} 
+              onClick={() => setActiveTab('models')}
             />
             <SidebarItem 
               icon={<PlusCircle size={20} />} 
@@ -209,12 +219,14 @@ export default function App() {
             >
               {activeTab === 'dashboard' && <DashboardView />}
               {activeTab === 'workspaces' && <WorkspacesView token={token} />}
+              {activeTab === 'models' && <ModelsView token={token} />}
               {activeTab === 'factory' && (
                 <AppFactoryView 
                   templates={templates} 
                   onGenerate={handleGenerate} 
                   generating={generating}
                   currentJob={currentJob}
+                  token={token}
                 />
               )}
               {activeTab === 'sandbox' && <SandboxView token={token} />}
@@ -465,6 +477,76 @@ function AdminLog({ event, user, time, type }: { event: string, user: string, ti
     </div>
   );
 }
+function ModelsView({ token }: { token: string | null }) {
+  const [models, setModels] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (token) {
+      fetch('http://localhost:3001/api/factory/models', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+        .then(res => res.json())
+        .then(data => {
+          setModels(data);
+          setLoading(false);
+        })
+        .catch(err => {
+          console.error(err);
+          setLoading(false);
+        });
+    }
+  }, [token]);
+
+  if (loading) return <div className="flex items-center justify-center h-64"><Loader2 className="animate-spin text-blue-500" /></div>;
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold">AI Model Hub</h2>
+        <div className="flex items-center gap-2 text-xs text-white/40">
+          <ShieldCheck size={14} className="text-green-500" />
+          Enterprise Verified Models
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {models.map(model => (
+          <div key={model.id} className="bg-[#0f0f0f] border border-white/10 p-6 rounded-xl hover:border-white/20 transition-all group">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-blue-600/10 text-blue-400 rounded-xl flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
+                  <Cpu size={24} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg">{model.name}</h3>
+                  <p className="text-xs text-white/40">{model.provider} • {model.parameters}</p>
+                </div>
+              </div>
+              {model.isFree && (
+                <span className="text-[10px] px-2 py-0.5 bg-green-500/10 text-green-400 rounded-full font-bold uppercase">Free Tier</span>
+              )}
+            </div>
+            <p className="text-sm text-white/60 mb-6 leading-relaxed">{model.description}</p>
+            <div className="flex items-center justify-between pt-4 border-t border-white/5">
+              <div className="flex items-center gap-2">
+                <div className="flex -space-x-2">
+                  {[1, 2, 3].map(i => (
+                    <div key={i} className="w-6 h-6 rounded-full border-2 border-[#0f0f0f] bg-white/10" />
+                  ))}
+                </div>
+                <span className="text-[10px] text-white/30">Used by 2.4k developers</span>
+              </div>
+              <button className="text-blue-400 text-sm font-medium hover:underline flex items-center gap-1">
+                View Docs <Zap size={14} />
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 function SidebarItem({ icon, label, active, onClick }: { icon: React.ReactNode, label: string, active?: boolean, onClick: () => void }) {
   return (
     <button 
@@ -549,12 +631,33 @@ function WorkspacesView({ token }: { token: string }) {
 
   useEffect(() => {
     fetchWorkspaces();
-  }, [token]);
+    
+    // Poll if any workspace is syncing
+    const interval = setInterval(() => {
+      if (workspaces.some(ws => ws.status === 'syncing')) {
+        fetchWorkspaces();
+      }
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [token, workspaces]);
 
   const handleDelete = async (id: string) => {
     try {
       await fetch(`http://localhost:3001/api/workspaces/${id}`, {
         method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      fetchWorkspaces();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleSync = async (id: string) => {
+    try {
+      await fetch(`http://localhost:3001/api/workspaces/${id}/sync`, {
+        method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });
       fetchWorkspaces();
@@ -577,10 +680,9 @@ function WorkspacesView({ token }: { token: string }) {
         {workspaces.map(ws => (
           <WorkspaceCard 
             key={ws.id} 
-            name={ws.name} 
-            template={ws.template} 
-            status={ws.status} 
+            workspace={ws}
             onDelete={() => handleDelete(ws.id)}
+            onSync={() => handleSync(ws.id)}
           />
         ))}
       </div>
@@ -588,43 +690,108 @@ function WorkspacesView({ token }: { token: string }) {
   );
 }
 
-function WorkspaceCard({ name, template, status, onDelete }: { name: string, template: string, status: string, onDelete: () => void }) {
+function WorkspaceCard({ workspace, onDelete, onSync }: { workspace: any, onDelete: () => void, onSync: () => void }) {
+  const isSyncing = workspace.status === 'syncing';
+  
   return (
-    <div className="bg-[#0f0f0f] border border-white/10 p-6 rounded-xl hover:border-white/20 transition-all cursor-pointer group relative">
-      <button 
-        onClick={(e) => {
-          e.stopPropagation();
-          onDelete();
-        }}
-        className="absolute top-4 right-4 text-white/20 hover:text-red-500 transition-colors"
-      >
-        <LogOut size={14} />
-      </button>
+    <div className="bg-[#0f0f0f] border border-white/10 p-6 rounded-xl hover:border-white/20 transition-all cursor-pointer group relative overflow-hidden">
+      {isSyncing && (
+        <div className="absolute inset-0 bg-blue-600/5 backdrop-blur-[1px] flex items-center justify-center z-10">
+          <div className="flex flex-col items-center gap-2">
+            <RefreshCw size={24} className="animate-spin text-blue-400" />
+            <span className="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Syncing to Repo...</span>
+          </div>
+        </div>
+      )}
+      
+      <div className="absolute top-4 right-4 flex items-center gap-2 z-20">
+        <button 
+          disabled={isSyncing}
+          onClick={(e) => {
+            e.stopPropagation();
+            onSync();
+          }}
+          className={`text-white/20 hover:text-blue-400 transition-colors ${isSyncing ? 'opacity-0' : ''}`}
+          title="Sync to Repository"
+        >
+          <RefreshCw size={14} />
+        </button>
+        <button 
+          disabled={isSyncing}
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete();
+          }}
+          className={`text-white/20 hover:text-red-500 transition-colors ${isSyncing ? 'opacity-0' : ''}`}
+        >
+          <LogOut size={14} />
+        </button>
+      </div>
       <div className="flex items-center justify-between mb-4">
         <div className="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center group-hover:bg-blue-600/20 group-hover:text-blue-400 transition-colors">
           <Box size={20} />
         </div>
         <span className={`text-xs px-2 py-1 rounded-full ${
-          status === 'Running' ? 'bg-green-500/10 text-green-400' : 'bg-white/10 text-white/40'
+          workspace.status === 'running' ? 'bg-green-500/10 text-green-400' : 'bg-white/10 text-white/40'
         }`}>
-          {status}
+          {workspace.status}
         </span>
       </div>
-      <h3 className="font-bold mb-1">{name}</h3>
-      <p className="text-sm text-white/40">{template}</p>
+      <h3 className="font-bold mb-1">{workspace.name}</h3>
+      <p className="text-sm text-white/40 mb-4">{workspace.templateId}</p>
+      
+      {workspace.repoUrl && (
+        <div className="mb-4 p-2 bg-white/5 rounded border border-white/5 text-[10px] font-mono text-white/40 truncate">
+          {workspace.repoUrl}
+        </div>
+      )}
+      
+      <div className="flex items-center gap-4 pt-4 border-t border-white/5 text-[10px] text-white/30">
+        <div className="flex items-center gap-1">
+          <Globe size={10} />
+          <span>{workspace.repoUrl ? 'Repo Linked' : 'Local Only'}</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <Clock size={10} />
+          <span>{workspace.lastSyncedAt ? new Date(workspace.lastSyncedAt).toLocaleTimeString() : 'Never'}</span>
+        </div>
+      </div>
     </div>
   );
 }
 
-function AppFactoryView({ templates, onGenerate, generating, currentJob }: { 
+function AppFactoryView({ templates, onGenerate, generating, currentJob, token }: { 
   templates: Template[], 
-  onGenerate: (desc: string, templateId: string, target: string) => void,
+  onGenerate: (desc: string, templateId: string, target: string, modelId?: string) => void,
   generating: boolean,
-  currentJob: Job | null
+  currentJob: Job | null,
+  token: string | null
 }) {
   const [description, setDescription] = useState('');
   const [templateId, setTemplateId] = useState(templates[0]?.id || '');
   const [target, setTarget] = useState('Cloud Run (GCP)');
+  const [modelId, setModelId] = useState('');
+  const [availableModels, setAvailableModels] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (token) {
+      fetch('http://localhost:3001/api/factory/models', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+        .then(res => res.json())
+        .then(data => setAvailableModels(data))
+        .catch(err => console.error(err));
+    }
+  }, [token]);
+
+  // Filter models based on template support
+  const filteredModels = availableModels.filter(m => {
+    const template = templates.find(t => t.id === templateId);
+    if (!template) return true;
+    // If template doesn't specify supported models, allow all
+    if (!(template as any).supportedModels) return true;
+    return (template as any).supportedModels.includes(m.id);
+  });
 
   return (
     <div className="max-w-3xl mx-auto space-y-8">
@@ -644,7 +811,7 @@ function AppFactoryView({ templates, onGenerate, generating, currentJob }: {
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="space-y-2">
             <label className="text-sm font-medium text-white/70">Base Template</label>
             <select 
@@ -654,6 +821,19 @@ function AppFactoryView({ templates, onGenerate, generating, currentJob }: {
             >
               {templates.map(t => (
                 <option key={t.id} value={t.id}>{t.name}</option>
+              ))}
+            </select>
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-white/70">AI Model</label>
+            <select 
+              value={modelId}
+              onChange={(e) => setModelId(e.target.value)}
+              className="w-full bg-black/50 border border-white/10 rounded-xl p-3 focus:outline-none focus:border-blue-500/50 transition-colors"
+            >
+              <option value="">Default (Template Optimized)</option>
+              {filteredModels.map(m => (
+                <option key={m.id} value={m.id}>{m.name} ({m.parameters})</option>
               ))}
             </select>
           </div>
@@ -673,7 +853,7 @@ function AppFactoryView({ templates, onGenerate, generating, currentJob }: {
 
         <button 
           disabled={generating || !description}
-          onClick={() => onGenerate(description, templateId, target)}
+          onClick={() => onGenerate(description, templateId, target, modelId)}
           className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 disabled:cursor-not-allowed text-white py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
         >
           {generating ? <Loader2 size={20} className="animate-spin" /> : <Zap size={20} />}

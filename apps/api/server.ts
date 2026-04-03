@@ -131,15 +131,44 @@ app.delete('/api/workspaces/:id', authenticateToken, (req, res) => {
   res.json({ success: true });
 });
 
+app.post('/api/workspaces/:id/sync', authenticateToken, (req, res) => {
+  const workspace = workspaces.find(w => w.id === req.params.id);
+  if (workspace) {
+    workspace.status = 'syncing';
+    
+    // Simulate sync process
+    setTimeout(() => {
+      workspace.status = 'running';
+      workspace.lastSyncedAt = new Date().toISOString();
+      
+      systemLogs.unshift({
+        id: Date.now().toString(),
+        event: `Workspace Synced to ${workspace.repoUrl || 'Repository'}`,
+        user: (req as any).user.email,
+        time: 'Just now',
+        type: 'success'
+      });
+    }, 2000);
+
+    res.json({ success: true, message: 'Sync started' });
+  } else {
+    res.status(404).json({ error: 'Workspace not found' });
+  }
+});
+
 // App Factory Service Interface
 app.get('/api/factory/templates', authenticateToken, (req, res) => {
   res.json(appFactory.getTemplates());
 });
 
+app.get('/api/factory/models', authenticateToken, (req, res) => {
+  res.json(appFactory.getModels());
+});
+
 app.post('/api/factory/generate', authenticateToken, async (req: any, res) => {
-  const { description, templateId, target } = req.body;
+  const { description, templateId, target, modelId } = req.body;
   try {
-    const job = await appFactory.generate({ description, templateId, target });
+    const job = await appFactory.generate({ description, templateId, target, modelId });
     
     // Log the event
     systemLogs.unshift({
@@ -167,8 +196,13 @@ app.get('/api/factory/jobs/:id', authenticateToken, async (req, res) => {
       workspaces.unshift({
         id: job.id,
         name: `Generated ${template.name}`,
-        template: template.name,
-        status: 'Running'
+        templateId: template.id,
+        status: 'running',
+        repoUrl: template.repoUrl,
+        lastSyncedAt: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        ownerId: (req as any).user.id
       });
     }
   }
