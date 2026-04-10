@@ -21,10 +21,12 @@ Direction:
 Current role:
 - product-facing API
 - currently wires together auth, templates, sandbox launch, and app-generation flows
+- still reflects older factory/workspace-console assumptions in its route shape
 
 Direction:
 - keep this as the app-owned API layer
 - avoid letting it become a vague system backend for things owned elsewhere
+- over time, regroup routes around BeMore product capabilities instead of generic platform/factory framing
 
 ## Likely future surfaces
 
