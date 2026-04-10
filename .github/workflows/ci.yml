@@ -1,0 +1,54 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - main
+      - feat/**
+      - fix/**
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Validate key files exist
+        run: |
+          test -f README.md
+          test -f package.json
+          test -f package-lock.json
+          test -f turbo.json
+          test -d apps
+          test -d packages
+          test -f apps/web/package.json
+          test -f apps/api/package.json
+          test -f packages/core/package.json
+          test -f packages/app-factory/package.json
+          test -f packages/sandbox/package.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck web app
+        run: npm --workspace apps/web run lint
+
+      - name: Typecheck shared packages
+        run: |
+          npm --workspace packages/core run lint
+          npm --workspace packages/app-factory run lint
+          npm --workspace packages/sandbox run lint
+
+      - name: Build repository
+        run: npm run build
