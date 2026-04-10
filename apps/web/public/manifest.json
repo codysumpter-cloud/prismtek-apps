@@ -1,7 +1,7 @@
 {
-  "name": "Prismtek Platform",
-  "short_name": "Prismtek",
-  "description": "Production-grade OpenClaw/NemoClaw-powered application platform.",
+  "name": "BeMore",
+  "short_name": "BeMore",
+  "description": "The flagship personal agent app from Prismtek.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0a0a0a",

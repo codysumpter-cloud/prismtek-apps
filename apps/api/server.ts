@@ -231,7 +231,7 @@ app.post('/api/sandbox/launch', authenticateToken, async (req: any, res) => {
       expiresAt: session.expiresAt,
       createdAt: new Date().toISOString(),
       logs: [
-        '# Initializing Prismtek Sandbox...',
+        '# Initializing BeMore workspace sandbox...',
         '# Mounting virtual filesystem...',
         '# Loading OpenClaw harness...',
         '# Environment ready.'
@@ -265,5 +265,5 @@ app.delete('/api/sandbox/sessions/:id', authenticateToken, async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Prismtek API running on http://localhost:${PORT}`);
+  console.log(`BeMore API running on http://localhost:${PORT}`);
 });
