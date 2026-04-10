@@ -144,6 +144,8 @@ npm run build
 - `docs/AUTOMATION_MIGRATION.md` — how product-owned automation should move here over time
 - `docs/BEMORE_IOS_BUILD_MIGRATION.md` — target migration path for BeMore iOS build ownership
 - `docs/BUILD_OWNERSHIP_AUDIT.md` — audit table for current vs target build/release ownership
+- `docs/DEV_CHECKLIST.md` — lightweight checklist for meaningful repo changes
+- `docs/RELEASE_CHECKLIST.md` — lightweight release-path checklist
 - `CONTRIBUTING.md` — contribution boundaries and repo expectations
 
 ## Current cleanup priorities
