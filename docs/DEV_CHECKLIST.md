@@ -32,3 +32,9 @@ Use this checklist when making meaningful changes in `prismtek-apps`.
 - explain why it belongs in `apps/`
 - note whether it is a real shipped surface or transitional
 - link it back to BeMore or the Prismtek product family clearly
+
+## If you touch app branding metadata
+
+- do not ship placeholder third-party assets in manifests or icons
+- prefer no icon metadata over fake remote icon URLs
+- if branding is still in flux, keep labels honest and leave a clear follow-up note
