@@ -9,6 +9,7 @@
     "packages/*"
   ],
   "scripts": {
+    "prepare": "husky install",
     "dev": "turbo run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
@@ -30,6 +31,7 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "husky": "^9.0.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.19",
     "@types/express": "^4.17.21",
