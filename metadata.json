@@ -1,5 +1,5 @@
 {
-  "name": "Prismtek Platform",
-  "description": "Production-grade OpenClaw/NemoClaw-powered application platform with Enterprise App Factory and sandboxed runtime.",
+  "name": "Prismtek Apps",
+  "description": "Product monorepo for BeMore and future Prismtek apps, with shared app surfaces, APIs, and product packages.",
   "requestFramePermissions": ["camera", "microphone", "geolocation"]
 }

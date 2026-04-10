@@ -243,7 +243,7 @@ export default function App() {
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
               <Zap className="w-5 h-5 text-white" />
             </div>
-            <span className="font-bold text-xl tracking-tight">Prismtek</span>
+            <span className="font-bold text-xl tracking-tight">BeMore</span>
           </div>
 
           <nav className="space-y-1">
@@ -373,12 +373,12 @@ function AuthView({ onLogin }: { onLogin: () => void }) {
           <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
             <Zap className="w-6 h-6 text-white" />
           </div>
-          <span className="font-bold text-2xl tracking-tight text-white">Prismtek</span>
+          <span className="font-bold text-2xl tracking-tight text-white">BeMore</span>
         </div>
 
-        <h2 className="text-xl font-bold text-center mb-2">Welcome to Prismtek</h2>
+        <h2 className="text-xl font-bold text-center mb-2">Welcome to BeMore</h2>
         <p className="text-white/40 text-center text-sm mb-8">
-          The Enterprise App Factory for OpenClaw Agents
+          The flagship personal agent app from Prismtek
         </p>
 
         <button 
@@ -926,8 +926,8 @@ function AppFactoryView({ templates, onGenerate, generating, currentJob, user, t
   return (
     <div className="max-w-3xl mx-auto space-y-8">
       <div className="text-center">
-        <h2 className="text-3xl font-bold mb-2">Enterprise App Factory</h2>
-        <p className="text-white/50 text-lg">Generate production-grade applications in seconds.</p>
+        <h2 className="text-3xl font-bold mb-2">BeMore</h2>
+        <p className="text-white/50 text-lg">Build and run BeMore experiences with shared Prismtek product infrastructure.</p>
       </div>
 
       <div className="bg-[#0f0f0f] border border-white/10 p-8 rounded-2xl space-y-6">
