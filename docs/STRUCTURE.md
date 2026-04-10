@@ -15,6 +15,7 @@ packages/
   sandbox/
 
 docs/
+  DECISIONS/
   ORGANIZATION.md
   REPO_POSITIONING.md
   STRUCTURE.md
@@ -36,10 +37,12 @@ packages/
   runtime-adapter/   App-facing runtime adapters that integrate with external execution layers
 
 docs/
+  DECISIONS/
+    0001-product-monorepo.md
+    0002-naming-layers.md
   ORGANIZATION.md
   REPO_POSITIONING.md
   STRUCTURE.md
-  DECISIONS/
 ```
 
 ## Rules
@@ -73,9 +76,9 @@ Examples:
 ### `docs/DECISIONS/`
 Use this for short architecture decisions.
 
-Suggested naming:
+Current decisions:
 - `0001-product-monorepo.md`
-- `0002-bemore-naming-layers.md`
+- `0002-naming-layers.md`
 
 ## Current posture
 
