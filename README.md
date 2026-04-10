@@ -143,6 +143,7 @@ npm run build
 - `docs/NEXT_STRUCTURE_PASS.md` — recommended next structural cleanup without premature churn
 - `docs/AUTOMATION_MIGRATION.md` — how product-owned automation should move here over time
 - `docs/BEMORE_IOS_BUILD_MIGRATION.md` — target migration path for BeMore iOS build ownership
+- `docs/BUILD_OWNERSHIP_AUDIT.md` — audit table for current vs target build/release ownership
 - `CONTRIBUTING.md` — contribution boundaries and repo expectations
 
 ## Current cleanup priorities
