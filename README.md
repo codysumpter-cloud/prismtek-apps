@@ -4,6 +4,16 @@ Canonical product monorepo for **BeMore** and future **Prismtek** apps.
 
 This repository is the implementation home for the Prismtek app family. It owns product-facing apps, shared product packages, and app-level APIs. It does **not** own the assistant runtime substrate, the council and Buddy policy layer, or the public Prismtek website.
 
+## Quick start
+
+```bash
+npm install
+npm run dev
+```
+
+Use this repo when the work is about shipped product implementation.
+If the work is really runtime substrate, policy/identity, or public-site ownership, it probably belongs elsewhere.
+
 ## At a glance
 
 - **Umbrella brand:** Prismtek
@@ -64,6 +74,7 @@ packages/
   sandbox/         Product-level sandbox/session adapters
 
 docs/
+  DECISIONS/           Short architecture decisions
   ORGANIZATION.md      Naming layers, ownership split, migration posture
   REPO_POSITIONING.md  Repo role and cleanup posture
 ```
@@ -133,20 +144,40 @@ npm run dev
 npm run build
 ```
 
+### Useful commands
+
+```bash
+npm run lint
+npm run clean
+```
+
 ## Docs
 
+### Core repo docs
 - `docs/REPO_POSITIONING.md` — repo ownership summary and cleanup posture
 - `docs/ORGANIZATION.md` — naming layers, ownership split, and migration posture
 - `docs/STRUCTURE.md` — current and intended file structure
+- `CONTRIBUTING.md` — contribution boundaries and repo expectations
+
+### Product structure and boundaries
 - `docs/PACKAGE_BOUNDARIES.md` — current package roles and future package direction
 - `docs/APP_SURFACES.md` — current and intended app surfaces
 - `docs/NEXT_STRUCTURE_PASS.md` — recommended next structural cleanup without premature churn
+- `docs/PACKAGE_ROLE_AUDIT.md` — package-by-package review of current roles and likely direction
+
+### Migration and release ownership
 - `docs/AUTOMATION_MIGRATION.md` — how product-owned automation should move here over time
 - `docs/BEMORE_IOS_BUILD_MIGRATION.md` — target migration path for BeMore iOS build ownership
 - `docs/BUILD_OWNERSHIP_AUDIT.md` — audit table for current vs target build/release ownership
+- `docs/IOS_BUILD_OWNERSHIP.md` — current notes on iOS build ownership posture
+
+### Working checklists
 - `docs/DEV_CHECKLIST.md` — lightweight checklist for meaningful repo changes
 - `docs/RELEASE_CHECKLIST.md` — lightweight release-path checklist
-- `CONTRIBUTING.md` — contribution boundaries and repo expectations
+
+### Decisions
+- `docs/DECISIONS/0001-product-monorepo.md` — why this repo is the canonical product monorepo
+- `docs/DECISIONS/0002-naming-layers.md` — why repo, product, and technical naming are intentionally separated
 
 ## Current cleanup priorities
 
@@ -155,6 +186,15 @@ npm run build
 3. move product-owned automation here over time
 4. reduce overlap with shadow or transitional app repos
 5. keep BeMore implementation decisions close to the product repo
+
+## Branding assets
+
+A polished app logo is important for shipped product surfaces, especially iOS, but it is not required for this repo README to do its job.
+
+Current priority order:
+1. real app icon and branding system for the BeMore app
+2. consistent product naming across app surfaces
+3. optional repo-level branding assets once the product identity is more stable
 
 ## License
 
