@@ -9,6 +9,18 @@ The repo rename is real, but parts of the codebase still reflect older platform 
 The right immediate move is not a giant restructure.
 It is to keep the useful pieces, demote the misleading center of gravity, and move gradually toward BeMore-first product ownership.
 
+## Current code reality snapshot
+
+The current implementation still centers a few older assumptions that the docs should not hide:
+
+- `apps/api` still exposes factory-style routes like `/api/factory/templates`, `/api/factory/models`, and `/api/factory/generate`
+- `packages/app-factory` still acts as a template catalog plus generation job simulator
+- `packages/core` currently mixes product contracts for users, workspaces, templates, sandbox sessions, admin stats, and logs in one place
+- `packages/sandbox` is currently a lightweight product adapter around sandbox session lifecycle, not deep runtime ownership
+
+That means the docs are directionally right, but the codebase is still transitional.
+The next cleanup steps should acknowledge that reality instead of pretending the product model is already fully re-centered.
+
 ## Current recommendations
 
 ### `apps/web`
@@ -58,11 +70,13 @@ Direction:
 
 Current posture:
 - strongest leftover from the old platform/app-factory center of gravity
+- currently provides the template/model catalog and fake generation job flow used by `apps/api`
 
 Direction:
 - do not let this package define the product architecture
 - if retained, split conceptually into template-catalog and provisioning/generation responsibilities
 - if no longer core to the product, mark clearly as secondary or transitional
+- likely first candidate for either a rename or a narrower BeMore-specific replacement once the real product flow is clearer
 
 ## Keep / rename / split / archive
 
@@ -91,6 +105,13 @@ Move gradually toward a structure like:
 - `packages/runtime-adapter`
 - `packages/shared-types`
 - `packages/template-catalog`
+
+## Recommended next code-facing moves
+
+1. keep `apps/api` working, but gradually rename or regroup factory-first routes under clearer product semantics
+2. decide whether template generation is actually a lasting BeMore product feature or just transitional scaffolding
+3. split `packages/core` only when real domain seams appear, not for aesthetics alone
+4. keep `packages/sandbox` at the adapter layer and resist turning it into runtime substrate ownership
 
 ## Rule of thumb
 
