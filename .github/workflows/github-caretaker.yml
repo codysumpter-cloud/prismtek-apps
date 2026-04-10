@@ -1,0 +1,54 @@
+name: Prismtek Apps GitHub Caretaker
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 13 * * *'
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  repo-health:
+    runs-on: ubuntu-latest
+    env:
+      OPEN_ISSUES_THRESHOLD: '10'
+      STALE_DAYS: '30'
+      REPORT_PATH: maintenance-report.md
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Install GitHub CLI
+        run: gh --version
+
+      - name: Generate maintenance report
+        id: report
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x scripts/github-maintenance-report.sh
+          scripts/github-maintenance-report.sh
+
+      - name: Upload maintenance report artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: prismtek-apps-maintenance-report
+          path: maintenance-report.md
+
+      - name: Open maintenance issue when attention is needed
+        if: steps.report.outputs.needs_attention == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          title="Prismtek Apps maintenance report: action needed"
+          if gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "$title in:title" --json number --jq 'length' | grep -q '^0$'; then
+            gh issue create \
+              --repo "$GITHUB_REPOSITORY" \
+              --title "$title" \
+              --body-file maintenance-report.md
+          else
+            echo "Open maintenance issue already exists; skipping issue creation."
+          fi
