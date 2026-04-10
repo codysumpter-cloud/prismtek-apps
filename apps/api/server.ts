@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 import admin from 'firebase-admin';
 import { AppFactory } from '@prismtek/app-factory';
 import { SandboxManager } from '@prismtek/sandbox';
-import firebaseConfig from '../../firebase-applet-config.json' assert { type: 'json' };
+import firebaseConfig from '../../firebase-applet-config.json' with { type: 'json' } ;
 
 dotenv.config();
 

@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "lint": "tsc --noEmit",
     "dev": "tsx watch server.ts",
     "start": "node server.js",
     "build": "tsc"
