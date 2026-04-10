@@ -140,7 +140,9 @@ npm run build
 - `docs/STRUCTURE.md` — current and intended file structure
 - `docs/PACKAGE_BOUNDARIES.md` — current package roles and future package direction
 - `docs/APP_SURFACES.md` — current and intended app surfaces
+- `docs/NEXT_STRUCTURE_PASS.md` — recommended next structural cleanup without premature churn
 - `docs/AUTOMATION_MIGRATION.md` — how product-owned automation should move here over time
+- `docs/BEMORE_IOS_BUILD_MIGRATION.md` — target migration path for BeMore iOS build ownership
 - `CONTRIBUTING.md` — contribution boundaries and repo expectations
 
 ## Current cleanup priorities
