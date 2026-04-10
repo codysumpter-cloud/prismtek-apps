@@ -41,6 +41,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install Linux Tailwind native binding
+        if: runner.os == 'Linux'
+        run: npm install --no-save @tailwindcss/oxide-linux-x64-gnu@4.2.2
+
       - name: Typecheck web app
         run: npm --workspace apps/web run lint
 
