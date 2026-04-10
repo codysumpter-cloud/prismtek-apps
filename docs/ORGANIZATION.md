@@ -73,3 +73,7 @@ Do not move everything at once.
 3. Clarify package responsibilities
 4. Gradually move product-owned automation into `prismtek-apps`
 5. Avoid duplicating the same source of truth across repos
+
+## Canonical repo map
+
+Use `docs/REPO_OWNERSHIP_MAP.md` as the ecosystem-level ownership map when deciding whether work belongs in `openclaw`, `bmo-stack`, `prismtek-site`, or `prismtek-apps`.

@@ -157,6 +157,7 @@ npm run clean
 - `docs/REPO_POSITIONING.md` — repo ownership summary and cleanup posture
 - `docs/ORGANIZATION.md` — naming layers, ownership split, and migration posture
 - `docs/STRUCTURE.md` — current and intended file structure
+- `docs/REPO_OWNERSHIP_MAP.md` — canonical repo roles across OpenClaw, BMO, Prismtek Site, and Prismtek Apps
 - `CONTRIBUTING.md` — contribution boundaries and repo expectations
 
 ### Product structure and boundaries
