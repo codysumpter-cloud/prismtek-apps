@@ -138,6 +138,8 @@ npm run build
 - `docs/REPO_POSITIONING.md` — repo ownership summary and cleanup posture
 - `docs/ORGANIZATION.md` — naming layers, ownership split, and migration posture
 - `docs/STRUCTURE.md` — current and intended file structure
+- `docs/PACKAGE_BOUNDARIES.md` — current package roles and future package direction
+- `docs/APP_SURFACES.md` — current and intended app surfaces
 - `docs/AUTOMATION_MIGRATION.md` — how product-owned automation should move here over time
 - `CONTRIBUTING.md` — contribution boundaries and repo expectations
 
