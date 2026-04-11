@@ -1,0 +1,72 @@
+{
+  "generatedAt": "2026-04-11",
+  "referenceSources": [
+    "/Users/prismtek/.openclaw-src/docs/start/openclaw.md",
+    "/Users/prismtek/.openclaw-src/docs/tools/index.md",
+    "/Users/prismtek/.openclaw-src/docs/providers/index.md",
+    "/Users/prismtek/.openclaw-src/docs/web/dashboard.md",
+    "/Users/prismtek/code/bmo-stack-master-work/context/openclaw-bridge"
+  ],
+  "capabilities": [
+    {
+      "capability": "standalone product CLI",
+      "openClaw": "openclaw bin with setup/status/gateway/dashboard/channel operations",
+      "beMoreStatus": "implemented",
+      "evidence": "apps/bemore-cli exposes bemore runtime/workspace/files/file/run/tasks/artifacts/receipts/buddy/diff commands"
+    },
+    {
+      "capability": "workspace file tree/read/write",
+      "openClaw": "agent workspace plus file tools",
+      "beMoreStatus": "implemented",
+      "evidence": "BeMore Mac runtime /api/workspace and CLI files/file commands"
+    },
+    {
+      "capability": "process execution with output receipts",
+      "openClaw": "exec tooling and sandbox/runtime process adapters",
+      "beMoreStatus": "implemented",
+      "evidence": "BeMore Mac runtime /api/processes, CLI run --wait, receipt creation"
+    },
+    {
+      "capability": "tasks/subtasks",
+      "openClaw": "agent turns and subagent/task orchestration",
+      "beMoreStatus": "partially-present",
+      "evidence": "BeMore runtime supports task create/run and receipts; explicit parallel subagent delegation remains a future product layer"
+    },
+    {
+      "capability": "diff/review loop",
+      "openClaw": "diff tools and patch review",
+      "beMoreStatus": "implemented",
+      "evidence": "BeMore Mac Review panel and CLI diff show use git status/diff"
+    },
+    {
+      "capability": "artifacts/results/receipts",
+      "openClaw": "logs, workspace artifacts, sessions",
+      "beMoreStatus": "implemented",
+      "evidence": "BeMore runtime artifacts/receipts endpoints, Mac panels, CLI artifacts/receipts commands"
+    },
+    {
+      "capability": "mobile companion/pairing",
+      "openClaw": "iOS/node app, device-pair plugin, channel nodes",
+      "beMoreStatus": "implemented",
+      "evidence": "bmo-stack BeMoreAgent iOS Mac pairing view and BeMore Mac pairing state"
+    },
+    {
+      "capability": "multi-channel messaging gateway",
+      "openClaw": "WhatsApp, Telegram, Discord, iMessage and plugin channel gateway",
+      "beMoreStatus": "intentionally-dropped-for-now",
+      "evidence": "BeMore product direction centers Mac runtime + iOS companion; channel gateway remains legacy/reference until product-owned"
+    },
+    {
+      "capability": "provider plugin ecosystem",
+      "openClaw": "many provider/plugin manifests under extensions",
+      "beMoreStatus": "partially-present",
+      "evidence": "BeMore iOS/provider route work exists in bmo-stack; product-owned provider plugin SDK is not claimed complete"
+    },
+    {
+      "capability": "installer/service management",
+      "openClaw": "installers, LaunchAgents, gateway services",
+      "beMoreStatus": "missing",
+      "evidence": "BeMore CLI can start the Mac runtime, but install/uninstall/service lifecycle is not productized yet"
+    }
+  ]
+}

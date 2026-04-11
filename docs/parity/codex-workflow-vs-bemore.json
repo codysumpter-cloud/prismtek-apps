@@ -1,0 +1,51 @@
+{
+  "generatedAt": "2026-04-11",
+  "scope": "Codex-class workflow capability relevant to BeMore Mac/iOS/runtime product direction, not Codex internals or branding",
+  "capabilities": [
+    {
+      "capability": "open workspace and inspect tree",
+      "beMoreStatus": "implemented",
+      "evidence": "Mac Workspace panel, BeMore runtime snapshot, CLI workspace/files commands"
+    },
+    {
+      "capability": "read/edit/save files",
+      "beMoreStatus": "implemented",
+      "evidence": "Mac Editor panel and CLI file read/write"
+    },
+    {
+      "capability": "run commands/tests/builds and stream/capture output",
+      "beMoreStatus": "implemented",
+      "evidence": "Mac Terminal panel and CLI run --wait; output is attached to process records"
+    },
+    {
+      "capability": "review diffs",
+      "beMoreStatus": "implemented",
+      "evidence": "Mac Review panel and CLI diff show"
+    },
+    {
+      "capability": "inspect receipts/results/artifacts",
+      "beMoreStatus": "implemented",
+      "evidence": "Mac Artifacts/Buddy/receipt areas and CLI artifacts/receipts/buddy commands"
+    },
+    {
+      "capability": "task orchestration and retry/fix/re-run",
+      "beMoreStatus": "partially-present",
+      "evidence": "Task create/run and receipts exist; automatic fix/retry planner remains human/agent-driven instead of an autonomous planner loop"
+    },
+    {
+      "capability": "subagents/parallel delegation",
+      "beMoreStatus": "missing",
+      "evidence": "Runtime protocol names runSubtask, but no product-owned implementation exists yet"
+    },
+    {
+      "capability": "patch application",
+      "beMoreStatus": "partially-present",
+      "evidence": "File writes and diff review exist; structured patch apply command is not implemented yet"
+    },
+    {
+      "capability": "sandbox isolation policy",
+      "beMoreStatus": "partially-present",
+      "evidence": "Product sandbox adapter and command runner exist; hardened isolation policy remains a release-hardening item"
+    }
+  ]
+}

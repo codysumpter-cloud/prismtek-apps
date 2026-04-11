@@ -178,6 +178,19 @@ app.get('/api/snapshot', async (_req, res, next) => {
   }
 });
 
+app.get('/api/runtime/status', async (_req, res) => {
+  res.json({
+    status: 'ready',
+    runtime: 'bemore-mac',
+    version: '1.0.0-build.1',
+    workspaceRoot,
+    processCount: processes.size,
+    taskCount: tasks.size,
+    receiptCount: receipts.length,
+    pairing: pairingState,
+  });
+});
+
 app.post('/api/workspace/select', async (req, res, next) => {
   try {
     const requestedPath = String(req.body.workspacePath || '').replace(/^~(?=$|\/)/, homedir());
@@ -260,10 +273,29 @@ app.post('/api/processes', async (req, res, next) => {
       });
       processRecord.receiptId = receipt.id;
       receipts.unshift(receipt);
+      if (req.body.taskId) {
+        const task = tasks.get(String(req.body.taskId));
+        if (task) {
+          task.status = processRecord.status;
+          task.updatedAt = processRecord.endedAt;
+          task.receiptIds.unshift(receipt.id);
+        }
+      }
     });
     processes.set(id, processRecord);
     const {child: _child, ...record} = processRecord;
     res.json(record);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get('/api/processes/:id', (req, res, next) => {
+  try {
+    const record = processes.get(req.params.id);
+    if (!record) throw new Error('Process not found.');
+    const {child: _child, ...process} = record;
+    res.json(process);
   } catch (error) {
     next(error);
   }
@@ -287,6 +319,10 @@ app.post('/api/processes/:id/stop', (req, res, next) => {
   } catch (error) {
     next(error);
   }
+});
+
+app.get('/api/tasks', (_req, res) => {
+  res.json(Array.from(tasks.values()));
 });
 
 app.post('/api/tasks', (req, res) => {
@@ -333,6 +369,31 @@ app.get('/api/diffs/current', async (_req, res, next) => {
   } catch (error) {
     next(error);
   }
+});
+
+app.get('/api/artifacts', async (_req, res, next) => {
+  try {
+    res.json(await listArtifacts());
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get('/api/artifacts/file', async (req, res, next) => {
+  try {
+    const relativePath = String(req.query.path ?? '');
+    res.json({relativePath, content: await readFile(safePath(relativePath), 'utf8'), encoding: 'utf8'});
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get('/api/receipts', (_req, res) => {
+  res.json(receipts);
+});
+
+app.get('/api/buddy', (_req, res) => {
+  res.json(buddyState());
 });
 
 app.use(express.static(clientDist));
