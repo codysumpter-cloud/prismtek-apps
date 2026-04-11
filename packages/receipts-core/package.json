@@ -1,0 +1,17 @@
+{
+  "name": "@prismtek/receipts-core",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./index.ts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@prismtek/agent-protocol": "*"
+  },
+  "devDependencies": {
+    "typescript": "~6.0.2"
+  }
+}

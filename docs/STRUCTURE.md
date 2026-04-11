@@ -7,12 +7,16 @@ This document is the current and intended file-structure guide for `prismtek-app
 ```text
 apps/
   api/
+  bemore-macos/
   web/
 
 packages/
+  agent-protocol/
   app-factory/
   core/
+  receipts-core/
   sandbox/
+  workspace-core/
 
 docs/
   DECISIONS/
@@ -25,6 +29,7 @@ docs/
 
 ```text
 apps/
+  bemore-macos/      BeMore Mac local workspace/runtime app
   bemore-web/        BeMore web product surface
   bemore-ios/        BeMore iOS app project or bridge docs
   api/               Product-facing API
@@ -33,8 +38,11 @@ apps/
 packages/
   buddy-core/        Buddy models, template contracts, install logic
   design-system/     Shared UI primitives and branding tokens
+  agent-protocol/    Shared BeMore runtime and pairing contract
   product-core/      Shared product-domain types and services
+  receipts-core/     Shared receipt creation and formatting primitives
   runtime-adapter/   App-facing runtime adapters that integrate with external execution layers
+  workspace-core/    Shared workspace, task, artifact, and diff helpers
 
 docs/
   DECISIONS/

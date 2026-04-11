@@ -34,9 +34,14 @@ jobs:
           test -d packages
           test -f apps/web/package.json
           test -f apps/api/package.json
+          test -f apps/bemore-macos/package.json
+          test -f apps/bemore-macos/server.ts
           test -f packages/core/package.json
           test -f packages/app-factory/package.json
           test -f packages/sandbox/package.json
+          test -f packages/agent-protocol/package.json
+          test -f packages/workspace-core/package.json
+          test -f packages/receipts-core/package.json
 
       - name: Install dependencies
         run: npm ci
@@ -53,6 +58,12 @@ jobs:
           npm --workspace packages/core run lint
           npm --workspace packages/app-factory run lint
           npm --workspace packages/sandbox run lint
+          npm --workspace packages/agent-protocol run lint
+          npm --workspace packages/workspace-core run lint
+          npm --workspace packages/receipts-core run lint
+
+      - name: Typecheck BeMore Mac app
+        run: npm --workspace apps/bemore-macos run lint
 
       - name: Build repository
         run: npm run build

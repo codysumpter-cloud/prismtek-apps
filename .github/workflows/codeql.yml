@@ -14,7 +14,24 @@ permissions:
   security-events: write
 
 jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    outputs:
+      codeql-enabled: ${{ steps.codeql.outputs.enabled }}
+    steps:
+      - name: Decide whether CodeQL can upload
+        id: codeql
+        run: |
+          if [ "${{ github.event.repository.private }}" = "true" ] && [ "${{ vars.ENABLE_PRIVATE_CODEQL }}" != "true" ]; then
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "CodeQL upload is skipped because this private repository does not have GitHub Advanced Security enabled."
+          else
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          fi
+
   analyze:
+    needs: preflight
+    if: needs.preflight.outputs.codeql-enabled == 'true'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
