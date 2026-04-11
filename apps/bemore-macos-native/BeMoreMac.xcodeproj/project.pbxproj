@@ -22,6 +22,7 @@
 		7E9B173DCC4E49977FC192F1 /* BeMoreMacState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeMoreMacState.swift; sourceTree = "<group>"; };
 		8593E15E3EA21CF25709590A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		B4058246DDBE9C34C2337424 /* BeMoreMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BeMoreMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DF152526ACE1EDF84FCBF637 /* BeMoreMac.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BeMoreMac.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -29,6 +30,7 @@
 			isa = PBXGroup;
 			children = (
 				7817EDCD4ADCA4E036076B11 /* Assets.xcassets */,
+				DF152526ACE1EDF84FCBF637 /* BeMoreMac.entitlements */,
 				3031CF89092AC4F322CF16CB /* BeMoreMacApp.swift */,
 				4CDBEBFFFFB051E96491ECED /* BeMoreMacRootView.swift */,
 				7E9B173DCC4E49977FC192F1 /* BeMoreMacState.swift */,
@@ -139,6 +141,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = BeMoreMac/BeMoreMac.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -279,6 +282,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = BeMoreMac/BeMoreMac.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
