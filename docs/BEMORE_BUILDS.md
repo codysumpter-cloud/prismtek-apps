@@ -2,9 +2,12 @@
 
 ## macOS Build 1
 
-BeMore Mac Build 1 now lives in `apps/bemore-macos`.
+BeMore Mac has two product-owned pieces:
 
-It is a product-owned local workstation slice with:
+- `apps/bemore-macos` is the local workspace/runtime server used by Mac and paired iPhone flows.
+- `apps/bemore-macos-native` is the native macOS TestFlight shell. Its XcodeGen project target is `BeMoreMac`, the generated project is `BeMoreMac.xcodeproj`, and the App Store bundle identifier is `com.prismtek.bemore.mac`.
+
+The local runtime slice provides:
 - workspace selection and file tree browsing
 - text file open/edit/save
 - command/process runner with output and stop receipts
@@ -21,6 +24,17 @@ npm --workspace apps/bemore-macos run dev
 ```
 
 Use `BEMORE_MAC_RUNTIME_HOST=0.0.0.0` only when intentionally exposing the runtime for a paired iPhone or trusted tunnel.
+
+The native macOS shell is generated and archived with:
+
+```sh
+cd apps/bemore-macos-native
+xcodegen generate
+xcodebuild -project BeMoreMac.xcodeproj -scheme BeMoreMac -destination 'platform=macOS' build
+xcodebuild -project BeMoreMac.xcodeproj -scheme BeMoreMac -configuration Release -destination 'generic/platform=macOS' -archivePath .build/BeMoreMac.xcarchive -allowProvisioningUpdates DEVELOPMENT_TEAM=DY9FHPRZA9 CODE_SIGN_STYLE=Automatic clean archive
+```
+
+TestFlight upload is owned by `.github/workflows/bemore-macos-testflight.yml` and requires App Store Connect API secrets in this repo: `APPSTORE_CONNECT_API_KEY`, `APPSTORE_CONNECT_KEY_ID`, and `APPSTORE_CONNECT_ISSUER_ID`.
 
 ## iOS Build 18
 
