@@ -28,7 +28,7 @@ If the work is really runtime substrate, policy/identity, or public-site ownersh
 
 Use this mental model:
 
-- **`openclaw`** = engine
+- **BeMore runtime substrate** = execution engine and inherited runtime primitives
 - **`bmo-stack`** = brain / policy / council / identity
 - **`prismtek-site`** = public web world
 - **`prismtek-apps`** = shipped app family
@@ -50,7 +50,7 @@ This repo owns:
 ## What this repo does not own
 
 This repo does **not** own:
-- **`openclaw`** runtime substrate, tools, sessions, nodes, channels, and deep execution primitives
+- deep runtime substrate, tools, sessions, nodes, channels, and execution primitives outside the BeMore product adapter
 - **`bmo-stack`** council policy, Buddy identity rules, memory philosophy, agent operating behavior, and cross-repo governance
 - **`prismtek-site`** public website ownership for `prismtek.dev`, site-backed public experiences, and site-specific APIs
 
@@ -103,7 +103,7 @@ That future structure is directional, not a promise that everything moves at onc
 
 ## Working rules
 
-1. Do not duplicate runtime ownership already held by `openclaw`.
+1. Do not duplicate runtime substrate ownership in product packages.
 2. Do not duplicate policy and identity ownership already held by `bmo-stack`.
 3. Do not treat this repo as the owner of the public marketing and site layer unless that ownership is explicitly moved here.
 4. Prefer clear product boundaries over "just put it here for now."
@@ -159,7 +159,7 @@ npm run clean
 - `docs/REPO_POSITIONING.md` — repo ownership summary and cleanup posture
 - `docs/ORGANIZATION.md` — naming layers, ownership split, and migration posture
 - `docs/STRUCTURE.md` — current and intended file structure
-- `docs/REPO_OWNERSHIP_MAP.md` — canonical repo roles across OpenClaw, BMO, Prismtek Site, and Prismtek Apps
+- `docs/REPO_OWNERSHIP_MAP.md` — canonical repo roles across the legacy runtime substrate, BMO, Prismtek Site, and Prismtek Apps
 - `CONTRIBUTING.md` — contribution boundaries and repo expectations
 
 ### Product structure and boundaries

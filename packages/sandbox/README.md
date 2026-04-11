@@ -10,4 +10,4 @@ This package currently exposes sandbox session management used by the product-fa
 
 Keep this package focused on app-facing adapters.
 
-Deep runtime substrate and execution primitives belong in `openclaw`, not here. This package should stay at the product-integration layer.
+Deep runtime substrate and execution primitives belong outside this product adapter. This package should stay at the BeMore product-integration layer.

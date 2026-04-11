@@ -78,7 +78,7 @@ Config file:
 
 ### Workspace sync on merge
 
-Workspace sync is still a self-hosted, OpenClaw-specific concern and should remain outside `prismtek-apps` until there is a real product-owned runner and workspace sync story for this repo.
+Workspace sync is still a self-hosted runtime concern and should remain outside `prismtek-apps` until there is a real product-owned runner and workspace sync story for this repo.
 
 ### BeMore iOS release automation
 

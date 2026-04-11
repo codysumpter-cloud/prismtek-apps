@@ -38,9 +38,9 @@ export class AppFactory {
       version: '1.0.0'
     });
     this.registerTemplate({
-      id: 'openclaw-harness',
-      name: 'OpenClaw Harness',
-      description: 'High-performance harness for Claude-style agents.',
+      id: 'bemore-runtime-harness',
+      name: 'BeMore Runtime Harness',
+      description: 'High-performance runtime harness for BeMore-style agents.',
       repoUrl: 'https://github.com/ultraworkers/claw-code',
       version: '2.4.0'
     });

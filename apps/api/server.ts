@@ -233,7 +233,7 @@ app.post('/api/sandbox/launch', authenticateToken, async (req: any, res) => {
       logs: [
         '# Initializing BeMore workspace sandbox...',
         '# Mounting virtual filesystem...',
-        '# Loading OpenClaw harness...',
+        '# Loading BeMore runtime harness...',
         '# Environment ready.'
       ]
     };

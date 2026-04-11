@@ -39,7 +39,7 @@ Owns:
 - cross-repo automation
 - operator workflows and runbooks
 
-### `openclaw`
+### Legacy runtime substrate
 Owns:
 - runtime engine
 - tools, sessions, nodes, channels
@@ -76,4 +76,4 @@ Do not move everything at once.
 
 ## Canonical repo map
 
-Use `docs/REPO_OWNERSHIP_MAP.md` as the ecosystem-level ownership map when deciding whether work belongs in `openclaw`, `bmo-stack`, `prismtek-site`, or `prismtek-apps`.
+Use `docs/REPO_OWNERSHIP_MAP.md` as the ecosystem-level ownership map when deciding whether work belongs in the runtime substrate, `bmo-stack`, `prismtek-site`, or `prismtek-apps`.
