@@ -23,7 +23,7 @@ jobs:
       ASC_API_KEY: ${{ secrets.APPSTORE_CONNECT_API_KEY }}
       ASC_KEY_ID: ${{ secrets.APPSTORE_CONNECT_KEY_ID }}
       ASC_ISSUER_ID: ${{ secrets.APPSTORE_CONNECT_ISSUER_ID }}
-      MAC_BUNDLE_ID: com.prismtek.bemore.mac
+      MAC_BUNDLE_ID: BeMoreAgent
       MAC_TEAM_ID: DY9FHPRZA9
     steps:
       - name: Checkout repo
@@ -92,7 +92,7 @@ jobs:
           import sys
 
           project = pathlib.Path('project.yml').read_text()
-          expected_bundle = 'com.prismtek.bemore.mac'
+          expected_bundle = 'BeMoreAgent'
           expected_team = 'DY9FHPRZA9'
           bundle = re.search(r'PRODUCT_BUNDLE_IDENTIFIER:\s*([^\n]+)', project)
           team = re.search(r'DEVELOPMENT_TEAM:\s*([^\n]+)', project)
