@@ -58,12 +58,15 @@ jobs:
       - name: Validate App Store Connect secrets
         run: |
           missing=0
-          for name in ASC_API_KEY ASC_KEY_ID ASC_ISSUER_ID; do
+          for name in ASC_API_KEY ASC_KEY_ID; do
             if [ -z "${!name:-}" ]; then
               echo "::error title=Missing App Store Connect secret::$name is required for BeMore Mac TestFlight upload."
               missing=1
             fi
           done
+          if [ -z "${ASC_ISSUER_ID:-}" ]; then
+            echo "::notice title=App Store Connect issuer not set::Continuing in issuer-less API key mode. If this key is team-scoped, set APPSTORE_CONNECT_ISSUER_ID."
+          fi
           if [ "$missing" -ne 0 ]; then
             exit 65
           fi
@@ -107,30 +110,34 @@ jobs:
 
       - name: Archive BeMore Mac
         run: |
+          auth_args=(-authenticationKeyPath "$RUNNER_TEMP/AuthKey.p8" -authenticationKeyID "$ASC_KEY_ID")
+          if [ -n "${ASC_ISSUER_ID:-}" ]; then
+            auth_args+=(-authenticationKeyIssuerID "$ASC_ISSUER_ID")
+          fi
           xcodebuild -project BeMoreMac.xcodeproj \
             -scheme BeMoreMac \
             -configuration Release \
             -destination 'generic/platform=macOS' \
             -archivePath "$RUNNER_TEMP/BeMoreMac.xcarchive" \
             -allowProvisioningUpdates \
-            -authenticationKeyPath "$RUNNER_TEMP/AuthKey.p8" \
-            -authenticationKeyID "$ASC_KEY_ID" \
-            -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+            "${auth_args[@]}" \
             CODE_SIGN_STYLE=Automatic \
             DEVELOPMENT_TEAM="$MAC_TEAM_ID" \
             clean archive
 
       - name: Export and upload to TestFlight
         run: |
+          auth_args=(-authenticationKeyPath "$RUNNER_TEMP/AuthKey.p8" -authenticationKeyID "$ASC_KEY_ID")
+          if [ -n "${ASC_ISSUER_ID:-}" ]; then
+            auth_args+=(-authenticationKeyIssuerID "$ASC_ISSUER_ID")
+          fi
           plutil -p exportOptions-upload.plist
           xcodebuild -exportArchive \
             -archivePath "$RUNNER_TEMP/BeMoreMac.xcarchive" \
             -exportPath "$RUNNER_TEMP/BeMoreMac-export" \
             -exportOptionsPlist exportOptions-upload.plist \
             -allowProvisioningUpdates \
-            -authenticationKeyPath "$RUNNER_TEMP/AuthKey.p8" \
-            -authenticationKeyID "$ASC_KEY_ID" \
-            -authenticationKeyIssuerID "$ASC_ISSUER_ID"
+            "${auth_args[@]}"
 
       - name: Publish TestFlight summary
         if: success()
