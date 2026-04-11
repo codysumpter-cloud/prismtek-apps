@@ -21,13 +21,30 @@ import type {RuntimeFileNode, RuntimePatch, RuntimePatchOperation, RuntimeProces
 import {getBuddyFrame, getBuddyLabel, type BuddyAnimationState, type BuddyArchetype} from './buddyAscii';
 import {runtimeClient, type RuntimeSnapshot} from './runtimeClient';
 
-type Section = 'Home' | 'Workspace' | 'Tasks' | 'Skills' | 'Results' | 'Settings';
+type Section = 'Home' | 'Chat' | 'Missions' | 'Workspace' | 'Results' | 'Settings';
+
+type BuddyVitals = {
+  energy: number;
+  bond: number;
+  focus: number;
+  care: number;
+  attention: number;
+};
+
+type BuddyCareAction = 'checkIn' | 'encourage' | 'train' | 'focus' | 'rest' | 'feedKnowledge' | 'play';
+
+const activeBuddy = {
+  name: 'Prism',
+  role: 'Builder companion',
+  archetype: 'prism' as BuddyArchetype,
+  focus: 'Keep work useful, calm, and receipt-backed.',
+};
 
 const sections: Array<{id: Section; icon: ComponentType<{size?: number}>}> = [
   {id: 'Home', icon: HeartPulse},
+  {id: 'Chat', icon: Send},
+  {id: 'Missions', icon: ClipboardList},
   {id: 'Workspace', icon: FolderTree},
-  {id: 'Tasks', icon: ClipboardList},
-  {id: 'Skills', icon: Brain},
   {id: 'Results', icon: Boxes},
   {id: 'Settings', icon: Settings},
 ];
@@ -58,7 +75,7 @@ const flattenFiles = (nodes: RuntimeFileNode[]): RuntimeFileNode[] =>
 
 const newestReceipt = (snapshot: RuntimeSnapshot | null) => snapshot?.receipts[0];
 
-function useBuddyFrame(snapshot: RuntimeSnapshot | null, status: string, active: Section) {
+function useBuddyFrame(snapshot: RuntimeSnapshot | null, status: string, active: Section, vitals: BuddyVitals) {
   const [tick, setTick] = useState(0);
 
   useEffect(() => {
@@ -76,18 +93,22 @@ function useBuddyFrame(snapshot: RuntimeSnapshot | null, status: string, active:
     : recentPatch
       ? 'levelUp'
       : hasFailure
-        ? 'thinking'
-        : idleWorkspace
-          ? 'sleepy'
-          : status.includes('Created') || status.includes('Saved') || status.includes('Delegated')
-            ? 'happy'
-            : tick % 11 === 0
-              ? 'blink'
-              : active === 'Skills'
-                ? 'thinking'
-                : 'idle';
+        ? 'needsAttention'
+        : vitals.attention >= 70
+          ? 'needsAttention'
+          : vitals.energy <= 24
+            ? 'sleepy'
+            : idleWorkspace
+              ? 'sleepy'
+              : status.includes('Created') || status.includes('Saved') || status.includes('Delegated')
+                ? 'happy'
+                : tick % 11 === 0
+                  ? 'blink'
+                  : active === 'Missions'
+                    ? 'thinking'
+                    : 'idle';
 
-  const archetype: BuddyArchetype = hasFailure ? 'neptr' : hasRunningWork ? 'prismo' : 'companion';
+  const archetype = activeBuddy.archetype;
   return {state, archetype, frame: getBuddyFrame(archetype, state, tick), label: getBuddyLabel(archetype)};
 }
 
@@ -115,16 +136,20 @@ function BuddyStage({
   frame,
   label,
   state,
+  vitals,
   snapshot,
   onCreateFocusTask,
   onRunStatus,
+  onCareAction,
 }: {
   frame: string;
   label: string;
   state: BuddyAnimationState;
+  vitals: BuddyVitals;
   snapshot: RuntimeSnapshot | null;
   onCreateFocusTask: () => void;
   onRunStatus: () => void;
+  onCareAction: (action: BuddyCareAction) => void;
 }) {
   const activeTasks = snapshot?.tasks.filter((task) => task.status === 'running').length ?? 0;
   const completedReceipts = snapshot?.receipts.filter((receipt) => receipt.status === 'completed').length ?? 0;
@@ -138,15 +163,30 @@ function BuddyStage({
       </div>
       <div className="buddy-copy">
         <p className="eyebrow">{label} is {state}</p>
-        <h1>Buddy keeps the work moving.</h1>
-        <p>Open a workspace, give Buddy a task, review the patch, and keep the receipts.</p>
+        <h1>{activeBuddy.name} is your Buddy.</h1>
+        <p>{activeBuddy.role}. {activeBuddy.focus}</p>
         <div className="hero-actions">
+          <button onClick={() => onCareAction('checkIn')}>
+            <HeartPulse size={16} /> Check In
+          </button>
+          <button className="secondary" onClick={() => onCareAction('train')}>
+            <Brain size={16} /> Train
+          </button>
+          <button className="secondary" onClick={() => onCareAction('rest')}>
+            Rest
+          </button>
           <button onClick={onCreateFocusTask}>
             <Sparkles size={16} /> Start Buddy Task
           </button>
           <button className="secondary" onClick={onRunStatus}>
             <Terminal size={16} /> Check Workspace
           </button>
+        </div>
+        <div className="vital-grid" aria-label={`${label} care state`}>
+          <span><strong>{vitals.energy}</strong> energy</span>
+          <span><strong>{vitals.bond}</strong> bond</span>
+          <span><strong>{vitals.focus}</strong> focus</span>
+          <span><strong>{vitals.care}</strong> care</span>
         </div>
         <div className="signal-grid">
           <span><strong>{workspaceName}</strong> workspace</span>
@@ -158,13 +198,13 @@ function BuddyStage({
   );
 }
 
-function BuddyRail({frame, label, state, snapshot}: {frame: string; label: string; state: BuddyAnimationState; snapshot: RuntimeSnapshot | null}) {
+function BuddyRail({frame, label, state, vitals, snapshot}: {frame: string; label: string; state: BuddyAnimationState; vitals: BuddyVitals; snapshot: RuntimeSnapshot | null}) {
   const latest = newestReceipt(snapshot);
   return (
     <aside className="buddy-rail">
       <pre className="buddy-ascii small" aria-label={`${label} ${state}`}>{frame}</pre>
       <strong>{label}</strong>
-      <span>{state}</span>
+      <span>{state} · energy {vitals.energy}</span>
       <p>{latest ? latest.summary : 'Ready for the first receipt.'}</p>
     </aside>
   );
@@ -276,11 +316,18 @@ export default function App() {
   const [patchAfter, setPatchAfter] = useState('');
   const [patchTaskId, setPatchTaskId] = useState('');
   const [status, setStatus] = useState('Buddy is ready.');
+  const [buddyVitals, setBuddyVitals] = useState<BuddyVitals>({
+    energy: 72,
+    bond: 61,
+    focus: 68,
+    care: 58,
+    attention: 12,
+  });
 
   const files = useMemo(() => flattenFiles(snapshot?.files ?? []).filter((file) => file.kind === 'file'), [snapshot]);
   const failedTasks = snapshot?.tasks.filter((task) => task.status === 'failed') ?? [];
   const recentTasks = snapshot?.tasks.slice(0, 5) ?? [];
-  const buddy = useBuddyFrame(snapshot, status, active);
+  const buddy = useBuddyFrame(snapshot, status, active, buddyVitals);
 
   const refresh = async () => {
     setSnapshot(await runtimeClient.snapshot());
@@ -317,12 +364,14 @@ export default function App() {
     if (!selectedPath) return;
     const result = await runtimeClient.writeFile(selectedPath, editorValue);
     await refresh();
+    setBuddyVitals((current) => ({...current, focus: Math.min(100, current.focus + 3), attention: Math.max(0, current.attention - 8)}));
     setStatus(result.receipt.summary);
   };
 
   const runCommand = async (nextCommand = command) => {
     const process = await runtimeClient.runCommand(nextCommand);
     await refresh();
+    setBuddyVitals((current) => ({...current, energy: Math.max(0, current.energy - 6), focus: Math.min(100, current.focus + 2)}));
     setActive('Results');
     setStatus(`Buddy started ${process.command}`);
   };
@@ -330,7 +379,8 @@ export default function App() {
   const createTask = async (title = taskTitle, detail = taskDetail, nextCommand = taskCommand) => {
     const task = await runtimeClient.createTask(title, detail, nextCommand);
     await refresh();
-    setActive('Tasks');
+    setBuddyVitals((current) => ({...current, attention: Math.max(0, current.attention - 6), bond: Math.min(100, current.bond + 2)}));
+    setActive('Missions');
     setStatus(`Created ${task.title}`);
     return task;
   };
@@ -342,6 +392,7 @@ export default function App() {
   const runTask = async (id: string) => {
     await runtimeClient.runTask(id);
     await refresh();
+    setBuddyVitals((current) => ({...current, energy: Math.max(0, current.energy - 8), focus: Math.min(100, current.focus + 4)}));
     setActive('Results');
     setStatus('Buddy is working. Watch receipts and output.');
   };
@@ -349,12 +400,14 @@ export default function App() {
   const delegateTask = async (id: string) => {
     const task = await runtimeClient.delegateTask(id, 'Buddy delegated review', 'Check workspace status as a bounded subtask.', 'git status --short');
     await refresh();
+    setBuddyVitals((current) => ({...current, care: Math.min(100, current.care + 2), attention: Math.max(0, current.attention - 4)}));
     setStatus(`Delegated ${task.title}`);
   };
 
   const retryTask = async (id: string) => {
     const task = await runtimeClient.retryTask(id);
     await refresh();
+    setBuddyVitals((current) => ({...current, attention: Math.min(100, current.attention + 10), focus: Math.min(100, current.focus + 5)}));
     setStatus(`Created retry ${task.title}`);
   };
 
@@ -362,6 +415,7 @@ export default function App() {
     const operation: RuntimePatchOperation = {path: patchPath, kind: patchBefore ? 'replace' : 'write', before: patchBefore || undefined, after: patchAfter};
     const patch = await runtimeClient.previewPatch(patchTitle, patchTaskId || undefined, [operation]);
     await refresh();
+    setBuddyVitals((current) => ({...current, focus: Math.min(100, current.focus + 4), care: Math.min(100, current.care + 1)}));
     setActive('Results');
     setStatus(`Buddy previewed ${patch.title}`);
   };
@@ -369,6 +423,7 @@ export default function App() {
   const applyPatch = async (id: string) => {
     const patch = await runtimeClient.applyPatch(id);
     await refresh();
+    setBuddyVitals((current) => ({...current, bond: Math.min(100, current.bond + 5), attention: Math.max(0, current.attention - 12)}));
     setStatus(`${patch.status}: ${patch.title}`);
   };
 
@@ -381,7 +436,40 @@ export default function App() {
   const stopProcess = async (id: string) => {
     const result = await runtimeClient.stopProcess(id);
     await refresh();
+    setBuddyVitals((current) => ({...current, energy: Math.min(100, current.energy + 3), attention: Math.max(0, current.attention - 4)}));
     setStatus(result.receipt.summary);
+  };
+
+  const careForBuddy = (action: BuddyCareAction) => {
+    const updates: Record<BuddyCareAction, Partial<BuddyVitals>> = {
+      checkIn: {bond: 6, care: 5, attention: -14},
+      encourage: {bond: 4, focus: 3, attention: -8},
+      train: {focus: 8, energy: -7, bond: 2},
+      focus: {focus: 6, energy: -3, attention: -4},
+      rest: {energy: 18, care: 5, attention: -6},
+      feedKnowledge: {focus: 5, care: 3, energy: -2},
+      play: {bond: 7, energy: -2, attention: -10},
+    };
+    const label: Record<BuddyCareAction, string> = {
+      checkIn: 'checked in with',
+      encourage: 'encouraged',
+      train: 'trained',
+      focus: 'focused',
+      rest: 'rested',
+      feedKnowledge: 'fed knowledge to',
+      play: 'played with',
+    };
+    setBuddyVitals((current) => {
+      const delta = updates[action];
+      return {
+        energy: Math.max(0, Math.min(100, current.energy + (delta.energy ?? 0))),
+        bond: Math.max(0, Math.min(100, current.bond + (delta.bond ?? 0))),
+        focus: Math.max(0, Math.min(100, current.focus + (delta.focus ?? 0))),
+        care: Math.max(0, Math.min(100, current.care + (delta.care ?? 0))),
+        attention: Math.max(0, Math.min(100, current.attention + (delta.attention ?? 0))),
+      };
+    });
+    setStatus(`You ${label[action]} ${activeBuddy.name}.`);
   };
 
   return (
@@ -394,7 +482,7 @@ export default function App() {
             <span>Buddy workspace</span>
           </div>
         </div>
-        <BuddyRail frame={buddy.frame} label={buddy.label} state={buddy.state} snapshot={snapshot} />
+        <BuddyRail frame={buddy.frame} label={buddy.label} state={buddy.state} vitals={buddyVitals} snapshot={snapshot} />
         <nav>
           {sections.map(({id, icon: Icon}) => (
             <button key={id} className={active === id ? 'nav active' : 'nav'} onClick={() => setActive(id)}>
@@ -408,7 +496,7 @@ export default function App() {
         <header className="topbar">
           <div>
             <p className="eyebrow">Local Buddy runtime</p>
-            <h1>{active === 'Home' ? 'Buddy Home' : active}</h1>
+            <h1>{active === 'Home' ? `${activeBuddy.name} Home` : active}</h1>
           </div>
           <button className="secondary" onClick={refresh}>
             <RefreshCw size={16} /> Refresh
@@ -421,10 +509,10 @@ export default function App() {
 
         {active === 'Home' ? (
           <section className="stack">
-            <BuddyStage frame={buddy.frame} label={buddy.label} state={buddy.state} snapshot={snapshot} onCreateFocusTask={createFocusTask} onRunStatus={() => runCommand('git status --short')} />
+            <BuddyStage frame={buddy.frame} label={buddy.label} state={buddy.state} vitals={buddyVitals} snapshot={snapshot} onCreateFocusTask={createFocusTask} onRunStatus={() => runCommand('git status --short')} onCareAction={careForBuddy} />
             <section className="grid three">
               <article className="panel">
-                <h2>Buddy Queue</h2>
+                <h2>{activeBuddy.name}'s Queue</h2>
                 {recentTasks.length ? recentTasks.map((task) => <p key={task.id}>{task.status}: {task.title}</p>) : <p className="quiet">Start a Buddy task to build the queue.</p>}
               </article>
               <article className="panel">
@@ -436,6 +524,33 @@ export default function App() {
                 {failedTasks.length ? failedTasks.map((task) => <p key={task.id}>{task.title}: {task.failureReason}</p>) : <p className="quiet">No blocked tasks in this session.</p>}
               </article>
             </section>
+          </section>
+        ) : null}
+
+        {active === 'Chat' ? (
+          <section className="grid two">
+            <div className="panel companion-panel">
+              <pre className="buddy-ascii small" aria-label={`${buddy.label} ${buddy.state}`}>{buddy.frame}</pre>
+              <h2>Chat with {activeBuddy.name}</h2>
+              <p>{activeBuddy.name} carries the same mood, care state, and task context from Home into chat.</p>
+              <div className="vital-grid compact-vitals">
+                <span><strong>{buddyVitals.energy}</strong> energy</span>
+                <span><strong>{buddyVitals.bond}</strong> bond</span>
+                <span><strong>{buddyVitals.focus}</strong> focus</span>
+                <span><strong>{buddyVitals.care}</strong> care</span>
+              </div>
+              <div className="hero-actions">
+                <button onClick={() => careForBuddy('encourage')}>Encourage</button>
+                <button className="secondary" onClick={() => careForBuddy('feedKnowledge')}>Feed Knowledge</button>
+              </div>
+            </div>
+            <div className="panel">
+              <h2>{activeBuddy.name}</h2>
+              <p>{activeBuddy.role}. Ask for a focus pass, run a skill, or move into the workspace when the work needs files and receipts.</p>
+              <button onClick={createFocusTask}>
+                <Sparkles size={16} /> Ask {activeBuddy.name} for a focus pass
+              </button>
+            </div>
           </section>
         ) : null}
 
@@ -466,33 +581,35 @@ export default function App() {
           </section>
         ) : null}
 
-        {active === 'Tasks' ? (
+        {active === 'Missions' ? (
           <section className="grid two">
-            <div className="panel">
-              <h2>Give Buddy Work</h2>
-              <input value={taskTitle} onChange={(event) => setTaskTitle(event.target.value)} />
-              <textarea value={taskDetail} onChange={(event) => setTaskDetail(event.target.value)} />
-              <input value={taskCommand} onChange={(event) => setTaskCommand(event.target.value)} />
-              <button onClick={() => createTask()}>
-                <Send size={16} /> Create Task
-              </button>
+            <div className="stack">
+              <div className="panel">
+                <h2>Give {activeBuddy.name} Work</h2>
+                <input value={taskTitle} onChange={(event) => setTaskTitle(event.target.value)} />
+                <textarea value={taskDetail} onChange={(event) => setTaskDetail(event.target.value)} />
+                <input value={taskCommand} onChange={(event) => setTaskCommand(event.target.value)} />
+                <button onClick={() => createTask()}>
+                  <Send size={16} /> Create Mission
+                </button>
+              </div>
+              <div className="panel">
+                <h2>Train With Skills</h2>
+                {skillCards.map((skill) => (
+                  <article key={skill.id} className="skill-card compact-skill">
+                    <Sparkles size={18} />
+                    <div>
+                      <strong>{skill.title}</strong>
+                      <p>{skill.description}</p>
+                    </div>
+                    <button className="secondary" onClick={() => createTask(skill.title, skill.description, skill.command)}>Use</button>
+                  </article>
+                ))}
+              </div>
             </div>
             <div className="stack">
-              {(snapshot?.tasks ?? []).length ? (snapshot?.tasks ?? []).map((task) => <TaskRow key={task.id} task={task} onRun={runTask} onDelegate={delegateTask} onRetry={retryTask} />) : <p className="quiet">Buddy has no tasks yet. Create one from Home or this panel.</p>}
+              {(snapshot?.tasks ?? []).length ? (snapshot?.tasks ?? []).map((task) => <TaskRow key={task.id} task={task} onRun={runTask} onDelegate={delegateTask} onRetry={retryTask} />) : <p className="quiet">Buddy has no missions yet. Create one from Home or this panel.</p>}
             </div>
-          </section>
-        ) : null}
-
-        {active === 'Skills' ? (
-          <section className="grid three">
-            {skillCards.map((skill) => (
-              <article key={skill.id} className="panel skill-card">
-                <Sparkles size={22} />
-                <h2>{skill.title}</h2>
-                <p>{skill.description}</p>
-                <button onClick={() => createTask(skill.title, skill.description, skill.command)}>Use Skill</button>
-              </article>
-            ))}
           </section>
         ) : null}
 

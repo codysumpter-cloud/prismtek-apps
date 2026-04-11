@@ -2,15 +2,11 @@ import AppKit
 import Foundation
 
 enum BeMoreMacSection: String, CaseIterable, Identifiable {
-    case home = "Buddy Home"
-    case buddy = "My Buddy"
+    case home = "Prism"
     case chat = "Chat"
-    case workspace = "Workspace"
-    case tasks = "Tasks"
-    case skills = "Skills"
+    case work = "Work"
     case results = "Results"
-    case marketplace = "Marketplace"
-    case pricing = "Pricing"
+    case discover = "Discover"
     case settings = "Settings"
 
     var id: String { rawValue }
@@ -18,14 +14,10 @@ enum BeMoreMacSection: String, CaseIterable, Identifiable {
     var symbol: String {
         switch self {
         case .home: return "heart.text.square.fill"
-        case .buddy: return "person.crop.circle.badge.checkmark"
         case .chat: return "message.fill"
-        case .workspace: return "folder.fill"
-        case .tasks: return "checklist.checked"
-        case .skills: return "sparkles.rectangle.stack.fill"
+        case .work: return "checklist.checked"
         case .results: return "doc.richtext.fill"
-        case .marketplace: return "bag.fill"
-        case .pricing: return "creditcard.fill"
+        case .discover: return "bag.fill"
         case .settings: return "gearshape.fill"
         }
     }
@@ -40,13 +32,17 @@ final class BeMoreMacState: ObservableObject {
     @Published var activeBuddyRole = "Builder companion"
     @Published var activeBuddyFocus = "Keep today focused, useful, and receipt-backed."
     @Published var latestReceipt = "Prism is ready for the next useful step."
+    @Published var energy = 72
+    @Published var bond = 61
+    @Published var focus = 68
+    @Published var care = 58
+    @Published var attention = 12
 
     let quickActions = [
-        "Chat with Prism",
-        "Train Buddy",
-        "Run a skill",
-        "Review results",
-        "Pair Mac power"
+        "Check in with Prism",
+        "Train Prism",
+        "Rest Prism",
+        "Run a mission"
     ]
 
     let ownedBuddies = ["Prism", "Moe"]
@@ -58,11 +54,43 @@ final class BeMoreMacState: ObservableObject {
 
     func markWorking() {
         buddyMood = .working
+        energy = max(0, energy - 6)
+        focus = min(100, focus + 4)
         latestReceipt = "\(activeBuddyName) is checking the local runtime boundary."
     }
 
     func markHappy() {
         buddyMood = .happy
+        bond = min(100, bond + 4)
+        attention = max(0, attention - 8)
         latestReceipt = "\(activeBuddyName) action queued for the BeMore runtime."
+    }
+
+    func checkIn() {
+        buddyMood = .happy
+        care = min(100, care + 5)
+        bond = min(100, bond + 6)
+        attention = max(0, attention - 14)
+        latestReceipt = "You checked in with \(activeBuddyName)."
+    }
+
+    func train() {
+        buddyMood = .working
+        focus = min(100, focus + 8)
+        energy = max(0, energy - 7)
+        latestReceipt = "\(activeBuddyName) trained with a focused mission."
+    }
+
+    func rest() {
+        buddyMood = .sleepy
+        energy = min(100, energy + 18)
+        care = min(100, care + 5)
+        latestReceipt = "\(activeBuddyName) is resting before the next run."
+    }
+
+    func needsAttention() {
+        buddyMood = .needsAttention
+        attention = min(100, attention + 16)
+        latestReceipt = "\(activeBuddyName) needs a check-in before more work."
     }
 }

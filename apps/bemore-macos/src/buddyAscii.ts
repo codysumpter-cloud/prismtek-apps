@@ -1,6 +1,6 @@
-export type BuddyAnimationState = 'idle' | 'blink' | 'happy' | 'thinking' | 'working' | 'sleepy' | 'levelUp';
+export type BuddyAnimationState = 'idle' | 'blink' | 'happy' | 'thinking' | 'working' | 'sleepy' | 'levelUp' | 'needsAttention';
 
-export type BuddyArchetype = 'companion' | 'prismo' | 'neptr';
+export type BuddyArchetype = 'prism' | 'moe' | 'scout';
 
 export interface BuddyFrameSet {
   label: string;
@@ -9,41 +9,45 @@ export interface BuddyFrameSet {
 
 const frame = (lines: string[]) => lines.join('\n');
 
-const companion: BuddyFrameSet = {
-  label: 'Buddy',
+const prism: BuddyFrameSet = {
+  label: 'Prism',
   frames: {
     idle: [
-      frame(['   /\\_/\\', '  ( o.o )', '  /| _ |\\', '   /   \\', '  _|   |_']),
-      frame(['   /\\_/\\', '  ( o.o )', '  /| _ |\\', '   /   \\', '   |___|']),
+      frame(['    /\\', '  < o  o >', '  /|  v |\\', ' /_|____|_\\', '   /_  _\\']),
+      frame(['    /\\', '  < o  o >', '  /|  v |\\', ' /_|____|_\\', '   \\_  _/']),
     ],
     blink: [
-      frame(['   /\\_/\\', '  ( -.- )', '  /| _ |\\', '   /   \\', '   |___|']),
+      frame(['    /\\', '  < -  - >', '  /|  v |\\', ' /_|____|_\\', '   \\_  _/']),
     ],
     happy: [
-      frame(['   /\\_/\\', '  ( ^.^ )', '  /| * |\\', '   / \\ \\', '  _| |_|']),
-      frame(['  \\/\\_/\\/', '  ( ^o^ )', '  /| * |\\', '   / \\ \\', '  _| |_|']),
+      frame(['  \\ /\\ /', '  < ^  ^ >', '  /|  * |\\', ' /_|____|_\\', '    /  \\']),
+      frame([' *  /\\  *', '  < ^  o >', '  /|  * |\\', ' /_|____|_\\', '    \\  /']),
     ],
     thinking: [
-      frame(['   /\\_/\\', '  ( o.o )  ?', '  /| _ |\\', '   /   \\', '   |___|']),
-      frame(['   /\\_/\\', '  ( o_o )  ..', '  /| _ |\\', '   /   \\', '   |___|']),
+      frame(['    /\\   ?', '  < o  o >', '  /|  ? |\\', ' /_|____|_\\', '    /  \\']),
+      frame(['    /\\  ..', '  < o  O >', '  /|  ? |\\', ' /_|____|_\\', '    \\  /']),
     ],
     working: [
-      frame(['   /\\_/\\', '  ( >.< )  #', '  /|[_]|\\', '   /   \\', '  _|   |_']),
-      frame(['   /\\_/\\', '  ( >.< )  ##', '  /|[_]|\\', '   /   \\', '   |___|']),
+      frame(['    /\\  #', '  < >  < >', '  /| [ ]|\\', ' /_|____|_\\', '   /_  _\\']),
+      frame(['    /\\  ##', '  < >  < >', '  /| [*]|\\', ' /_|____|_\\', '   \\_  _/']),
     ],
     sleepy: [
-      frame(['   /\\_/\\', '  ( -.- ) z', '  /| _ |\\', '   /   \\', '   |___|']),
-      frame(['   /\\_/\\', '  ( -.- ) zz', '  /| _ |\\', '   /   \\', '  _|___|_']),
+      frame(['    /\\   z', '  < -  - >', '  /|  . |\\', ' /_|____|_\\', '    /__\\']),
+      frame(['    /\\  zz', '  < -  - >', '  /|  . |\\', ' /_|____|_\\', '   _/  \\_']),
     ],
     levelUp: [
-      frame(['  * /\\_/\\ *', '   ( ^.^ )', '  /|[*]|\\', '   / \\ \\', '  _| |_|']),
-      frame([' **/\\_/\\**', '   ( ^o^ )', '  /|[*]|\\', '   / \\ \\', '  _| |_|']),
+      frame([' ** /\\ **', '  < ^  ^ >', '  /|{*}|\\', ' /_|____|_\\', '    /  \\']),
+      frame(['*** /\\ ***', '  < ^  o >', '  /|{*}|\\', ' /_|____|_\\', '    \\  /']),
+    ],
+    needsAttention: [
+      frame([' !  /\\  !', '  < o  o >', '  /|  ! |\\', ' /_|____|_\\', '    /  \\']),
+      frame([' !! /\\ !!', '  < O  o >', '  /|  ! |\\', ' /_|____|_\\', '    \\  /']),
     ],
   },
 };
 
-const prismo: BuddyFrameSet = {
-  label: 'Prismo',
+const moe: BuddyFrameSet = {
+  label: 'Moe',
   frames: {
     idle: [
       frame(['    .-.', '  <(o o)>', '   /| O |\\', '  /_|___|_\\', '    / \\']),
@@ -68,11 +72,14 @@ const prismo: BuddyFrameSet = {
     levelUp: [
       frame([' ** .-. **', '  <(^ ^)>', '   /| @ |\\', '  /_|___|_\\', '    \\ /']),
     ],
+    needsAttention: [
+      frame([' !! .-. !!', '  <(o o)>', '   /| ! |\\', '  /_|___|_\\', '    / \\']),
+    ],
   },
 };
 
-const neptr: BuddyFrameSet = {
-  label: 'NEPTR',
+const scout: BuddyFrameSet = {
+  label: 'Scout',
   frames: {
     idle: [
       frame(['  [=====]', '  | o o |', '  |  ^  |', ' /|_____|\\', '   /_|_\\']),
@@ -97,17 +104,20 @@ const neptr: BuddyFrameSet = {
     levelUp: [
       frame([' *[=====]*', '  | ^ ^ |', '  | \\_/ |', ' /|__*__|\\', '   \\_|_/']),
     ],
+    needsAttention: [
+      frame([' ![=====]!', '  | o O |', '  |  !  |', ' /|_____|\\', '   /_|_\\']),
+    ],
   },
 };
 
-const registry: Record<BuddyArchetype, BuddyFrameSet> = {companion, prismo, neptr};
+const registry: Record<BuddyArchetype, BuddyFrameSet> = {prism, moe, scout};
 
 export function getBuddyFrame(archetype: BuddyArchetype, state: BuddyAnimationState, tick: number): string {
-  const frameSet = registry[archetype] ?? registry.companion;
+  const frameSet = registry[archetype] ?? registry.prism;
   const frames = frameSet.frames[state] ?? frameSet.frames.idle;
   return frames[tick % frames.length] ?? frames[0] ?? '';
 }
 
 export function getBuddyLabel(archetype: BuddyArchetype): string {
-  return registry[archetype]?.label ?? registry.companion.label;
+  return registry[archetype]?.label ?? registry.prism.label;
 }

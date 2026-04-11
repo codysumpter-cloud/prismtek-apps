@@ -14,7 +14,7 @@ struct BeMoreMacRootView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
                     header
-                    BuddyAsciiView(mood: state.buddyMood)
+                    BuddyAsciiView(buddyName: state.activeBuddyName, mood: state.buddyMood)
                     content
                 }
                 .padding(28)
@@ -45,22 +45,14 @@ struct BeMoreMacRootView: View {
         switch state.selectedSection {
         case .home:
             homeContent
-        case .buddy:
-            buddyContent
         case .chat:
             chatContent
-        case .workspace:
-            productPanel(title: "Workspace", summary: "Browse and edit files in the local runtime shell at \(state.runtimeURL.absoluteString).")
-        case .tasks:
-            productPanel(title: "Tasks", summary: "Create Buddy tasks, delegate subtasks, retry bounded failures, and inspect status through the runtime.")
-        case .skills:
-            productPanel(title: "Skills", summary: "Skills are Buddy-linked actions that create artifacts and receipts instead of empty shortcuts.")
+        case .work:
+            workContent
         case .results:
             productPanel(title: "Results", summary: "Command output, diffs, patches, artifacts, and receipts are the proof trail for every run.")
-        case .marketplace:
-            marketplaceContent
-        case .pricing:
-            pricingContent
+        case .discover:
+            discoverContent
         case .settings:
             productPanel(title: "Runtime Boundary", summary: "The macOS TestFlight app is the native shell. The local Node runtime remains explicit at \(state.runtimeURL.absoluteString).")
         }
@@ -76,6 +68,12 @@ struct BeMoreMacRootView: View {
                 .foregroundStyle(.secondary)
             Text(state.latestReceipt)
                 .foregroundStyle(.secondary)
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 120), spacing: 10)], spacing: 10) {
+                statPill("Energy", value: state.energy)
+                statPill("Bond", value: state.bond)
+                statPill("Focus", value: state.focus)
+                statPill("Care", value: state.care)
+            }
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 180), spacing: 12)], spacing: 12) {
                 ForEach(state.quickActions, id: \.self) { action in
                     Text(action)
@@ -87,13 +85,16 @@ struct BeMoreMacRootView: View {
                 }
             }
             HStack {
-                Button("Check Runtime") {
-                    state.markWorking()
-                    state.openRuntime()
+                Button("Check In") {
+                    state.checkIn()
                 }
                 .buttonStyle(.borderedProminent)
-                Button("Queue \(state.activeBuddyName) Task") {
-                    state.markHappy()
+                Button("Train") {
+                    state.train()
+                }
+                .buttonStyle(.bordered)
+                Button("Rest") {
+                    state.rest()
                 }
                 .buttonStyle(.bordered)
             }
@@ -103,19 +104,19 @@ struct BeMoreMacRootView: View {
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 
-    private var buddyContent: some View {
+    private var workContent: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("My Buddy")
+            Text("\(state.activeBuddyName)'s Work")
                 .font(.title2.bold())
-            Text("\(state.activeBuddyName) is equipped as the active Buddy. Owned Buddies stay separate from marketplace discovery.")
+            Text("Workspace, missions, skills, and Mac power mode stay grouped here so the main menu feels companion-first.")
                 .foregroundStyle(.secondary)
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 180), spacing: 12)], spacing: 12) {
-                ForEach(state.ownedBuddies, id: \.self) { buddy in
+                ForEach(["Workspace", "Missions", "Skills", "Mac power"], id: \.self) { surface in
                     VStack(alignment: .leading, spacing: 8) {
-                        Text(buddy)
+                        Text(surface)
                             .font(.headline)
-                        Text(buddy == state.activeBuddyName ? "Active" : "Owned")
-                            .foregroundStyle(buddy == state.activeBuddyName ? .green : .secondary)
+                        Text(surface == "Workspace" ? "Browse files and run bounded commands." : "Receipt-backed actions for \(state.activeBuddyName).")
+                            .foregroundStyle(.secondary)
                     }
                     .padding()
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -123,8 +124,9 @@ struct BeMoreMacRootView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
             }
-            Button("Train \(state.activeBuddyName)") {
-                state.markHappy()
+            Button("Open Local Runtime") {
+                state.markWorking()
+                state.openRuntime()
             }
             .buttonStyle(.borderedProminent)
         }
@@ -155,11 +157,11 @@ struct BeMoreMacRootView: View {
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 
-    private var marketplaceContent: some View {
+    private var discoverContent: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("Buddy Marketplace")
+            Text("Discover Buddies and Plans")
                 .font(.title2.bold())
-            Text("Curated starter Buddies are available now. Premium creator Buddies and council packs can attach to billing later.")
+            Text("Owned Buddies, marketplace discovery, and plan previews live here after \(state.activeBuddyName) is established as your companion.")
                 .foregroundStyle(.secondary)
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 200), spacing: 12)], spacing: 12) {
                 ForEach(state.marketplaceBuddies, id: \.self) { buddy in
@@ -175,6 +177,7 @@ struct BeMoreMacRootView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
             }
+            pricingContent
         }
         .padding()
         .background(Color.white.opacity(0.78))
@@ -218,6 +221,20 @@ struct BeMoreMacRootView: View {
         }
         .padding()
         .background(Color.white.opacity(0.78))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+
+    private func statPill(_ title: String, value: Int) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(title)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Text("\(value)")
+                .font(.headline)
+        }
+        .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.white)
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
