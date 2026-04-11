@@ -8,8 +8,11 @@ import type {
   RuntimeDiff,
   RuntimeFileContent,
   RuntimeFileNode,
+  RuntimePatch,
+  RuntimePatchOperation,
   RuntimeProcess,
   RuntimeReceipt,
+  RuntimeSandboxSession,
   RuntimeTask,
 } from '@prismtek/agent-protocol';
 
@@ -27,10 +30,12 @@ interface RuntimeSnapshot {
   files: RuntimeFileNode[];
   tasks: RuntimeTask[];
   processes: RuntimeProcess[];
+  patches: RuntimePatch[];
   artifacts: RuntimeArtifact[];
   receipts: RuntimeReceipt[];
   diff: RuntimeDiff;
   buddy: RuntimeBuddyState;
+  sandbox: RuntimeSandboxSession;
 }
 
 function parseArgs(argv: string[]): CliState {
@@ -124,6 +129,12 @@ async function main(): Promise<void> {
     return;
   }
 
+  if (group === 'runtime' && command === 'sandbox') {
+    const snapshot = await api<RuntimeSnapshot>(state, '/snapshot');
+    print(state, snapshot.sandbox, `${snapshot.sandbox.id}\nmode: ${snapshot.sandbox.mode}\nworkspace: ${snapshot.sandbox.workspaceRoot ?? 'none'}\n${snapshot.sandbox.note}`);
+    return;
+  }
+
   if (group === 'workspace' && command === 'open') {
     const workspacePath = rest[0] ?? process.cwd();
     const snapshot = await api<RuntimeSnapshot>(state, '/workspace/select', {
@@ -194,9 +205,36 @@ async function main(): Promise<void> {
         title,
         detail: detailIndex >= 0 ? rest[detailIndex + 1] ?? '' : '',
         command: commandIndex >= 0 ? rest.slice(commandIndex + 1).join(' ') : undefined,
+        role: valueAfter(rest, '--role'),
+        maxRetries: Number(valueAfter(rest, '--max-retries') ?? 1),
       }),
     });
     print(state, task, `Created ${task.id}: ${task.title}`);
+    return;
+  }
+
+  if (group === 'tasks' && command === 'delegate') {
+    const parentId = required(rest[0], 'tasks delegate requires a parent task id');
+    const title = required(rest[1], 'tasks delegate requires a title');
+    const commandIndex = rest.indexOf('--command');
+    const detailIndex = rest.indexOf('--detail');
+    const subtask = await api<RuntimeTask>(state, `/tasks/${encodeURIComponent(parentId)}/subtasks`, {
+      method: 'POST',
+      body: JSON.stringify({
+        title,
+        detail: detailIndex >= 0 ? rest[detailIndex + 1] ?? '' : '',
+        command: commandIndex >= 0 ? rest.slice(commandIndex + 1).join(' ') : undefined,
+        role: valueAfter(rest, '--role') ?? 'worker',
+        maxRetries: Number(valueAfter(rest, '--max-retries') ?? 1),
+      }),
+    });
+    print(state, subtask, `Delegated ${subtask.id}: ${subtask.title}`);
+    return;
+  }
+
+  if (group === 'tasks' && command === 'retry') {
+    const task = await api<RuntimeTask>(state, `/tasks/${encodeURIComponent(required(rest[0], 'tasks retry requires an id'))}/retry`, {method: 'POST'});
+    print(state, task, `Created retry ${task.id}: ${task.title}`);
     return;
   }
 
@@ -209,6 +247,40 @@ async function main(): Promise<void> {
   if (group === 'artifacts' && command === 'list') {
     const artifacts = await api<RuntimeArtifact[]>(state, '/artifacts');
     print(state, artifacts, artifacts.map((artifact) => `${artifact.kind}\t${artifact.relativePath}`).join('\n') || 'No artifacts.');
+    return;
+  }
+
+  if (group === 'patches' && command === 'list') {
+    const patches = await api<RuntimePatch[]>(state, '/patches');
+    print(state, patches, patches.map((patch) => `${patch.status}\t${patch.id}\t${patch.title}`).join('\n') || 'No patches.');
+    return;
+  }
+
+  if (group === 'patches' && command === 'preview') {
+    const title = required(rest[0], 'patches preview requires a title');
+    const filePath = required(valueAfter(rest, '--file'), 'patches preview requires --file PATH');
+    const taskId = valueAfter(rest, '--task');
+    const kind = rest.includes('--write') ? 'write' : 'replace';
+    const before = valueAfter(rest, '--before');
+    const after = rest.includes('--stdin') ? await stdin() : required(valueAfter(rest, '--after'), 'patches preview requires --after TEXT or --stdin');
+    const operation: RuntimePatchOperation = {path: filePath, kind, before, after};
+    const patch = await api<RuntimePatch>(state, '/patches/preview', {
+      method: 'POST',
+      body: JSON.stringify({title, taskId, operations: [operation]}),
+    });
+    print(state, patch, patch.unifiedDiff);
+    return;
+  }
+
+  if (group === 'patches' && command === 'apply') {
+    const patch = await api<RuntimePatch>(state, `/patches/${encodeURIComponent(required(rest[0], 'patches apply requires an id'))}/apply`, {method: 'POST'});
+    print(state, patch, `${patch.status}: ${patch.title}`);
+    return;
+  }
+
+  if (group === 'patches' && command === 'reject') {
+    const patch = await api<RuntimePatch>(state, `/patches/${encodeURIComponent(required(rest[0], 'patches reject requires an id'))}/reject`, {method: 'POST'});
+    print(state, patch, `${patch.status}: ${patch.title}`);
     return;
   }
 
@@ -245,6 +317,11 @@ function required(value: string | undefined, message: string): string {
   return value;
 }
 
+function valueAfter(args: string[], flag: string): string | undefined {
+  const index = args.indexOf(flag);
+  return index >= 0 ? args[index + 1] : undefined;
+}
+
 async function stdin(): Promise<string> {
   const chunks: Buffer[] = [];
   for await (const chunk of process.stdin) chunks.push(Buffer.from(chunk));
@@ -256,6 +333,7 @@ function usage(): string {
 
 Usage:
   bemore runtime status [--json] [--runtime-url URL]
+  bemore runtime sandbox
   bemore runtime start [--workspace PATH]
   bemore workspace open PATH
   bemore workspace list
@@ -265,8 +343,15 @@ Usage:
   bemore file write PATH --stdin
   bemore run COMMAND [--wait]
   bemore tasks list
-  bemore tasks create TITLE [--detail TEXT] [--command COMMAND]
+  bemore tasks create TITLE [--detail TEXT] [--role worker] [--max-retries N] [--command COMMAND]
   bemore tasks run TASK_ID
+  bemore tasks delegate TASK_ID TITLE [--detail TEXT] [--role worker] [--max-retries N] [--command COMMAND]
+  bemore tasks retry TASK_ID
+  bemore patches list
+  bemore patches preview TITLE --file PATH --before TEXT --after TEXT [--task TASK_ID]
+  bemore patches preview TITLE --file PATH --write --stdin [--task TASK_ID]
+  bemore patches apply PATCH_ID
+  bemore patches reject PATCH_ID
   bemore artifacts list
   bemore artifacts read PATH
   bemore receipts list

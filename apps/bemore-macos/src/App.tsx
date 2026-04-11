@@ -17,7 +17,7 @@ import {
   Square,
   Terminal,
 } from 'lucide-react';
-import type {RuntimeFileNode, RuntimeProcess, RuntimeTask} from '@prismtek/agent-protocol';
+import type {RuntimeFileNode, RuntimePatchOperation, RuntimeProcess, RuntimeTask} from '@prismtek/agent-protocol';
 import {runtimeClient, type RuntimeSnapshot} from './runtimeClient';
 
 type Section = 'Workspace' | 'Editor' | 'Terminal' | 'Tasks' | 'Review' | 'Artifacts' | 'Buddy' | 'Pairing';
@@ -78,17 +78,23 @@ function ProcessCard({process, onStop}: {process: RuntimeProcess; onStop: (id: s
   );
 }
 
-function TaskRow({task, onRun}: {task: RuntimeTask; onRun: (id: string) => void}) {
+function TaskRow({task, onRun, onDelegate, onRetry}: {task: RuntimeTask; onRun: (id: string) => void; onDelegate: (id: string) => void; onRetry: (id: string) => void}) {
   return (
     <article className="panel item">
       <div className="row between">
         <div>
           <strong>{task.title}</strong>
-          <p>{task.detail || task.command || 'No extra detail yet.'}</p>
+          <p>{task.detail || task.command || task.resultSummary || 'No extra detail yet.'}</p>
+          <p>{task.parentId ? `Child of ${task.parentId}` : `${task.childIds.length} child tasks`} · retry {task.retryCount}/{task.maxRetries}</p>
+          {task.failureReason ? <p>{task.failureReason}</p> : null}
         </div>
-        <button className="secondary" onClick={() => onRun(task.id)}>
-          <Play size={16} /> Run
-        </button>
+        <div className="row">
+          <button className="secondary" onClick={() => onRun(task.id)}>
+            <Play size={16} /> Run
+          </button>
+          <button className="secondary" onClick={() => onDelegate(task.id)}>Delegate</button>
+          <button className="secondary" onClick={() => onRetry(task.id)}>Retry</button>
+        </div>
       </div>
       <span className="pill">{task.status}</span>
     </article>
@@ -105,6 +111,11 @@ export default function App() {
   const [taskTitle, setTaskTitle] = useState('Ship the next BeMore slice');
   const [taskDetail, setTaskDetail] = useState('Create receipts and inspect the resulting diff.');
   const [taskCommand, setTaskCommand] = useState('git status --short');
+  const [patchTitle, setPatchTitle] = useState('Reviewable BeMore patch');
+  const [patchPath, setPatchPath] = useState('README.md');
+  const [patchBefore, setPatchBefore] = useState('');
+  const [patchAfter, setPatchAfter] = useState('');
+  const [patchTaskId, setPatchTaskId] = useState('');
   const [status, setStatus] = useState('Ready.');
 
   const files = useMemo(() => flattenFiles(snapshot?.files ?? []).filter((file) => file.kind === 'file'), [snapshot]);
@@ -159,6 +170,38 @@ export default function App() {
     await runtimeClient.runTask(id);
     await refresh();
     setStatus('Task started. Watch Terminal and Receipts for evidence.');
+  };
+
+  const delegateTask = async (id: string) => {
+    const task = await runtimeClient.delegateTask(id, `Subtask for ${id.slice(0, 16)}`, 'Delegated from the Mac task graph.', 'git status --short');
+    await refresh();
+    setStatus(`Delegated ${task.title}`);
+  };
+
+  const retryTask = async (id: string) => {
+    const task = await runtimeClient.retryTask(id);
+    await refresh();
+    setStatus(`Created retry ${task.title}`);
+  };
+
+  const previewPatch = async () => {
+    const operation: RuntimePatchOperation = {path: patchPath, kind: patchBefore ? 'replace' : 'write', before: patchBefore || undefined, after: patchAfter};
+    const patch = await runtimeClient.previewPatch(patchTitle, patchTaskId || undefined, [operation]);
+    await refresh();
+    setActive('Review');
+    setStatus(`Previewed ${patch.title}`);
+  };
+
+  const applyPatch = async (id: string) => {
+    const patch = await runtimeClient.applyPatch(id);
+    await refresh();
+    setStatus(`${patch.status}: ${patch.title}`);
+  };
+
+  const rejectPatch = async (id: string) => {
+    const patch = await runtimeClient.rejectPatch(id);
+    await refresh();
+    setStatus(`${patch.status}: ${patch.title}`);
   };
 
   const stopProcess = async (id: string) => {
@@ -259,7 +302,7 @@ export default function App() {
               </button>
             </div>
             <div className="stack">
-              {(snapshot?.tasks ?? []).map((task) => <TaskRow key={task.id} task={task} onRun={runTask} />)}
+              {(snapshot?.tasks ?? []).map((task) => <TaskRow key={task.id} task={task} onRun={runTask} onDelegate={delegateTask} onRetry={retryTask} />)}
             </div>
           </section>
         ) : null}
@@ -269,6 +312,25 @@ export default function App() {
             <div className="panel">
               <h2>Changed Files</h2>
               {snapshot?.diff.files.length ? snapshot.diff.files.map((file) => <p key={file.path} className="diff-row">{file.status}: {file.path}</p>) : <p>No git changes found.</p>}
+              <h2>Patch Preview</h2>
+              <input value={patchTitle} onChange={(event) => setPatchTitle(event.target.value)} placeholder="Patch title" />
+              <input value={patchPath} onChange={(event) => setPatchPath(event.target.value)} placeholder="README.md" />
+              <input value={patchTaskId} onChange={(event) => setPatchTaskId(event.target.value)} placeholder="Optional task id" />
+              <textarea value={patchBefore} onChange={(event) => setPatchBefore(event.target.value)} placeholder="Text to replace. Leave blank to write the whole file." />
+              <textarea value={patchAfter} onChange={(event) => setPatchAfter(event.target.value)} placeholder="Replacement or full file content" />
+              <button onClick={previewPatch}>Preview Patch</button>
+              <h2>Patches</h2>
+              {(snapshot?.patches ?? []).map((patch) => (
+                <article key={patch.id} className="mini">
+                  <strong>{patch.title}</strong>
+                  <span>{patch.status}</span>
+                  <p>{patch.files.map((file) => file.path).join(', ')}</p>
+                  <div className="row">
+                    <button className="secondary" onClick={() => applyPatch(patch.id)}>Apply</button>
+                    <button className="secondary" onClick={() => rejectPatch(patch.id)}>Reject</button>
+                  </div>
+                </article>
+              ))}
             </div>
             <pre className="panel diff">{snapshot?.diff.unifiedDiff || 'No unified diff available.'}</pre>
           </section>
@@ -309,6 +371,10 @@ export default function App() {
             <p>Host {snapshot?.pairing.hostName} is {snapshot?.pairing.status}.</p>
             <div className="pair-code">{snapshot?.pairing.pairingCode}</div>
             <p>Scopes are explicit: workspace read, workspace write, process run, review read, receipts read.</p>
+            <h2>Sandbox Session</h2>
+            <p>{snapshot?.sandbox.id}</p>
+            <p>{snapshot?.sandbox.note}</p>
+            <p>Timeout {snapshot?.sandbox.commandTimeoutMs}ms · output cap {snapshot?.sandbox.maxOutputBytes} bytes</p>
           </section>
         ) : null}
       </section>
