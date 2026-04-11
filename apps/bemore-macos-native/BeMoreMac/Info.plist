@@ -22,5 +22,7 @@
   <string>public.app-category.developer-tools</string>
   <key>NSHumanReadableCopyright</key>
   <string>Copyright © Prismtek</string>
+  <key>ITSAppUsesNonExemptEncryption</key>
+  <false/>
 </dict>
 </plist>
