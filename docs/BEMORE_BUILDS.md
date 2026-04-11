@@ -34,7 +34,7 @@ xcodebuild -project BeMoreMac.xcodeproj -scheme BeMoreMac -destination 'platform
 xcodebuild -project BeMoreMac.xcodeproj -scheme BeMoreMac -configuration Release -destination 'generic/platform=macOS' -archivePath .build/BeMoreMac.xcarchive -allowProvisioningUpdates DEVELOPMENT_TEAM=DY9FHPRZA9 CODE_SIGN_STYLE=Automatic clean archive
 ```
 
-TestFlight upload is owned by `.github/workflows/bemore-macos-testflight.yml` and requires App Store Connect API secrets in this repo: `APPSTORE_CONNECT_API_KEY`, `APPSTORE_CONNECT_KEY_ID`, and `APPSTORE_CONNECT_ISSUER_ID`.
+TestFlight upload is owned by `.github/workflows/bemore-macos-testflight.yml` and requires App Store Connect API secrets in this repo: `APPSTORE_CONNECT_API_KEY` and `APPSTORE_CONNECT_KEY_ID`. Set `APPSTORE_CONNECT_ISSUER_ID` too for team-scoped keys; issuer-less individual keys may omit it.
 
 ## iOS Build 18
 
