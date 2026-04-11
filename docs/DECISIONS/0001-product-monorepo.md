@@ -20,7 +20,7 @@ The product ecosystem needs a single implementation home for:
 ## Does not change
 
 This decision does **not** move ownership of:
-- runtime substrate in `openclaw`
+- legacy runtime substrate ownership
 - council and Buddy policy in `bmo-stack`
 - public website ownership in `prismtek-site`
 

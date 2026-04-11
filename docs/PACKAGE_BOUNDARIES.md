@@ -28,7 +28,7 @@ Keep here if:
 
 Do not turn it into:
 - the owner of deep execution primitives
-- a reimplementation of `openclaw`
+- a reimplementation of the inherited runtime substrate
 
 ### `packages/app-factory`
 Current role:

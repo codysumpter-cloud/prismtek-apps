@@ -17,13 +17,13 @@ It exists to hold product-facing implementation in one place so app surfaces, sh
 
 ## Does not own
 
-- `openclaw` runtime substrate, tool runtime, sessions, nodes, channels, or deep execution primitives
+- deep runtime substrate, tool runtime, sessions, nodes, channels, or execution primitives outside the BeMore product adapter
 - `bmo-stack` council policy, Buddy identity rules, agent operating behavior, or cross-repo governance
 - `prismtek-site` public website ownership, site-backed marketing surfaces, or site-specific APIs
 
 ## Repo map
 
-- `openclaw` = engine
+- BeMore runtime substrate = execution engine and inherited runtime primitives
 - `bmo-stack` = brain / policy / council / identity
 - `prismtek-site` = public web world
 - `prismtek-apps` = shipped app family

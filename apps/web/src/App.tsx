@@ -1165,8 +1165,8 @@ function SandboxView({ user, token }: { user: any, token: string | null }) {
           )}
           {sessions.length > 0 && (
             <>
-              <p><span className="text-blue-400">prismtek@sandbox</span>:<span className="text-yellow-400">~</span>$ openclaw status</p>
-              <p className="text-white">OpenClaw v2.4.0 - Active</p>
+              <p><span className="text-blue-400">prismtek@sandbox</span>:<span className="text-yellow-400">~</span>$ bemore status</p>
+              <p className="text-white">BeMore runtime - Active</p>
               <p className="text-white">Uptime: 0h 14m</p>
               <p className="text-white">Memory: 124MB / 512MB</p>
               <p><span className="text-blue-400">prismtek@sandbox</span>:<span className="text-yellow-400">~</span>$ _</p>

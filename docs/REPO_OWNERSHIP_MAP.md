@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document defines the canonical repo roles across the Prismtek, BeMore, and OpenClaw ecosystem.
+This document defines the canonical repo roles across Prismtek, BeMore, BMO, and the legacy runtime substrate.
 
 The goal is to reduce the number of repos acting like they might be the source of truth for the same thing.
 
@@ -10,7 +10,7 @@ The goal is to reduce the number of repos acting like they might be the source o
 
 These are the repos that should remain first-class in the mental model.
 
-### `openclaw`
+### Legacy runtime substrate
 Role:
 - runtime engine
 - execution substrate
@@ -20,7 +20,7 @@ Role:
 Owns:
 - runtime delivery and execution primitives
 - local and remote assistant control-plane capabilities
-- OpenClaw setup, config patterns, and skills ecosystem
+- inherited runtime setup, config patterns, and skills ecosystem
 
 Does not own:
 - BeMore product implementation
@@ -72,7 +72,7 @@ Owns:
 - app-owned build and release automation over time
 
 Does not own:
-- OpenClaw runtime substrate
+- legacy runtime substrate
 - BMO identity/council policy layer
 - public website ownership
 
@@ -121,7 +121,7 @@ Recommendation:
 Likely destination:
 - orchestration/operator patterns → `bmo-stack`
 - product implementation worth keeping → `prismtek-apps`
-- runtime/tooling assumptions → `openclaw`
+- runtime/tooling assumptions → legacy runtime substrate
 
 ### old BeMore/BMO app repos
 Recommendation:
@@ -130,10 +130,10 @@ Recommendation:
 
 ## Where things should live
 
-### OpenClaw setup, skills, and runtime config
+### Runtime setup, skills, and config
 Store in:
-- `openclaw`
-- OpenClaw workspace/config/docs
+- legacy runtime substrate
+- runtime workspace/config/docs
 - skill repos or skill directories
 
 Examples:
@@ -180,7 +180,7 @@ Examples:
 1. Do not keep multiple repos as equal product sources of truth.
 2. Mine older repos for value, then fold or archive them.
 3. Move product implementation toward `prismtek-apps`.
-4. Keep runtime/platform concerns in `openclaw`.
+4. Keep runtime/platform concerns in the legacy runtime substrate until they are intentionally product-owned.
 5. Keep policy/behavior/orchestration in `bmo-stack`.
 6. Keep public-site ownership in `prismtek-site`.
 7. Rename only when the ownership model is already clear.
@@ -199,6 +199,6 @@ If the question is “where does this ship to users?”, the answer is usually `
 
 If the question is “how should the assistant behave?”, the answer is usually `bmo-stack`.
 
-If the question is “how does the runtime actually execute?”, the answer is usually `openclaw`.
+If the question is “how does the runtime actually execute?”, the answer is usually the runtime substrate, not BeMore product UI.
 
 If the question is “is this the public web presence?”, the answer is usually `prismtek-site`.
