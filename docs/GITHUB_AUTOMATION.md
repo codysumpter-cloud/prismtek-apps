@@ -97,6 +97,10 @@ Recommended additional settings:
 - require conversation resolution before merge
 - optionally require at least one approving review
 
+Private CodeQL note:
+- GitHub rejected CodeQL upload on this private repo with `Advanced security has not been purchased`.
+- `codeql.yml` now uses a preflight and skips analysis unless the repo can upload code scanning results or `ENABLE_PRIVATE_CODEQL=true` is set after Advanced Security is available.
+
 ## Why this matters
 
 These automations make `prismtek-apps` more durable by catching broken repo changes early, surfacing workflow and code scanning issues, keeping dependency drift under control, and providing bounded issue-to-PR and repair paths.

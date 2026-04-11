@@ -28,13 +28,24 @@ Direction:
 - avoid letting it become a vague system backend for things owned elsewhere
 - over time, regroup routes around BeMore product capabilities instead of generic platform/factory framing
 
+### `apps/bemore-macos`
+Current role:
+- BeMore Mac Build 1 local workstation surface
+- workspace tree, text editor, command runner, tasks, diffs, artifacts, receipts, Buddy state, and pairing boundary
+- app-owned runtime API for the local Mac vertical slice
+
+Direction:
+- become the primary BeMore local IDE/runtime/sandbox app
+- keep inherited runtime ideas behind BeMore product-facing language and receipts
+- expose Mac pairing deliberately; loopback is the safe default unless the operator opts into a host bind
+
 ## Likely future surfaces
 
 ### `apps/bemore-web`
 Possible future rename or replacement for `apps/web` once the BeMore identity and app structure are mature enough to justify it.
 
 ### `apps/bemore-ios`
-Possible future home for app-owned iOS project structure, bridge docs, or release automation ownership.
+Future home for app-owned iOS project structure, bridge docs, or release automation ownership. The working Build 18 app and TestFlight path still live in `bmo-stack` until re-homing is proven.
 
 ### `apps/arcade`
 Only if an arcade surface truly belongs in the shared product family here rather than staying web-owned elsewhere.

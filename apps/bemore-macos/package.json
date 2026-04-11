@@ -1,0 +1,33 @@
+{
+  "name": "@prismtek/bemore-macos",
+  "version": "1.0.0-build.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx server.ts",
+    "build": "vite build && tsc -p tsconfig.server.json",
+    "lint": "tsc --noEmit && tsc -p tsconfig.server.json --noEmit",
+    "start": "node dist/server/server.js"
+  },
+  "dependencies": {
+    "@prismtek/agent-protocol": "*",
+    "@prismtek/receipts-core": "*",
+    "@prismtek/workspace-core": "*",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "lucide-react": "^1.8.0",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.6.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "tsx": "^4.21.0",
+    "typescript": "~6.0.2",
+    "vite": "^8.0.8"
+  }
+}
