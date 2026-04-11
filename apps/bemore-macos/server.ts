@@ -14,8 +14,11 @@ import type {
   RuntimeDiff,
   RuntimeDiffFile,
   RuntimeFileNode,
+  RuntimePatch,
+  RuntimePatchOperation,
   RuntimeProcess,
   RuntimeReceipt,
+  RuntimeSandboxSession,
   RuntimeTask,
 } from '@prismtek/agent-protocol';
 import {createReceipt} from '@prismtek/receipts-core';
@@ -39,7 +42,18 @@ app.use(express.json({limit: '5mb'}));
 let workspaceRoot: string | null = process.env.BEMORE_WORKSPACE_ROOT ?? null;
 const processes = new Map<string, RuntimeProcess & {child?: ReturnType<typeof spawn>}>();
 const tasks = new Map<string, RuntimeTask>();
+const patches = new Map<string, RuntimePatch>();
 const receipts: RuntimeReceipt[] = [];
+const sandboxSession: RuntimeSandboxSession = {
+  id: `sandbox-${randomUUID()}`,
+  workspaceRoot,
+  mode: 'workspace-bound',
+  createdAt: new Date().toISOString(),
+  commandTimeoutMs: Number(process.env.BEMORE_COMMAND_TIMEOUT_MS ?? 120000),
+  maxOutputBytes: Number(process.env.BEMORE_MAX_OUTPUT_BYTES ?? 256000),
+  blockedCommands: ['rm -rf /', 'sudo ', 'mkfs', ':(){', 'dd if=', '> /dev/'],
+  note: 'Commands run as child processes on this Mac, bounded to the selected workspace with command blocking, timeout, and output limits. This is not VM isolation.',
+};
 let pairingState: PairingState = {
   hostId: `bemore-mac-${hostname().replace(/[^a-z0-9]/gi, '-').toLowerCase()}`,
   hostName: hostname(),
@@ -58,10 +72,25 @@ const ensureWorkspace = () => {
 const safePath = (relativePath = '') => {
   const root = ensureWorkspace();
   const resolved = path.resolve(root, relativePath);
-  if (!resolved.startsWith(path.resolve(root))) {
+  const relative = path.relative(path.resolve(root), resolved);
+  if (relative.startsWith('..') || path.isAbsolute(relative)) {
     throw new Error('Path escapes the selected workspace.');
   }
   return resolved;
+};
+
+const safeCommand = (command: string) => {
+  const normalized = command.replace(/\s+/g, ' ').trim();
+  if (!normalized) throw new Error('Command is required.');
+  const blocked = sandboxSession.blockedCommands.find((pattern) => normalized.includes(pattern));
+  if (blocked) throw new Error(`Command blocked by BeMore workspace sandbox policy: ${blocked}`);
+  return normalized;
+};
+
+const clampOutput = (value: string) => {
+  const bytes = Buffer.byteLength(value);
+  if (bytes <= sandboxSession.maxOutputBytes) return value;
+  return `${value.slice(0, sandboxSession.maxOutputBytes)}\n[BeMore truncated output at ${sandboxSession.maxOutputBytes} bytes]`;
 };
 
 const toRelative = (absolutePath: string) => path.relative(ensureWorkspace(), absolutePath).split(path.sep).join('/');
@@ -126,6 +155,101 @@ async function currentDiff(): Promise<RuntimeDiff> {
   return {id: `diff-${Date.now()}`, generatedAt: new Date().toISOString(), files, unifiedDiff};
 }
 
+function operationDiff(operation: RuntimePatchOperation): string {
+  const before = operation.kind === 'write' && operation.before === undefined ? '' : operation.before ?? '';
+  const beforeLines = before.split('\n');
+  const afterLines = operation.after.split('\n');
+  const removed = beforeLines.length === 1 && beforeLines[0] === '' ? [] : beforeLines.map((line) => `-${line}`);
+  const added = afterLines.length === 1 && afterLines[0] === '' ? [] : afterLines.map((line) => `+${line}`);
+  return [`--- a/${operation.path}`, `+++ b/${operation.path}`, '@@', ...removed, ...added].join('\n');
+}
+
+async function previewPatch(title: string, operations: RuntimePatchOperation[], taskId?: string): Promise<RuntimePatch> {
+  if (!operations.length) throw new Error('Patch requires at least one operation.');
+  const normalized: RuntimePatchOperation[] = [];
+  const files: RuntimeDiffFile[] = [];
+  for (const operation of operations) {
+    const relativePath = String(operation.path ?? '');
+    if (!isTextEditablePath(relativePath)) throw new Error(`Patch target is not text-editable: ${relativePath}`);
+    const absolute = safePath(relativePath);
+    const current = existsSync(absolute) ? await readFile(absolute, 'utf8') : '';
+    if (operation.kind === 'replace' && operation.before !== undefined && !current.includes(operation.before)) {
+      throw new Error(`Patch before text was not found in ${relativePath}`);
+    }
+    const after = operation.kind === 'replace' && operation.before !== undefined ? current.replace(operation.before, operation.after) : operation.after;
+    normalized.push({...operation, path: relativePath, before: current, after});
+    files.push({path: relativePath, status: existsSync(absolute) ? 'modified' : 'added', summary: `${operation.kind} ${relativePath}`});
+  }
+  const now = new Date().toISOString();
+  return {
+    id: `patch-${now.replace(/[^0-9A-Za-z]/g, '').toLowerCase()}-${Math.random().toString(36).slice(2, 8)}`,
+    title,
+    status: 'previewed',
+    createdAt: now,
+    updatedAt: now,
+    taskId,
+    operations: normalized,
+    files,
+    unifiedDiff: normalized.map(operationDiff).join('\n'),
+    receiptIds: [],
+  };
+}
+
+async function applyRuntimePatch(patch: RuntimePatch): Promise<RuntimePatch> {
+  const startedAt = new Date().toISOString();
+  try {
+    for (const operation of patch.operations) {
+      const absolute = safePath(operation.path);
+      if (operation.kind === 'replace' && operation.before !== undefined) {
+        const current = existsSync(absolute) ? await readFile(absolute, 'utf8') : '';
+        if (!current.includes(operation.before)) throw new Error(`Patch before text no longer matches ${operation.path}`);
+      }
+    }
+    for (const operation of patch.operations) {
+      await mkdir(path.dirname(safePath(operation.path)), {recursive: true});
+      await writeFile(safePath(operation.path), operation.after, 'utf8');
+    }
+    patch.status = 'applied';
+    patch.updatedAt = new Date().toISOString();
+    const receipt = createReceipt({
+      action: 'applyPatch',
+      status: 'completed',
+      startedAt,
+      summary: `Applied patch ${patch.title}`,
+      taskId: patch.taskId,
+      patchId: patch.id,
+      sandboxSessionId: sandboxSession.id,
+    });
+    patch.receiptIds.unshift(receipt.id);
+    receipts.unshift(receipt);
+    if (patch.taskId) {
+      const task = tasks.get(patch.taskId);
+      if (task) {
+        task.receiptIds.unshift(receipt.id);
+        task.updatedAt = patch.updatedAt;
+      }
+    }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    patch.status = 'failed';
+    patch.failureReason = message;
+    patch.updatedAt = new Date().toISOString();
+    const receipt = createReceipt({
+      action: 'applyPatch',
+      status: 'failed',
+      startedAt,
+      summary: `Failed to apply patch ${patch.title}`,
+      taskId: patch.taskId,
+      patchId: patch.id,
+      sandboxSessionId: sandboxSession.id,
+      failureReason: message,
+    });
+    patch.receiptIds.unshift(receipt.id);
+    receipts.unshift(receipt);
+  }
+  return patch;
+}
+
 async function listArtifacts(): Promise<RuntimeArtifact[]> {
   if (!workspaceRoot) return [];
   const candidates = ['dist', 'build', 'artifacts', 'receipts', '.bemore'];
@@ -162,11 +286,13 @@ async function snapshot() {
     files: workspaceRoot ? await listWorkspaceFiles() : [],
     tasks: Array.from(tasks.values()),
     processes: Array.from(processes.values()).map(({child, ...process}) => process),
+    patches: Array.from(patches.values()),
     artifacts: await listArtifacts(),
     receipts,
     diff: await currentDiff(),
     buddy: buddyState(),
     pairing: pairingState,
+    sandbox: {...sandboxSession, workspaceRoot},
   };
 }
 
@@ -187,6 +313,8 @@ app.get('/api/runtime/status', async (_req, res) => {
     processCount: processes.size,
     taskCount: tasks.size,
     receiptCount: receipts.length,
+    patchCount: patches.size,
+    sandbox: {...sandboxSession, workspaceRoot},
     pairing: pairingState,
   });
 });
@@ -197,6 +325,7 @@ app.post('/api/workspace/select', async (req, res, next) => {
     const info = await stat(requestedPath);
     if (!info.isDirectory()) throw new Error('Workspace path must be a folder.');
     workspaceRoot = path.resolve(requestedPath);
+    sandboxSession.workspaceRoot = workspaceRoot;
     res.json(await snapshot());
   } catch (error) {
     next(error);
@@ -236,10 +365,28 @@ app.put('/api/workspace/file', async (req, res, next) => {
 app.post('/api/processes', async (req, res, next) => {
   try {
     const root = ensureWorkspace();
-    const command = String(req.body.command ?? '').trim();
-    if (!command) throw new Error('Command is required.');
     const startedAt = new Date().toISOString();
+    let command: string;
+    try {
+      command = safeCommand(String(req.body.command ?? ''));
+    } catch (error) {
+      const failureReason = error instanceof Error ? error.message : String(error);
+      const receipt = createReceipt({
+        action: 'runCommand',
+        status: 'blocked',
+        startedAt,
+        command: String(req.body.command ?? ''),
+        cwd: root,
+        taskId: req.body.taskId,
+        sandboxSessionId: sandboxSession.id,
+        failureReason,
+        summary: `Blocked command: ${String(req.body.command ?? '').trim()}`,
+      });
+      receipts.unshift(receipt);
+      throw error;
+    }
     const id = `process-${randomUUID()}`;
+    const timeoutMs = Number(req.body.timeoutMs ?? sandboxSession.commandTimeoutMs);
     const processRecord: RuntimeProcess & {child?: ReturnType<typeof spawn>} = {
       id,
       command,
@@ -248,19 +395,31 @@ app.post('/api/processes', async (req, res, next) => {
       stdout: '',
       stderr: '',
       startedAt,
+      sandboxSessionId: sandboxSession.id,
     };
     const child = spawn(command, {cwd: root, shell: true});
     processRecord.child = child;
+    const timer = setTimeout(() => {
+      if (processRecord.status === 'running') {
+        processRecord.failureReason = `Timed out after ${timeoutMs}ms`;
+        processRecord.stderr = clampOutput(`${processRecord.stderr}\n[BeMore terminated command after ${timeoutMs}ms]`);
+        child.kill('SIGTERM');
+      }
+    }, timeoutMs);
     child.stdout.on('data', (chunk: Buffer) => {
-      processRecord.stdout += chunk.toString();
+      processRecord.stdout = clampOutput(processRecord.stdout + chunk.toString());
     });
     child.stderr.on('data', (chunk: Buffer) => {
-      processRecord.stderr += chunk.toString();
+      processRecord.stderr = clampOutput(processRecord.stderr + chunk.toString());
     });
     child.on('close', (exitCode) => {
+      clearTimeout(timer);
       processRecord.exitCode = exitCode;
       processRecord.status = exitCode === 0 ? 'completed' : 'failed';
       processRecord.endedAt = new Date().toISOString();
+      if (processRecord.status === 'failed' && !processRecord.failureReason) {
+        processRecord.failureReason = processRecord.stderr.trim().split('\n').at(-1) || `Command exited ${exitCode}`;
+      }
       const receipt = createReceipt({
         action: 'runCommand',
         status: processRecord.status,
@@ -269,6 +428,8 @@ app.post('/api/processes', async (req, res, next) => {
         cwd: root,
         exitCode,
         taskId: req.body.taskId,
+        sandboxSessionId: sandboxSession.id,
+        failureReason: processRecord.failureReason,
         summary: exitCode === 0 ? `Command completed: ${command}` : `Command failed: ${command}`,
       });
       processRecord.receiptId = receipt.id;
@@ -278,6 +439,8 @@ app.post('/api/processes', async (req, res, next) => {
         if (task) {
           task.status = processRecord.status;
           task.updatedAt = processRecord.endedAt;
+          task.resultSummary = processRecord.status === 'completed' ? `Command completed with exit ${exitCode}` : `Command failed with exit ${exitCode}`;
+          task.failureReason = processRecord.failureReason;
           task.receiptIds.unshift(receipt.id);
         }
       }
@@ -313,6 +476,7 @@ app.post('/api/processes/:id/stop', (req, res, next) => {
       summary: `Stopped ${record.command}`,
       command: record.command,
       cwd: record.cwd,
+      sandboxSessionId: sandboxSession.id,
     });
     receipts.unshift(receipt);
     res.json({receipt});
@@ -326,9 +490,41 @@ app.get('/api/tasks', (_req, res) => {
 });
 
 app.post('/api/tasks', (req, res) => {
-  const task = createTask(String(req.body.title ?? 'Untitled task'), String(req.body.detail ?? ''), req.body.command);
+  const task = createTask(String(req.body.title ?? 'Untitled task'), String(req.body.detail ?? ''), req.body.command, {
+    role: req.body.role,
+    maxRetries: Number(req.body.maxRetries ?? 1),
+  });
   tasks.set(task.id, task);
   res.json(task);
+});
+
+app.post('/api/tasks/:id/subtasks', (req, res, next) => {
+  try {
+    const parent = tasks.get(req.params.id);
+    if (!parent) throw new Error('Parent task not found.');
+    const subtask = createTask(String(req.body.title ?? 'Delegated subtask'), String(req.body.detail ?? ''), req.body.command, {
+      parentId: parent.id,
+      role: req.body.role ?? 'worker',
+      maxRetries: Number(req.body.maxRetries ?? parent.maxRetries ?? 1),
+    });
+    parent.childIds.push(subtask.id);
+    parent.updatedAt = new Date().toISOString();
+    tasks.set(subtask.id, subtask);
+    const receipt = createReceipt({
+      action: 'delegateSubtask',
+      status: 'completed',
+      taskId: subtask.id,
+      parentTaskId: parent.id,
+      sandboxSessionId: sandboxSession.id,
+      summary: `Delegated ${subtask.title} from ${parent.title}`,
+    });
+    subtask.receiptIds.unshift(receipt.id);
+    parent.receiptIds.unshift(receipt.id);
+    receipts.unshift(receipt);
+    res.json(subtask);
+  } catch (error) {
+    next(error);
+  }
 });
 
 app.post('/api/tasks/:id/run', async (req, res, next) => {
@@ -342,9 +538,12 @@ app.post('/api/tasks/:id/run', async (req, res, next) => {
         action: 'runTask',
         status: 'completed',
         taskId: task.id,
+        parentTaskId: task.parentId,
+        sandboxSessionId: sandboxSession.id,
         summary: `Recorded task without command: ${task.title}`,
       });
       task.status = 'completed';
+      task.resultSummary = receipt.summary;
       task.receiptIds.unshift(receipt.id);
       receipts.unshift(receipt);
       res.json(task);
@@ -363,9 +562,110 @@ app.post('/api/tasks/:id/run', async (req, res, next) => {
   }
 });
 
+app.post('/api/tasks/:id/retry', (req, res, next) => {
+  try {
+    const task = tasks.get(req.params.id);
+    if (!task) throw new Error('Task not found.');
+    if (task.retryCount >= task.maxRetries) throw new Error(`Retry limit reached for ${task.id}`);
+    const retry = createTask(
+      String(req.body.title ?? `${task.title} retry ${task.retryCount + 1}`),
+      String(req.body.detail ?? `Retry of ${task.id}. Last failure: ${task.failureReason ?? 'unknown'}`),
+      req.body.command ?? task.command,
+      {
+        parentId: task.parentId ?? task.id,
+        role: task.role ?? 'worker',
+        maxRetries: task.maxRetries,
+        retryOfTaskId: task.id,
+      },
+    );
+    retry.retryCount = task.retryCount + 1;
+    task.retryCount += 1;
+    task.childIds.push(retry.id);
+    task.updatedAt = new Date().toISOString();
+    tasks.set(retry.id, retry);
+    const receipt = createReceipt({
+      action: 'retryTask',
+      status: 'completed',
+      taskId: retry.id,
+      parentTaskId: task.id,
+      sandboxSessionId: sandboxSession.id,
+      retryCount: retry.retryCount,
+      failureReason: task.failureReason,
+      summary: `Created bounded retry ${retry.retryCount}/${task.maxRetries} for ${task.title}`,
+    });
+    retry.receiptIds.unshift(receipt.id);
+    task.receiptIds.unshift(receipt.id);
+    receipts.unshift(receipt);
+    res.json(retry);
+  } catch (error) {
+    next(error);
+  }
+});
+
 app.get('/api/diffs/current', async (_req, res, next) => {
   try {
     res.json(await currentDiff());
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get('/api/patches', (_req, res) => {
+  res.json(Array.from(patches.values()));
+});
+
+app.post('/api/patches/preview', async (req, res, next) => {
+  try {
+    const patch = await previewPatch(
+      String(req.body.title ?? 'Untitled patch'),
+      (req.body.operations ?? []) as RuntimePatchOperation[],
+      req.body.taskId ? String(req.body.taskId) : undefined,
+    );
+    patches.set(patch.id, patch);
+    const receipt = createReceipt({
+      action: 'previewPatch',
+      status: 'completed',
+      taskId: patch.taskId,
+      patchId: patch.id,
+      sandboxSessionId: sandboxSession.id,
+      summary: `Previewed patch ${patch.title}`,
+    });
+    patch.receiptIds.unshift(receipt.id);
+    receipts.unshift(receipt);
+    res.json(patch);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post('/api/patches/:id/apply', async (req, res, next) => {
+  try {
+    const patch = patches.get(req.params.id);
+    if (!patch) throw new Error('Patch not found.');
+    if (patch.status !== 'previewed' && patch.status !== 'failed') throw new Error(`Patch is ${patch.status} and cannot be applied.`);
+    res.json(await applyRuntimePatch(patch));
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post('/api/patches/:id/reject', (req, res, next) => {
+  try {
+    const patch = patches.get(req.params.id);
+    if (!patch) throw new Error('Patch not found.');
+    patch.status = 'rejected';
+    patch.updatedAt = new Date().toISOString();
+    const receipt = createReceipt({
+      action: 'rejectPatch',
+      status: 'completed',
+      taskId: patch.taskId,
+      patchId: patch.id,
+      sandboxSessionId: sandboxSession.id,
+      summary: `Rejected patch ${patch.title}`,
+    });
+    patch.receiptIds.unshift(receipt.id);
+    receipts.unshift(receipt);
+    res.json(patch);
   } catch (error) {
     next(error);
   }

@@ -23,20 +23,20 @@
     {
       "capability": "process execution with output receipts",
       "openClaw": "exec tooling and sandbox/runtime process adapters",
-      "beMoreStatus": "implemented",
-      "evidence": "BeMore Mac runtime /api/processes, CLI run --wait, receipt creation"
+      "beMoreStatus": "implemented-bounded",
+      "evidence": "BeMore Mac runtime /api/processes, CLI run --wait, receipt creation, workspace-bound sandbox session, blocked command patterns, timeouts, and output caps"
     },
     {
       "capability": "tasks/subtasks",
       "openClaw": "agent turns and subagent/task orchestration",
-      "beMoreStatus": "partially-present",
-      "evidence": "BeMore runtime supports task create/run and receipts; explicit parallel subagent delegation remains a future product layer"
+      "beMoreStatus": "implemented-bounded",
+      "evidence": "BeMore runtime supports task create/run, delegated subtasks with parent/child task graph fields, roles, receipts, and bounded retries; parallel model-backed subagents remain future work"
     },
     {
       "capability": "diff/review loop",
       "openClaw": "diff tools and patch review",
       "beMoreStatus": "implemented",
-      "evidence": "BeMore Mac Review panel and CLI diff show use git status/diff"
+      "evidence": "BeMore Mac Review panel and CLI diff show use git status/diff; structured patch preview/apply/reject is implemented through runtime patch records"
     },
     {
       "capability": "artifacts/results/receipts",

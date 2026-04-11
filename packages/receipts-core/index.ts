@@ -11,6 +11,11 @@ export interface ReceiptInput {
   exitCode?: number | null;
   taskId?: string;
   artifactIds?: string[];
+  patchId?: string;
+  parentTaskId?: string;
+  sandboxSessionId?: string;
+  retryCount?: number;
+  failureReason?: string;
 }
 
 export function createReceipt(input: ReceiptInput): RuntimeReceipt {
@@ -27,6 +32,11 @@ export function createReceipt(input: ReceiptInput): RuntimeReceipt {
     exitCode: input.exitCode,
     taskId: input.taskId,
     artifactIds: input.artifactIds ?? [],
+    patchId: input.patchId,
+    parentTaskId: input.parentTaskId,
+    sandboxSessionId: input.sandboxSessionId,
+    retryCount: input.retryCount,
+    failureReason: input.failureReason,
   };
 }
 

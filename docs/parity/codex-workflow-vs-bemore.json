@@ -29,23 +29,23 @@
     },
     {
       "capability": "task orchestration and retry/fix/re-run",
-      "beMoreStatus": "partially-present",
-      "evidence": "Task create/run and receipts exist; automatic fix/retry planner remains human/agent-driven instead of an autonomous planner loop"
+      "beMoreStatus": "implemented-bounded",
+      "evidence": "Task create/run, bounded task retry creation, retry counts, failure reasons, and receipt history are implemented in the Mac runtime and CLI"
     },
     {
       "capability": "subagents/parallel delegation",
-      "beMoreStatus": "missing",
-      "evidence": "Runtime protocol names runSubtask, but no product-owned implementation exists yet"
+      "beMoreStatus": "implemented-bounded",
+      "evidence": "Delegated subtasks are real RuntimeTask records with parentId, childIds, role, command, status, receipts, and CLI/Mac controls; this is not yet parallel multi-agent model execution"
     },
     {
       "capability": "patch application",
-      "beMoreStatus": "partially-present",
-      "evidence": "File writes and diff review exist; structured patch apply command is not implemented yet"
+      "beMoreStatus": "implemented",
+      "evidence": "Runtime patch preview/apply/reject endpoints, patch records, unified patch previews, task/receipt links, and CLI/Mac Review controls are implemented"
     },
     {
       "capability": "sandbox isolation policy",
-      "beMoreStatus": "partially-present",
-      "evidence": "Product sandbox adapter and command runner exist; hardened isolation policy remains a release-hardening item"
+      "beMoreStatus": "implemented-bounded",
+      "evidence": "Runtime exposes a workspace-bound sandbox session with path enforcement, destructive command blocking, command timeouts, output caps, and receipt logging; VM/container isolation remains future work"
     }
   ]
 }

@@ -29,7 +29,17 @@ export function normalizeDiffStatus(status: string): RuntimeDiffFile['status'] {
   return 'unknown';
 }
 
-export function createTask(title: string, detail = '', command?: string): RuntimeTask {
+export function createTask(
+  title: string,
+  detail = '',
+  command?: string,
+  options: {
+    parentId?: string;
+    role?: RuntimeTask['role'];
+    maxRetries?: number;
+    retryOfTaskId?: string;
+  } = {},
+): RuntimeTask {
   const now = new Date().toISOString();
   return {
     id: `task-${now.replace(/[^0-9A-Za-z]/g, '').toLowerCase()}-${Math.random().toString(36).slice(2, 8)}`,
@@ -39,6 +49,12 @@ export function createTask(title: string, detail = '', command?: string): Runtim
     status: 'idle',
     createdAt: now,
     updatedAt: now,
+    parentId: options.parentId,
+    childIds: [],
+    role: options.role,
+    retryCount: 0,
+    maxRetries: options.maxRetries ?? 1,
+    retryOfTaskId: options.retryOfTaskId,
     receiptIds: [],
     artifactIds: [],
   };

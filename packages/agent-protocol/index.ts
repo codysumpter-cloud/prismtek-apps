@@ -11,8 +11,13 @@ export type RuntimeRequestKind =
   | 'createTask'
   | 'runTask'
   | 'runSubtask'
+  | 'retryTask'
   | 'listDiffs'
   | 'getDiff'
+  | 'previewPatch'
+  | 'applyPatch'
+  | 'rejectPatch'
+  | 'listPatches'
   | 'listArtifacts'
   | 'readArtifact'
   | 'getReceipts'
@@ -76,6 +81,8 @@ export interface RuntimeProcess {
   startedAt: string;
   endedAt?: string;
   receiptId?: string;
+  failureReason?: string;
+  sandboxSessionId?: string;
 }
 
 export interface RuntimeTask {
@@ -86,8 +93,27 @@ export interface RuntimeTask {
   createdAt: string;
   updatedAt: string;
   command?: string;
+  parentId?: string;
+  childIds: string[];
+  role?: 'operator' | 'explorer' | 'worker' | 'verifier';
+  resultSummary?: string;
+  failureReason?: string;
+  retryCount: number;
+  maxRetries: number;
+  retryOfTaskId?: string;
   receiptIds: string[];
   artifactIds: string[];
+}
+
+export interface RuntimeSandboxSession {
+  id: string;
+  workspaceRoot: string | null;
+  mode: 'workspace-bound';
+  createdAt: string;
+  commandTimeoutMs: number;
+  maxOutputBytes: number;
+  blockedCommands: string[];
+  note: string;
 }
 
 export interface RuntimeDiffFile {
@@ -101,6 +127,27 @@ export interface RuntimeDiff {
   generatedAt: string;
   files: RuntimeDiffFile[];
   unifiedDiff?: string;
+}
+
+export interface RuntimePatchOperation {
+  path: string;
+  kind: 'replace' | 'write';
+  before?: string;
+  after: string;
+}
+
+export interface RuntimePatch {
+  id: string;
+  title: string;
+  status: 'previewed' | 'applied' | 'rejected' | 'failed';
+  createdAt: string;
+  updatedAt: string;
+  taskId?: string;
+  operations: RuntimePatchOperation[];
+  files: RuntimeDiffFile[];
+  unifiedDiff: string;
+  receiptIds: string[];
+  failureReason?: string;
 }
 
 export interface RuntimeArtifact {
@@ -124,6 +171,11 @@ export interface RuntimeReceipt {
   exitCode?: number | null;
   taskId?: string;
   artifactIds?: string[];
+  patchId?: string;
+  parentTaskId?: string;
+  sandboxSessionId?: string;
+  retryCount?: number;
+  failureReason?: string;
 }
 
 export interface RuntimeBuddyState {
@@ -167,8 +219,13 @@ export interface BeMoreRuntimeProtocol {
   createTask(task: Pick<RuntimeTask, 'title' | 'detail' | 'command'>): Promise<RuntimeTask>;
   runTask(taskId: string): Promise<RuntimeTask>;
   runSubtask(taskId: string, title: string): Promise<RuntimeTask>;
+  retryTask(taskId: string): Promise<RuntimeTask>;
   listDiffs(): Promise<RuntimeDiff>;
   getDiff(path?: string): Promise<RuntimeDiff>;
+  listPatches(): Promise<RuntimePatch[]>;
+  previewPatch(patch: Pick<RuntimePatch, 'title' | 'operations' | 'taskId'>): Promise<RuntimePatch>;
+  applyPatch(patchId: string): Promise<RuntimePatch>;
+  rejectPatch(patchId: string): Promise<RuntimePatch>;
   listArtifacts(): Promise<RuntimeArtifact[]>;
   readArtifact(artifactId: string): Promise<RuntimeFileContent>;
   getReceipts(): Promise<RuntimeReceipt[]>;
