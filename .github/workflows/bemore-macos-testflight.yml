@@ -1,0 +1,160 @@
+name: BeMore Mac TestFlight
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/bemore-macos-native/**'
+      - '.github/workflows/bemore-macos-testflight.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: bemore-macos-testflight-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-26
+    defaults:
+      run:
+        working-directory: apps/bemore-macos-native
+    env:
+      XCODE_DEVELOPER_DIR: ${{ vars.BEMORE_MAC_XCODE_DEVELOPER_DIR != '' && vars.BEMORE_MAC_XCODE_DEVELOPER_DIR || '/Applications/Xcode.app/Contents/Developer' }}
+      ASC_API_KEY: ${{ secrets.APPSTORE_CONNECT_API_KEY }}
+      ASC_KEY_ID: ${{ secrets.APPSTORE_CONNECT_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.APPSTORE_CONNECT_ISSUER_ID }}
+      MAC_BUNDLE_ID: com.prismtek.bemore.mac
+      MAC_TEAM_ID: DY9FHPRZA9
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Select Xcode
+        run: |
+          xcode_app="${XCODE_DEVELOPER_DIR%/Contents/Developer}"
+          test -d "$xcode_app"
+          echo "DEVELOPER_DIR=$XCODE_DEVELOPER_DIR" >> "$GITHUB_ENV"
+          if command -v sudo >/dev/null 2>&1 && sudo -n true 2>/dev/null; then
+            sudo xcode-select -s "$xcode_app"
+          else
+            echo "Skipping xcode-select; using DEVELOPER_DIR=$XCODE_DEVELOPER_DIR"
+          fi
+
+      - name: Show Xcode version
+        run: |
+          xcodebuild -version
+          xcrun --sdk macosx --show-sdk-version
+          sw_vers
+
+      - name: Install XcodeGen if needed
+        run: |
+          if ! command -v xcodegen >/dev/null 2>&1; then
+            brew install xcodegen
+          fi
+          xcodegen --version
+
+      - name: Validate App Store Connect secrets
+        run: |
+          missing=0
+          for name in ASC_API_KEY ASC_KEY_ID ASC_ISSUER_ID; do
+            if [ -z "${!name:-}" ]; then
+              echo "::error title=Missing App Store Connect secret::$name is required for BeMore Mac TestFlight upload."
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            exit 65
+          fi
+
+      - name: Write App Store Connect API key
+        run: |
+          umask 077
+          if printf '%s' "$ASC_API_KEY" | grep -q 'BEGIN PRIVATE KEY'; then
+            printf '%s' "$ASC_API_KEY" > "$RUNNER_TEMP/AuthKey.p8"
+          else
+            printf '%s' "$ASC_API_KEY" | base64 --decode > "$RUNNER_TEMP/AuthKey.p8"
+          fi
+
+      - name: Generate Xcode project
+        run: |
+          test -f project.yml
+          xcodegen generate
+          test -d BeMoreMac.xcodeproj
+          test -f exportOptions-upload.plist
+
+      - name: Verify macOS bundle contract
+        run: |
+          python3 - <<'PY2'
+          import pathlib
+          import re
+          import sys
+
+          project = pathlib.Path('project.yml').read_text()
+          expected_bundle = 'com.prismtek.bemore.mac'
+          expected_team = 'DY9FHPRZA9'
+          bundle = re.search(r'PRODUCT_BUNDLE_IDENTIFIER:\s*([^\n]+)', project)
+          team = re.search(r'DEVELOPMENT_TEAM:\s*([^\n]+)', project)
+          if not bundle or bundle.group(1).strip() != expected_bundle:
+              print(f"Bundle identifier drifted; expected {expected_bundle}", file=sys.stderr)
+              sys.exit(1)
+          if not team or team.group(1).strip() != expected_team:
+              print(f"Team identifier drifted; expected {expected_team}", file=sys.stderr)
+              sys.exit(1)
+          print(f"macOS bundle verified: {expected_bundle} / {expected_team}")
+          PY2
+
+      - name: Archive BeMore Mac
+        run: |
+          xcodebuild -project BeMoreMac.xcodeproj \
+            -scheme BeMoreMac \
+            -configuration Release \
+            -destination 'generic/platform=macOS' \
+            -archivePath "$RUNNER_TEMP/BeMoreMac.xcarchive" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$RUNNER_TEMP/AuthKey.p8" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+            CODE_SIGN_STYLE=Automatic \
+            DEVELOPMENT_TEAM="$MAC_TEAM_ID" \
+            clean archive
+
+      - name: Export and upload to TestFlight
+        run: |
+          plutil -p exportOptions-upload.plist
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/BeMoreMac.xcarchive" \
+            -exportPath "$RUNNER_TEMP/BeMoreMac-export" \
+            -exportOptionsPlist exportOptions-upload.plist \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$RUNNER_TEMP/AuthKey.p8" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID"
+
+      - name: Publish TestFlight summary
+        if: success()
+        run: |
+          ARCHIVE_PLIST="$RUNNER_TEMP/BeMoreMac.xcarchive/Products/Applications/BeMore.app/Contents/Info.plist"
+          VERSION=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$ARCHIVE_PLIST")
+          BUILD=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$ARCHIVE_PLIST")
+          {
+            echo '## BeMore Mac TestFlight upload'
+            echo ''
+            echo "- Bundle identifier: $MAC_BUNDLE_ID"
+            echo "- Team: $MAC_TEAM_ID"
+            echo "- Archived version: $VERSION ($BUILD)"
+            echo '- Upload step: xcodebuild -exportArchive completed successfully'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload distribution logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bemore-mac-xcdistributionlogs
+          path: ${{ runner.temp }}/**/BeMoreMac_*.xcdistributionlogs
+          if-no-files-found: ignore
+
+      - name: Clean App Store Connect key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/AuthKey.p8"

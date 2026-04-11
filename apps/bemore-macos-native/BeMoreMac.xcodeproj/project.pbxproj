@@ -1,0 +1,323 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3BCC7DB0FBD59522DC27C389 /* BeMoreMacState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E9B173DCC4E49977FC192F1 /* BeMoreMacState.swift */; };
+		49147D791CABD9C93807D3DE /* BuddyAsciiView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7DB9D87584433635666BF9 /* BuddyAsciiView.swift */; };
+		7673756EB2DD431028497E3F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7817EDCD4ADCA4E036076B11 /* Assets.xcassets */; };
+		AD5242F37C242040A23EDD75 /* BeMoreMacApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3031CF89092AC4F322CF16CB /* BeMoreMacApp.swift */; };
+		E6F396BF443DABEE767FAEB6 /* BeMoreMacRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDBEBFFFFB051E96491ECED /* BeMoreMacRootView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		3031CF89092AC4F322CF16CB /* BeMoreMacApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeMoreMacApp.swift; sourceTree = "<group>"; };
+		4CDBEBFFFFB051E96491ECED /* BeMoreMacRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeMoreMacRootView.swift; sourceTree = "<group>"; };
+		4D7DB9D87584433635666BF9 /* BuddyAsciiView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyAsciiView.swift; sourceTree = "<group>"; };
+		7817EDCD4ADCA4E036076B11 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		7E9B173DCC4E49977FC192F1 /* BeMoreMacState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeMoreMacState.swift; sourceTree = "<group>"; };
+		8593E15E3EA21CF25709590A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		B4058246DDBE9C34C2337424 /* BeMoreMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BeMoreMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		C0C21F955AE946E3A4EDD3F8 /* BeMoreMac */ = {
+			isa = PBXGroup;
+			children = (
+				7817EDCD4ADCA4E036076B11 /* Assets.xcassets */,
+				3031CF89092AC4F322CF16CB /* BeMoreMacApp.swift */,
+				4CDBEBFFFFB051E96491ECED /* BeMoreMacRootView.swift */,
+				7E9B173DCC4E49977FC192F1 /* BeMoreMacState.swift */,
+				4D7DB9D87584433635666BF9 /* BuddyAsciiView.swift */,
+				8593E15E3EA21CF25709590A /* Info.plist */,
+			);
+			path = BeMoreMac;
+			sourceTree = "<group>";
+		};
+		E8C29D5039BF2CEE5C9D7967 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B4058246DDBE9C34C2337424 /* BeMoreMac.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FEE8E71A5BA90F70A35EEDF6 = {
+			isa = PBXGroup;
+			children = (
+				C0C21F955AE946E3A4EDD3F8 /* BeMoreMac */,
+				E8C29D5039BF2CEE5C9D7967 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		894B9710B3E42D1763C18F82 /* BeMoreMac */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2F5571AA14869FA1497BABF2 /* Build configuration list for PBXNativeTarget "BeMoreMac" */;
+			buildPhases = (
+				140D3CFDE5BC4C08F6D7A207 /* Sources */,
+				0D8ABB3187BEF14191394AD1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BeMoreMac;
+			packageProductDependencies = (
+			);
+			productName = BeMoreMac;
+			productReference = B4058246DDBE9C34C2337424 /* BeMoreMac.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		1EBF041E7E3AFCC9E50D3FD3 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					894B9710B3E42D1763C18F82 = {
+						DevelopmentTeam = DY9FHPRZA9;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = A74D937EE4A52DE7EAB1F78F /* Build configuration list for PBXProject "BeMoreMac" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = FEE8E71A5BA90F70A35EEDF6;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = E8C29D5039BF2CEE5C9D7967 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				894B9710B3E42D1763C18F82 /* BeMoreMac */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		0D8ABB3187BEF14191394AD1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7673756EB2DD431028497E3F /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		140D3CFDE5BC4C08F6D7A207 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AD5242F37C242040A23EDD75 /* BeMoreMacApp.swift in Sources */,
+				E6F396BF443DABEE767FAEB6 /* BeMoreMacRootView.swift in Sources */,
+				3BCC7DB0FBD59522DC27C389 /* BeMoreMacState.swift in Sources */,
+				49147D791CABD9C93807D3DE /* BuddyAsciiView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		3D7445B2C073D7F6FA1E2683 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = DY9FHPRZA9;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = BeMoreMac/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.prismtek.bemore.mac;
+				PRODUCT_NAME = BeMore;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		5F3F7E5A69EECE41C4E42687 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		9CD95A89BD0DB5F4DF8098F7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+		E45DAE9C3AE01CF90544D005 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = DY9FHPRZA9;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = BeMoreMac/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.prismtek.bemore.mac;
+				PRODUCT_NAME = BeMore;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2F5571AA14869FA1497BABF2 /* Build configuration list for PBXNativeTarget "BeMoreMac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3D7445B2C073D7F6FA1E2683 /* Debug */,
+				E45DAE9C3AE01CF90544D005 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		A74D937EE4A52DE7EAB1F78F /* Build configuration list for PBXProject "BeMoreMac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5F3F7E5A69EECE41C4E42687 /* Debug */,
+				9CD95A89BD0DB5F4DF8098F7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 1EBF041E7E3AFCC9E50D3FD3 /* Project object */;
+}
