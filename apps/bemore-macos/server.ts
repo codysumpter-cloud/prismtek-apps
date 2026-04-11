@@ -335,7 +335,7 @@ app.post('/api/workspace/select', async (req, res, next) => {
 app.get('/api/workspace/file', async (req, res, next) => {
   try {
     const relativePath = String(req.query.path ?? '');
-    if (!isTextEditablePath(relativePath)) throw new Error('This Build 1 editor only opens text files.');
+    if (!isTextEditablePath(relativePath)) throw new Error('This editor only opens text files.');
     res.json({relativePath, content: await readFile(safePath(relativePath), 'utf8'), encoding: 'utf8'});
   } catch (error) {
     next(error);
