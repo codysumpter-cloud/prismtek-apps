@@ -7,9 +7,11 @@ enum BuddyMood {
     case working
     case sleepy
     case levelUp
+    case needsAttention
 }
 
 struct BuddyAsciiView: View {
+    let buddyName: String
     let mood: BuddyMood
     @State private var tick = 0
 
@@ -29,7 +31,7 @@ struct BuddyAsciiView: View {
                     tick += 1
                 }
             }
-            .accessibilityLabel("Buddy \(label)")
+            .accessibilityLabel("\(buddyName) \(label)")
     }
 
     private var label: String {
@@ -40,6 +42,7 @@ struct BuddyAsciiView: View {
         case .working: return "working"
         case .sleepy: return "sleepy"
         case .levelUp: return "level up"
+        case .needsAttention: return "needs attention"
         }
     }
 
@@ -52,33 +55,38 @@ struct BuddyAsciiView: View {
         switch mood {
         case .idle:
             return [
-                Self.make(["   /\\_/\\", "  ( o.o )", "  /| _ |\\", "   /   \\", "  _|   |_"]),
-                Self.make(["   /\\_/\\", "  ( o.o )", "  /| _ |\\", "   /   \\", "   |___|"])
+                Self.make(["    /\\", "  < o  o >", "  /|  v |\\", " /_|____|_\\", "   /_  _\\"]),
+                Self.make(["    /\\", "  < o  o >", "  /|  v |\\", " /_|____|_\\", "   \\_  _/"])
             ]
         case .happy:
             return [
-                Self.make(["   /\\_/\\", "  ( ^.^ )", "  /| * |\\", "   / \\ \\", "  _| |_|"]),
-                Self.make(["  \\/\\_/\\/", "  ( ^o^ )", "  /| * |\\", "   / \\ \\", "  _| |_|"])
+                Self.make(["  \\ /\\ /", "  < ^  ^ >", "  /|  * |\\", " /_|____|_\\", "    /  \\"]),
+                Self.make([" *  /\\  *", "  < ^  o >", "  /|  * |\\", " /_|____|_\\", "    \\  /"])
             ]
         case .thinking:
             return [
-                Self.make(["   /\\_/\\", "  ( o.o )  ?", "  /| _ |\\", "   /   \\", "   |___|"]),
-                Self.make(["   /\\_/\\", "  ( o_o )  ..", "  /| _ |\\", "   /   \\", "   |___|"])
+                Self.make(["    /\\   ?", "  < o  o >", "  /|  ? |\\", " /_|____|_\\", "    /  \\"]),
+                Self.make(["    /\\  ..", "  < o  O >", "  /|  ? |\\", " /_|____|_\\", "    \\  /"])
             ]
         case .working:
             return [
-                Self.make(["    .-.", "  <(o o)> *", "   /| # |\\", "  /_|___|_\\", "    \\ /"]),
-                Self.make(["    .-.", "  <(o o)> **", "   /| # |\\", "  /_|___|_\\", "    / \\"])
+                Self.make(["    /\\  #", "  < >  < >", "  /| [ ]|\\", " /_|____|_\\", "   /_  _\\"]),
+                Self.make(["    /\\  ##", "  < >  < >", "  /| [*]|\\", " /_|____|_\\", "   \\_  _/"])
             ]
         case .sleepy:
             return [
-                Self.make(["   /\\_/\\", "  ( -.- ) z", "  /| _ |\\", "   /   \\", "   |___|"]),
-                Self.make(["   /\\_/\\", "  ( -.- ) zz", "  /| _ |\\", "   /   \\", "  _|___|_"])
+                Self.make(["    /\\   z", "  < -  - >", "  /|  . |\\", " /_|____|_\\", "    /__\\"]),
+                Self.make(["    /\\  zz", "  < -  - >", "  /|  . |\\", " /_|____|_\\", "   _/  \\_"])
             ]
         case .levelUp:
             return [
-                Self.make(["  * /\\_/\\ *", "   ( ^.^ )", "  /|[*]|\\", "   / \\ \\", "  _| |_|"]),
-                Self.make([" **/\\_/\\**", "   ( ^o^ )", "  /|[*]|\\", "   / \\ \\", "  _| |_|"])
+                Self.make([" ** /\\ **", "  < ^  ^ >", "  /|{*}|\\", " /_|____|_\\", "    /  \\"]),
+                Self.make(["*** /\\ ***", "  < ^  o >", "  /|{*}|\\", " /_|____|_\\", "    \\  /"])
+            ]
+        case .needsAttention:
+            return [
+                Self.make([" !  /\\  !", "  < o  o >", "  /|  ! |\\", " /_|____|_\\", "    /  \\"]),
+                Self.make([" !! /\\ !!", "  < O  o >", "  /|  ! |\\", " /_|____|_\\", "    \\  /"])
             ]
         }
     }
