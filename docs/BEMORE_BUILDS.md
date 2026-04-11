@@ -5,7 +5,7 @@
 BeMore Mac has two product-owned pieces:
 
 - `apps/bemore-macos` is the local workspace/runtime server used by Mac and paired iPhone flows.
-- `apps/bemore-macos-native` is the native macOS TestFlight shell. Its XcodeGen project target is `BeMoreMac`, the generated project is `BeMoreMac.xcodeproj`, and the App Store bundle identifier is `com.prismtek.bemore.mac`.
+- `apps/bemore-macos-native` is the native macOS TestFlight shell. Its XcodeGen project target is `BeMoreMac`, the generated project is `BeMoreMac.xcodeproj`, and the App Store bundle identifier is `BeMoreAgent`, sharing the existing BeMore App Store Connect record so the macOS TestFlight build lands under the same product family.
 
 The local runtime slice provides:
 - workspace selection and file tree browsing
