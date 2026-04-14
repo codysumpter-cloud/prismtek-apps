@@ -107,7 +107,7 @@ export class iBuddyClient {
   async retryTask(id: string): Promise<{id: string, title: string}> {
     return { id: 'task-789', title: 'Retry Task' };
   }
-  async previewPatch(title: string, taskId?: string, ops: any[]): Promise<{id: string, title: string}> {
+  async previewPatch(title: string, taskId?: string, ops?: any[]): Promise<{id: string, title: string}> {
     return { id: 'patch-123', title };
   }
   async applyPatch(id: string): Promise<{status: string, title: string}> {
