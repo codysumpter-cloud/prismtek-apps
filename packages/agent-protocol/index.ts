@@ -247,4 +247,5 @@ export interface RuntimeSnapshot {
   diff: RuntimeDiff;
   buddy: RuntimeBuddyState;
   sandbox: RuntimeSandboxSession;
+  pairing: PairingState;
 }
