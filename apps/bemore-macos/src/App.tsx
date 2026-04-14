@@ -17,9 +17,9 @@ import {
   Square,
   Terminal,
 } from 'lucide-react';
-import type {RuntimeFileNode, RuntimePatch, RuntimePatchOperation, RuntimeProcess, RuntimeReceipt, RuntimeTask} from '@prismtek/agent-protocol';
+import type {RuntimeFileNode, RuntimePatch, RuntimePatchOperation, RuntimeProcess, RuntimeReceipt, RuntimeTask, RuntimeSnapshot} from '@prismtek/agent-protocol';
 import {getBuddyFrame, getBuddyLabel, type BuddyAnimationState, type BuddyArchetype} from './buddyAscii';
-import {runtimeClient, type RuntimeSnapshot} from './runtimeClient';
+import {runtimeClient} from './runtimeClient';
 import {SupervisionView} from './SupervisionView';
 
 type Section = 'Home' | 'Chat' | 'Missions' | 'Workspace' | 'Results' | 'Settings' | 'Supervision';
@@ -86,8 +86,8 @@ function useBuddyFrame(snapshot: RuntimeSnapshot | null, status: string, active:
   }, []);
 
   const receipt = newestReceipt(snapshot);
-  const hasRunningWork = Boolean(snapshot?.processes.some((process) => process.status === 'running') || snapshot?.tasks.some((task) => task.status === 'running'));
-  const hasFailure = Boolean(receipt?.status === 'failed' || receipt?.status === 'blocked' || snapshot?.tasks.some((task) => task.status === 'failed'));
+  const hasRunningWork = Boolean(snapshot?.processes.some((process: RuntimeProcess) => process.status === 'running') || snapshot?.tasks.some((task: RuntimeTask) => task.status === 'running'));
+  const hasFailure = Boolean(receipt?.status === 'failed' || receipt?.status === 'blocked' || snapshot?.tasks.some((task: RuntimeTask) => task.status === 'failed'));
   const idleWorkspace = !snapshot?.workspaceRoot;
   const recentPatch = receipt?.action === 'applyPatch' && receipt.status === 'completed';
   const state: BuddyAnimationState = hasRunningWork
@@ -153,8 +153,8 @@ function BuddyStage({
   onRunStatus: () => void;
   onCareAction: (action: BuddyCareAction) => void;
 }) {
-  const activeTasks = snapshot?.tasks.filter((task) => task.status === 'running').length ?? 0;
-  const completedReceipts = snapshot?.receipts.filter((receipt) => receipt.status === 'completed').length ?? 0;
+  const activeTasks = snapshot?.tasks.filter((task: RuntimeTask) => task.status === 'running').length ?? 0;
+  const completedReceipts = snapshot?.receipts.filter((receipt: RuntimeReceipt) => receipt.status === 'completed').length ?? 0;
   const workspaceName = snapshot?.workspaceRoot?.split('/').filter(Boolean).at(-1) ?? 'No workspace';
 
   return (
@@ -263,7 +263,7 @@ function ReceiptList({receipts}: {receipts: RuntimeReceipt[]}) {
   }
   return (
     <div className="stack compact">
-      {receipts.slice(0, 8).map((receipt) => (
+      {receipts.slice(0, 8).map((receipt: RuntimeReceipt) => (
         <article key={receipt.id} className="receipt-row">
           <span className={`dot ${receipt.status}`} />
           <div>
@@ -318,12 +318,7 @@ export default function App() {
   const [patchAfter, setPatchAfter] = useState('');
   const [patchTaskId, setPatchTaskId] = useState('');
   const [status, setStatus] = useState('Buddy is ready.');
-  const [buddyVitals, setBuddyVitals] = useState<BuddyVitals>({
-    energy: 72,
-    bond: 61,
-    focus: 68,
-    care: 58,
-  });
+  const [buddyVitals, setBuddyVitals] = useState<BuddyVitals>({\n    energy: 72,\n    bond: 61,\n    focus: 68,\n    care: 58,\n    attention: 60,\n  });
 
   const files = useMemo(() => flattenFiles(snapshot?.files ?? []).filter((file) => file.kind === 'file'), [snapshot]);
   const failedTasks = snapshot?.tasks.filter((task) => task.status === 'failed') ?? [];
@@ -514,7 +509,7 @@ export default function App() {
             <section className="grid three">
               <article className="panel">
                 <h2>{activeBuddy.name}'s Queue</h2>
-                {recentTasks.length ? recentTasks.map((task) => <p key={task.id}>{task.status}: {task.title}</p>) : <p className="quiet">Start a Buddy task to build the queue.</p>}
+                {recentTasks.length ? recentTasks.map((task: RuntimeTask) => <p key={task.id}>{task.status}: {task.title}</p>) : <p className=\"quiet\">Start a Buddy task to build the queue.</p>}
               </article>
               <article className="panel">
                 <h2>Receipts</h2>
@@ -522,7 +517,7 @@ export default function App() {
               </article>
               <article className="panel">
                 <h2>Needs Attention</h2>
-                {failedTasks.length ? failedTasks.map((task) => <p key={task.id}>{task.title}: {task.failureReason}</p>) : <p className="quiet">No blocked tasks in this session.</p>}
+                {failedTasks.length ? failedTasks.map((task: RuntimeTask) => <p key={task.id}>{task.title}: {task.failureReason}</p>) : <p className="quiet">No blocked tasks in this session.</p>}
               </article>
             </section>
           </section>
@@ -609,7 +604,7 @@ export default function App() {
               </div>
             </div>
             <div className="stack">
-              {(snapshot?.tasks ?? []).length ? (snapshot?.tasks ?? []).map((task) => <TaskRow key={task.id} task={task} onRun={runTask} onDelegate={delegateTask} onRetry={retryTask} />) : <p className="quiet">Buddy has no missions yet. Create one from Home this panel.</p>}
+              {(snapshot?.tasks ?? []).length ? (snapshot?.tasks ?? []).map((task: RuntimeTask) => <TaskRow key={task.id} task={task} onRun={runTask} onDelegate={delegateTask} onRetry={retryTask} />) : <p className="quiet">Buddy has no missions yet. Create one from Home this panel.</p>}
             </div>
           </section>
         ) : null}
@@ -625,7 +620,7 @@ export default function App() {
                 </button>
               </div>
               <div className="stack compact">
-                {(snapshot?.processes ?? []).map((process) => <ProcessCard key={process.id} process={process} onStop={stopProcess} />)}
+                {(snapshot?.processes ?? []).map((process: RuntimeProcess) => <ProcessCard key={process.id} process={process} onStop={stopProcess} />)}
                 {!snapshot?.processes.length ? <p className="quiet">Command output will appear here with receipts.</p> : null}
               </div>
             </div>

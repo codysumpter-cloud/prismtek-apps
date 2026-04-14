@@ -1,3 +1,5 @@
+import type { RuntimeSnapshot } from '@prismtek/agent-protocol';
+
 export interface BuddyEvent {
   event_id: string;
   session_id: string;
@@ -19,6 +21,12 @@ export interface SessionState {
 
 export class iBuddyClient {
   private baseUrl: string = 'http://localhost:8000';
+
+  async snapshot(): Promise<RuntimeSnapshot> {
+    const response = await fetch(`${this.baseUrl}/snapshot`);
+    if (!response.ok) throw new Error('Failed to fetch snapshot');
+    return await response.json();
+  }
 
   async launchTask(goal: string, context?: string, constraints?: any): Promise<string> {
     const response = await fetch(`${this.baseUrl}/sessions`, {
@@ -75,4 +83,42 @@ export class iBuddyClient {
   closeStream(sessionId: string) {
     // In a real app, we'd track the EventSource instances
   }
+
+  // Mock methods to satisfy App.tsx
+  async selectWorkspace(path: string): Promise<RuntimeSnapshot> {
+    return this.snapshot();
+  }
+  async readFile(path: string): Promise<{relativePath: string, content: string}> {
+    return { relativePath: path, content: 'File content placeholder' };
+  }
+  async writeFile(path: string, content: string): Promise<{receipt: {summary: string}}> {
+    return { receipt: { summary: 'File written successfully' } };
+  }
+  async runCommand(cmd: string): Promise<{command: string, status: string, cwd: string}> {
+    return { command: cmd, status: 'running', cwd: '/tmp' };
+  }
+  async createTask(title: string, detail: string, cmd: string): Promise<{id: string, title: string}> {
+    return { id: 'task-123', title };
+  }
+  async runTask(id: string): Promise<void> {}
+  async delegateTask(id: string, title: string, detail: string, cmd: string): Promise<{id: string, title: string}> {
+    return { id: 'task-456', title };
+  }
+  async retryTask(id: string): Promise<{id: string, title: string}> {
+    return { id: 'task-789', title: 'Retry Task' };
+  }
+  async previewPatch(title: string, taskId?: string, ops: any[]): Promise<{id: string, title: string}> {
+    return { id: 'patch-123', title };
+  }
+  async applyPatch(id: string): Promise<{status: string, title: string}> {
+    return { status: 'completed', title: 'Patch Applied' };
+  }
+  async rejectPatch(id: string): Promise<{status: string, title: string}> {
+    return { status: 'rejected', title: 'Patch Rejected' };
+  }
+  async stopProcess(id: string): Promise<{receipt: {summary: string}}> {
+    return { receipt: { summary: 'Process stopped' } };
+  }
 }
+
+export const runtimeClient = new iBuddyClient();
