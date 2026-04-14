@@ -318,7 +318,13 @@ export default function App() {
   const [patchAfter, setPatchAfter] = useState('');
   const [patchTaskId, setPatchTaskId] = useState('');
   const [status, setStatus] = useState('Buddy is ready.');
-  const [buddyVitals, setBuddyVitals] = useState<BuddyVitals>({\n    energy: 72,\n    bond: 61,\n    focus: 68,\n    care: 58,\n    attention: 60,\n  });
+  const [buddyVitals, setBuddyVitals] = useState<BuddyVitals>({
+    energy: 72,
+    bond: 61,
+    focus: 68,
+    care: 58,
+    attention: 60,
+  });
 
   const files = useMemo(() => flattenFiles(snapshot?.files ?? []).filter((file) => file.kind === 'file'), [snapshot]);
   const failedTasks = snapshot?.tasks.filter((task) => task.status === 'failed') ?? [];
@@ -509,7 +515,7 @@ export default function App() {
             <section className="grid three">
               <article className="panel">
                 <h2>{activeBuddy.name}'s Queue</h2>
-                {recentTasks.length ? recentTasks.map((task: RuntimeTask) => <p key={task.id}>{task.status}: {task.title}</p>) : <p className=\"quiet\">Start a Buddy task to build the queue.</p>}
+                {recentTasks.length ? recentTasks.map((task: RuntimeTask) => <p key={task.id}>{task.status}: {task.title}</p>) : <p className="quiet">Start a Buddy task to build the queue.</p>}
               </article>
               <article className="panel">
                 <h2>Receipts</h2>
