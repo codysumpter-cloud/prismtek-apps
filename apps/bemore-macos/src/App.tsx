@@ -20,8 +20,9 @@ import {
 import type {RuntimeFileNode, RuntimePatch, RuntimePatchOperation, RuntimeProcess, RuntimeReceipt, RuntimeTask} from '@prismtek/agent-protocol';
 import {getBuddyFrame, getBuddyLabel, type BuddyAnimationState, type BuddyArchetype} from './buddyAscii';
 import {runtimeClient, type RuntimeSnapshot} from './runtimeClient';
+import {SupervisionView} from './SupervisionView';
 
-type Section = 'Home' | 'Chat' | 'Missions' | 'Workspace' | 'Results' | 'Settings';
+type Section = 'Home' | 'Chat' | 'Missions' | 'Workspace' | 'Results' | 'Settings' | 'Supervision';
 
 type BuddyVitals = {
   energy: number;
@@ -47,6 +48,7 @@ const sections: Array<{id: Section; icon: ComponentType<{size?: number}>}> = [
   {id: 'Workspace', icon: FolderTree},
   {id: 'Results', icon: Boxes},
   {id: 'Settings', icon: Settings},
+  {id: 'Supervision', icon: Sparkles},
 ];
 
 const skillCards = [
@@ -128,7 +130,6 @@ function FileTree({nodes, onOpen}: {nodes: RuntimeFileNode[]; onOpen: (node: Run
           ) : null}
         </div>
       ))}
-    </div>
   );
 }
 
@@ -194,7 +195,6 @@ function BuddyStage({
           <span><strong>{completedReceipts}</strong> receipts</span>
         </div>
       </div>
-    </section>
   );
 }
 
@@ -206,7 +206,6 @@ function BuddyRail({frame, label, state, vitals, snapshot}: {frame: string; labe
       <strong>{label}</strong>
       <span>{state} · energy {vitals.energy}</span>
       <p>{latest ? latest.summary : 'Ready for the first receipt.'}</p>
-    </aside>
   );
 }
 
@@ -228,7 +227,6 @@ function ProcessCard({process, onStop}: {process: RuntimeProcess; onStop: (id: s
       </div>
       <pre className="terminal-output">{process.stdout || process.stderr || 'Waiting for output.'}</pre>
       {process.stderr ? <pre className="terminal-error">{process.stderr}</pre> : null}
-    </article>
   );
 }
 
@@ -251,7 +249,6 @@ function TaskRow({task, onRun, onDelegate, onRetry}: {task: RuntimeTask; onRun: 
         </div>
       </div>
       <span className="pill">{task.status}</span>
-    </article>
   );
 }
 
@@ -270,7 +267,6 @@ function ReceiptList({receipts}: {receipts: RuntimeReceipt[]}) {
           </div>
         </article>
       ))}
-    </div>
   );
 }
 
@@ -296,7 +292,6 @@ function PatchList({patches, onApply, onReject}: {patches: RuntimePatch[]; onApp
           </div>
         </article>
       ))}
-    </div>
   );
 }
 
@@ -321,8 +316,7 @@ export default function App() {
     bond: 61,
     focus: 68,
     care: 58,
-    attention: 12,
-  });
+  );
 
   const files = useMemo(() => flattenFiles(snapshot?.files ?? []).filter((file) => file.kind === 'file'), [snapshot]);
   const failedTasks = snapshot?.tasks.filter((task) => task.status === 'failed') ?? [];
@@ -467,8 +461,7 @@ export default function App() {
         focus: Math.max(0, Math.min(100, current.focus + (delta.focus ?? 0))),
         care: Math.max(0, Math.min(100, current.care + (delta.care ?? 0))),
         attention: Math.max(0, Math.min(100, current.attention + (delta.attention ?? 0))),
-      };
-    });
+  );
     setStatus(`You ${label[action]} ${activeBuddy.name}.`);
   };
 
@@ -667,7 +660,10 @@ export default function App() {
             </div>
           </section>
         ) : null}
+
+        {active === 'Supervision' ? (
+          <SupervisionView />
+        ) : null}
       </section>
-    </main>
   );
 }
