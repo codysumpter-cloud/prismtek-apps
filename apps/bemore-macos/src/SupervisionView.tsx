@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { iBuddyClient } from './runtimeClient';
+import {runtimeClient} from './runtimeClient';
 
-const client = new iBuddyClient();
+const client = runtimeClient;
 
 export const SupervisionView: React.FC = () => {
   const [goal, setGoal] = useState('');

@@ -31,7 +31,7 @@ Owns:
 - product APIs
 - app build and release logic over time
 
-### `bmo-stack`
+### `BeMore-stack`
 Owns:
 - Buddy and council policy
 - agent operating rules
@@ -76,4 +76,4 @@ Do not move everything at once.
 
 ## Canonical repo map
 
-Use `docs/REPO_OWNERSHIP_MAP.md` as the ecosystem-level ownership map when deciding whether work belongs in the runtime substrate, `bmo-stack`, `prismtek-site`, or `prismtek-apps`.
+Use `docs/REPO_OWNERSHIP_MAP.md` as the ecosystem-level ownership map when deciding whether work belongs in the runtime substrate, `BeMore-stack`, `prismtek-site`, or `prismtek-apps`.

@@ -55,7 +55,7 @@ The repo just went through a major identity cleanup. The next move should be **c
 Because the repo still needs a lot of product decisions:
 - how central app-factory really is
 - how BeMore web and iOS divide responsibilities
-- what product-owned automation will move here from `bmo-stack`
+- what product-owned automation will move here from `BeMore-stack`
 
 Renaming too early creates work without creating clarity.
 

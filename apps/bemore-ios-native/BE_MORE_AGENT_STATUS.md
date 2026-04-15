@@ -70,7 +70,7 @@ xcodebuild -project BeMoreAgent.xcodeproj \
   provides a receipt-backed controlled sandbox surface and leaves real hardened process execution for
   a future platform/runtime integration.
 - Buddy Workshop authoring, external package publishing, and marketplace flows are not shipped in
-  this wedge; the source of truth is the bundled canonical starter pack inside `bmo-stack`.
+  this wedge; the source of truth is the bundled canonical starter pack inside `BeMore-stack`.
 
 ## Next native work
 

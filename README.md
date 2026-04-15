@@ -29,7 +29,7 @@ If the work is really runtime substrate, policy/identity, or public-site ownersh
 Use this mental model:
 
 - **BeMore runtime substrate** = execution engine and inherited runtime primitives
-- **`bmo-stack`** = brain / policy / council / identity
+- **`BeMore-stack`** = brain / policy / council / identity
 - **`prismtek-site`** = public web world
 - **`prismtek-apps`** = shipped app family
 
@@ -51,7 +51,7 @@ This repo owns:
 
 This repo does **not** own:
 - deep runtime substrate, tools, sessions, nodes, channels, and execution primitives outside the BeMore product adapter
-- **`bmo-stack`** council policy, Buddy identity rules, memory philosophy, agent operating behavior, and cross-repo governance
+- **`BeMore-stack`** council policy, Buddy identity rules, memory philosophy, agent operating behavior, and cross-repo governance
 - **`prismtek-site`** public website ownership for `prismtek.dev`, site-backed public experiences, and site-specific APIs
 
 ## Product naming layers
@@ -104,7 +104,7 @@ That future structure is directional, not a promise that everything moves at onc
 ## Working rules
 
 1. Do not duplicate runtime substrate ownership in product packages.
-2. Do not duplicate policy and identity ownership already held by `bmo-stack`.
+2. Do not duplicate policy and identity ownership already held by `BeMore-stack`.
 3. Do not treat this repo as the owner of the public marketing and site layer unless that ownership is explicitly moved here.
 4. Prefer clear product boundaries over "just put it here for now."
 5. If a feature is experimental and not product-canonical, label it clearly.

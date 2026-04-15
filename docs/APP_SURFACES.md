@@ -45,7 +45,7 @@ Direction:
 Possible future rename or replacement for `apps/web` once the BeMore identity and app structure are mature enough to justify it.
 
 ### `apps/bemore-ios`
-Future home for app-owned iOS project structure, bridge docs, or release automation ownership. The working Build 18 app and TestFlight path still live in `bmo-stack` until re-homing is proven.
+Future home for app-owned iOS project structure, bridge docs, or release automation ownership. The working Build 18 app and TestFlight path still live in `BeMore-stack` until re-homing is proven.
 
 ### `apps/arcade`
 Only if an arcade surface truly belongs in the shared product family here rather than staying web-owned elsewhere.

@@ -362,14 +362,14 @@ export default function App() {
 
   const saveFile = async () => {
     if (!selectedPath) return;
-    const result = await runtimeClient.writeFile(selectedPath, editorValue);
+    const result = await runtimeClient.writeFile({ relativePath: selectedPath, content: editorValue, encoding: 'utf8' });
     await refresh();
     setBuddyVitals((current) => ({...current, focus: Math.min(100, current.focus + 3), attention: Math.max(0, current.attention - 8)}));
-    setStatus(result.receipt.summary);
+    setStatus(result.summary);
   };
 
   const runCommand = async (nextCommand = command) => {
-    const process = await runtimeClient.runCommand(nextCommand);
+    const process = await runtimeClient.runCommand({ command: nextCommand });
     await refresh();
     setBuddyVitals((current) => ({...current, energy: Math.max(0, current.energy - 6), focus: Math.min(100, current.focus + 2)}));
     setActive('Results');
@@ -377,7 +377,7 @@ export default function App() {
   };
 
   const createTask = async (title = taskTitle, detail = taskDetail, nextCommand = taskCommand) => {
-    const task = await runtimeClient.createTask(title, detail, nextCommand);
+    const task = await runtimeClient.createTask({ title, detail, command: nextCommand });
     await refresh();
     setBuddyVitals((current) => ({...current, attention: Math.max(0, current.attention - 6), bond: Math.min(100, current.bond + 2)}));
     setActive('Missions');
@@ -413,7 +413,7 @@ export default function App() {
 
   const previewPatch = async () => {
     const operation: RuntimePatchOperation = {path: patchPath, kind: patchBefore ? 'replace' : 'write', before: patchBefore || undefined, after: patchAfter};
-    const patch = await runtimeClient.previewPatch(patchTitle, patchTaskId || undefined, [operation]);
+    const patch = await runtimeClient.previewPatch({ title: patchTitle, taskId: patchTaskId || undefined, operations: [operation] });
     await refresh();
     setBuddyVitals((current) => ({...current, focus: Math.min(100, current.focus + 4), care: Math.min(100, current.care + 1)}));
     setActive('Results');
@@ -437,7 +437,7 @@ export default function App() {
     const result = await runtimeClient.stopProcess(id);
     await refresh();
     setBuddyVitals((current) => ({...current, energy: Math.min(100, current.energy + 3), attention: Math.max(0, current.attention - 4)}));
-    setStatus(result.receipt.summary);
+    setStatus(result.summary);
   };
 
   const careForBuddy = (action: BuddyCareAction) => {

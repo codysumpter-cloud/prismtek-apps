@@ -82,7 +82,7 @@ Workspace sync is still a self-hosted runtime concern and should remain outside 
 
 ### BeMore iOS release automation
 
-The working iOS validate/TestFlight path is still owned by `bmo-stack` until the actual iOS project is re-homed into this repo and proven here.
+The working iOS validate/TestFlight path is still owned by `BeMore-stack` until the actual iOS project is re-homed into this repo and proven here.
 
 ## Recommended repository settings
 

@@ -27,7 +27,7 @@ Does not own:
 - Buddy/council policy and identity rules
 - public Prismtek website ownership
 
-### `bmo-stack`
+### `BeMore-stack`
 Role:
 - brain / policy / council / identity layer
 - operator and orchestration repo for BMO behavior
@@ -102,7 +102,7 @@ Recommendation:
 - treat as **satellite** or **archive candidate** unless it still owns a distinct technical layer
 
 Likely destination:
-- behavior/orchestration concepts → `bmo-stack`
+- behavior/orchestration concepts → `BeMore-stack`
 - product-facing features → `prismtek-apps`
 
 ### `PrismBot` and PrismBot variants
@@ -110,7 +110,7 @@ Recommendation:
 - treat as **historical reference + migration input**, not as parallel product homes
 
 Likely destination:
-- useful agent behavior, orchestration, and logic → `bmo-stack`
+- useful agent behavior, orchestration, and logic → `BeMore-stack`
 - useful user-facing product patterns → `prismtek-apps`
 - duplicate public-facing or half-canonical variants → archive with clear banners
 
@@ -119,7 +119,7 @@ Recommendation:
 - treat as **migration input**, probably not a long-term first-class repo
 
 Likely destination:
-- orchestration/operator patterns → `bmo-stack`
+- orchestration/operator patterns → `BeMore-stack`
 - product implementation worth keeping → `prismtek-apps`
 - runtime/tooling assumptions → legacy runtime substrate
 
@@ -145,7 +145,7 @@ Examples:
 
 ### Buddy, council, memory philosophy, and agent operating behavior
 Store in:
-- `bmo-stack`
+- `BeMore-stack`
 
 Examples:
 - behavior rules
@@ -181,7 +181,7 @@ Examples:
 2. Mine older repos for value, then fold or archive them.
 3. Move product implementation toward `prismtek-apps`.
 4. Keep runtime/platform concerns in the legacy runtime substrate until they are intentionally product-owned.
-5. Keep policy/behavior/orchestration in `bmo-stack`.
+5. Keep policy/behavior/orchestration in `BeMore-stack`.
 6. Keep public-site ownership in `prismtek-site`.
 7. Rename only when the ownership model is already clear.
 
@@ -191,13 +191,13 @@ Examples:
 2. add README banners to superseded repos
 3. create a migration inventory for Omni-BMO, PrismBot, and Automindlab-derived features
 4. decide which BeMore app repos should fold into `prismtek-apps` first
-5. keep one implementation roadmap in `prismtek-apps` and one policy/vision roadmap in `bmo-stack`
+5. keep one implementation roadmap in `prismtek-apps` and one policy/vision roadmap in `BeMore-stack`
 
 ## Rule of thumb
 
 If the question is “where does this ship to users?”, the answer is usually `prismtek-apps`.
 
-If the question is “how should the assistant behave?”, the answer is usually `bmo-stack`.
+If the question is “how should the assistant behave?”, the answer is usually `BeMore-stack`.
 
 If the question is “how does the runtime actually execute?”, the answer is usually the runtime substrate, not BeMore product UI.
 

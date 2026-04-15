@@ -21,7 +21,7 @@ The product ecosystem needs a single implementation home for:
 
 This decision does **not** move ownership of:
 - legacy runtime substrate ownership
-- council and Buddy policy in `bmo-stack`
+- council and Buddy policy in `BeMore-stack`
 - public website ownership in `prismtek-site`
 
 ## Consequences

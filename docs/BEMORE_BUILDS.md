@@ -38,6 +38,6 @@ TestFlight upload is owned by `.github/workflows/bemore-macos-testflight.yml` an
 
 ## iOS Build 18
 
-The working BeMoreAgent iOS Build 18 source and release validation path still live in `bmo-stack` under `apps/openclaw-shell-ios`.
+The working BeMoreAgent iOS Build 18 source and release validation path still live in `BeMore-stack` under `apps/openclaw-shell-ios`.
 
 Build 18 is kept there until the real native project is re-homed into `apps/bemore-ios` and a TestFlight upload is proven from this repo. The current product direction is still BeMore-first: the iOS app can run standalone, and the Build 18 pairing path can inspect BeMore Mac runtime state when the Mac endpoint is intentionally exposed.

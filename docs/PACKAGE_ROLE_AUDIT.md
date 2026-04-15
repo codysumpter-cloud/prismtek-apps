@@ -116,4 +116,4 @@ Move gradually toward a structure like:
 ## Rule of thumb
 
 If a package is product implementation, it belongs here.
-If it is policy, council, identity philosophy, or cross-repo operator logic, it belongs in `bmo-stack` instead.
+If it is policy, council, identity philosophy, or cross-repo operator logic, it belongs in `BeMore-stack` instead.

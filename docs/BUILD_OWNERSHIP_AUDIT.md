@@ -14,8 +14,8 @@ Use this document to track which build and release workflows are still owned out
 
 | Workflow | Current owner | Target owner | Status | Notes |
 |---|---|---|---|---|
-| BeMore iOS build | `bmo-stack` or other current path | `prismtek-apps` | transitional | verify scripts, signing, archive/export steps |
-| BeMore iOS release | `bmo-stack` or other current path | `prismtek-apps` | transitional | migrate only after build path is proven |
+| BeMore iOS build | `BeMore-stack` or other current path | `prismtek-apps` | transitional | verify scripts, signing, archive/export steps |
+| BeMore iOS release | `BeMore-stack` or other current path | `prismtek-apps` | transitional | migrate only after build path is proven |
 | BeMore web build | `prismtek-apps` | `prismtek-apps` | keep | current product-repo ownership is correct |
 | Product API build | `prismtek-apps` | `prismtek-apps` | keep | current product-repo ownership is correct |
 

@@ -2,7 +2,7 @@
 
 `prismtek-apps` is the intended long-term owner of BeMore iOS product build and release automation.
 
-At the moment, `bmo-stack` still owns the working BeMoreAgent iOS validation and TestFlight workflows.
+At the moment, `BeMore-stack` still owns the working BeMoreAgent iOS validation and TestFlight workflows.
 That is a transitional state, not the target state.
 
 ## Rule
@@ -30,13 +30,13 @@ Once the project lives here, this repo should own:
 
 ## Safe migration order
 
-1. Keep the working path alive in `bmo-stack`
+1. Keep the working path alive in `BeMore-stack`
 2. Re-home the iOS project here
 3. Port validate workflow here
 4. Port TestFlight workflow here
 5. Mirror repo variables and secrets here
 6. Prove one real upload from this repo
-7. Then demote old workflow ownership in `bmo-stack`
+7. Then demote old workflow ownership in `BeMore-stack`
 
 ## Current status
 

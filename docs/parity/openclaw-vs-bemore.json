@@ -5,7 +5,7 @@
     "/Users/prismtek/.openclaw-src/docs/tools/index.md",
     "/Users/prismtek/.openclaw-src/docs/providers/index.md",
     "/Users/prismtek/.openclaw-src/docs/web/dashboard.md",
-    "/Users/prismtek/code/bmo-stack-master-work/context/openclaw-bridge"
+    "/Users/prismtek/code/BeMore-stack-master-work/context/openclaw-bridge"
   ],
   "capabilities": [
     {
@@ -48,7 +48,7 @@
       "capability": "mobile companion/pairing",
       "openClaw": "iOS/node app, device-pair plugin, channel nodes",
       "beMoreStatus": "implemented",
-      "evidence": "bmo-stack BeMoreAgent iOS Mac pairing view and BeMore Mac pairing state"
+      "evidence": "BeMore-stack BeMoreAgent iOS Mac pairing view and BeMore Mac pairing state"
     },
     {
       "capability": "multi-channel messaging gateway",
@@ -60,7 +60,7 @@
       "capability": "provider plugin ecosystem",
       "openClaw": "many provider/plugin manifests under extensions",
       "beMoreStatus": "partially-present",
-      "evidence": "BeMore iOS/provider route work exists in bmo-stack; product-owned provider plugin SDK is not claimed complete"
+      "evidence": "BeMore iOS/provider route work exists in BeMore-stack; product-owned provider plugin SDK is not claimed complete"
     },
     {
       "capability": "installer/service management",

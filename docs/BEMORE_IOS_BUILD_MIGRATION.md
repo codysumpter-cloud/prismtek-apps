@@ -6,7 +6,7 @@ This document tracks the eventual migration of BeMore iOS build and release owne
 
 ## Current posture
 
-BeMore iOS build and release automation may still be operating from `bmo-stack`.
+BeMore iOS build and release automation may still be operating from `BeMore-stack`.
 
 That is acceptable as a transitional state, but it should not be the final ownership model.
 
@@ -14,7 +14,7 @@ That is acceptable as a transitional state, but it should not be the final owner
 
 Product-owned build and release automation for BeMore should live in `prismtek-apps`.
 
-`bmo-stack` may still keep higher-level orchestration or cross-repo wrappers if they are genuinely operator-layer concerns.
+`BeMore-stack` may still keep higher-level orchestration or cross-repo wrappers if they are genuinely operator-layer concerns.
 
 ## Migration principles
 
@@ -41,7 +41,7 @@ Add product-owned build/release docs and scripts to `prismtek-apps`.
 Run the new path successfully from `prismtek-apps`.
 
 ### Phase 4 - demote old ownership
-Once the new path is proven, mark the `bmo-stack` automation as transitional or wrapper-only.
+Once the new path is proven, mark the `BeMore-stack` automation as transitional or wrapper-only.
 
 ## Immediate recommendation
 

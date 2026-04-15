@@ -25,7 +25,7 @@ The shell persists local state under app-scoped Application Support, including:
 - operator preferences
 
 The Buddy surface now bundles repo-owned canonical Buddy contracts and starter content from the
-main `bmo-stack` repo. Installing or personalizing a Buddy persists:
+main `BeMore-stack` repo. Installing or personalizing a Buddy persists:
 
 - `State/buddy-instances.json`
 - `.openclaw/state/buddy-runtime-events.json`
