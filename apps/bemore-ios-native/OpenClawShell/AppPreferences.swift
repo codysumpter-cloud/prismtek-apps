@@ -7,6 +7,7 @@ enum AppTab: String, CaseIterable, Codable, Identifiable, Hashable {
     case chat
     case files
     case models
+    case pricing
     case settings
 
     var id: String { rawValue }
@@ -17,6 +18,7 @@ enum AppTab: String, CaseIterable, Codable, Identifiable, Hashable {
         case .chat: return "Chat"
         case .files: return "Files"
         case .models: return "Models"
+        case .pricing: return "Pricing"
         case .settings: return "Settings"
         }
     }
@@ -27,6 +29,7 @@ enum AppTab: String, CaseIterable, Codable, Identifiable, Hashable {
         case .chat: return "message.fill"
         case .files: return "folder.fill"
         case .models: return "cpu"
+        case .pricing: return "creditcard.fill"
         case .settings: return "gearshape.fill"
         }
     }
