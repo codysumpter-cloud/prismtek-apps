@@ -17,9 +17,9 @@ import {
   Square,
   Terminal,
 } from 'lucide-react';
-import type {RuntimeFileNode, RuntimePatch, RuntimePatchOperation, RuntimeProcess, RuntimeReceipt, RuntimeTask, RuntimeSnapshot} from '@prismtek/agent-protocol';
+import type {RuntimeFileNode, RuntimePatch, RuntimePatchOperation, RuntimeProcess, RuntimeReceipt, RuntimeTask} from '@prismtek/agent-protocol';
 import {getBuddyFrame, getBuddyLabel, type BuddyAnimationState, type BuddyArchetype} from './buddyAscii';
-import {runtimeClient} from './runtimeClient';
+import {runtimeClient, type RuntimeSnapshot} from './runtimeClient';
 import {SupervisionView} from './SupervisionView';
 
 type Section = 'Home' | 'Chat' | 'Missions' | 'Workspace' | 'Results' | 'Settings' | 'Supervision';
@@ -86,8 +86,8 @@ function useBuddyFrame(snapshot: RuntimeSnapshot | null, status: string, active:
   }, []);
 
   const receipt = newestReceipt(snapshot);
-  const hasRunningWork = Boolean(snapshot?.processes.some((process: RuntimeProcess) => process.status === 'running') || snapshot?.tasks.some((task: RuntimeTask) => task.status === 'running'));
-  const hasFailure = Boolean(receipt?.status === 'failed' || receipt?.status === 'blocked' || snapshot?.tasks.some((task: RuntimeTask) => task.status === 'failed'));
+  const hasRunningWork = Boolean(snapshot?.processes.some((process) => process.status === 'running') || snapshot?.tasks.some((task) => task.status === 'running'));
+  const hasFailure = Boolean(receipt?.status === 'failed' || receipt?.status === 'blocked' || snapshot?.tasks.some((task) => task.status === 'failed'));
   const idleWorkspace = !snapshot?.workspaceRoot;
   const recentPatch = receipt?.action === 'applyPatch' && receipt.status === 'completed';
   const state: BuddyAnimationState = hasRunningWork
@@ -153,8 +153,8 @@ function BuddyStage({
   onRunStatus: () => void;
   onCareAction: (action: BuddyCareAction) => void;
 }) {
-  const activeTasks = snapshot?.tasks.filter((task: RuntimeTask) => task.status === 'running').length ?? 0;
-  const completedReceipts = snapshot?.receipts.filter((receipt: RuntimeReceipt) => receipt.status === 'completed').length ?? 0;
+  const activeTasks = snapshot?.tasks.filter((task) => task.status === 'running').length ?? 0;
+  const completedReceipts = snapshot?.receipts.filter((receipt) => receipt.status === 'completed').length ?? 0;
   const workspaceName = snapshot?.workspaceRoot?.split('/').filter(Boolean).at(-1) ?? 'No workspace';
 
   return (
@@ -228,8 +228,8 @@ function ProcessCard({process, onStop}: {process: RuntimeProcess; onStop: (id: s
           <span className="pill">{process.exitCode ?? 'done'}</span>
         )}
       </div>
-      <pre className="terminal-output">{process.stdout || process.stderr || 'Waiting for output.'}</pre>
-      {process.stderr ? <pre className="terminal-error">{process.stderr}</pre> : null}
+      <pre className=\"terminal-output\">{process.stdout || process.stderr || 'Waiting for output.'}</pre>
+      {process.stderr ? <pre className=\"terminal-error\">{process.stderr}</pre> : null}
     </article>
   );
 }
@@ -245,61 +245,36 @@ function TaskRow({task, onRun, onDelegate, onRetry}: {task: RuntimeTask; onRun: 
           {task.failureReason ? <p>{task.failureReason}</p> : null}
         </div>
         <div className="row wrap">
-          <button className="secondary" onClick={() => onRun(task.id)}>
+          <button className=\"secondary\" onClick={() => onRun(task.id)}>
             <Play size={16} /> Run
           </button>
-          <button className="secondary" onClick={() => onDelegate(task.id)}>Delegate</button>
-          <button className="secondary" onClick={() => onRetry(task.id)}>Retry</button>
+          <button className=\"secondary\" onClick={() => onDelegate(task.id)}>Delegate</button>
+          <button className=\"secondary\" onClick={() => onRetry(task.id)}>Retry</button>
         </div>
       </div>
-      <span className="pill">{task.status}</span>
+      <span className=\"pill\">{task.status}</span>
     </article>
   );
 }
 
 function ReceiptList({receipts}: {receipts: RuntimeReceipt[]}) {
   if (!receipts.length) {
-    return <p className="quiet">Run a Buddy task to create the first receipt.</p>;
+    return <p className=\"quiet\">Run a Buddy task to create the first receipt.</p>;
   }
   return (
-    <div className="stack compact">
-      {receipts.slice(0, 8).map((receipt: RuntimeReceipt) => (
-        <article key={receipt.id} className="receipt-row">
-          <span className={`dot ${receipt.status}`} />
-          <div>
-            <strong>{receipt.action}</strong>
-            <p>{receipt.summary}</p>
-          </div>
-        </article>
-      ))}
+    <div className=\"stack compact\">
+      {receipts.slice(0, 8).map((receipt) => (
+        <article key={receipt.id} className=\"receipt-row\">\n          <span className={`dot ${receipt.status}`} />\n          <div>\n            <strong>{receipt.action}</strong>\n            <p>{receipt.summary}</p>\n          </div>\n        </article>\n      ))}
     </div>
   );
 }
 
 function PatchList({patches, onApply, onReject}: {patches: RuntimePatch[]; onApply: (id: string) => void; onReject: (id: string) => void}) {
   if (!patches.length) {
-    return <p className="quiet">Preview a patch and Buddy will keep it here until you apply or reject it.</p>;
+    return <p className=\"quiet\">Preview a patch and Buddy will keep it here until you apply or reject it.</p>;
   }
   return (
-    <div className="stack compact">
-      {patches.map((patch) => (
-        <article key={patch.id} className="item">
-          <div className="row between">
-            <div>
-              <strong>{patch.title}</strong>
-              <p>{patch.files.map((file) => file.path).join(', ')}</p>
-            </div>
-            <span className="pill">{patch.status}</span>
-          </div>
-          <pre className="patch-preview">{patch.unifiedDiff}</pre>
-          <div className="row">
-            <button className="secondary" onClick={() => onApply(patch.id)}>Apply</button>
-            <button className="secondary" onClick={() => onReject(patch.id)}>Reject</button>
-          </div>
-        </article>
-      ))}
-    </div>
-  );
+    <div className=\"stack compact\">\n      {patches.map((patch) => (\n        <article key={patch.id} className=\"item\">\n          <div className=\"row between\">\n            <div>\n              <strong>{patch.title}</strong>\n              <p>{patch.files.map((file) => file.path).join(', ')}</p>\n            </div>\n            <span className=\"pill\">{patch.status}</span>\n          </div>\n          <pre className=\"patch-preview\">{patch.unifiedDiff}</pre>\n          <div className=\"row\">\n            <button className=\"secondary\" onClick={() => onApply(patch.id)}>Apply</button>\n            <button className=\"secondary\" onClick={() => onReject(patch.id)}>Reject</button>\n          </div>\n        </article>\n      ))}\n    </div>\n  );
 }
 
 export default function App() {
@@ -323,7 +298,6 @@ export default function App() {
     bond: 61,
     focus: 68,
     care: 58,
-    attention: 60,
   });
 
   const files = useMemo(() => flattenFiles(snapshot?.files ?? []).filter((file) => file.kind === 'file'), [snapshot]);
@@ -515,7 +489,7 @@ export default function App() {
             <section className="grid three">
               <article className="panel">
                 <h2>{activeBuddy.name}'s Queue</h2>
-                {recentTasks.length ? recentTasks.map((task: RuntimeTask) => <p key={task.id}>{task.status}: {task.title}</p>) : <p className="quiet">Start a Buddy task to build the queue.</p>}
+                {recentTasks.length ? recentTasks.map((task) => <p key={task.id}>{task.status}: {task.title}</p>) : <p className="quiet">Start a Buddy task to build the queue.</p>}
               </article>
               <article className="panel">
                 <h2>Receipts</h2>
@@ -523,7 +497,7 @@ export default function App() {
               </article>
               <article className="panel">
                 <h2>Needs Attention</h2>
-                {failedTasks.length ? failedTasks.map((task: RuntimeTask) => <p key={task.id}>{task.title}: {task.failureReason}</p>) : <p className="quiet">No blocked tasks in this session.</p>}
+                {failedTasks.length ? failedTasks.map((task) => <p key={task.id}>{task.title}: {task.failureReason}</p>) : <p className="quiet">No blocked tasks in this session.</p>}
               </article>
             </section>
           </section>
@@ -566,114 +540,20 @@ export default function App() {
                 <button onClick={selectWorkspace}>Open</button>
               </div>
               <p className="mono">{snapshot?.workspaceRoot ?? 'Choose a workspace to begin.'}</p>
-              {snapshot?.files.length ? <FileTree nodes={snapshot.files} onOpen={openFile} /> : <p className="quiet">Buddy needs a workspace before files appear.</p>}
+              {snapshot?.files.length ? <FileTree nodes={snapshot.files} onOpen={openFile} /> : <p className=\"quiet\">Buddy needs a workspace before files appear.</p>}
             </div>
             <div className="panel tall">
-              <div className="row between">
-                <div>
-                  <h2>{selectedPath || 'Pick a file'}</h2>
-                  <p>{files.length} editable files in the current snapshot.</p>
-                </div>
-                <button onClick={saveFile} disabled={!selectedPath}>
-                  <Save size={16} /> Save
-                </button>
-              </div>
-              <textarea className="editor" value={editorValue} onChange={(event) => setEditorValue(event.target.value)} spellCheck={false} />
-            </div>
-          </section>
+              <div className=\"row between\">\n                <div>\n                  <h2>{selectedPath || 'Pick a file'}</h2>\n                  <p>{files.length} editable files in the current snapshot.</p>\n                </div>\n                <button onClick={saveFile} disabled={!selectedPath}>\n                  <Save size={16} /> Save\n                </button>\n              </div>\n              <textarea className=\"editor\" value={editorValue} onChange={(event) => setEditorValue(event.target.value)} spellCheck={false} />\n            </div>\n          </section>
         ) : null}
 
         {active === 'Missions' ? (
-          <section className="grid two">
-            <div className="stack">
-              <div className="panel">
-                <h2>Give {activeBuddy.name} Work</h2>
-                <input value={taskTitle} onChange={(event) => setTaskTitle(event.target.value)} />
-                <textarea value={taskDetail} onChange={(event) => setTaskDetail(event.target.value)} />
-                <input value={taskCommand} onChange={(event) => setTaskCommand(event.target.value)} />
-                <button onClick={() => createTask()}>
-                  <Send size={16} /> Create Mission
-                </button>
-              </div>
-              <div className="panel">
-                <h2>Train With Skills</h2>
-                {skillCards.map((skill) => (
-                  <article key={skill.id} className="skill-card compact-skill">
-                    <Sparkles size={18} />
-                    <div>
-                      <strong>{skill.title}</strong>
-                      <p>{skill.description}</p>
-                    </div>
-                    <button className="secondary" onClick={() => createTask(skill.title, skill.description, skill.command)}>Use</button>
-                  </article>
-                ))}
-              </div>
-            </div>
-            <div className="stack">
-              {(snapshot?.tasks ?? []).length ? (snapshot?.tasks ?? []).map((task: RuntimeTask) => <TaskRow key={task.id} task={task} onRun={runTask} onDelegate={delegateTask} onRetry={retryTask} />) : <p className="quiet">Buddy has no missions yet. Create one from Home this panel.</p>}
-            </div>
-          </section>
-        ) : null}
+          <section className=\"grid two\">\n            <div className=\"stack\">\n              <div className=\"panel\">\n                <h2>Give {activeBuddy.name} Work</h2>\n                <input value={taskTitle} onChange={(event) => setTaskTitle(event.target.value)} />\n                <textarea value={taskDetail} onChange={(event) => setTaskDetail(event.target.value)} />\n                <input value={taskCommand} onChange={(event) => setTaskCommand(event.target.value)} />\n                <button onClick={() => createTask()}>\n                  <Send size={16} /> Create Mission\n                </button>\n              </div>\n              <div className=\"panel\">\n                <h2>Train With Skills</h2>\n                {skillCards.map((skill) => (\n                  <article key={skill.id} className=\"skill-card compact-skill\">\n                    <Sparkles size={18} />\n                    <div>\n                      <strong>{skill.title}</strong>\n                      <p>{skill.description}</p>\n                    </div>\n                    <button className=\"secondary\" onClick={() => createTask(skill.title, skill.description, skill.command)}>Use</button>\n                  </article>\n                ))}\n              </div>\n            </div>\n            <div className=\"stack\">\n              {(snapshot?.tasks ?? []).length ? (snapshot?.tasks ?? []).map((task) => <TaskRow key={task.id} task={task} onRun={runTask} onDelegate={delegateTask} onRetry={retryTask} />) : <p className=\"quiet\">Buddy has no missions yet. Create one from Home this panel.</p>}\n            </div>\n          </section>\n        ) : null}
 
         {active === 'Results' ? (
-          <section className="grid results-grid">
-            <div className="panel">
-              <h2>Run Command</h2>
-              <div className="inline-form">
-                <input value={command} onChange={(event) => setCommand(event.target.value)} />
-                <button onClick={() => runCommand()}>
-                  <Play size={16} /> Run
-                </button>
-              </div>
-              <div className="stack compact">
-                {(snapshot?.processes ?? []).map((process: RuntimeProcess) => <ProcessCard key={process.id} process={process} onStop={stopProcess} />)}
-                {!snapshot?.processes.length ? <p className="quiet">Command output will appear here with receipts.</p> : null}
-              </div>
-            </div>
-            <div className="panel">
-              <h2>Patch Review</h2>
-              <input value={patchTitle} onChange={(event) => setPatchTitle(event.target.value)} placeholder="Patch title" />
-              <input value={patchPath} onChange={(event) => setPatchPath(event.target.value)} placeholder="README.md" />
-              <input value={patchTaskId} onChange={(event) => setPatchTaskId(event.target.value)} placeholder="Optional task id" />
-              <textarea value={patchBefore} onChange={(event) => setPatchBefore(event.target.value)} placeholder="Text to replace. Leave blank to write the whole file." />
-              <textarea value={patchAfter} onChange={(event) => setPatchAfter(event.target.value)} placeholder="Replacement or full file content" />
-              <button onClick={previewPatch}>
-                <GitPullRequest size={16} /> Preview Patch
-              </button>
-              <PatchList patches={snapshot?.patches ?? []} onApply={applyPatch} onReject={rejectPatch} />
-            </div>
-            <div className="panel">
-              <h2>Current Diff</h2>
-              <pre className="diff">{snapshot?.diff.unifiedDiff || 'Clean working tree.'}</pre>
-            </div>
-            <div className="panel">
-              <h2>Receipts</h2>
-              <ReceiptList receipts={snapshot?.receipts ?? []} />
-            </div>
-          </section>
-        ) : null}
+          <section className=\"grid results-grid\">\n            <div className=\"panel\">\n              <h2>Run Command</h2>\n              <div className=\"inline-form\">\n                <input value={command} onChange={(event) => setCommand(event.target.value)} />\n                <button onClick={() => runCommand()}>\n                  <Play size={16} /> Run\n                </button>\n              </div>\n              <div className=\"stack compact\">\n                {(snapshot?.processes ?? []).map((process) => <ProcessCard key={process.id} process={process} onStop={stopProcess} />)}\n                {!snapshot?.processes.length ? <p className=\"quiet\">Command output will appear here with receipts.</p> : null}\n              </div>\n            </div>\n            <div className=\"panel\">\n              <h2>Patch Review</h2>\n              <input value={patchTitle} onChange={(event) => setPatchTitle(event.target.value)} placeholder=\"Patch title\" />\n              <input value={patchPath} onChange={(event) => setPatchPath(event.target.value)} placeholder=\"README.md\" />\n              <input value={patchTaskId} onChange={(event) => setPatchTaskId(event.target.value)} placeholder=\"Optional task id\" />\n              <textarea value={patchBefore} onChange={(event) => setPatchBefore(event.target.value)} placeholder=\"Text to replace. Leave blank to write the whole file.\" />\n              <textarea value={patchAfter} onChange={(event) => setPatchAfter(event.target.value)} placeholder=\"Replacement or full file content\" />\n              <button onClick={previewPatch}>\n                <GitPullRequest size={16} /> Preview Patch\n              </button>\n              <PatchList patches={snapshot?.patches ?? []} onApply={applyPatch} onReject={rejectPatch} />\n            </div>\n            <div className=\"panel\">\n              <h2>Current Diff</h2>\n              <pre className=\"diff\">{snapshot?.diff.unifiedDiff || 'Clean working tree.'}</pre>\n            </div>\n            <div className=\"panel\">\n              <h2>Receipts</h2>\n              <ReceiptList receipts={snapshot?.receipts ?? []} />\n            </div>\n          </section>\n        ) : null}
 
         {active === 'Settings' ? (
-          <section className="grid two">
-            <div className="panel">
-              <h2>Runtime Boundary</h2>
-              <p>{snapshot?.sandbox.id}</p>
-              <p>{snapshot?.sandbox.note}</p>
-              <p>Timeout {snapshot?.sandbox.commandTimeoutMs}ms · output cap {snapshot?.sandbox.maxOutputBytes} bytes</p>
-            </div>
-            <div className="panel">
-              <h2>iPhone Power Mode</h2>
-              <p>Host {snapshot?.pairing.hostName} is {snapshot?.pairing.status}.</p>
-              <div className="pair-code">{snapshot?.pairing.pairingCode}</div>
-              <p>Pairing scopes stay explicit: workspace read, workspace write, process run, review read, receipts read.</p>
-            </div>
-          </section>
-        ) : null}
+          <section className=\"grid two\">\n            <div className=\"panel\">\n              <h2>Runtime Boundary</h2>\n              <p>{snapshot?.sandbox.id}</p>\n              <p>{snapshot?.sandbox.note}</p>\n              <p>Timeout {snapshot?.sandbox.commandTimeoutMs}ms · output cap {snapshot?.sandbox.maxOutputBytes} bytes</p>\n            </div>\n            <div className=\"panel\">\n              <h2>iPhone Power Mode</h2>\n              <p>Host {snapshot?.pairing.hostName} is {snapshot?.pairing.status}.</p>\n              <div className=\"pair-code\">{snapshot?.pairing.pairingCode}</div>\n              <p>Pairing scopes stay explicit: workspace read, workspace write, process run, review read, receipts read.</p>\n            </div>\n          </section>\n        ) : null}
 
         {active === 'Supervision' ? (
-          <SupervisionView />
-        ) : null}
-      </section>
-    </main>
-  );
-}
+          <SupervisionView />\n        ) : null}\n      </section>\n    </main>\n  );\n}
