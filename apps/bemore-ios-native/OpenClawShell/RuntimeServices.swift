@@ -935,7 +935,7 @@ actor CloudExecutionService {
     private func requestURL(provider: ProviderKind, baseURL: String, model: String) -> URL? {
         let root = baseURL.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
         switch provider {
-        case .nvidia, .openAI, .huggingFace:
+        case .nvidia, .xai, .openAI, .huggingFace:
             return URL(string: root + "/chat/completions")
         case .ollama:
             return URL(string: (root.hasSuffix("/api") ? root : root + "/api") + "/chat")
@@ -947,7 +947,7 @@ actor CloudExecutionService {
     private func modelsURL(provider: ProviderKind, baseURL: String) -> URL? {
         let root = baseURL.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
         switch provider {
-        case .nvidia, .openAI, .huggingFace:
+        case .nvidia, .xai, .openAI, .huggingFace:
             return URL(string: root + "/models")
         case .ollama:
             return URL(string: (root.hasSuffix("/api") ? root : root + "/api") + "/tags")
@@ -994,7 +994,7 @@ actor CloudExecutionService {
         let object = try JSONSerialization.jsonObject(with: data)
 
         switch provider {
-        case .nvidia, .openAI, .huggingFace:
+        case .nvidia, .xai, .openAI, .huggingFace:
             guard let root = object as? [String: Any], let entries = root["data"] as? [[String: Any]] else {
                 throw CloudExecutionServiceError.invalidResponse
             }
