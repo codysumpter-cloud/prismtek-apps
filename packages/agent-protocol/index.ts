@@ -235,3 +235,17 @@ export interface BeMoreRuntimeProtocol {
   applyBuddyEvent(event: string): Promise<RuntimeBuddyState>;
   getPairingState(): Promise<PairingState>;
 }
+
+export interface RuntimeSnapshot {
+  workspaceRoot: string | null;
+  files: RuntimeFileNode[];
+  tasks: RuntimeTask[];
+  processes: RuntimeProcess[];
+  patches: RuntimePatch[];
+  artifacts: RuntimeArtifact[];
+  receipts: RuntimeReceipt[];
+  diff: RuntimeDiff;
+  buddy: RuntimeBuddyState;
+  sandbox: RuntimeSandboxSession;
+  pairing: PairingState;
+}
