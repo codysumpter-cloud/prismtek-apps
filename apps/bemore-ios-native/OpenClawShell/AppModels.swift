@@ -127,6 +127,7 @@ struct InstalledModelDescriptor: Codable, Hashable {
 enum ProviderKind: String, Codable, CaseIterable, Identifiable {
     case nvidia
     case google
+    case xai
     case openAI = "openai"
     case huggingFace = "huggingface"
     case ollama
@@ -137,6 +138,7 @@ enum ProviderKind: String, Codable, CaseIterable, Identifiable {
         switch self {
         case .nvidia: return "NVIDIA"
         case .google: return "Google AI Studio"
+        case .xai: return "xAI (Grok)"
         case .openAI: return "OpenAI"
         case .huggingFace: return "Hugging Face"
         case .ollama: return "Ollama"
@@ -147,6 +149,7 @@ enum ProviderKind: String, Codable, CaseIterable, Identifiable {
         switch self {
         case .nvidia: return "https://integrate.api.nvidia.com/v1"
         case .google: return "https://generativelanguage.googleapis.com"
+        case .xai: return "https://api.x.ai/v1"
         case .openAI: return "https://api.openai.com/v1"
         case .huggingFace: return "https://router.huggingface.co/v1"
         case .ollama: return "http://localhost:11434"
@@ -157,6 +160,7 @@ enum ProviderKind: String, Codable, CaseIterable, Identifiable {
         switch self {
         case .nvidia: return "Paste a build.nvidia.com API key"
         case .google: return "Paste a Google AI Studio API key"
+        case .xai: return "Paste an xAI API key"
         case .openAI: return "Paste an OpenAI API key. ChatGPT OAuth can be added later with a real OAuth client flow."
         case .huggingFace: return "Paste a Hugging Face token"
         case .ollama: return "Set your Ollama server URL, optionally with a bearer token"
@@ -207,6 +211,11 @@ enum CloudModelCatalog {
             return [
                 CloudModel(provider: .google, slug: "gemini-2.5-pro", displayName: "Gemini 2.5 Pro", notes: "Best quality"),
                 CloudModel(provider: .google, slug: "gemini-2.5-flash", displayName: "Gemini 2.5 Flash", notes: "Fast and cheaper")
+            ]
+        case .xai:
+            return [
+                CloudModel(provider: .xai, slug: "grok-beta", displayName: "Grok Beta", notes: "Latest xAI experimental model"),
+                CloudModel(provider: .xai, slug: "grok-2", displayName: "Grok 2", notes: "High-performance xAI model")
             ]
         case .openAI:
             return [
@@ -416,8 +425,6 @@ struct StackConfig: Codable {
     )
 }
 
-// MARK: - Model download state
-
 enum ModelDownloadState: Equatable {
     case notInstalled
     case downloading(progress: Double)
@@ -434,8 +441,6 @@ enum ModelDownloadState: Equatable {
         }
     }
 }
-
-// MARK: - Known model catalog
 
 struct KnownModel: Identifiable {
     let id = UUID()
@@ -460,124 +465,4 @@ struct KnownModel: Identifiable {
     )
 
     static let catalog: [KnownModel] = [gemma4E2B]
-}
-
-enum AppTab: String, Codable, CaseIterable, Hashable, Identifiable {
-    case missionControl
-    case editor
-    case buddy
-    case files
-    case skills
-    case artifacts
-    case pairing
-    case models
-    case chat
-    case pricing
-    case settings
-
-    var id: String { rawValue }
-
-    var title: String {
-        switch self {
-        case .missionControl: return "Home"
-        case .editor: return "Editor"
-        case .buddy: return "Buddy"
-        case .files: return "Workspace"
-        case .skills: return "Skills"
-        case .artifacts: return "Results"
-        case .pairing: return "Mac"
-        case .models: return "Models"
-        case .chat: return "Chat"
-        case .pricing: return "Pricing"
-        case .settings: return "Settings"
-        }
-    }
-
-    var systemImage: String {
-        switch self {
-        case .missionControl: return "heart.text.square.fill"
-        case .editor: return "doc.text.fill"
-        case .buddy: return "person.crop.circle.badge.checkmark"
-        case .files: return "folder.fill"
-        case .skills: return "sparkles.rectangle.stack.fill"
-        case .artifacts: return "checklist.checked"
-        case .pairing: return "macbook.and.iphone"
-        case .models: return "cpu"
-        case .chat: return "message.fill"
-        case .pricing: return "creditcard.fill"
-        case .settings: return "gearshape.fill"
-        }
-    }
-
-    var allowsHiding: Bool {
-        self != .missionControl
-    }
-}
-
-struct ShellPreferences: Codable, Hashable {
-    var orderedTabs: [AppTab]
-    var hiddenTabs: Set<AppTab>
-    var selectedTab: AppTab
-
-    static let `default` = ShellPreferences(
-        orderedTabs: [.missionControl, .buddy, .chat, .skills, .artifacts, .files, .pairing, .pricing, .models, .settings],
-        hiddenTabs: [.pairing, .pricing, .models],
-        selectedTab: .missionControl
-    )
-
-    func normalized() -> ShellPreferences {
-        var order = orderedTabs
-        for tab in AppTab.allCases where !order.contains(tab) {
-            order.append(tab)
-        }
-        order = order.filter { AppTab.allCases.contains($0) }
-
-        var hidden = hiddenTabs.filter { $0.allowsHiding && AppTab.allCases.contains($0) }
-        if order.filter({ !hidden.contains($0) }).isEmpty {
-            hidden.removeAll()
-        }
-
-        let selected = hidden.contains(selectedTab) ? order.first(where: { !hidden.contains($0) }) ?? .missionControl : selectedTab
-        return ShellPreferences(orderedTabs: order, hiddenTabs: hidden, selectedTab: selected)
-    }
-
-    var visibleTabs: [AppTab] {
-        let normalized = normalized()
-        return normalized.orderedTabs.filter { !normalized.hiddenTabs.contains($0) }
-    }
-}
-
-enum AppColorTheme: String, Codable, Hashable, CaseIterable, Identifiable {
-    case system
-    case dark
-
-    var id: String { rawValue }
-
-    var displayName: String {
-        switch self {
-        case .system: return "System"
-        case .dark: return "Dark"
-        }
-    }
-
-    var preferredColorScheme: ColorScheme? {
-        switch self {
-        case .system: return nil
-        case .dark: return .dark
-        }
-    }
-}
-
-struct UserPreferences: Codable, Hashable {
-    var preferredName: String
-    var theme: AppColorTheme
-    var userProfileMarkdown: String
-    var soulProfileMarkdown: String
-
-    static let `default` = UserPreferences(
-        preferredName: "",
-        theme: .dark,
-        userProfileMarkdown: "",
-        soulProfileMarkdown: ""
-    )
 }
