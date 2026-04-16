@@ -90,9 +90,18 @@ struct ShellPreferences: Codable, Hashable {
         for tab in AppTab.allCases where !order.contains(tab) {
             order.append(tab)
         }
-        order = order.filter { AppTab.allCases.contains($0) }
+        order = order.reduce(into: [AppTab]()) { result, tab in
+            guard AppTab.allCases.contains(tab), !result.contains(tab) else { return }
+            result.append(tab)
+        }
+
+        if let modelsIndex = order.firstIndex(of: .models), let skillsIndex = order.firstIndex(of: .skills), modelsIndex > skillsIndex + 1 {
+            order.remove(at: modelsIndex)
+            order.insert(.models, at: skillsIndex + 1)
+        }
 
         var hidden = hiddenTabs.filter { $0.allowsHiding && AppTab.allCases.contains($0) }
+        hidden.subtract([.buddy, .chat, .skills, .models, .artifacts, .files, .settings])
         if order.filter({ !hidden.contains($0) }).isEmpty {
             hidden.removeAll()
         }
