@@ -92,19 +92,19 @@ struct MissionControlView: View {
                 .buttonStyle(BMOButtonStyle())
 
                 Button("Train Buddy") {
-                    appState.selectedTab = .buddy
+                    appState.route(to: .buddy)
                 }
                 .buttonStyle(BMOButtonStyle(isPrimary: false))
             }
 
             HStack(spacing: 8) {
                 Button("Discover") {
-                    appState.selectedTab = .buddy
+                    appState.route(to: .buddy)
                 }
                 .buttonStyle(BMOButtonStyle(isPrimary: false))
 
                 Button("Plans") {
-                    appState.selectedTab = .pricing
+                    appState.route(to: .pricing)
                 }
                 .buttonStyle(BMOButtonStyle(isPrimary: false))
             }
@@ -169,7 +169,7 @@ struct MissionControlView: View {
                 .font(.subheadline)
                 .foregroundColor(BMOTheme.textSecondary)
             Button("Open Skills") {
-                appState.selectedTab = .skills
+                appState.route(to: .skills)
             }
             .buttonStyle(BMOButtonStyle(isPrimary: false))
         }

@@ -377,7 +377,7 @@ struct BuddyView: View {
                 .foregroundColor(BMOTheme.textSecondary)
             HStack {
                 Button("Open Pricing") {
-                    appState.selectedTab = .pricing
+                    appState.route(to: .pricing)
                 }
                 .buttonStyle(BMOButtonStyle(isPrimary: false))
                 Button("Open Chat") {

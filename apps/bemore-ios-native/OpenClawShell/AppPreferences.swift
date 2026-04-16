@@ -80,8 +80,8 @@ struct ShellPreferences: Codable, Hashable {
     var selectedTab: AppTab
 
     static let `default` = ShellPreferences(
-        orderedTabs: [.missionControl, .buddy, .chat, .skills, .artifacts, .files, .pairing, .pricing, .models, .settings],
-        hiddenTabs: [.pairing, .pricing, .models],
+        orderedTabs: [.missionControl, .buddy, .chat, .skills, .models, .artifacts, .files, .settings, .pairing, .pricing, .editor],
+        hiddenTabs: [.pairing, .pricing, .editor],
         selectedTab: .missionControl
     )
 
