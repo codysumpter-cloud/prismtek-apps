@@ -7,6 +7,7 @@ final class PlatformAppState: ObservableObject {
     @Published var workspaces: [WorkspaceRecord] = []
     @Published var jobs: [GenerationJob] = []
     @Published var sessions: [SandboxSessionRecord] = []
+    private let apiService = PlatformApiService()
     @Published var billing = BillingSnapshot.unavailable
     @Published var admin = AdminSnapshot.unavailable
     @Published var runtime = RuntimeSummary.unconfigured
@@ -61,15 +62,74 @@ final class PlatformAppState: ObservableObject {
 
     func enqueueGeneration(description: String, templateName: String, target: String, modelSlug: String) {
         guard !description.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+        
         let job = GenerationJob(description: description, templateName: templateName, target: target, modelSlug: modelSlug, status: .queued, progress: 0.0)
         jobs.insert(job, at: 0)
         persistJobs()
+        
+        Task {
+            do {
+                let response = try await apiService.enqueueGeneration(description: description, templateId: templateName, target: target, modelId: modelSlug)
+                if let jobId = response["id"] as? String {
+                    // Start polling for status
+                    while true {
+                        try await Task.sleep(nanoseconds: 2 * 1_000_000_000)
+                        let statusUpdate = try await apiService.getJobStatus(jobId: jobId)
+                        
+                        if let statusStr = statusUpdate["status"] as? String,
+                           let progress = statusUpdate["progress"] as? Double,
+                           let index = jobs.firstIndex(where: { $0.description == description && $0.templateName == templateName }) {
+                            
+                            let status: GenerationJob.Status = statusStr == "completed" ? .completed : (statusStr == "failed" ? .failed : .processing)
+                            jobs[index].status = status
+                            jobs[index].progress = progress
+                            persistJobs()
+                            
+                            if status == .completed || status == .failed { break }
+                        } else {
+                            break
+                        }
+                    }
+                }
+            } catch {
+                print("Generation API failed: \(error)")
+                if let index = jobs.firstIndex(where: { $0.description == description && $0.templateName == templateName }) {
+                    jobs[index].status = .failed
+                    persistJobs()
+                }
+            }
+        }
     }
 
     func launchSandbox(for workspaceName: String) {
         guard !workspaceName.isEmpty else { return }
-        sessions.insert(SandboxSessionRecord(workspaceName: workspaceName, status: "unavailable", connectURL: "No sandbox backend is connected on this device.", expiresAt: .now), at: 0)
+        
+        let session = SandboxSessionRecord(workspaceName: workspaceName, status: \"launching\", connectURL: \"Connecting to backend...\", expiresAt: .now)
+        sessions.insert(session, at: 0)
         persistSessions()
+        
+        Task {
+            do {
+                let response = try await apiService.launchSandbox(workspaceId: workspaceName)
+                if let url = response[\"url\"] as? String,
+                   let expiresAtStr = response[\"expiresAt\"] as? String,
+                   let expiresAt = ISO8601DateFormatter().date(from: expiresAtStr),
+                   let index = sessions.firstIndex(where: { $0.workspaceName == workspaceName }) {
+                    
+                    sessions[index].status = \"running\"
+                    sessions[index].connectURL = url
+                    sessions[index].expiresAt = expiresAt
+                    persistSessions()
+                }
+            } catch {
+                print(\"Sandbox API failed: \\(error)\")
+                if let index = sessions.firstIndex(where: { $0.workspaceName == workspaceName }) {
+                    sessions[index].status = \"failed\"
+                    sessions[index].connectURL = \"Failed to launch sandbox: \\(error.localizedDescription)\"
+                    persistSessions()
+                }
+            }
+        }
     }
 
     func terminateSandbox(_ session: SandboxSessionRecord) {

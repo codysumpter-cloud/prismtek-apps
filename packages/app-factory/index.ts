@@ -1,4 +1,8 @@
+import { exec } from 'child_process';
+import { promisify } from 'util';
 import { AppTemplate, AppGenerationJob, AIModel } from '@prismtek/core';
+
+const execAsync = promisify(exec);
 
 export interface ScaffoldingOptions {
   description: string;
@@ -128,8 +132,6 @@ export class AppFactory {
     };
 
     this.jobs.set(jobId, job);
-
-    // Simulate the scaffolding process in the background
     this.processJob(jobId, options);
 
     return job;
@@ -139,27 +141,32 @@ export class AppFactory {
     const job = this.jobs.get(jobId);
     if (!job) return;
 
-    console.log(`Processing job ${jobId} for template ${options.templateId}`);
-    job.status = 'processing';
+    try {
+      job.status = 'processing';
+      const template = this.templates.get(options.templateId);
+      const targetDir = `generated/${job.workspaceId}`;
 
-    // Simulate scaffolding steps
-    const steps = [
-      'Cloning repository...',
-      'Injecting environment variables...',
-      'Configuring agent identity...',
-      'Setting up storage hygiene...',
-      'Building application...',
-      'Finalizing workspace...'
-    ];
+      console.log(`Processing real generation job ${jobId}...`);
+      
+      // Step 1: Clone repository
+      job.progress = 10;
+      await execAsync(`mkdir -p ${targetDir} && git clone ${template?.repoUrl} ${targetDir}`);
+      
+      // Step 2: Configure environment
+      job.progress = 40;
+      await execAsync(`cd ${targetDir} && echo "Generating ${options.description}..." > .generation_meta`);
+      
+      // Step 3: Run setup (simulation of nemoclaw onboard)
+      job.progress = 70;
+      await execAsync(`sleep 2`); 
 
-    for (let i = 0; i < steps.length; i++) {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      job.progress = Math.round(((i + 1) / steps.length) * 100);
-      console.log(`Job ${jobId}: ${steps[i]} (${job.progress}%)`);
+      job.status = 'completed';
+      job.progress = 100;
+      console.log(`Job ${jobId} completed successfully. Workspace created at ${targetDir}`);
+    } catch (error) {
+      console.error(`Generation job ${jobId} failed: ${error}`);
+      if (job) job.status = 'failed';
     }
-
-    job.status = 'completed';
-    console.log(`Job ${jobId} completed successfully`);
   }
 
   async getJobStatus(jobId: string): Promise<AppGenerationJob | undefined> {
