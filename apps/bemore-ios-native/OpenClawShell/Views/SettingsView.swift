@@ -213,7 +213,7 @@ private struct TabManagementSheet: View {
                 }
 
                 Section("Visibility") {
-                    ForEach(AppTab.allCases) { tab in
+                    ForEach(AppTab.allCases.filter { !$0.isInternalDraft }) { tab in
                         Toggle(isOn: Binding(
                             get: { appState.orderedVisibleTabs.contains(tab) },
                             set: { appState.setTabVisibility(tab, isVisible: $0) }

@@ -27,7 +27,7 @@ struct SandboxView: View {
                                     .font(.headline)
                                     .foregroundColor(PlatformTheme.textPrimary)
                                 Spacer()
-                                PillBadge(text: session.status.capitalized, color: PlatformTheme.success)
+                                PillBadge(text: session.status.capitalized, color: session.status == "running" ? PlatformTheme.success : PlatformTheme.warning)
                             }
                             Text(session.connectURL)
                                 .font(.caption)

@@ -68,7 +68,11 @@ enum AppTab: String, Codable, CaseIterable, Hashable, Identifiable {
     }
 
     var allowsHiding: Bool {
-        self != .missionControl
+        self != .missionControl && !isInternalDraft
+    }
+
+    var isInternalDraft: Bool {
+        self == .editor
     }
 }
 
@@ -100,7 +104,8 @@ struct ShellPreferences: Codable, Hashable {
             order.insert(.models, at: skillsIndex + 1)
         }
 
-        var hidden = hiddenTabs.filter { $0.allowsHiding && AppTab.allCases.contains($0) }
+        var hidden = hiddenTabs.filter { ($0.allowsHiding || $0.isInternalDraft) && AppTab.allCases.contains($0) }
+        hidden.formUnion(AppTab.allCases.filter(\.isInternalDraft))
         hidden.subtract([.buddy, .chat, .skills, .models, .artifacts, .files, .settings])
         if order.filter({ !hidden.contains($0) }).isEmpty {
             hidden.removeAll()
