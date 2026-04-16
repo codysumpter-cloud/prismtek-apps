@@ -1,0 +1,87 @@
+openapi: 3.1.0
+info:
+  title: iBeMore Buddy Personalization API
+  version: 0.1.0
+  description: |
+    Product-side adapter contract for Buddy appearance, performance, and guided generation.
+    Shared runtime ownership remains outside prismtek-apps.
+servers:
+  - url: https://api.bemore.dev
+paths:
+  /v1/buddies/{buddyId}/personalization:
+    get:
+      operationId: getBuddyPersonalization
+      summary: Fetch the saved Buddy appearance and behavior profile.
+      parameters:
+        - name: buddyId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Saved Buddy personalization record.
+    put:
+      operationId: updateBuddyPersonalization
+      summary: Update saved Buddy appearance and behavior settings.
+      parameters:
+        - name: buddyId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated Buddy personalization record.
+  /v1/buddies/generate/ascii:
+    post:
+      operationId: generateAsciiBuddy
+      summary: Generate an ASCII Buddy from a guided prompt flow.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Generated ASCII Buddy appearance and animation pack.
+  /v1/buddies/generate/pixel:
+    post:
+      operationId: generatePixelBuddy
+      summary: Generate a pixel Buddy from a guided prompt flow.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Generated pixel Buddy appearance and animation pack.
+  /v1/buddies/{buddyId}/animations/preview:
+    post:
+      operationId: previewBuddyAnimations
+      summary: Preview Buddy animation frames for the current appearance and behavior settings.
+      parameters:
+        - name: buddyId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Animation preview payload.
+components: {}
