@@ -174,14 +174,18 @@ enum BuiltInSkillRegistry {
                 tags: ["pokemon", "team-builder", "strategy"],
                 permissions: ["workspace.write", "workspace.read", "actions.write"],
                 inputSchema: [
+                    "goal": "string",
                     "format": "string",
                     "strategy": "string",
                     "mustInclude": "comma-separated string",
-                    "avoid": "comma-separated string"
+                    "avoid": "comma-separated string",
+                    "existingTeam": "comma-separated string",
+                    "editRequest": "string"
                 ],
                 outputSchema: [
                     "teamMembers": "array",
                     "summary": "string",
+                    "coverage": "string",
                     "artifactPath": "string"
                 ],
                 ui: .init(route: "/skills/pokemon-team-builder", systemImage: "gamecontroller.fill", accent: "accent"),
@@ -881,15 +885,24 @@ final class OpenClawWorkspaceRuntime: ObservableObject {
 
     private func runPokemonTeamBuilder(input: [String: String], manifest: SkillManifest) -> OpenClawReceipt {
         let action = begin(kind: .skillRun, source: "skill.\(manifest.id)", title: manifest.name, input: input)
+        let goal = input["goal"].nilIfBlank ?? "Build a useful team"
         let format = input["format"].nilIfBlank ?? "Singles"
         let strategy = input["strategy"].nilIfBlank ?? "balanced offense"
         let mustInclude = splitList(input["mustInclude"])
         let avoid = Set(splitList(input["avoid"]).map { $0.lowercased() })
+        let existingTeam = splitList(input["existingTeam"])
+        let editRequest = input["editRequest"].nilIfBlank
         let candidates = ["Pikachu", "Charizard", "Venusaur", "Blastoise", "Gengar", "Dragonite", "Lucario", "Garchomp", "Rotom-Wash", "Corviknight", "Togekiss", "Snorlax"]
         let roles = ["Lead / speed control", "Physical breaker", "Special attacker", "Defensive pivot", "Utility support", "Late-game cleaner"]
         var selected: [String] = []
+        for name in existingTeam where !avoid.contains(name.lowercased()) {
+            if !selected.contains(name) { selected.append(name) }
+        }
         for name in mustInclude where !avoid.contains(name.lowercased()) {
             if !selected.contains(name) { selected.append(name) }
+        }
+        if let editRequest {
+            applyPokemonEditRequest(editRequest, selected: &selected, avoid: avoid)
         }
         for candidate in candidates where selected.count < 6 {
             guard !avoid.contains(candidate.lowercased()), !selected.contains(candidate) else { continue }
@@ -900,21 +913,26 @@ final class OpenClawWorkspaceRuntime: ObservableObject {
             return PokemonTeamMember(
                 name: name,
                 role: role,
-                notes: "\(format) pick for \(strategy).",
+                notes: "\(format) pick for \(strategy). Types: \(pokemonTypes(for: name).joined(separator: "/")).",
                 reason: selectionReason(for: name, role: role, strategy: strategy, mustInclude: mustInclude),
                 battlePlan: battlePlan(for: name, role: role, format: format, strategy: strategy)
             )
         }
+        let coverage = pokemonCoverageSummary(for: Array(team))
         let battleStrategy = [
+            "Goal: \(goal)",
             "Open with \(team.first?.name ?? "the lead") to establish \(team.first?.role.lowercased() ?? "tempo").",
             "Use pivots and utility picks to protect the main breakers until the opponent's answers are weakened.",
             "Preserve \(team.last?.name ?? "the cleaner") for the final turn cycle instead of trading it early."
         ]
         let weaknesses = [
+            coverage.weaknessSummary,
+            coverage.resistanceSummary,
             "Validate exact legality, moves, items, and EVs against the target format before competitive use.",
             "This MVP uses curated role coverage rather than a full damage calculator or matchup database."
         ]
         let suggestions = [
+            coverage.recommendation,
             "Add exact movesets after choosing the battle format.",
             "Run a future simulator-backed pass for type chart and usage data."
         ]
@@ -947,6 +965,8 @@ final class OpenClawWorkspaceRuntime: ObservableObject {
                 output: [
                     "summary": saved.summary,
                     "members": saved.teamMembers.map(\.name).joined(separator: ", "),
+                    "coverage": "\(coverage.weaknessSummary)\n\(coverage.resistanceSummary)",
+                    "recommendation": coverage.recommendation,
                     "strategy": saved.battleStrategy.joined(separator: "\n"),
                     "rationale": saved.selectionRationale.joined(separator: "\n")
                 ],
@@ -1021,6 +1041,86 @@ final class OpenClawWorkspaceRuntime: ObservableObject {
         ## Suggestions
         \(output.suggestions.map { "- \($0)" }.joined(separator: "\n"))
         """
+    }
+
+    private func applyPokemonEditRequest(_ request: String, selected: inout [String], avoid: Set<String>) {
+        let lowercased = request.lowercased()
+        func ensure(_ name: String) {
+            guard !avoid.contains(name.lowercased()), !selected.contains(name) else { return }
+            if selected.count >= 6 {
+                selected.removeLast()
+            }
+            selected.append(name)
+        }
+        if lowercased.contains("electric") {
+            ensure("Garchomp")
+            ensure("Rotom-Wash")
+        }
+        if lowercased.contains("bulky") || lowercased.contains("pivot") {
+            ensure("Corviknight")
+            ensure("Blastoise")
+        }
+    }
+
+    private func pokemonTypes(for name: String) -> [String] {
+        switch name.lowercased() {
+        case "pikachu": return ["Electric"]
+        case "charizard": return ["Fire", "Flying"]
+        case "venusaur": return ["Grass", "Poison"]
+        case "blastoise": return ["Water"]
+        case "gengar": return ["Ghost", "Poison"]
+        case "dragonite": return ["Dragon", "Flying"]
+        case "lucario": return ["Fighting", "Steel"]
+        case "garchomp": return ["Dragon", "Ground"]
+        case "rotom-wash": return ["Electric", "Water"]
+        case "corviknight": return ["Flying", "Steel"]
+        case "togekiss": return ["Fairy", "Flying"]
+        case "snorlax": return ["Normal"]
+        default: return ["Unknown"]
+        }
+    }
+
+    private func pokemonCoverageSummary(for team: [PokemonTeamMember]) -> (weaknessSummary: String, resistanceSummary: String, recommendation: String) {
+        let typeChart: [String: (weakTo: [String], resists: [String])] = [
+            "Electric": (["Ground"], ["Electric", "Flying", "Steel"]),
+            "Fire": (["Water", "Ground", "Rock"], ["Fire", "Grass", "Ice", "Bug", "Steel", "Fairy"]),
+            "Flying": (["Electric", "Ice", "Rock"], ["Grass", "Fighting", "Bug"]),
+            "Grass": (["Fire", "Ice", "Poison", "Flying", "Bug"], ["Water", "Electric", "Grass", "Ground"]),
+            "Poison": (["Ground", "Psychic"], ["Grass", "Fighting", "Poison", "Bug", "Fairy"]),
+            "Water": (["Electric", "Grass"], ["Fire", "Water", "Ice", "Steel"]),
+            "Ghost": (["Ghost", "Dark"], ["Poison", "Bug"]),
+            "Dragon": (["Ice", "Dragon", "Fairy"], ["Fire", "Water", "Electric", "Grass"]),
+            "Fighting": (["Flying", "Psychic", "Fairy"], ["Bug", "Rock", "Dark"]),
+            "Steel": (["Fire", "Fighting", "Ground"], ["Normal", "Grass", "Ice", "Flying", "Psychic", "Bug", "Rock", "Dragon", "Steel", "Fairy"]),
+            "Ground": (["Water", "Grass", "Ice"], ["Poison", "Rock"]),
+            "Fairy": (["Poison", "Steel"], ["Fighting", "Bug", "Dark"]),
+            "Normal": (["Fighting"], [])
+        ]
+        var weakCounts: [String: Int] = [:]
+        var resistCounts: [String: Int] = [:]
+        for member in team {
+            for type in pokemonTypes(for: member.name) {
+                for weakness in typeChart[type]?.weakTo ?? [] {
+                    weakCounts[weakness, default: 0] += 1
+                }
+                for resistance in typeChart[type]?.resists ?? [] {
+                    resistCounts[resistance, default: 0] += 1
+                }
+            }
+        }
+        let weaknesses = weakCounts.sorted { lhs, rhs in lhs.value == rhs.value ? lhs.key < rhs.key : lhs.value > rhs.value }.prefix(4)
+        let resistances = resistCounts.sorted { lhs, rhs in lhs.value == rhs.value ? lhs.key < rhs.key : lhs.value > rhs.value }.prefix(4)
+        let weaknessSummary = weaknesses.isEmpty ? "Weakness summary: no major shared weakness found in the curated data." : "Weakness summary: \(weaknesses.map { "\($0.key) x\($0.value)" }.joined(separator: ", "))."
+        let resistanceSummary = resistances.isEmpty ? "Resistance summary: add typed defensive pivots for better switch-ins." : "Resistance summary: \(resistances.map { "\($0.key) x\($0.value)" }.joined(separator: ", "))."
+        let recommendation: String
+        if weakCounts["Electric", default: 0] >= 2 {
+            recommendation = "Recommendation: add or preserve Garchomp as a Ground immunity pressure point, or use Rotom-Wash/Corviknight pivoting to avoid exposing Flying and Water picks."
+        } else if weakCounts["Ice", default: 0] >= 2 {
+            recommendation = "Recommendation: keep Steel or Water support healthy before committing Dragon and Flying attackers."
+        } else {
+            recommendation = "Recommendation: the team has a usable first-pass spread; refine exact moves, items, and EVs next."
+        }
+        return (weaknessSummary, resistanceSummary, recommendation)
     }
 
     private func selectionReason(for name: String, role: String, strategy: String, mustInclude: [String]) -> String {

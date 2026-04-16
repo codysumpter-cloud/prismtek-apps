@@ -4,23 +4,55 @@ struct BeMoreMacRootView: View {
     @EnvironmentObject private var state: BeMoreMacState
 
     var body: some View {
+        if state.hasCompletedOnboarding {
+            appShell
+        } else {
+            MacOnboardingView()
+        }
+    }
+
+    private var appShell: some View {
         NavigationSplitView {
             List(BeMoreMacSection.allCases, selection: $state.selectedSection) { section in
                 Label(section.rawValue, systemImage: section.symbol)
                     .tag(section)
             }
             .navigationTitle("BeMore")
+            .safeAreaInset(edge: .bottom) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(state.activeBuddyName)
+                        .font(.headline)
+                    Text(state.activeBuddyRole)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .padding()
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
         } detail: {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
                     header
-                    BuddyAsciiView(buddyName: state.activeBuddyName, mood: state.buddyMood)
-                    content
+                    HStack(alignment: .top, spacing: 18) {
+                        content
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        companionRail
+                            .frame(width: 260)
+                    }
                 }
                 .padding(28)
-                .frame(maxWidth: 980, alignment: .leading)
+                .frame(maxWidth: 1180, alignment: .leading)
             }
-            .background(Color(red: 0.96, green: 0.98, blue: 0.95))
+            .background(
+                LinearGradient(
+                    colors: [
+                        Color(red: 0.95, green: 0.98, blue: 0.94),
+                        Color(red: 0.88, green: 0.94, blue: 0.98)
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
         }
     }
 
@@ -29,10 +61,14 @@ struct BeMoreMacRootView: View {
             VStack(alignment: .leading, spacing: 6) {
                 Text(state.selectedSection.rawValue)
                     .font(.system(size: 34, weight: .bold))
-                Text("\(state.activeBuddyName) is the active Buddy across chat, tasks, skills, marketplace ownership, and receipts. Runtime power stays available without owning the first screen.")
+                Text("BeMore Mac is a native supervision shell: onboarding, Buddy work, skills, templates, and receipts stay visible instead of hiding behind a mascot.")
                     .foregroundStyle(.secondary)
             }
             Spacer()
+            Button("Check Runtime") {
+                state.checkRuntime()
+            }
+            .buttonStyle(.bordered)
             Button("Open Runtime") {
                 state.openRuntime()
             }
@@ -49,179 +85,292 @@ struct BeMoreMacRootView: View {
             chatContent
         case .work:
             workContent
+        case .skills:
+            skillsContent
         case .results:
-            productPanel(title: "Results", summary: "Command output, diffs, patches, artifacts, and receipts are the proof trail for every run.")
-        case .discover:
-            discoverContent
+            resultsContent
+        case .templates:
+            templatesContent
         case .settings:
-            productPanel(title: "Runtime Boundary", summary: "The macOS TestFlight app is the native shell. The local Node runtime remains explicit at \(state.runtimeURL.absoluteString).")
+            settingsContent
         }
     }
 
-    private var homeContent: some View {
+    private var companionRail: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("Start with Buddy")
-                .font(.title2.bold())
-            Text("\(state.activeBuddyName) • \(state.activeBuddyRole)")
-                .font(.headline)
-            Text(state.activeBuddyFocus)
-                .foregroundStyle(.secondary)
+            BuddyAsciiView(buddyName: state.activeBuddyName, mood: state.buddyMood)
             Text(state.latestReceipt)
+                .font(.subheadline)
                 .foregroundStyle(.secondary)
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 120), spacing: 10)], spacing: 10) {
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
                 statPill("Energy", value: state.energy)
                 statPill("Bond", value: state.bond)
                 statPill("Focus", value: state.focus)
                 statPill("Care", value: state.care)
             }
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 180), spacing: 12)], spacing: 12) {
-                ForEach(state.quickActions, id: \.self) { action in
-                    Text(action)
-                        .font(.headline)
-                        .padding()
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.white)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                }
-            }
             HStack {
-                Button("Check In") {
-                    state.checkIn()
-                }
-                .buttonStyle(.borderedProminent)
-                Button("Train") {
-                    state.train()
-                }
-                .buttonStyle(.bordered)
-                Button("Rest") {
-                    state.rest()
-                }
-                .buttonStyle(.bordered)
+                Button("Check In") { state.checkIn() }
+                Button("Train") { state.train() }
+                Button("Rest") { state.rest() }
             }
+            .buttonStyle(.bordered)
         }
-        .padding()
-        .background(Color.white.opacity(0.78))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .panel()
     }
 
-    private var workContent: some View {
+    private var homeContent: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("\(state.activeBuddyName)'s Work")
+            Text("Today With \(state.activeBuddyName)")
                 .font(.title2.bold())
-            Text("Workspace, missions, skills, and Mac power mode stay grouped here so the main menu feels companion-first.")
+            Text(state.activeBuddyFocus)
                 .foregroundStyle(.secondary)
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 180), spacing: 12)], spacing: 12) {
-                ForEach(["Workspace", "Missions", "Skills", "Mac power"], id: \.self) { surface in
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(surface)
-                            .font(.headline)
-                        Text(surface == "Workspace" ? "Browse files and run bounded commands." : "Receipt-backed actions for \(state.activeBuddyName).")
-                            .foregroundStyle(.secondary)
-                    }
-                    .padding()
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+
+            HStack(spacing: 12) {
+                actionTile("Start a task", icon: "plus.circle.fill", body: "Create focused work for your Buddy.") {
+                    state.selectedSection = .work
+                }
+                actionTile("Run a skill", icon: "wand.and.stars", body: "Use bounded capabilities with receipts.") {
+                    state.selectedSection = .skills
+                }
+                actionTile("Package a template", icon: "shippingbox.fill", body: "Prepare a sell-ready Buddy draft.") {
+                    state.selectedSection = .templates
                 }
             }
-            Button("Open Local Runtime") {
-                state.markWorking()
-                state.openRuntime()
-            }
-            .buttonStyle(.borderedProminent)
+
+            latestReceipts(limit: 3)
         }
-        .padding()
-        .background(Color.white.opacity(0.78))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .panel()
     }
 
     private var chatContent: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("Chat with \(state.activeBuddyName)")
+            Text("Chat With \(state.activeBuddyName)")
                 .font(.title2.bold())
-            Text("Chat uses the active Buddy identity instead of a detached assistant label. The full runtime still lives behind the local endpoint.")
+            Text("This local chat records visible turns and routes work into tasks, skills, or artifacts. It does not claim hidden runtime execution.")
                 .foregroundStyle(.secondary)
-            Text("\(state.activeBuddyName): I’m watching tasks, skills, receipts, and Mac power mode with you.")
-                .padding()
+
+            ForEach(state.chatMessages) { message in
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(message.speaker)
+                        .font(.caption.bold())
+                        .foregroundStyle(message.speaker == "You" ? .blue : .green)
+                    Text(message.body)
+                }
+                .padding(12)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.white)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-            Button("Open Runtime Chat Route") {
-                state.markWorking()
-                state.openRuntime()
+                .background(Color.white.opacity(0.86))
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+            }
+
+            HStack {
+                TextField("Ask Buddy what to do next...", text: $state.chatDraft)
+                    .textFieldStyle(.roundedBorder)
+                    .onSubmit { state.sendChat() }
+                Button("Send") { state.sendChat() }
+                    .buttonStyle(.borderedProminent)
+            }
+        }
+        .panel()
+    }
+
+    private var workContent: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text("Workbench")
+                .font(.title2.bold())
+            Text("Create tasks, mark progress, and keep work receipt-backed before pushing it into a runtime or repo.")
+                .foregroundStyle(.secondary)
+
+            HStack {
+                TextField("New task...", text: $state.taskDraft)
+                    .textFieldStyle(.roundedBorder)
+                    .onSubmit { state.addTask() }
+                Button("Add Task") { state.addTask() }
+                    .buttonStyle(.borderedProminent)
+            }
+
+            ForEach(state.tasks) { task in
+                Button {
+                    state.toggleTask(task)
+                } label: {
+                    HStack(alignment: .top, spacing: 12) {
+                        Image(systemName: task.isDone ? "checkmark.circle.fill" : "circle")
+                            .foregroundStyle(task.isDone ? .green : .secondary)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(task.title)
+                                .font(.headline)
+                            Text(task.detail)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                    }
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .padding(12)
+                .background(Color.white.opacity(0.86))
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+            }
+        }
+        .panel()
+    }
+
+    private var skillsContent: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text("Skills")
+                .font(.title2.bold())
+            Text("Skills are bounded capabilities. Buddy operates them; each run emits a receipt and artifact path.")
+                .foregroundStyle(.secondary)
+
+            ForEach(state.skills) { skill in
+                HStack(alignment: .top, spacing: 12) {
+                    Image(systemName: "wand.and.stars")
+                        .foregroundStyle(.blue)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(skill.name)
+                            .font(.headline)
+                        Text(skill.summary)
+                            .foregroundStyle(.secondary)
+                        Text(skill.status)
+                            .font(.caption.bold())
+                            .foregroundStyle(.green)
+                    }
+                    Spacer()
+                    Button("Run") {
+                        state.runSkill(skill)
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+                .padding(12)
+                .background(Color.white.opacity(0.86))
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+            }
+        }
+        .panel()
+    }
+
+    private var resultsContent: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text("Results and Receipts")
+                .font(.title2.bold())
+            Text("Receipts are the truth trail for the Mac shell. If a task, skill, or template action happens, it appears here.")
+                .foregroundStyle(.secondary)
+            latestReceipts(limit: 20)
+        }
+        .panel()
+    }
+
+    private var templatesContent: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text("Buddy Templates")
+                .font(.title2.bold())
+            Text("Create, train, and package Buddies without leaking private memory. Paid selling still needs billing and moderation; this build prepares clean seller drafts.")
+                .foregroundStyle(.secondary)
+
+            HStack(spacing: 12) {
+                templateStep("Create", "Install or personalize a Buddy with a clear role and use case.")
+                templateStep("Train", "Use check-ins, tasks, skills, and receipts to prove capability.")
+                templateStep("Package", "Emit a sanitized seller guide and template artifact.")
+                templateStep("Sell", "Submit when marketplace billing and moderation are enabled.")
+            }
+
+            Button("Prepare Seller-Ready Draft") {
+                state.packageTemplate()
             }
             .buttonStyle(.borderedProminent)
-        }
-        .padding()
-        .background(Color.white.opacity(0.78))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-    }
 
-    private var discoverContent: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Text("Discover Buddies and Plans")
-                .font(.title2.bold())
-            Text("Owned Buddies, marketplace discovery, and plan previews live here after \(state.activeBuddyName) is established as your companion.")
-                .foregroundStyle(.secondary)
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 200), spacing: 12)], spacing: 12) {
-                ForEach(state.marketplaceBuddies, id: \.self) { buddy in
-                    VStack(alignment: .leading, spacing: 8) {
+            Text("Discoverable Buddies")
+                .font(.headline)
+            ForEach(state.marketplaceBuddies, id: \.self) { buddy in
+                HStack {
+                    VStack(alignment: .leading) {
                         Text(buddy)
                             .font(.headline)
-                        Text(state.ownedBuddies.contains(buddy) ? "Owned" : "Installable")
-                            .foregroundStyle(state.ownedBuddies.contains(buddy) ? .green : .secondary)
+                        Text(state.ownedBuddies.contains(buddy) ? "Owned" : "Installable starter template")
+                            .foregroundStyle(.secondary)
                     }
-                    .padding()
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    Spacer()
+                    Button(state.ownedBuddies.contains(buddy) ? "Owned" : "Install") {
+                        state.installBuddy(buddy)
+                    }
+                    .disabled(state.ownedBuddies.contains(buddy))
                 }
+                .padding(12)
+                .background(Color.white.opacity(0.86))
+                .clipShape(RoundedRectangle(cornerRadius: 10))
             }
-            pricingContent
         }
-        .padding()
-        .background(Color.white.opacity(0.78))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .panel()
     }
 
-    private var pricingContent: some View {
+    private var settingsContent: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("Pricing")
+            Text("Settings")
                 .font(.title2.bold())
-            Text("Free keeps one active Buddy and starter marketplace access. Plus unlocks more Buddy slots and runtime capacity. Council unlocks premium/creator Buddies and team-style rosters.")
+            Text("Runtime URL: \(state.runtimeURL.absoluteString)")
                 .foregroundStyle(.secondary)
-            ForEach(["Free — $0", "Plus — $12/mo preview", "Council — $29/mo preview"], id: \.self) { plan in
-                Text(plan)
-                    .font(.headline)
-                    .padding()
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+            Text("Runtime status: \(state.runtimeStatus)")
+                .foregroundStyle(.secondary)
+            Button("Check Runtime Boundary") { state.checkRuntime() }
+                .buttonStyle(.borderedProminent)
+            Button("Run Onboarding Again") { state.resetOnboarding() }
+                .buttonStyle(.bordered)
+        }
+        .panel()
+    }
+
+    private func latestReceipts(limit: Int) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Latest Receipts")
+                .font(.headline)
+            ForEach(Array(state.receipts.prefix(limit))) { receipt in
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(receipt.title)
+                        .font(.headline)
+                    Text(receipt.summary)
+                        .foregroundStyle(.secondary)
+                    Text(receipt.artifact)
+                        .font(.caption.monospaced())
+                        .foregroundStyle(.blue)
+                }
+                .padding(12)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color.white.opacity(0.86))
+                .clipShape(RoundedRectangle(cornerRadius: 10))
             }
-            Text("Checkout is not enabled in this build; the pricing structure is visible so the product no longer hides monetization.")
+        }
+    }
+
+    private func actionTile(_ title: String, icon: String, body: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: 10) {
+                Image(systemName: icon)
+                    .font(.title2)
+                Text(title)
+                    .font(.headline)
+                Text(body)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            .padding()
+            .frame(maxWidth: .infinity, minHeight: 130, alignment: .leading)
+            .background(Color.white.opacity(0.9))
+            .clipShape(RoundedRectangle(cornerRadius: 14))
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func templateStep(_ title: String, _ body: String) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title)
+                .font(.headline)
+            Text(body)
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
         .padding()
-        .background(Color.white.opacity(0.78))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-    }
-
-    private func productPanel(title: String, summary: String) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text(title)
-                .font(.title2.bold())
-            Text(summary)
-                .foregroundStyle(.secondary)
-            Button("Open Local Runtime") {
-                state.markWorking()
-                state.openRuntime()
-            }
-            .buttonStyle(.borderedProminent)
-        }
-        .padding()
-        .background(Color.white.opacity(0.78))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .frame(maxWidth: .infinity, minHeight: 120, alignment: .topLeading)
+        .background(Color.white.opacity(0.86))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
     private func statPill(_ title: String, value: Int) -> some View {
@@ -232,9 +381,84 @@ struct BeMoreMacRootView: View {
             Text("\(value)")
                 .font(.headline)
         }
+        .padding(10)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.white.opacity(0.86))
+        .clipShape(RoundedRectangle(cornerRadius: 10))
+    }
+}
+
+private struct MacOnboardingView: View {
+    @EnvironmentObject private var state: BeMoreMacState
+    @State private var buddyName = "Prism"
+    @State private var buddyRole = "Builder companion"
+    @State private var buddyFocus = "Help me create, train, and package useful Buddy templates."
+    @State private var runtimeURL = "http://127.0.0.1:4319"
+
+    var body: some View {
+        VStack(spacing: 24) {
+            Text("Set Up BeMore Mac")
+                .font(.system(size: 42, weight: .bold))
+            Text("Create your first Buddy, choose what they help with, and keep the runtime boundary explicit.")
+                .font(.title3)
+                .foregroundStyle(.secondary)
+
+            VStack(alignment: .leading, spacing: 14) {
+                TextField("Buddy name", text: $buddyName)
+                TextField("Buddy role", text: $buddyRole)
+                TextField("Current focus", text: $buddyFocus)
+                TextField("Runtime URL", text: $runtimeURL)
+            }
+            .textFieldStyle(.roundedBorder)
+            .frame(width: 520)
+
+            HStack(spacing: 12) {
+                onboardingPill("Create", "Name a Buddy and role.")
+                onboardingPill("Train", "Use tasks, chat, and skills.")
+                onboardingPill("Sell", "Package sanitized templates.")
+            }
+            .frame(width: 720)
+
+            Button("Start BeMore") {
+                state.completeOnboarding(name: buddyName, role: buddyRole, focus: buddyFocus, runtime: runtimeURL)
+            }
+            .controlSize(.large)
+            .buttonStyle(.borderedProminent)
+        }
+        .padding(48)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(
+            LinearGradient(
+                colors: [
+                    Color(red: 0.94, green: 0.98, blue: 0.91),
+                    Color(red: 0.84, green: 0.92, blue: 0.98)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+    }
+
+    private func onboardingPill(_ title: String, _ body: String) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title)
+                .font(.headline)
+            Text(body)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .background(Color.white.opacity(0.82))
+        .clipShape(RoundedRectangle(cornerRadius: 14))
+    }
+}
+
+private extension View {
+    func panel() -> some View {
+        padding()
+            .background(Color.white.opacity(0.72))
+            .clipShape(RoundedRectangle(cornerRadius: 18))
+            .shadow(color: .black.opacity(0.06), radius: 18, y: 8)
     }
 }

@@ -287,6 +287,86 @@ final class BuddyProfileStore: ObservableObject {
         }
     }
 
+    func packageActiveBuddyTemplate(using appState: AppState) {
+        guard let activeBuddy else {
+            loadError = "Install or equip a Buddy before packaging a template."
+            return
+        }
+        guard let contracts else {
+            loadError = "Buddy contracts are not loaded yet."
+            return
+        }
+
+        let template = contracts.templateForInstance(activeBuddy)
+        let slug = safeTemplateSlug(activeBuddy.displayName.isEmpty ? activeBuddy.identity.role : activeBuddy.displayName)
+        let jsonPath = "buddies/templates/\(slug)-template-package.json"
+        let guidePath = "buddies/templates/\(slug)-seller-guide.md"
+        let trainedCategories = activeBuddy.proficiencies.templateDictionary
+            .filter { $0.value > 0 }
+            .sorted { lhs, rhs in lhs.value == rhs.value ? lhs.key < rhs.key : lhs.value > rhs.value }
+        let package: [String: Any] = [
+            "schemaVersion": "buddy-template-package.v1",
+            "packageId": "buddy.template.\(slug).v1",
+            "displayName": activeBuddy.displayName,
+            "sourceTemplateId": activeBuddy.templateId,
+            "sourceTemplateName": template?.name ?? "Custom Buddy",
+            "status": "sell-ready-draft",
+            "marketplaceAvailability": "packaged locally; paid marketplace submission is gated by billing and moderation",
+            "creatorNotes": [
+                "This package is sanitized for template review.",
+                "Private Buddy memory files, chat transcripts, check-in notes, and raw training notes are not included."
+            ],
+            "identity": [
+                "class": activeBuddy.identity.class,
+                "role": activeBuddy.identity.role,
+                "personalityPrimary": activeBuddy.identity.personalityPrimary,
+                "personalitySecondary": activeBuddy.identity.personalitySecondary ?? "",
+                "voicePrimary": activeBuddy.identity.voicePrimary,
+                "archetype": activeBuddy.identity.archetype,
+                "bodyStyle": activeBuddy.identity.bodyStyle,
+                "palette": activeBuddy.identity.palette
+            ],
+            "progressionSnapshot": [
+                "level": activeBuddy.progression.level,
+                "bond": activeBuddy.progression.bond,
+                "evolutionTier": activeBuddy.progression.evolutionTier,
+                "growthStageLabel": activeBuddy.progression.growthStageLabel,
+                "badges": activeBuddy.progression.badges
+            ],
+            "publicTrainingSummary": [
+                "trainingEventCount": activeBuddy.trainingHistory.count,
+                "trainedCategories": trainedCategories.map { ["category": $0.key, "score": $0.value] },
+                "favoriteTasks": activeBuddy.state.favoriteTasks
+            ],
+            "moves": activeBuddy.equippedMoves
+                .sorted { $0.slot < $1.slot }
+                .map { ["slot": $0.slot, "name": $0.name, "category": $0.category, "kind": $0.kind, "mastery": $0.mastery] },
+            "recommendedFor": template?.recommendedFor ?? [],
+            "sanitation": [
+                "privateMemoryIncluded": false,
+                "chatTranscriptsIncluded": false,
+                "rawCheckInsIncluded": false,
+                "rawTrainingNotesIncluded": false,
+                "artifactPaths": [jsonPath, guidePath]
+            ]
+        ]
+
+        do {
+            let json = try prettyJSON(package)
+            let guide = templateSellerGuide(
+                buddy: activeBuddy,
+                templateName: template?.name ?? "Custom Buddy",
+                trainedCategories: trainedCategories,
+                jsonPath: jsonPath
+            )
+            _ = appState.writeWorkspaceArtifact(path: jsonPath, content: json)
+            lastReceipt = appState.writeWorkspaceArtifact(path: guidePath, content: guide)
+            loadError = nil
+        } catch {
+            loadError = error.localizedDescription
+        }
+    }
+
     func ensureStarterBuddy(templateID: String, displayName: String, focus: String, using appState: AppState) {
         if contracts == nil {
             load(for: appState.stackConfig)
@@ -332,6 +412,98 @@ final class BuddyProfileStore: ObservableObject {
         } catch {
             loadError = error.localizedDescription
         }
+    }
+
+    private func prettyJSON(_ object: [String: Any]) throws -> String {
+        let data = try JSONSerialization.data(withJSONObject: object, options: [.prettyPrinted, .sortedKeys])
+        return String(data: data, encoding: .utf8) ?? "{}"
+    }
+
+    private func safeTemplateSlug(_ value: String) -> String {
+        let allowed = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "-"))
+        let slug = value
+            .lowercased()
+            .replacingOccurrences(of: " ", with: "-")
+            .unicodeScalars
+            .map { allowed.contains($0) ? Character($0) : "-" }
+            .reduce(into: "") { $0.append($1) }
+            .replacingOccurrences(of: "--", with: "-")
+            .trimmingCharacters(in: CharacterSet(charactersIn: "-"))
+        return slug.isEmpty ? "buddy" : slug
+    }
+
+    private func templateSellerGuide(
+        buddy: BuddyInstance,
+        templateName: String,
+        trainedCategories: [(key: String, value: Int)],
+        jsonPath: String
+    ) -> String {
+        let moves = buddy.equippedMoves
+            .sorted { $0.slot < $1.slot }
+            .map { "- Slot \($0.slot): \($0.name) (\($0.category), mastery \($0.mastery))" }
+            .joined(separator: "\n")
+        let training = trainedCategories.isEmpty
+            ? "- No scored training categories yet. Record training before marketplace submission."
+            : trainedCategories.map { "- \($0.key): \($0.value)" }.joined(separator: "\n")
+
+        return """
+        # \(buddy.displayName) Template Seller Guide
+
+        - Status: sell-ready draft
+        - Source template: \(templateName)
+        - Package artifact: \(jsonPath)
+        - Marketplace note: paid selling is not live in this build. This package is ready for review once billing, moderation, and listing submission are enabled.
+
+        ## What Users Are Creating
+        A Buddy template is a reusable blueprint: identity, role, moves, starter guidance, public training summary, and recommended use cases. It is not a clone of your private Buddy.
+
+        ## How To Create A Template
+        1. Install or personalize a Buddy.
+        2. Give the Buddy a clear role and focus.
+        3. Use the Buddy on real tasks so receipts and artifacts prove what it can do.
+        4. Package the active Buddy from the Buddy tab.
+
+        ## How To Train A Template
+        Training comes from check-ins, training entries, and receipt-backed work. Keep the notes specific: what improved, what category was trained, and which skill or artifact proved the improvement.
+
+        ## How To Sell A Template
+        Selling requires a sanitized package, a clear listing, pricing, moderation approval, and billing support. This build creates the sanitized package and seller guide; it does not publish paid listings yet.
+
+        ## Public Capabilities
+        - Class: \(buddy.identity.class)
+        - Role: \(buddy.identity.role)
+        - Level: \(buddy.progression.level)
+        - Bond: \(buddy.progression.bond)
+        - Evolution tier: \(buddy.progression.evolutionTier)
+
+        ## Moves
+        \(moves)
+
+        ## Training Summary
+        \(training)
+
+        ## Privacy Boundary
+        Private memory, chat transcripts, raw check-ins, and raw training notes are stripped. Buyers receive the template blueprint and public capability summary, not your personal history.
+        """
+    }
+}
+
+private extension BuddyProficiencies {
+    var templateDictionary: [String: Int] {
+        [
+            "planning": planning,
+            "building": building,
+            "research": research,
+            "writing": writing,
+            "memory": memory,
+            "organization": organization,
+            "safety": safety,
+            "verification": verification,
+            "optimization": optimization,
+            "creativity": creativity,
+            "coordination": coordination,
+            "emotionalSupport": emotionalSupport
+        ]
     }
 }
 
