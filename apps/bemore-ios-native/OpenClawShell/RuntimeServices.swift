@@ -714,13 +714,19 @@ final class ProviderStore: ObservableObject {
 
     func load() {
         accounts = (try? JSONDecoder().decode([ProviderAccount].self, from: Data(contentsOf: Paths.providersFile))) ?? []
+        let migrated = accounts.map(normalized)
+        if migrated != accounts {
+            accounts = migrated
+            persist()
+        }
     }
 
     func account(for provider: ProviderKind) -> ProviderAccount {
-        accounts.first(where: { $0.provider == provider }) ?? .blank(for: provider)
+        normalized(accounts.first(where: { $0.provider == provider }) ?? .blank(for: provider))
     }
 
     func upsert(_ account: ProviderAccount) {
+        let account = normalized(account)
         if let index = accounts.firstIndex(where: { $0.provider == account.provider }) {
             accounts[index] = account
         } else {
@@ -764,6 +770,17 @@ final class ProviderStore: ObservableObject {
         } catch {
             lastError = error.localizedDescription
         }
+    }
+
+    private func normalized(_ account: ProviderAccount) -> ProviderAccount {
+        var account = account
+        if account.provider == .xai {
+            let legacyGrokModels = ["grok-beta", "grok-2"]
+            if legacyGrokModels.contains(account.modelSlug.trimmingCharacters(in: .whitespacesAndNewlines)) {
+                account.modelSlug = CloudModelCatalog.suggestedDefaultModel(for: .xai)
+            }
+        }
+        return account
     }
 }
 
@@ -1206,6 +1223,9 @@ final class AppState: ObservableObject {
     var selectedTab: AppTab {
         get { tabPreferencesStore.preferences.selectedTab }
         set {
+            if tabPreferencesStore.preferences.hiddenTabs.contains(newValue) {
+                tabPreferencesStore.preferences.hiddenTabs.remove(newValue)
+            }
             tabPreferencesStore.preferences.selectedTab = newValue
             tabPreferencesStore.persist()
         }
@@ -1354,12 +1374,15 @@ final class AppState: ObservableObject {
     }
     
     func route(to tab: AppTab) {
+        if tabPreferencesStore.preferences.hiddenTabs.contains(tab) {
+            tabPreferencesStore.preferences.hiddenTabs.remove(tab)
+        }
         selectedTab = tab
     }
     
     func openChat(with prompt: String) {
         pendingPrompt = prompt
-        selectedTab = .chat
+        route(to: .chat)
     }
     
     func consumePendingPrompt() -> String? {
@@ -1546,13 +1569,13 @@ final class AppState: ObservableObject {
         if resetConversation {
             chatStore.clear()
         }
-        selectedTab = .chat
+        route(to: .chat)
     }
 
     func leaveChat() {
         let destination = chatReturnTab ?? stableHomeTab
         chatReturnTab = nil
-        selectedTab = destination
+        route(to: destination)
     }
 
     func removeProvider(_ provider: ProviderKind) {

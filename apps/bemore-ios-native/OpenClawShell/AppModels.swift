@@ -214,8 +214,8 @@ enum CloudModelCatalog {
             ]
         case .xai:
             return [
-                CloudModel(provider: .xai, slug: "grok-beta", displayName: "Grok Beta", notes: "Latest xAI experimental model"),
-                CloudModel(provider: .xai, slug: "grok-2", displayName: "Grok 2", notes: "High-performance xAI model")
+                CloudModel(provider: .xai, slug: "grok-3", displayName: "Grok 3", notes: "Stable xAI chat model"),
+                CloudModel(provider: .xai, slug: "grok-3-mini", displayName: "Grok 3 Mini", notes: "Lower-latency Grok 3 option")
             ]
         case .openAI:
             return [

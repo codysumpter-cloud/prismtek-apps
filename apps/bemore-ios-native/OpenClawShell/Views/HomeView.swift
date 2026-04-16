@@ -152,10 +152,10 @@ struct HomeView: View {
 
             HStack(spacing: 12) {
                 quickAction(icon: "message", label: "New Chat") {
-                    appState.chatStore.clear()
+                    appState.openChat(from: .missionControl, resetConversation: true)
                 }
                 quickAction(icon: "macbook.and.iphone", label: "Pair Mac") {
-                    appState.selectedTab = .pairing
+                    appState.route(to: .pairing)
                 }
                 quickAction(icon: "folder.badge.plus", label: "Import File") {
                     isHomeFileImporterPresented = true
