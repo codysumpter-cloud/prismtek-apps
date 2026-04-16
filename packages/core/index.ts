@@ -113,7 +113,7 @@ export type EventType =
 export interface CapabilityPackageMetadata {
   name: string;
   description: string;
-  ownerRepo: 'bmo-stack' | 'prismtek-apps';
+  ownerRepo: 'prismtek-apps' | 'external-runtime';
   category: string;
   tags?: string[];
   maturity: CapabilityMaturity;
