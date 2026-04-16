@@ -25,6 +25,8 @@ jobs:
       ASC_ISSUER_ID: ${{ secrets.APPSTORE_CONNECT_ISSUER_ID }}
       MAC_BUNDLE_ID: BeMoreAgent
       MAC_TEAM_ID: DY9FHPRZA9
+      MAC_DEVELOPMENT_CERTIFICATE_P12_BASE64: ${{ secrets.BEMORE_MAC_DEVELOPMENT_CERTIFICATE_P12_BASE64 }}
+      MAC_DEVELOPMENT_CERTIFICATE_PASSWORD: ${{ secrets.BEMORE_MAC_DEVELOPMENT_CERTIFICATE_PASSWORD }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -77,7 +79,107 @@ jobs:
             printf '%s' "$ASC_API_KEY" | base64 --decode > "$RUNNER_TEMP/AuthKey.p8"
           fi
 
+      - name: Skip upload if current macOS build already exists
+        run: |
+          ruby <<'RUBY'
+          require 'base64'
+          require 'json'
+          require 'net/http'
+          require 'openssl'
+          require 'rexml/document'
+          require 'uri'
+          require 'yaml'
+
+          project = YAML.safe_load(File.read('project.yml'), permitted_classes: [String, Integer, Float], aliases: true)
+          settings = project.fetch('targets').fetch('BeMoreMac').fetch('settings').fetch('base')
+          version = settings.fetch('MARKETING_VERSION').to_s
+          build = settings.fetch('CURRENT_PROJECT_VERSION').to_s
+          key_id = ENV.fetch('ASC_KEY_ID')
+          issuer = ENV.fetch('ASC_ISSUER_ID')
+          key = OpenSSL::PKey.read(File.read(ENV.fetch('RUNNER_TEMP') + '/AuthKey.p8'))
+
+          def b64url(data)
+            Base64.urlsafe_encode64(data).delete('=')
+          end
+
+          header = { alg: 'ES256', kid: key_id, typ: 'JWT' }
+          payload = { iss: issuer, iat: Time.now.to_i - 30, exp: Time.now.to_i + 900, aud: 'appstoreconnect-v1' }
+          unsigned = [b64url(header.to_json), b64url(payload.to_json)].join('.')
+          signature = OpenSSL::ASN1.decode(key.dsa_sign_asn1(OpenSSL::Digest::SHA256.digest(unsigned)))
+          r = signature.value[0].value.to_s(2).rjust(32, "\0")[-32, 32]
+          s = signature.value[1].value.to_s(2).rjust(32, "\0")[-32, 32]
+          token = "#{unsigned}.#{b64url(r + s)}"
+
+          uri = URI('https://api.appstoreconnect.apple.com/v1/builds?filter[app]=6761770213&include=preReleaseVersion&limit=100&sort=-uploadedDate')
+          request = Net::HTTP::Get.new(uri)
+          request['Authorization'] = "Bearer #{token}"
+          response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) { |http| http.request(request) }
+          abort("App Store Connect build lookup failed: HTTP #{response.code}") unless response.code.start_with?('2')
+
+          payload = JSON.parse(response.body)
+          included = (payload['included'] || []).to_h { |item| [item['id'], item] }
+          existing = payload.fetch('data').find do |candidate|
+            attrs = candidate.fetch('attributes')
+            prerelease = included.dig(candidate.dig('relationships', 'preReleaseVersion', 'data', 'id'), 'attributes') || {}
+            attrs['version'].to_s == build &&
+              attrs['processingState'] != 'INVALID' &&
+              prerelease['platform'] == 'MAC_OS' &&
+              prerelease['version'].to_s == version
+          end
+
+          if existing
+            attrs = existing.fetch('attributes')
+            File.open(ENV.fetch('GITHUB_ENV'), 'a') { |file| file.puts('MAC_BUILD_ALREADY_UPLOADED=1') }
+            File.open(ENV.fetch('GITHUB_STEP_SUMMARY'), 'a') do |file|
+              file.puts('## BeMore Mac TestFlight upload')
+              file.puts
+              file.puts("- Bundle identifier: #{ENV.fetch('MAC_BUNDLE_ID')}")
+              file.puts("- Archived version: #{version} (#{build})")
+              file.puts("- Upload step: skipped because this macOS build already exists in App Store Connect")
+              file.puts("- App Store Connect processing state: #{attrs['processingState']}")
+            end
+            puts "macOS build #{version} (#{build}) already exists in App Store Connect; skipping duplicate upload."
+          else
+            puts "macOS build #{version} (#{build}) is not present in App Store Connect; continuing upload."
+          end
+          RUBY
+
+      - name: Validate CI signing assets
+        if: env.MAC_BUILD_ALREADY_UPLOADED != '1'
+        run: |
+          missing=0
+          for name in MAC_DEVELOPMENT_CERTIFICATE_P12_BASE64 MAC_DEVELOPMENT_CERTIFICATE_PASSWORD; do
+            if [ -z "${!name:-}" ]; then
+              echo "::error title=Missing BeMore Mac CI signing secret::$name is required for GitHub-hosted macOS archive signing."
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            exit 65
+          fi
+
+      - name: Import CI signing assets
+        if: env.MAC_BUILD_ALREADY_UPLOADED != '1'
+        run: |
+          umask 077
+          SIGNING_KEYCHAIN="$RUNNER_TEMP/bemoremac-signing.keychain-db"
+          SIGNING_KEYCHAIN_PASSWORD="$(uuidgen)"
+          CERT_PATH="$RUNNER_TEMP/bemoremac-development.p12"
+          echo "SIGNING_KEYCHAIN=$SIGNING_KEYCHAIN" >> "$GITHUB_ENV"
+
+          printf '%s' "$MAC_DEVELOPMENT_CERTIFICATE_P12_BASE64" | base64 --decode > "$CERT_PATH"
+
+          security create-keychain -p "$SIGNING_KEYCHAIN_PASSWORD" "$SIGNING_KEYCHAIN"
+          security set-keychain-settings -lut 21600 "$SIGNING_KEYCHAIN"
+          security unlock-keychain -p "$SIGNING_KEYCHAIN_PASSWORD" "$SIGNING_KEYCHAIN"
+          security import "$CERT_PATH" -k "$SIGNING_KEYCHAIN" -P "$MAC_DEVELOPMENT_CERTIFICATE_PASSWORD" -T /usr/bin/codesign -T /usr/bin/security -T /usr/bin/xcodebuild
+          security list-keychains -d user -s "$SIGNING_KEYCHAIN"
+          security default-keychain -d user -s "$SIGNING_KEYCHAIN"
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$SIGNING_KEYCHAIN_PASSWORD" "$SIGNING_KEYCHAIN"
+          security find-identity -v -p codesigning "$SIGNING_KEYCHAIN"
+
       - name: Generate Xcode project
+        if: env.MAC_BUILD_ALREADY_UPLOADED != '1'
         run: |
           test -f project.yml
           xcodegen generate
@@ -85,6 +187,7 @@ jobs:
           test -f exportOptions-upload.plist
 
       - name: Verify macOS bundle contract
+        if: env.MAC_BUILD_ALREADY_UPLOADED != '1'
         run: |
           python3 - <<'PY2'
           import pathlib
@@ -106,6 +209,7 @@ jobs:
           PY2
 
       - name: Archive BeMore Mac
+        if: env.MAC_BUILD_ALREADY_UPLOADED != '1'
         run: |
           xcodebuild -project BeMoreMac.xcodeproj \
             -scheme BeMoreMac \
@@ -118,9 +222,11 @@ jobs:
             -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
             CODE_SIGN_STYLE=Automatic \
             DEVELOPMENT_TEAM="$MAC_TEAM_ID" \
+            OTHER_CODE_SIGN_FLAGS="--keychain $SIGNING_KEYCHAIN" \
             clean archive
 
       - name: Export and upload to TestFlight
+        if: env.MAC_BUILD_ALREADY_UPLOADED != '1'
         run: |
           plutil -p exportOptions-upload.plist
           xcodebuild -exportArchive \
@@ -133,7 +239,7 @@ jobs:
             -authenticationKeyIssuerID "$ASC_ISSUER_ID"
 
       - name: Publish TestFlight summary
-        if: success()
+        if: success() && env.MAC_BUILD_ALREADY_UPLOADED != '1'
         run: |
           ARCHIVE_PLIST="$RUNNER_TEMP/BeMoreMac.xcarchive/Products/Applications/BeMore.app/Contents/Info.plist"
           VERSION=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$ARCHIVE_PLIST")
