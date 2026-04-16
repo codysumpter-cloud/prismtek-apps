@@ -7,9 +7,9 @@ final class PlatformAppState: ObservableObject {
     @Published var workspaces: [WorkspaceRecord] = []
     @Published var jobs: [GenerationJob] = []
     @Published var sessions: [SandboxSessionRecord] = []
-    @Published var billing = BillingSnapshot.demo
-    @Published var admin = AdminSnapshot.demo
-    @Published var runtime = RuntimeSummary.stub
+    @Published var billing = BillingSnapshot.unavailable
+    @Published var admin = AdminSnapshot.unavailable
+    @Published var runtime = RuntimeSummary.unconfigured
 
     func bootstrap() {
         providerStore.load()
@@ -17,13 +17,19 @@ final class PlatformAppState: ObservableObject {
         jobs = PlatformPersistence.load([GenerationJob].self, from: PlatformPaths.jobsFile) ?? []
         sessions = PlatformPersistence.load([SandboxSessionRecord].self, from: PlatformPaths.sessionsFile) ?? []
 
-        if workspaces.isEmpty {
-            workspaces = [
-                WorkspaceRecord(name: "BeMoreAgent iOS", repoURL: "codysumpter-cloud/bmo-stack", syncStatus: "linked", lastSyncedAt: .now),
-                WorkspaceRecord(name: "prismtek.dev mega-app", repoURL: "codysumpter-cloud/prismtek.dev_mega-app", syncStatus: "linked", lastSyncedAt: nil)
-            ]
-            persistWorkspaces()
-        }
+        billing = BillingSnapshot(
+            currentUsageUSD: 0,
+            softLimitUSD: 0,
+            activeSandboxes: sessions.filter { $0.status == "running" }.count,
+            maxSandboxes: 0,
+            planName: "Not connected"
+        )
+        admin = AdminSnapshot(
+            totalUsers: 0,
+            activeSessions: sessions.filter { $0.status == "running" }.count,
+            generationJobs: jobs.count,
+            systemHealth: "Not connected"
+        )
         refreshRuntimeSummary()
     }
 
@@ -31,7 +37,7 @@ final class PlatformAppState: ObservableObject {
         if let connected = providerStore.accounts.first(where: { $0.isEnabled }) {
             runtime = RuntimeSummary(mode: "Hybrid-ready", activeProvider: connected.provider.displayName, activeModel: connected.modelSlug, notes: "Provider connection saved locally. Real network execution still needs request validation on device.")
         } else {
-            runtime = .stub
+            runtime = .unconfigured
         }
     }
 
@@ -55,14 +61,14 @@ final class PlatformAppState: ObservableObject {
 
     func enqueueGeneration(description: String, templateName: String, target: String, modelSlug: String) {
         guard !description.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
-        let job = GenerationJob(description: description, templateName: templateName, target: target, modelSlug: modelSlug, status: .completed, progress: 1.0)
+        let job = GenerationJob(description: description, templateName: templateName, target: target, modelSlug: modelSlug, status: .queued, progress: 0.0)
         jobs.insert(job, at: 0)
         persistJobs()
     }
 
     func launchSandbox(for workspaceName: String) {
         guard !workspaceName.isEmpty else { return }
-        sessions.insert(SandboxSessionRecord(workspaceName: workspaceName, status: "running", connectURL: "sandbox-session", expiresAt: Calendar.current.date(byAdding: .hour, value: 1, to: .now) ?? .now), at: 0)
+        sessions.insert(SandboxSessionRecord(workspaceName: workspaceName, status: "unavailable", connectURL: "No sandbox backend is connected on this device.", expiresAt: .now), at: 0)
         persistSessions()
     }
 

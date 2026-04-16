@@ -148,7 +148,7 @@ struct BillingSnapshot: Codable, Hashable {
     var maxSandboxes: Int
     var planName: String
 
-    static let demo = BillingSnapshot(currentUsageUSD: 42.5, softLimitUSD: 100, activeSandboxes: 3, maxSandboxes: 10, planName: "Pro")
+    static let unavailable = BillingSnapshot(currentUsageUSD: 0, softLimitUSD: 0, activeSandboxes: 0, maxSandboxes: 0, planName: "Not connected")
 }
 
 struct AdminSnapshot: Codable, Hashable {
@@ -157,7 +157,7 @@ struct AdminSnapshot: Codable, Hashable {
     var generationJobs: Int
     var systemHealth: String
 
-    static let demo = AdminSnapshot(totalUsers: 1284, activeSessions: 84, generationJobs: 3492, systemHealth: "Healthy")
+    static let unavailable = AdminSnapshot(totalUsers: 0, activeSessions: 0, generationJobs: 0, systemHealth: "Not connected")
 }
 
 struct RuntimeSummary: Codable, Hashable {
@@ -166,10 +166,10 @@ struct RuntimeSummary: Codable, Hashable {
     var activeModel: String
     var notes: String
 
-    static let stub = RuntimeSummary(
-        mode: "Stub runtime",
+    static let unconfigured = RuntimeSummary(
+        mode: "Not configured",
         activeProvider: "None",
         activeModel: "None",
-        notes: "Real on-device runtime still requires Mac/Xcode-side integration."
+        notes: "No provider is enabled and no platform execution backend has been validated on this device."
     )
 }

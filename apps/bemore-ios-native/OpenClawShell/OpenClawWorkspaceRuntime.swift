@@ -335,7 +335,7 @@ enum ClawHubCatalog {
 
             ## Runtime contract
             - Report configured routes separately from working routes.
-            - Never imply local inference is live when only stub runtime is present.
+            - Never imply local inference is live when only a placeholder runtime is present.
             - Suggest the smallest next action to restore capability.
             """,
             systemImage: "stethoscope"
@@ -990,26 +990,17 @@ final class OpenClawWorkspaceRuntime: ObservableObject {
     private func runClawHubSkill(manifest: SkillManifest, input: [String: String]) -> OpenClawReceipt {
         let action = begin(kind: .skillRun, source: "skill.\(manifest.id)", title: manifest.name, input: input)
         let request = input["request"].nilIfBlank ?? "Inspect this skill."
-        let path = "skills/\(manifest.id)/runs/\(safeSlug(String(Int(Date().timeIntervalSince1970)) + "-" + request.prefix(32))).md"
-        let body = """
-        # \(manifest.name) Run
-
-        - Skill: \(manifest.id)
-        - Request: \(request)
-        - Status: completed with local workspace receipt
-
-        ## Result
-        This Buddy Skill Hub skill is installed and callable through the generic skill runner. Connect deeper domain logic by editing `skills/\(manifest.id)/README.md` and its manifest.
-        """
-        do {
-            let url = try resolve(path)
-            try fileManager.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
-            try body.write(to: url, atomically: true, encoding: .utf8)
-            appendEvent(type: "skill.completed", message: "\(manifest.name) wrote \(path).", metadata: ["skillId": manifest.id, "artifact": path])
-            return finish(action, status: .persisted, summary: "\(manifest.name) wrote a run artifact", output: ["summary": "Run artifact created for \(request)"], artifacts: [path])
-        } catch {
-            return finish(action, status: .failed, summary: "\(manifest.name) could not write a run artifact", error: error.localizedDescription)
-        }
+        appendEvent(type: "skill.unavailable", message: "\(manifest.name) has no executable runtime entrypoint.", metadata: ["skillId": manifest.id])
+        return finish(
+            action,
+            status: .planned,
+            summary: "\(manifest.name) is installed, but no executable implementation is wired",
+            output: [
+                "request": request,
+                "status": "Installed manifest only. No domain runtime ran, no artifact was generated, and no workspace state changed.",
+                "entrypoint": manifest.entrypoint
+            ]
+        )
     }
 
     private func pokemonMarkdown(output: PokemonTeamOutput, format: String, strategy: String) -> String {
