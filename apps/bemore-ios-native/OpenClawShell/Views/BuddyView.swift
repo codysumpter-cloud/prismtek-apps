@@ -31,6 +31,8 @@ struct BuddyView: View {
                     rosterCard
                     marketplaceCard
 
+                    buddyTemplateLifecycleCard
+                    sellReadyTemplateCard
                     trainingAndManagementCard
 
                     if let receipt = store.lastReceipt {
@@ -389,6 +391,82 @@ struct BuddyView: View {
         .bmoCard()
     }
 
+    private var buddyTemplateLifecycleCard: some View {
+        VStack(alignment: .leading, spacing: BMOTheme.spacingMD) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Create, Train, Sell")
+                        .font(.headline)
+                        .foregroundColor(BMOTheme.textPrimary)
+                    Text("Buddy templates are reusable blueprints. Training improves the owned Buddy; packaging creates a sanitized sell-ready draft.")
+                        .font(.subheadline)
+                        .foregroundColor(BMOTheme.textSecondary)
+                }
+                Spacer()
+                StatusBadge(label: "Creator path", color: BMOTheme.accent)
+            }
+
+            lifecycleStep(
+                number: "1",
+                title: "Create",
+                body: "Install a starter Buddy or personalize one. Pick a clear role, use case, voice, and focus so buyers understand what the Buddy is for."
+            )
+            lifecycleStep(
+                number: "2",
+                title: "Train",
+                body: "Record check-ins, training entries, and real task receipts. A trained Buddy should have proof: saved artifacts, skill runs, and clear capability growth."
+            )
+            lifecycleStep(
+                number: "3",
+                title: "Package",
+                body: "Package the active Buddy to create JSON and Markdown artifacts. The package strips private memory, chat transcripts, raw check-ins, and raw training notes."
+            )
+            lifecycleStep(
+                number: "4",
+                title: "Sell",
+                body: "Paid marketplace submission is not live yet. Sell-ready means the listing package is sanitized and ready for future billing, moderation, and review."
+            )
+        }
+        .bmoCard()
+    }
+
+    private var sellReadyTemplateCard: some View {
+        VStack(alignment: .leading, spacing: BMOTheme.spacingMD) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Template Workshop")
+                        .font(.headline)
+                        .foregroundColor(BMOTheme.textPrimary)
+                    Text("Turn the active Buddy into a clean package that explains what buyers get and what stays private.")
+                        .font(.subheadline)
+                        .foregroundColor(BMOTheme.textSecondary)
+                }
+                Spacer()
+                StatusBadge(label: store.activeBuddy == nil ? "Needs Buddy" : "Ready", color: store.activeBuddy == nil ? BMOTheme.warning : BMOTheme.success)
+            }
+
+            VStack(alignment: .leading, spacing: 8) {
+                templateBoundaryRow(title: "Included", body: "Identity, role, moves, public progression, public training category scores, recommended uses, and seller guide.")
+                templateBoundaryRow(title: "Stripped", body: "Private memories, chat transcripts, raw check-ins, raw training notes, and personal workspace context.")
+                templateBoundaryRow(title: "Not live yet", body: "Payment processing, public marketplace publishing, moderation queue, refunds, and buyer install analytics.")
+            }
+
+            HStack {
+                Button("Package Active Buddy") {
+                    store.packageActiveBuddyTemplate(using: appState)
+                }
+                .disabled(store.activeBuddy == nil)
+                .buttonStyle(BMOButtonStyle())
+
+                Button("Open Artifacts") {
+                    appState.route(to: .artifacts)
+                }
+                .buttonStyle(BMOButtonStyle(isPrimary: false))
+            }
+        }
+        .bmoCard()
+    }
+
     private var emptyStateCard: some View {
         VStack(alignment: .leading, spacing: BMOTheme.spacingMD) {
             Text("No Buddy Installed Yet")
@@ -504,6 +582,40 @@ struct BuddyView: View {
                 .foregroundColor(BMOTheme.textSecondary)
             Spacer(minLength: 0)
         }
+    }
+
+    private func lifecycleStep(number: String, title: String, body: String) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            Text(number)
+                .font(.caption.weight(.bold))
+                .foregroundColor(BMOTheme.backgroundPrimary)
+                .frame(width: 24, height: 24)
+                .background(BMOTheme.accent)
+                .clipShape(Circle())
+            VStack(alignment: .leading, spacing: 3) {
+                Text(title)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundColor(BMOTheme.textPrimary)
+                Text(body)
+                    .font(.caption)
+                    .foregroundColor(BMOTheme.textSecondary)
+            }
+        }
+    }
+
+    private func templateBoundaryRow(title: String, body: String) -> some View {
+        VStack(alignment: .leading, spacing: 3) {
+            Text(title)
+                .font(.caption.weight(.semibold))
+                .foregroundColor(BMOTheme.accent)
+            Text(body)
+                .font(.caption)
+                .foregroundColor(BMOTheme.textSecondary)
+        }
+        .padding(10)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(BMOTheme.backgroundSecondary)
+        .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusSmall, style: .continuous))
     }
 
     private func moodColor(_ mood: String) -> Color {

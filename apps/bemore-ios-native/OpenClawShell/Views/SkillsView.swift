@@ -166,10 +166,13 @@ struct SkillsView: View {
 
 struct PokemonTeamBuilderView: View {
     @EnvironmentObject private var appState: AppState
+    @State private var goal = "Build a balanced team that can pivot safely and explain every slot."
     @State private var format = "Singles"
     @State private var strategy = "balanced offense"
-    @State private var mustInclude = "Pikachu"
+    @State private var mustInclude = "Dragonite"
     @State private var avoid = ""
+    @State private var manualTeam = ["", "", "", "", "", ""]
+    @State private var editRequest = ""
     @State private var receipt: OpenClawReceipt?
 
     var body: some View {
@@ -177,6 +180,8 @@ struct PokemonTeamBuilderView: View {
             VStack(alignment: .leading, spacing: BMOTheme.spacingMD) {
                 header
                 formCard
+                manualEditorCard
+                supervisionCard
                 if let receipt {
                     ActionReceiptCard(receipt: receipt)
                     if let members = receipt.output["members"] {
@@ -197,11 +202,11 @@ struct PokemonTeamBuilderView: View {
             Text("Flagship Skill")
                 .font(.caption)
                 .foregroundColor(BMOTheme.textTertiary)
-            Text("Draft a team, save artifacts, get a receipt.")
+            Text("Buddy-operated team building.")
                 .font(.title2)
                 .fontWeight(.bold)
                 .foregroundColor(BMOTheme.textPrimary)
-            Text("This MVP uses curated role coverage. Exact legality, moves, EVs, and simulator-backed matchup data are still TODOs.")
+            Text("Your active Buddy drives a bounded skill: generate, edit, analyze, save JSON/Markdown artifacts, and keep every run receipt-backed. This phone build uses the bundled BeMore workspace runtime while the BeMore-stack handler owns the canonical brain-side contract.")
                 .font(.subheadline)
                 .foregroundColor(BMOTheme.textSecondary)
         }
@@ -210,6 +215,8 @@ struct PokemonTeamBuilderView: View {
 
     private var formCard: some View {
         VStack(alignment: .leading, spacing: 12) {
+            labeledField("Goal", text: $goal, placeholder: "Make a safe Singles team around Dragonite")
+
             Picker("Format", selection: $format) {
                 Text("Singles").tag("Singles")
                 Text("Doubles").tag("Doubles")
@@ -221,17 +228,10 @@ struct PokemonTeamBuilderView: View {
             labeledField("Strategy / theme", text: $strategy, placeholder: "rain balance, cute chaos, bulky offense")
             labeledField("Must include", text: $mustInclude, placeholder: "Pikachu, Gengar")
             labeledField("Avoid", text: $avoid, placeholder: "Legendaries, Charizard")
+            labeledField("Buddy edit request", text: $editRequest, placeholder: "make this less weak to Electric")
 
             Button {
-                receipt = appState.runSkill(
-                    id: BuiltInSkillRegistry.pokemonTeamBuilderID,
-                    input: [
-                        "format": format,
-                        "strategy": strategy,
-                        "mustInclude": mustInclude,
-                        "avoid": avoid
-                    ]
-                )
+                runTeamBuilder()
             } label: {
                 HStack {
                     Image(systemName: "square.and.arrow.down.fill")
@@ -240,6 +240,96 @@ struct PokemonTeamBuilderView: View {
                 .frame(maxWidth: .infinity)
             }
             .buttonStyle(BMOButtonStyle())
+
+            HStack {
+                Button("Less weak to Electric") {
+                    editRequest = "make this team less weak to Electric"
+                    runTeamBuilder()
+                }
+                .buttonStyle(BMOButtonStyle(isPrimary: false))
+
+                Button("Add bulky pivot") {
+                    editRequest = "replace a slot with a bulky pivot"
+                    runTeamBuilder()
+                }
+                .buttonStyle(BMOButtonStyle(isPrimary: false))
+            }
+        }
+        .bmoCard()
+    }
+
+    private var manualEditorCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Manual Team Editing")
+                        .font(.headline)
+                        .foregroundColor(BMOTheme.textPrimary)
+                    Text("Seed the six slots yourself, then ask Buddy to analyze or revise the team. Blank slots are filled by the skill.")
+                        .font(.caption)
+                        .foregroundColor(BMOTheme.textSecondary)
+                }
+                Spacer()
+                StatusBadge(label: "Editable", color: BMOTheme.accent)
+            }
+
+            ForEach(manualTeam.indices, id: \.self) { index in
+                labeledField("Slot \(index + 1)", text: $manualTeam[index], placeholder: index == 0 ? "Dragonite" : "Optional Pokemon")
+            }
+
+            Button("Analyze / Save Current Slots") {
+                if editRequest.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    editRequest = "analyze this team and recommend improvements"
+                }
+                runTeamBuilder()
+            }
+            .buttonStyle(BMOButtonStyle(isPrimary: false))
+        }
+        .bmoCard()
+    }
+
+    private var supervisionCard: some View {
+        let actions = appState.workspaceRuntime.recentActions
+            .filter { $0.kind == .skillRun || $0.kind == .workspaceWrite }
+            .prefix(4)
+
+        return VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Workbench Supervision")
+                        .font(.headline)
+                        .foregroundColor(BMOTheme.textPrimary)
+                    Text("Receipts and artifacts are the source of truth. If Buddy says it saved a team, it should appear here and in Artifacts.")
+                        .font(.caption)
+                        .foregroundColor(BMOTheme.textSecondary)
+                }
+                Spacer()
+                StatusBadge(label: "\(actions.count) recent", color: BMOTheme.success)
+            }
+
+            if actions.isEmpty {
+                Text("No supervised skill actions yet.")
+                    .font(.subheadline)
+                    .foregroundColor(BMOTheme.textSecondary)
+            } else {
+                ForEach(Array(actions)) { action in
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack {
+                            Text(action.title)
+                                .font(.caption.weight(.semibold))
+                                .foregroundColor(BMOTheme.textPrimary)
+                            Spacer()
+                            StatusBadge(label: action.status.label, color: action.status.color)
+                        }
+                        Text(action.output["summary"] ?? action.error ?? action.source)
+                            .font(.caption)
+                            .foregroundColor(BMOTheme.textSecondary)
+                    }
+                    .padding(10)
+                    .background(BMOTheme.backgroundSecondary)
+                    .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusSmall, style: .continuous))
+                }
+            }
         }
         .bmoCard()
     }
@@ -255,6 +345,21 @@ struct PokemonTeamBuilderView: View {
             Text("Open Artifacts to inspect the saved JSON and Markdown team files.")
                 .font(.caption)
                 .foregroundColor(BMOTheme.textTertiary)
+            if let coverage = receipt?.output["coverage"] {
+                Divider().overlay(BMOTheme.divider)
+                Text("Coverage")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(BMOTheme.textPrimary)
+                Text(coverage)
+                    .font(.caption)
+                    .foregroundColor(BMOTheme.textSecondary)
+            }
+            if let recommendation = receipt?.output["recommendation"] {
+                Text(recommendation)
+                    .font(.caption)
+                    .foregroundColor(BMOTheme.textSecondary)
+            }
             if let strategy = receipt?.output["strategy"] {
                 Divider().overlay(BMOTheme.divider)
                 Text("Battle strategy")
@@ -277,6 +382,26 @@ struct PokemonTeamBuilderView: View {
             }
         }
         .bmoCard()
+    }
+
+    private func runTeamBuilder() {
+        appState.workspaceRuntime.refreshMetadata()
+        receipt = appState.runSkill(
+            id: BuiltInSkillRegistry.pokemonTeamBuilderID,
+            input: [
+                "goal": goal,
+                "format": format,
+                "strategy": strategy,
+                "mustInclude": mustInclude,
+                "avoid": avoid,
+                "existingTeam": manualTeam.joined(separator: ", "),
+                "editRequest": editRequest
+            ]
+        )
+        if let members = receipt?.output["members"] {
+            let parsed = members.split(separator: ",").map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) }
+            manualTeam = (parsed + Array(repeating: "", count: max(0, 6 - parsed.count))).prefix(6).map { $0 }
+        }
     }
 
     private func labeledField(_ title: String, text: Binding<String>, placeholder: String) -> some View {
