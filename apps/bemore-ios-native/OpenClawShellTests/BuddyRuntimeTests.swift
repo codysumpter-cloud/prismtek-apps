@@ -127,6 +127,54 @@ final class BuddyRuntimeTests: XCTestCase {
         XCTAssertTrue(buddyMarkdown.contains("Morning planning and continuity"))
     }
 
+    func testTeachingPlanningLoopStoresMemoryTrainsSkillAndRegeneratesMarkdown() throws {
+        let contracts = try BuddyContractLoader.loadCanonicalResources()
+        let runtime = OpenClawWorkspaceRuntime()
+        runtime.bootstrap(config: .default, preferences: .default, routeSummary: "Direct cloud model route")
+        let engine = BuddyEventEngine(contracts: contracts)
+
+        let installBundle = try engine.install(
+            templateID: "bmo",
+            currentState: BuddyLibraryState(),
+            currentEvents: BuddyRuntimeEventLog(),
+            now: Date(timeIntervalSince1970: 1_744_314_400)
+        )
+
+        let trained = try engine.teachPlanningLoop(
+            instanceID: try XCTUnwrap(installBundle.libraryState.activeBuddy?.instanceId),
+            preferenceTitle: "Daily planning style",
+            preferenceDetail: "I plan best with one clear priority and a small follow-up. Keep the language calm and concrete.",
+            topPriority: "Ship the Buddy planning loop",
+            supportStyle: "calm coach",
+            currentState: installBundle.libraryState,
+            currentEvents: installBundle.eventLog,
+            now: Date(timeIntervalSince1970: 1_744_318_000)
+        )
+
+        let activeBuddy = try XCTUnwrap(trained.libraryState.activeBuddy)
+        XCTAssertEqual(activeBuddy.learnedPreferences?.count, 1)
+        XCTAssertEqual(activeBuddy.learnedPreferences?.first?.category, "planning")
+        XCTAssertEqual(activeBuddy.dailyPlans?.first?.topPriority, "Ship the Buddy planning loop")
+
+        let planningSkill = try XCTUnwrap(activeBuddy.learnedSkills?.first(where: { $0.id == "daily-planning" }))
+        XCTAssertTrue(planningSkill.isUnlocked)
+        XCTAssertTrue(planningSkill.isEquipped)
+        XCTAssertGreaterThanOrEqual(planningSkill.mastery, 1)
+        XCTAssertGreaterThanOrEqual(activeBuddy.proficiencies.value(for: "Planning"), 1)
+        XCTAssertTrue(activeBuddy.progression.badges.contains("planning-student"))
+
+        let receipt = runtime.persistBuddyBundle(trained)
+        XCTAssertEqual(receipt.status, .persisted)
+
+        let buddyMarkdown = try String(contentsOf: Paths.openClawDirectory.appendingPathComponent("buddy.md"), encoding: .utf8)
+        XCTAssertTrue(buddyMarkdown.contains("## What Buddy learned from you"))
+        XCTAssertTrue(buddyMarkdown.contains("I plan best with one clear priority"))
+        XCTAssertTrue(buddyMarkdown.contains("## Equipped skills"))
+        XCTAssertTrue(buddyMarkdown.contains("Daily Planning"))
+        XCTAssertTrue(buddyMarkdown.contains("## Latest daily plan"))
+        XCTAssertTrue(buddyMarkdown.contains("Ship the Buddy planning loop"))
+    }
+
     func testLegacyBuddySystemMigratesIntoBuild18State() throws {
         let legacyJSON = """
         {

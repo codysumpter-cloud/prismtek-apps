@@ -614,6 +614,40 @@ struct BuddyTrainingRecord: Identifiable, Codable, Hashable {
     var source: String
 }
 
+struct BuddyLearnedPreference: Identifiable, Codable, Hashable {
+    var id: String
+    var category: String
+    var title: String
+    var detail: String
+    var source: String
+    var createdAt: Date
+    var updatedAt: Date
+    var reinforcementCount: Int
+}
+
+struct BuddySkillState: Identifiable, Codable, Hashable {
+    var id: String
+    var name: String
+    var summary: String
+    var category: String
+    var isUnlocked: Bool
+    var isEquipped: Bool
+    var mastery: Int
+    var unlockedAt: Date?
+    var lastTrainedAt: Date?
+}
+
+struct BuddyDailyPlan: Identifiable, Codable, Hashable {
+    var id: String
+    var createdAt: Date
+    var dateLabel: String
+    var topPriority: String
+    var supportStyle: String
+    var reminderTitle: String
+    var journalPrompt: String
+    var messageDraft: String
+}
+
 struct BuddyInstance: Identifiable, Codable, Hashable {
     var id: String { instanceId }
     var instanceId: String
@@ -629,6 +663,9 @@ struct BuddyInstance: Identifiable, Codable, Hashable {
     var memory: BuddyMemoryBindings
     var visual: BuddyVisualState?
     var trainingHistory: [BuddyTrainingRecord]
+    var learnedPreferences: [BuddyLearnedPreference]?
+    var learnedSkills: [BuddySkillState]?
+    var dailyPlans: [BuddyDailyPlan]?
 }
 
 struct BuddyLibraryState: Codable, Hashable {

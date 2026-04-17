@@ -233,8 +233,9 @@ final class AppStateRuntimeTests: XCTestCase {
         XCTAssertTrue(FileManager.default.fileExists(atPath: Paths.openClawDirectory.appendingPathComponent("skills/\(template.id)/README.md").path))
 
         let runReceipt = runtime.runSkill(id: template.id, input: ["request": "coach me"], config: .default, preferences: .default, routeSummary: "Route not configured")
-        XCTAssertEqual(runReceipt.status, .persisted)
-        XCTAssertFalse(runReceipt.artifacts.isEmpty)
+        XCTAssertEqual(runReceipt.status, .planned)
+        XCTAssertTrue(runReceipt.artifacts.isEmpty)
+        XCTAssertTrue(runReceipt.summary.contains("no executable implementation"))
     }
 
     func testSandboxRejectsUnsupportedShellWithoutFakeCompletion() {
@@ -274,7 +275,7 @@ private final class FakeLocalLLMEngine: LocalLLMEngine {
         isRuntimeReady = config != nil && supportsLocalModels
     }
 
-    func generate(prompt: String, fileContexts: [WorkspaceFile], chatHistory: [ChatMessage]) async throws -> String {
+    func generate(prompt: String, fileContexts: [WorkspaceFile], chatHistory: [ChatMessage], activeStack: CompiledStack?) async throws -> String {
         "ok"
     }
 }

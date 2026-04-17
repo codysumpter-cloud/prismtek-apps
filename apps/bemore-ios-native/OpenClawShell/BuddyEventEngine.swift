@@ -300,6 +300,127 @@ struct BuddyEventEngine {
         )
     }
 
+    func teachPlanningLoop(
+        instanceID: String,
+        preferenceTitle: String,
+        preferenceDetail: String,
+        topPriority: String,
+        supportStyle: String,
+        currentState: BuddyLibraryState,
+        currentEvents: BuddyRuntimeEventLog,
+        now: Date = .now
+    ) throws -> BuddyPersistenceBundle {
+        guard var instance = currentState.instances.first(where: { $0.instanceId == instanceID }) else {
+            throw BuddyEventEngineError.instanceNotFound(instanceID)
+        }
+
+        let cleanedTitle = preferenceTitle.trimmingCharacters(in: .whitespacesAndNewlines).nilIfBlank ?? "Daily planning style"
+        let cleanedDetail = preferenceDetail.trimmingCharacters(in: .whitespacesAndNewlines).nilIfBlank ?? "Help me plan calmly around one useful next step."
+        let cleanedPriority = topPriority.trimmingCharacters(in: .whitespacesAndNewlines).nilIfBlank ?? "Pick one useful next step"
+        let cleanedStyle = supportStyle.trimmingCharacters(in: .whitespacesAndNewlines).nilIfBlank ?? "Calm, specific, and low-pressure"
+        let previousLastActive = instance.state.lastActiveAt
+        let awardedXP = cappedXP(currentEvents, on: now, requested: contracts.progression.xpRewards.training.basic ?? 15)
+        let bondDelta = cappedBondDelta(currentEvents, on: now, requested: 1)
+        let preference = upsertPreference(
+            in: instance.learnedPreferences ?? [],
+            category: "planning",
+            title: cleanedTitle,
+            detail: cleanedDetail,
+            source: "teach_buddy",
+            now: now
+        )
+        instance.learnedPreferences = preference
+        instance.learnedSkills = upsertSkill(
+            in: instance.learnedSkills ?? Self.defaultStarterSkills(now: now),
+            id: "daily-planning",
+            trainedCategory: "Planning",
+            now: now,
+            cap: contracts.progression.maxSkillProficiency
+        )
+        instance.proficiencies.increment(category: "Planning", cap: contracts.progression.maxSkillProficiency)
+        instance.trainingHistory.append(
+            BuddyTrainingRecord(
+                id: "train_\(UUID().uuidString.lowercased())",
+                category: "Planning",
+                xpAwarded: awardedXP,
+                bondDelta: bondDelta,
+                completedAt: now,
+                source: "teaching_loop"
+            )
+        )
+        instance.state.currentFocus = cleanedPriority
+        instance.state.favoriteTasks = Array(([cleanedPriority] + instance.state.favoriteTasks).uniqued().prefix(5))
+        instance.state.mood = nextMood(from: instance.state.mood, preferred: "thinking")
+        instance.state.energy = min(100, max(0, instance.state.energy + 4))
+        instance.state.lastActiveAt = now
+        instance.progression.xp += awardedXP
+        instance.progression.bond = min(contracts.progression.maxBond, instance.progression.bond + bondDelta)
+        instance.progression.streakDays = nextStreakDays(current: instance.progression.streakDays, lastActiveAt: previousLastActive, now: now)
+        if instance.progression.badges.contains("planning-student") == false {
+            instance.progression.badges.append("planning-student")
+        }
+
+        let dailyPlan = BuddyDailyPlan(
+            id: "plan_\(UUID().uuidString.lowercased())",
+            createdAt: now,
+            dateLabel: Self.dayFormatter.string(from: now),
+            topPriority: cleanedPriority,
+            supportStyle: cleanedStyle,
+            reminderTitle: "Check in with \(instance.displayName): \(cleanedPriority)",
+            journalPrompt: "\(instance.displayName) learned: \(cleanedDetail)",
+            messageDraft: "Quick check-in: I am focusing on \(cleanedPriority). Can you help keep me honest today?"
+        )
+        instance.dailyPlans = Array(([dailyPlan] + (instance.dailyPlans ?? [])).prefix(20))
+
+        let updated = recalculateProgression(for: instance, template: contracts.templateForInstance(instance), now: now)
+        var nextState = currentState
+        nextState.upsert(updated)
+        nextState.activeBuddyInstanceId = updated.instanceId
+        nextState.lastUpdatedAt = now
+
+        var nextEvents = currentEvents
+        nextEvents.events.append(
+            makeEvent(
+                type: "buddy.training.completed",
+                instance: updated,
+                actor: "user",
+                summary: "\(updated.displayName) learned a daily planning preference and trained Planning.",
+                payload: [
+                    "category": "Planning",
+                    "preferenceTitle": cleanedTitle,
+                    "preferenceDetail": cleanedDetail,
+                    "topPriority": cleanedPriority,
+                    "supportStyle": cleanedStyle,
+                    "reminderTitle": dailyPlan.reminderTitle,
+                    "journalPrompt": dailyPlan.journalPrompt
+                ],
+                effects: BuddyRuntimeEventEffects(
+                    xpDelta: awardedXP,
+                    bondDelta: bondDelta,
+                    proficiencyDeltas: ["Planning": 1],
+                    moodTarget: updated.state.mood,
+                    stateTransition: "training",
+                    memoryPromotion: "Saved an inspectable Buddy planning preference.",
+                    badgeGrant: "planning-student",
+                    passiveUnlock: updated.progression.passiveUnlocked ? "tier2-passive" : nil,
+                    signatureUpgrade: updated.progression.signatureUpgradeUnlocked ? "tier3-signature" : nil,
+                    receiptRef: nil,
+                    sanitationReport: nil
+                ),
+                occurredAt: now
+            )
+        )
+
+        return finalize(
+            state: nextState,
+            eventLog: nextEvents,
+            summary: "\(updated.displayName) learned your planning style and prepared today's loop.",
+            actionTitle: "Teach \(updated.displayName) planning",
+            activeInstanceID: updated.instanceId,
+            now: now
+        )
+    }
+
     func makeActive(
         instanceID: String,
         currentState: BuddyLibraryState,
@@ -476,7 +597,10 @@ struct BuddyEventEngine {
                 currentAnimationState: "happy",
                 evolutionCosmetics: []
             ),
-            trainingHistory: []
+            trainingHistory: [],
+            learnedPreferences: [],
+            learnedSkills: Self.defaultStarterSkills(now: now),
+            dailyPlans: []
         )
     }
 
@@ -598,6 +722,115 @@ struct BuddyEventEngine {
             .replacingOccurrences(of: "_", with: "")
             .replacingOccurrences(of: " ", with: "")
     }
+
+    private func upsertPreference(
+        in preferences: [BuddyLearnedPreference],
+        category: String,
+        title: String,
+        detail: String,
+        source: String,
+        now: Date
+    ) -> [BuddyLearnedPreference] {
+        var updated = preferences
+        if let index = updated.firstIndex(where: { $0.category == category && $0.title.localizedCaseInsensitiveCompare(title) == .orderedSame }) {
+            updated[index].detail = detail
+            updated[index].updatedAt = now
+            updated[index].reinforcementCount += 1
+        } else {
+            updated.insert(
+                BuddyLearnedPreference(
+                    id: "pref_\(UUID().uuidString.lowercased())",
+                    category: category,
+                    title: title,
+                    detail: detail,
+                    source: source,
+                    createdAt: now,
+                    updatedAt: now,
+                    reinforcementCount: 1
+                ),
+                at: 0
+            )
+        }
+        return Array(updated.prefix(40))
+    }
+
+    private func upsertSkill(
+        in skills: [BuddySkillState],
+        id: String,
+        trainedCategory: String,
+        now: Date,
+        cap: Int
+    ) -> [BuddySkillState] {
+        var updated = skills
+        if let index = updated.firstIndex(where: { $0.id == id }) {
+            updated[index].isUnlocked = true
+            updated[index].isEquipped = true
+            updated[index].mastery = min(cap, updated[index].mastery + 1)
+            updated[index].unlockedAt = updated[index].unlockedAt ?? now
+            updated[index].lastTrainedAt = now
+        } else {
+            updated.insert(
+                BuddySkillState(
+                    id: id,
+                    name: "Daily Planning",
+                    summary: "Turns a taught planning preference into a reminder, journal prompt, and follow-up draft.",
+                    category: trainedCategory,
+                    isUnlocked: true,
+                    isEquipped: true,
+                    mastery: 1,
+                    unlockedAt: now,
+                    lastTrainedAt: now
+                ),
+                at: 0
+            )
+        }
+        return updated
+    }
+
+    static func defaultStarterSkills(now: Date) -> [BuddySkillState] {
+        [
+            BuddySkillState(
+                id: "daily-planning",
+                name: "Daily Planning",
+                summary: "Turns taught planning preferences into a daily plan, reminder, journal prompt, and follow-up draft.",
+                category: "Planning",
+                isUnlocked: true,
+                isEquipped: true,
+                mastery: 1,
+                unlockedAt: now,
+                lastTrainedAt: now
+            ),
+            BuddySkillState(
+                id: "reflection-journal",
+                name: "Reflection Journal",
+                summary: "Captures what Buddy learned and what changed today as an editable local artifact.",
+                category: "Memory",
+                isUnlocked: true,
+                isEquipped: false,
+                mastery: 0,
+                unlockedAt: now,
+                lastTrainedAt: nil
+            ),
+            BuddySkillState(
+                id: "message-drafting",
+                name: "Message Drafting",
+                summary: "Drafts check-ins or follow-ups for user-approved compose flows. It never sends silently.",
+                category: "Writing",
+                isUnlocked: true,
+                isEquipped: false,
+                mastery: 0,
+                unlockedAt: now,
+                lastTrainedAt: nil
+            )
+        ]
+    }
+
+    private static let dayFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .none
+        return formatter
+    }()
 }
 
 private extension BuddyLibraryState {
@@ -615,5 +848,17 @@ private extension String {
     var nilIfBlank: String? {
         let value = trimmingCharacters(in: .whitespacesAndNewlines)
         return value.isEmpty ? nil : value
+    }
+}
+
+private extension Array where Element == String {
+    func uniqued() -> [String] {
+        var seen = Set<String>()
+        return filter { value in
+            let normalized = value.lowercased()
+            guard seen.contains(normalized) == false else { return false }
+            seen.insert(normalized)
+            return true
+        }
     }
 }

@@ -167,7 +167,10 @@ struct BuddyInstanceStore {
                 currentAnimationState: "neutral",
                 evolutionCosmetics: []
             ),
-            trainingHistory: []
+            trainingHistory: [],
+            learnedPreferences: [],
+            learnedSkills: BuddyEventEngine.defaultStarterSkills(now: installedAt),
+            dailyPlans: []
         )
     }
 }
@@ -281,6 +284,27 @@ final class BuddyProfileStore: ObservableObject {
                 instanceID: activeBuddy.instanceId,
                 category: selectedTrainingCategory,
                 note: note,
+                currentState: libraryState,
+                currentEvents: eventLog
+            )
+        }
+    }
+
+    func teachPlanningLoop(
+        preferenceTitle: String,
+        preferenceDetail: String,
+        topPriority: String,
+        supportStyle: String,
+        using appState: AppState
+    ) {
+        guard let activeBuddy else { return }
+        mutate(using: appState) { contracts in
+            try BuddyEventEngine(contracts: contracts).teachPlanningLoop(
+                instanceID: activeBuddy.instanceId,
+                preferenceTitle: preferenceTitle,
+                preferenceDetail: preferenceDetail,
+                topPriority: topPriority,
+                supportStyle: supportStyle,
                 currentState: libraryState,
                 currentEvents: eventLog
             )
