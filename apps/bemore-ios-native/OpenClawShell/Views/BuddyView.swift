@@ -1,10 +1,18 @@
 import Foundation
 import SwiftUI
+import UIKit
 
 private struct BuddyPersonalizationDraft {
     var displayName: String = ""
     var nickname: String = ""
     var currentFocus: String = ""
+}
+
+private struct BuddyTeachingDraft {
+    var preferenceTitle = "Daily planning style"
+    var preferenceDetail = "Help me pick one calm, useful next step before I over-plan."
+    var topPriority = "Plan today around one real priority"
+    var supportStyle = "Calm, specific, and low-pressure"
 }
 
 struct BuddyView: View {
@@ -13,6 +21,12 @@ struct BuddyView: View {
     @State private var checkInNote = ""
     @State private var trainingNote = ""
     @State private var personalizationDraft = BuddyPersonalizationDraft()
+    @State private var teachingDraft = BuddyTeachingDraft()
+    @State private var reminderDueAt = Calendar.current.date(byAdding: .hour, value: 2, to: Date()) ?? Date()
+    @State private var appleActionStatus: String?
+    @State private var isCreatingReminder = false
+    @State private var isShowingMessageComposer = false
+    @State private var messageDraft = ""
     @State private var isShowingPersonalizationSheet = false
 
     var body: some View {
@@ -22,6 +36,8 @@ struct BuddyView: View {
                     if let activeBuddy = store.activeBuddy {
                         myBuddyHeader(for: activeBuddy)
                         activeBuddyCard(for: activeBuddy)
+                        teachBuddyPlanningCard(for: activeBuddy)
+                        memoryAndSkillsCard(for: activeBuddy)
                         actionCard(for: activeBuddy)
                         recentEventsCard(for: activeBuddy)
                     } else {
@@ -56,6 +72,9 @@ struct BuddyView: View {
         .sheet(isPresented: $isShowingPersonalizationSheet) {
             personalizationSheet
         }
+        .sheet(isPresented: $isShowingMessageComposer) {
+            BuddyMessageComposer(body: messageDraft)
+        }
     }
 
     private func myBuddyHeader(for buddy: BuddyInstance) -> some View {
@@ -88,6 +107,195 @@ struct BuddyView: View {
                 metricPill(title: "Skills", value: "\(status.registeredSkillCount)")
                 metricPill(title: "Level", value: "\(buddy.progression.level)")
                 metricPill(title: "Bond", value: "\(buddy.progression.bond)")
+            }
+        }
+        .bmoCard()
+    }
+
+    private func teachBuddyPlanningCard(for buddy: BuddyInstance) -> some View {
+        let latestPlan = buddy.dailyPlans?.sorted { $0.createdAt > $1.createdAt }.first
+
+        return VStack(alignment: .leading, spacing: BMOTheme.spacingMD) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Teach Buddy")
+                        .font(.headline)
+                        .foregroundColor(BMOTheme.textPrimary)
+                    Text("Train \(buddy.displayName) on how you like to plan, then turn that teaching into a reminder, journal note, and message draft.")
+                        .font(.subheadline)
+                        .foregroundColor(BMOTheme.textSecondary)
+                }
+                Spacer()
+                StatusBadge(label: "Planning loop", color: BMOTheme.success)
+            }
+
+            VStack(alignment: .leading, spacing: 10) {
+                TextField("What should Buddy learn?", text: $teachingDraft.preferenceTitle)
+                    .textFieldStyle(.plain)
+                    .foregroundColor(BMOTheme.textPrimary)
+                    .padding(BMOTheme.spacingMD)
+                    .background(BMOTheme.backgroundSecondary)
+                    .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusSmall, style: .continuous))
+
+                TextField("Preference detail", text: $teachingDraft.preferenceDetail, axis: .vertical)
+                    .textFieldStyle(.plain)
+                    .foregroundColor(BMOTheme.textPrimary)
+                    .padding(BMOTheme.spacingMD)
+                    .background(BMOTheme.backgroundSecondary)
+                    .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusSmall, style: .continuous))
+
+                TextField("Today's priority", text: $teachingDraft.topPriority, axis: .vertical)
+                    .textFieldStyle(.plain)
+                    .foregroundColor(BMOTheme.textPrimary)
+                    .padding(BMOTheme.spacingMD)
+                    .background(BMOTheme.backgroundSecondary)
+                    .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusSmall, style: .continuous))
+
+                TextField("Support style", text: $teachingDraft.supportStyle)
+                    .textFieldStyle(.plain)
+                    .foregroundColor(BMOTheme.textPrimary)
+                    .padding(BMOTheme.spacingMD)
+                    .background(BMOTheme.backgroundSecondary)
+                    .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusSmall, style: .continuous))
+            }
+
+            HStack {
+                Button("Teach and Train") {
+                    store.teachPlanningLoop(
+                        preferenceTitle: teachingDraft.preferenceTitle,
+                        preferenceDetail: teachingDraft.preferenceDetail,
+                        topPriority: teachingDraft.topPriority,
+                        supportStyle: teachingDraft.supportStyle,
+                        using: appState
+                    )
+                    appleActionStatus = "\(buddy.displayName) learned this planning preference. Review or edit it below."
+                }
+                .buttonStyle(BMOButtonStyle())
+
+                Button("Capture Journal") {
+                    captureJournalArtifact(for: buddy)
+                }
+                .buttonStyle(BMOButtonStyle(isPrimary: false))
+            }
+
+            Divider().overlay(BMOTheme.divider)
+
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Apple handoff")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundColor(BMOTheme.textPrimary)
+                Text("Reminders are created with EventKit after permission. Messages are draft-only and require you to press send in Apple's composer.")
+                    .font(.caption)
+                    .foregroundColor(BMOTheme.textSecondary)
+
+                DatePicker("Reminder time", selection: $reminderDueAt, displayedComponents: [.date, .hourAndMinute])
+                    .foregroundColor(BMOTheme.textSecondary)
+
+                HStack {
+                    Button(isCreatingReminder ? "Creating..." : "Create Reminder") {
+                        createReminder(from: latestPlan, fallbackBuddy: buddy)
+                    }
+                    .disabled(isCreatingReminder)
+                    .buttonStyle(BMOButtonStyle(isPrimary: false))
+
+                    Button("Draft Message") {
+                        prepareMessageDraft(from: latestPlan, fallbackBuddy: buddy)
+                    }
+                    .buttonStyle(BMOButtonStyle(isPrimary: false))
+                }
+            }
+
+            if let latestPlan {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Latest plan")
+                        .font(.caption.weight(.semibold))
+                        .foregroundColor(BMOTheme.textTertiary)
+                    Text(latestPlan.topPriority)
+                        .font(.subheadline)
+                        .foregroundColor(BMOTheme.textPrimary)
+                    Text(latestPlan.journalPrompt)
+                        .font(.caption)
+                        .foregroundColor(BMOTheme.textSecondary)
+                }
+                .padding(BMOTheme.spacingMD)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(BMOTheme.backgroundSecondary)
+                .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusSmall, style: .continuous))
+            }
+
+            if let appleActionStatus {
+                Text(appleActionStatus)
+                    .font(.caption)
+                    .foregroundColor(BMOTheme.textSecondary)
+            }
+        }
+        .bmoCard()
+    }
+
+    private func memoryAndSkillsCard(for buddy: BuddyInstance) -> some View {
+        let preferences = (buddy.learnedPreferences ?? []).sorted { $0.updatedAt > $1.updatedAt }
+        let skills = (buddy.learnedSkills ?? []).sorted { lhs, rhs in
+            if lhs.isEquipped != rhs.isEquipped { return lhs.isEquipped && !rhs.isEquipped }
+            if lhs.mastery != rhs.mastery { return lhs.mastery > rhs.mastery }
+            return lhs.name < rhs.name
+        }
+
+        return VStack(alignment: .leading, spacing: BMOTheme.spacingMD) {
+            Text("Memory and Skills")
+                .font(.headline)
+                .foregroundColor(BMOTheme.textPrimary)
+
+            if preferences.isEmpty {
+                Text("No taught preferences yet. Teach Buddy one thing you want remembered.")
+                    .font(.subheadline)
+                    .foregroundColor(BMOTheme.textSecondary)
+            } else {
+                ForEach(preferences.prefix(4)) { preference in
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(preference.title)
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundColor(BMOTheme.textPrimary)
+                        Text(preference.detail)
+                            .font(.caption)
+                            .foregroundColor(BMOTheme.textSecondary)
+                        Text("Learned from \(preference.source), reinforced \(preference.reinforcementCount)x")
+                            .font(.caption2)
+                            .foregroundColor(BMOTheme.textTertiary)
+                    }
+                    .padding(BMOTheme.spacingMD)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(BMOTheme.backgroundSecondary)
+                    .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusSmall, style: .continuous))
+                }
+            }
+
+            Divider().overlay(BMOTheme.divider)
+
+            if skills.isEmpty {
+                Text("No learned skills are visible yet.")
+                    .font(.subheadline)
+                    .foregroundColor(BMOTheme.textSecondary)
+            } else {
+                ForEach(skills) { skill in
+                    HStack(alignment: .top) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(skill.name)
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundColor(BMOTheme.textPrimary)
+                            Text(skill.summary)
+                                .font(.caption)
+                                .foregroundColor(BMOTheme.textSecondary)
+                            Text("Mastery \(skill.mastery)/5")
+                                .font(.caption2)
+                                .foregroundColor(BMOTheme.textTertiary)
+                        }
+                        Spacer()
+                        StatusBadge(label: skill.isEquipped ? "Equipped" : "Unlocked", color: skill.isEquipped ? BMOTheme.success : BMOTheme.accent)
+                    }
+                    .padding(BMOTheme.spacingMD)
+                    .background(BMOTheme.backgroundSecondary)
+                    .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusSmall, style: .continuous))
+                }
             }
         }
         .bmoCard()
@@ -645,6 +853,58 @@ struct BuddyView: View {
             return .needsAttention
         default:
             return .idle
+        }
+    }
+
+    private func createReminder(from plan: BuddyDailyPlan?, fallbackBuddy buddy: BuddyInstance) {
+        let title = plan?.reminderTitle ?? "Check in with \(buddy.displayName): \(teachingDraft.topPriority)"
+        let notes = plan?.journalPrompt ?? "\(buddy.displayName) learned: \(teachingDraft.preferenceDetail)"
+        isCreatingReminder = true
+        appleActionStatus = nil
+        Task {
+            do {
+                _ = try await BuddyAppleIntegrationService().createReminder(title: title, notes: notes, dueDate: reminderDueAt)
+                await MainActor.run {
+                    appleActionStatus = "Reminder created. Buddy can help you follow through from the saved plan."
+                    isCreatingReminder = false
+                }
+            } catch {
+                await MainActor.run {
+                    appleActionStatus = error.localizedDescription
+                    isCreatingReminder = false
+                }
+            }
+        }
+    }
+
+    private func captureJournalArtifact(for buddy: BuddyInstance) {
+        let latestPlan = buddy.dailyPlans?.sorted { $0.createdAt > $1.createdAt }.first
+        let slug = BuddyMarkdownRenderer.iso8601(Date()).prefix(10)
+        let content = """
+        # Buddy Daily Note
+
+        - Buddy: \(buddy.displayName)
+        - Created: \(BuddyMarkdownRenderer.iso8601(Date()))
+        - Priority: \(latestPlan?.topPriority ?? teachingDraft.topPriority)
+        - Support style: \(latestPlan?.supportStyle ?? teachingDraft.supportStyle)
+
+        ## What Buddy learned
+        \(latestPlan?.journalPrompt ?? teachingDraft.preferenceDetail)
+
+        ## Next check-in
+        \(latestPlan?.reminderTitle ?? "Check in with \(buddy.displayName)")
+        """
+        let receipt = appState.writeWorkspaceArtifact(path: "journal/buddy-daily-\(slug).md", content: content)
+        appleActionStatus = receipt.status == .persisted ? "Journal note captured in workspace artifacts." : receipt.summary
+    }
+
+    private func prepareMessageDraft(from plan: BuddyDailyPlan?, fallbackBuddy buddy: BuddyInstance) {
+        messageDraft = plan?.messageDraft ?? "Quick check-in: I am focusing on \(teachingDraft.topPriority). Can you help keep me honest today?"
+        if BuddyMessageComposer.canSendText {
+            isShowingMessageComposer = true
+        } else {
+            UIPasteboard.general.string = messageDraft
+            appleActionStatus = "This device cannot present Messages compose. Draft copied instead."
         }
     }
 }

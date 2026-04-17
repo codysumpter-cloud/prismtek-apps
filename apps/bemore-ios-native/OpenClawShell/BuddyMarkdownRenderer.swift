@@ -35,6 +35,15 @@ enum BuddyMarkdownRenderer {
         ## What matters now
         \(bulletList(matterNowLines(instance: instance, roleProfile: roleProfile, nextLevel: nextLevel, topProficiencies: topProficiencies)))
 
+        ## What Buddy learned from you
+        \(bulletList(learnedPreferenceLines(for: instance)))
+
+        ## Equipped skills
+        \(bulletList(skillLines(for: instance)))
+
+        ## Latest daily plan
+        \(bulletList(dailyPlanLines(for: instance)))
+
         ## What is stale
         \(bulletList(staleLines(for: instance, now: now)))
 
@@ -66,6 +75,8 @@ enum BuddyMarkdownRenderer {
             - Bond: \(instance.progression.bond)/\(contracts.progression.maxBond) (\(bond))
             - Mood: \(instance.state.mood.capitalized)
             - Focus: \(instance.state.currentFocus ?? "No active focus")
+            - Learned preferences: \(instance.learnedPreferences?.count ?? 0)
+            - Equipped skills: \((instance.learnedSkills ?? []).filter(\.isEquipped).count)
             - Last active: \(iso8601(instance.state.lastActiveAt))
             \(recent.isEmpty ? "- Recent note: No Buddy events recorded yet." : recent.map { "- Recent note: \($0)" }.joined(separator: "\n"))
             """
@@ -124,6 +135,42 @@ enum BuddyMarkdownRenderer {
         }
 
         return lines
+    }
+
+    private static func learnedPreferenceLines(for instance: BuddyInstance) -> [String] {
+        let preferences = (instance.learnedPreferences ?? [])
+            .sorted { $0.updatedAt > $1.updatedAt }
+            .prefix(5)
+        guard preferences.isEmpty == false else {
+            return ["No explicit taught preferences yet. Use Teach Buddy to make memory inspectable."]
+        }
+        return preferences.map { "\($0.title): \($0.detail) (reinforced \($0.reinforcementCount)x)" }
+    }
+
+    private static func skillLines(for instance: BuddyInstance) -> [String] {
+        let skills = (instance.learnedSkills ?? [])
+            .filter(\.isEquipped)
+            .sorted { lhs, rhs in
+                if lhs.mastery == rhs.mastery { return lhs.name < rhs.name }
+                return lhs.mastery > rhs.mastery
+            }
+        guard skills.isEmpty == false else {
+            return ["No equipped learned skills yet."]
+        }
+        return skills.map { "\($0.name): \($0.summary) Mastery \($0.mastery)/5" }
+    }
+
+    private static func dailyPlanLines(for instance: BuddyInstance) -> [String] {
+        guard let plan = instance.dailyPlans?.sorted(by: { $0.createdAt > $1.createdAt }).first else {
+            return ["No daily plan captured yet."]
+        }
+        return [
+            "Date: \(plan.dateLabel)",
+            "Top priority: \(plan.topPriority)",
+            "Support style: \(plan.supportStyle)",
+            "Reminder: \(plan.reminderTitle)",
+            "Journal: \(plan.journalPrompt)"
+        ]
     }
 
     private static func staleLines(for instance: BuddyInstance, now: Date) -> [String] {
