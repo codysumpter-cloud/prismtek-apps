@@ -5,11 +5,17 @@ on:
     branches: [main]
     paths:
       - 'apps/bemore-ios-native/**'
+      - 'packages/core/**'
+      - 'packages/sandbox/**'
+      - 'packages/app-factory/**'
       - '.github/workflows/bemore-ios-ci-testflight.yml'
   pull_request:
     branches: [main]
     paths:
       - 'apps/bemore-ios-native/**'
+      - 'packages/core/**'
+      - 'packages/sandbox/**'
+      - 'packages/app-factory/**'
       - '.github/workflows/bemore-ios-ci-testflight.yml'
   workflow_dispatch:
 
