@@ -47,7 +47,7 @@ struct SkillsView: View {
                 Spacer()
                 StatusBadge(label: "\(appState.workspaceRuntime.skills.count) registered", color: BMOTheme.accent)
             }
-            Text("Skills run through the same receipt-backed BeMore workspace runtime used by Buddy, mobile actions, and Mac pairing.")
+            Text("Skills are practical abilities Buddy can learn, equip, and use for planning, review, building, and deeper operator work when you ask for it.")
                 .font(.subheadline)
                 .foregroundColor(BMOTheme.textSecondary)
         }
@@ -206,7 +206,7 @@ struct PokemonTeamBuilderView: View {
                 .font(.title2)
                 .fontWeight(.bold)
                 .foregroundColor(BMOTheme.textPrimary)
-            Text("Your active Buddy drives a bounded skill: generate, edit, analyze, save JSON/Markdown artifacts, and keep every run receipt-backed. This phone build uses the bundled BeMore workspace runtime while the BeMore-stack handler owns the canonical brain-side contract.")
+            Text("Your active Buddy can generate, edit, analyze, and save Pokemon teams. The phone build runs the local skill surface now; deeper runtime ownership stays in BeMore-stack.")
                 .font(.subheadline)
                 .foregroundColor(BMOTheme.textSecondary)
         }

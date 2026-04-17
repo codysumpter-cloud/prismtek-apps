@@ -61,7 +61,7 @@ struct BeMoreMacRootView: View {
             VStack(alignment: .leading, spacing: 6) {
                 Text(state.selectedSection.rawValue)
                     .font(.system(size: 34, weight: .bold))
-                Text("BeMore Mac is a native supervision shell: onboarding, Buddy work, skills, templates, and receipts stay visible instead of hiding behind a mascot.")
+                Text("BeMore Mac keeps Buddy useful on the desktop: plan work, train skills, review results, and open deeper operator tools when you need them.")
                     .foregroundStyle(.secondary)
             }
             Spacer()
@@ -129,7 +129,7 @@ struct BeMoreMacRootView: View {
                 actionTile("Start a task", icon: "plus.circle.fill", body: "Create focused work for your Buddy.") {
                     state.selectedSection = .work
                 }
-                actionTile("Run a skill", icon: "wand.and.stars", body: "Use bounded capabilities with receipts.") {
+                actionTile("Run a skill", icon: "wand.and.stars", body: "Train or use a practical Buddy capability.") {
                     state.selectedSection = .skills
                 }
                 actionTile("Package a template", icon: "shippingbox.fill", body: "Prepare a sell-ready Buddy draft.") {
@@ -146,7 +146,7 @@ struct BeMoreMacRootView: View {
         VStack(alignment: .leading, spacing: 14) {
             Text("Chat With \(state.activeBuddyName)")
                 .font(.title2.bold())
-            Text("This local chat records visible turns and routes work into tasks, skills, or artifacts. It does not claim hidden runtime execution.")
+            Text("Ask for planning, follow-through, teaching, or technical help. Buddy will keep the next step visible and avoid pretending work happened invisibly.")
                 .foregroundStyle(.secondary)
 
             ForEach(state.chatMessages) { message in
@@ -177,7 +177,7 @@ struct BeMoreMacRootView: View {
         VStack(alignment: .leading, spacing: 14) {
             Text("Workbench")
                 .font(.title2.bold())
-            Text("Create tasks, mark progress, and keep work receipt-backed before pushing it into a runtime or repo.")
+            Text("Create tasks, mark progress, and keep the next step clear before moving into deeper operator work.")
                 .foregroundStyle(.secondary)
 
             HStack {
@@ -218,7 +218,7 @@ struct BeMoreMacRootView: View {
         VStack(alignment: .leading, spacing: 14) {
             Text("Skills")
                 .font(.title2.bold())
-            Text("Skills are bounded capabilities. Buddy operates them; each run emits a receipt and artifact path.")
+            Text("Skills are practical abilities Buddy can learn, equip, and use for planning, review, templates, or deeper technical work.")
                 .foregroundStyle(.secondary)
 
             ForEach(state.skills) { skill in
@@ -252,7 +252,7 @@ struct BeMoreMacRootView: View {
         VStack(alignment: .leading, spacing: 14) {
             Text("Results and Receipts")
                 .font(.title2.bold())
-            Text("Receipts are the truth trail for the Mac shell. If a task, skill, or template action happens, it appears here.")
+            Text("Results show what Buddy actually did: tasks, skills, template work, and saved outputs.")
                 .foregroundStyle(.secondary)
             latestReceipts(limit: 20)
         }
@@ -263,13 +263,13 @@ struct BeMoreMacRootView: View {
         VStack(alignment: .leading, spacing: 14) {
             Text("Buddy Templates")
                 .font(.title2.bold())
-            Text("Create, train, and package Buddies without leaking private memory. Paid selling still needs billing and moderation; this build prepares clean seller drafts.")
+            Text("Create, train, and package Buddies without leaking private memory. Selling still needs billing and moderation; this build prepares clean shareable drafts.")
                 .foregroundStyle(.secondary)
 
             HStack(spacing: 12) {
                 templateStep("Create", "Install or personalize a Buddy with a clear role and use case.")
-                templateStep("Train", "Use check-ins, tasks, skills, and receipts to prove capability.")
-                templateStep("Package", "Emit a sanitized seller guide and template artifact.")
+                templateStep("Train", "Use check-ins, tasks, and skills to show what the Buddy is good at.")
+                templateStep("Package", "Create a clean guide and template without private history.")
                 templateStep("Sell", "Submit when marketplace billing and moderation are enabled.")
             }
 
@@ -392,14 +392,14 @@ private struct MacOnboardingView: View {
     @EnvironmentObject private var state: BeMoreMacState
     @State private var buddyName = "Prism"
     @State private var buddyRole = "Builder companion"
-    @State private var buddyFocus = "Help me create, train, and package useful Buddy templates."
+    @State private var buddyFocus = "Help me plan the day, follow through, and learn what useful support looks like."
     @State private var runtimeURL = "http://127.0.0.1:4319"
 
     var body: some View {
         VStack(spacing: 24) {
             Text("Set Up BeMore Mac")
                 .font(.system(size: 42, weight: .bold))
-            Text("Create your first Buddy, choose what they help with, and keep the runtime boundary explicit.")
+            Text("Create your first Buddy, choose what they help with, and add deeper operator setup only when you need it.")
                 .font(.title3)
                 .foregroundStyle(.secondary)
 
