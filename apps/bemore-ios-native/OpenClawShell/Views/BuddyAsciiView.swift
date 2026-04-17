@@ -20,7 +20,7 @@ struct BuddyAsciiView: View {
     var body: some View {
         Text(frame)
             .font(.system(size: compact ? 12 : 19, weight: .bold, design: .monospaced))
-            .foregroundColor(BMOTheme.accent)
+            .foregroundColor(paletteAccent)
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(compact ? 12 : 18)
             .background(BMOTheme.backgroundSecondary)
@@ -51,53 +51,65 @@ struct BuddyAsciiView: View {
         return frames[tick % frames.count]
     }
 
+    private var paletteAccent: Color {
+        BuddyPaletteDisplay.color(for: buddy?.identity.palette ?? templatePaletteID)
+    }
+
+    private var templatePaletteID: String {
+        template.map { CouncilBuddyIdentityCatalog.identity(for: $0).palette } ?? "mint_cream"
+    }
+
+    private var asciiVariantID: String {
+        buddy?.visual?.asciiVariantId ?? "starter_a"
+    }
+
     private var framesForMood: [String] {
         if let template {
             let state = moodKey
             if state == "idle", template.ascii.idleFrames.isEmpty == false {
-                return template.ascii.idleFrames
+                return style(template.ascii.idleFrames)
             }
             if let expression = template.ascii.expressions[state] {
-                return [expression, template.ascii.baseSilhouette]
+                return style([expression, template.ascii.baseSilhouette])
             }
-            return activeTemplateFallbackFrames(for: template.ascii.baseSilhouette)
+            return style(activeTemplateFallbackFrames(for: template.ascii.baseSilhouette))
         }
         switch mood {
         case .idle:
-            return [
+            return style([
                 Self.make(["    /\\", "  < o  o >", "  /|  v |\\", " /_|____|_\\", "   /_  _\\"]),
                 Self.make(["    /\\", "  < o  o >", "  /|  v |\\", " /_|____|_\\", "   \\_  _/"])
-            ]
+            ])
         case .happy:
-            return [
+            return style([
                 Self.make(["  \\ /\\ /", "  < ^  ^ >", "  /|  * |\\", " /_|____|_\\", "    /  \\"]),
                 Self.make([" *  /\\  *", "  < ^  o >", "  /|  * |\\", " /_|____|_\\", "    \\  /"])
-            ]
+            ])
         case .thinking:
-            return [
+            return style([
                 Self.make(["    /\\   ?", "  < o  o >", "  /|  ? |\\", " /_|____|_\\", "    /  \\"]),
                 Self.make(["    /\\  ..", "  < o  O >", "  /|  ? |\\", " /_|____|_\\", "    \\  /"])
-            ]
+            ])
         case .working:
-            return [
+            return style([
                 Self.make(["    /\\  #", "  < >  < >", "  /| [ ]|\\", " /_|____|_\\", "   /_  _\\"]),
                 Self.make(["    /\\  ##", "  < >  < >", "  /| [*]|\\", " /_|____|_\\", "   \\_  _/"])
-            ]
+            ])
         case .sleepy:
-            return [
+            return style([
                 Self.make(["    /\\   z", "  < -  - >", "  /|  . |\\", " /_|____|_\\", "    /__\\"]),
                 Self.make(["    /\\  zz", "  < -  - >", "  /|  . |\\", " /_|____|_\\", "   _/  \\_"])
-            ]
+            ])
         case .levelUp:
-            return [
+            return style([
                 Self.make([" ** /\\ **", "  < ^  ^ >", "  /|{*}|\\", " /_|____|_\\", "    /  \\"]),
                 Self.make(["*** /\\ ***", "  < ^  o >", "  /|{*}|\\", " /_|____|_\\", "    \\  /"])
-            ]
+            ])
         case .needsAttention:
-            return [
+            return style([
                 Self.make([" !  /\\  !", "  < o  o >", "  /|  ! |\\", " /_|____|_\\", "    /  \\"]),
                 Self.make([" !! /\\ !!", "  < O  o >", "  /|  ! |\\", " /_|____|_\\", "    \\  /"])
-            ]
+            ])
         }
     }
 
@@ -138,5 +150,41 @@ struct BuddyAsciiView: View {
 
     private static func wrap(_ silhouette: String, top: String, bottom: String) -> String {
         "\(top)\n\(silhouette.trimmingCharacters(in: .newlines))\n\(bottom)"
+    }
+
+    private func style(_ frames: [String]) -> [String] {
+        frames.map { frame in
+            switch asciiVariantID {
+            case "starter_b":
+                return frame
+                    .replacingOccurrences(of: "<", with: "(")
+                    .replacingOccurrences(of: ">", with: ")")
+                    .replacingOccurrences(of: "/\\", with: "/\\+")
+            case "starter_c":
+                return frame
+                    .replacingOccurrences(of: "<", with: "[")
+                    .replacingOccurrences(of: ">", with: "]")
+                    .replacingOccurrences(of: "/\\", with: "/\\#")
+            default:
+                return frame
+            }
+        }
+    }
+}
+
+private enum BuddyPaletteDisplay {
+    static func color(for paletteID: String) -> Color {
+        switch paletteID {
+        case "sky_navy": return Color(red: 0.49, green: 0.78, blue: 0.99)
+        case "peach_brown": return Color(red: 1.0, green: 0.78, blue: 0.65)
+        case "purple_gold": return Color(red: 0.78, green: 0.64, blue: 1.0)
+        case "black_neon": return Color(red: 0.22, green: 1.0, blue: 0.53)
+        case "rose_white": return Color(red: 0.95, green: 0.55, blue: 0.69)
+        case "forest_moss": return Color(red: 0.55, green: 0.68, blue: 0.35)
+        case "aqua_teal": return Color(red: 0.45, green: 0.95, blue: 0.91)
+        case "red_charcoal": return Color(red: 0.82, green: 0.29, blue: 0.36)
+        case "yellow_cocoa": return Color(red: 0.96, green: 0.83, blue: 0.37)
+        default: return Color(red: 0.56, green: 0.85, blue: 0.78)
+        }
     }
 }

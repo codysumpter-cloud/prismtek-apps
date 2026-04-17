@@ -10,17 +10,20 @@ import {
   Activity,
   Shield,
   Zap,
-  ChevronRight,
   Loader2,
   CreditCard,
   ShieldCheck,
-  CheckCircle2,
+  Cpu,
+  Palette,
+  Bot,
+  ChevronRight,
   RefreshCw,
   Globe,
-  Clock,
-  Cpu
+  Clock
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { BuddyStudioView } from './BuddyStudioView';
+import { CodexTasksView } from './CodexTasksView';
 import { 
   auth, 
   db, 
@@ -272,6 +275,18 @@ export default function App() {
               onClick={() => setActiveTab('factory')}
             />
             <SidebarItem 
+              icon={<Palette size={20} />} 
+              label="Buddy Studio" 
+              active={activeTab === 'buddy'} 
+              onClick={() => setActiveTab('buddy')}
+            />
+            <SidebarItem 
+              icon={<Bot size={20} />} 
+              label="Codex Tasks" 
+              active={activeTab === 'codex'} 
+              onClick={() => setActiveTab('codex')}
+            />
+            <SidebarItem 
               icon={<Terminal size={20} />} 
               label="Sandbox" 
               active={activeTab === 'sandbox'} 
@@ -339,6 +354,8 @@ export default function App() {
                   token={token}
                 />
               )}
+              {activeTab === 'buddy' && token && <BuddyStudioView token={token} />}
+              {activeTab === 'codex' && token && <CodexTasksView token={token} />}
               {activeTab === 'sandbox' && <SandboxView user={user} token={token} />}
               {activeTab === 'billing' && <BillingView />}
               {activeTab === 'admin' && <AdminView user={user} />}
