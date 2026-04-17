@@ -267,3 +267,5 @@ export interface InstalledPackageRecord {
   status: 'installed' | 'disabled' | 'error';
   config: Record<string, string | number | boolean | string[] | null>;
 }
+
+export * from './buddyStudio';

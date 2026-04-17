@@ -43,6 +43,8 @@ This repo owns:
 - shared product packages
 - product-facing APIs and services
 - Buddy UI and Buddy Workshop product surfaces
+- Buddy Appearance Studio, saved appearance profiles, and preview rendering
+- app-facing Codex task controls and result presentation
 - shared auth, account, and profile systems
 - app-shell, design-system, and product UX patterns
 - product build and release automation over time
@@ -189,6 +191,26 @@ npm run clean
 3. move product-owned automation here over time
 4. reduce overlap with shadow or transitional app repos
 5. keep BeMore implementation decisions close to the product repo
+
+## Current product slices
+
+- **Buddy Appearance Studio**
+  - guided Buddy look creation
+  - reusable saved appearance profiles
+  - local ASCII validation and preview
+  - optional PixelLab upgrade configuration without hard dependency
+- **Codex task controls**
+  - submit a bounded technical brief from the app
+  - select repo scope and approval mode
+  - poll live run status
+  - inspect logs, branch, worktree, and final summary
+  - keep execution owned by `BeMore-stack`
+
+## Runtime adapter boundary
+
+- `prismtek-apps` renders product UX for Buddy and operator controls.
+- `BeMore-stack` remains the source of truth for council posture, operator rules, skills/manifests, and Codex execution.
+- The app adapter should wrap `BeMore-stack`, not replace it.
 
 ## Branding assets
 
