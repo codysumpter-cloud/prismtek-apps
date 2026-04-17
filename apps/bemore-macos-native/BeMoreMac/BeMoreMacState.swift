@@ -60,7 +60,7 @@ final class BeMoreMacState: ObservableObject {
     @Published var runtimeURL = URL(string: "http://127.0.0.1:4319")!
     @Published var activeBuddyName = "Prism"
     @Published var activeBuddyRole = "Builder companion"
-    @Published var activeBuddyFocus = "Keep today focused, useful, and receipt-backed."
+    @Published var activeBuddyFocus = "Help me plan the day, follow through, and learn what useful support looks like."
     @Published var latestReceipt = "Prism is ready for the next useful step."
     @Published var hasCompletedOnboarding: Bool
     @Published var energy = 72
@@ -73,7 +73,7 @@ final class BeMoreMacState: ObservableObject {
     @Published var runtimeStatus = "Not checked"
 
     @Published var chatMessages: [MacChatMessage] = [
-        .init(speaker: "Prism", body: "I can help plan work, track receipts, run bounded skills, and keep Buddy/template progress understandable.")
+        .init(speaker: "Prism", body: "I can help plan your day, break down work, draft notes or follow-ups, and learn the routines that make me more useful.")
     ]
     @Published var tasks: [MacTask] = [
         .init(title: "Review build 27 release notes", detail: "Confirm iOS surfaces, Buddy template path, and Pokemon Team Builder are understandable."),
@@ -84,8 +84,8 @@ final class BeMoreMacState: ObservableObject {
     ]
     @Published var skills: [MacSkill] = [
         .init(id: "pokemon-team-builder", name: "Pokemon Team Builder", summary: "Create, edit, analyze, and export Pokemon teams.", status: "Ready"),
-        .init(id: "artifact-reviewer", name: "Artifact Reviewer", summary: "Review saved receipts and workspace artifacts.", status: "Ready"),
-        .init(id: "buddy-template-packager", name: "Buddy Template Packager", summary: "Prepare sanitized Buddy template seller drafts.", status: "Ready")
+        .init(id: "artifact-reviewer", name: "Result Reviewer", summary: "Review saved outputs and turn them into clear next steps.", status: "Ready"),
+        .init(id: "buddy-template-packager", name: "Buddy Template Packager", summary: "Prepare clean Buddy template drafts without private history.", status: "Ready")
     ]
     @Published var ownedBuddies = ["Prism", "Moe"]
     @Published var marketplaceBuddies = ["Prism Builder", "Moe Repair", "Scout Reviewer", "Nimbus Planner"]
@@ -94,7 +94,7 @@ final class BeMoreMacState: ObservableObject {
         hasCompletedOnboarding = UserDefaults.standard.bool(forKey: "bemore.mac.onboarding.completed")
         activeBuddyName = UserDefaults.standard.string(forKey: "bemore.mac.buddy.name") ?? "Prism"
         activeBuddyRole = UserDefaults.standard.string(forKey: "bemore.mac.buddy.role") ?? "Builder companion"
-        activeBuddyFocus = UserDefaults.standard.string(forKey: "bemore.mac.buddy.focus") ?? "Keep today focused, useful, and receipt-backed."
+        activeBuddyFocus = UserDefaults.standard.string(forKey: "bemore.mac.buddy.focus") ?? "Help me plan the day, follow through, and learn what useful support looks like."
         if let savedRuntime = UserDefaults.standard.string(forKey: "bemore.mac.runtime.url"),
            let url = URL(string: savedRuntime) {
             runtimeURL = url
@@ -104,7 +104,7 @@ final class BeMoreMacState: ObservableObject {
     func completeOnboarding(name: String, role: String, focus: String, runtime: String) {
         activeBuddyName = name.trimmingCharacters(in: .whitespacesAndNewlines).nilIfBlank ?? "Prism"
         activeBuddyRole = role.trimmingCharacters(in: .whitespacesAndNewlines).nilIfBlank ?? "Builder companion"
-        activeBuddyFocus = focus.trimmingCharacters(in: .whitespacesAndNewlines).nilIfBlank ?? "Keep today focused, useful, and receipt-backed."
+        activeBuddyFocus = focus.trimmingCharacters(in: .whitespacesAndNewlines).nilIfBlank ?? "Help me plan the day, follow through, and learn what useful support looks like."
         if let url = URL(string: runtime.trimmingCharacters(in: .whitespacesAndNewlines)), url.scheme != nil {
             runtimeURL = url
         }
@@ -129,14 +129,14 @@ final class BeMoreMacState: ObservableObject {
     func checkRuntime() {
         runtimeStatus = "Configured at \(runtimeURL.absoluteString)"
         markWorking()
-        record(title: "Runtime checked", summary: "The native shell confirmed the configured runtime boundary.", artifact: "state/runtime-status.json")
+        record(title: "Operator connection checked", summary: "BeMore Mac confirmed where deeper technical work would be routed.", artifact: "state/runtime-status.json")
     }
 
     func sendChat() {
         let prompt = chatDraft.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !prompt.isEmpty else { return }
         chatMessages.append(.init(speaker: "You", body: prompt))
-        chatMessages.append(.init(speaker: activeBuddyName, body: "I captured that. Next I would turn it into a task, skill run, or saved artifact instead of pretending invisible work happened."))
+        chatMessages.append(.init(speaker: activeBuddyName, body: companionReply(for: prompt)))
         chatDraft = ""
         markHappy()
         record(title: "Chat captured", summary: "Saved a local chat turn for \(activeBuddyName).", artifact: "chat/mac-chat.json")
@@ -189,14 +189,14 @@ final class BeMoreMacState: ObservableObject {
         buddyMood = .working
         energy = max(0, energy - 6)
         focus = min(100, focus + 4)
-        latestReceipt = "\(activeBuddyName) is working with a visible receipt trail."
+        latestReceipt = "\(activeBuddyName) is working on the next visible step."
     }
 
     func markHappy() {
         buddyMood = .happy
         bond = min(100, bond + 4)
         attention = max(0, attention - 8)
-        latestReceipt = "\(activeBuddyName) action completed locally."
+        latestReceipt = "\(activeBuddyName) saved that progress locally."
     }
 
     func checkIn() {
@@ -225,6 +225,27 @@ final class BeMoreMacState: ObservableObject {
         latestReceipt = summary
         receipts.insert(.init(title: title, summary: summary, artifact: artifact), at: 0)
         receipts = Array(receipts.prefix(20))
+    }
+
+    private func companionReply(for prompt: String) -> String {
+        let text = prompt.lowercased()
+        let asksModes = text.contains("companion mode") || text.contains("operator mode") || text.contains("power mode")
+        let asksTraining = text.contains("make you better") || text.contains("train you") || text.contains("teach you") || text.contains("improve you")
+        let asksCapability = text.contains("what can you do") || text.contains("what are you good at") || text.contains("how should i use you") || text.contains("what should i use you for") || text.contains("how do you work")
+
+        if asksModes {
+            return "Companion mode is for deciding what matters, planning, reflecting, remembering preferences, and staying aligned. Operator mode is for repo work, debugging, runtime checks, skills, and structured technical execution. You can just ask for the outcome; I will bring up the mechanics only when they matter."
+        }
+
+        if asksTraining && !asksCapability {
+            return "Teach me your preferences, correct me when I miss, show me your routines, and tell me what good help looks like. I get more useful through visible memory, repeated routines, and trained skills, not hidden magic."
+        }
+
+        if asksCapability || asksTraining {
+            return "I can help with your day, your work, your plans, your follow-through, and your thinking. Teach me preferences, routines, corrections, and examples of useful help so I get more aligned over time. I can grow through skills like planning, reminders, notes, message drafting, research, and project support. When you need operator mode, I can go deeper on repo work, debugging, runtime checks, and skill execution. Start with one thing you want help with today, or one thing you want me to learn about how you work."
+        }
+
+        return "I captured that. I can turn it into a task, a planning note, a skill run, or a saved result when you want the next concrete step."
     }
 }
 

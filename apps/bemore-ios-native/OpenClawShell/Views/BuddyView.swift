@@ -89,7 +89,7 @@ struct BuddyView: View {
                     Text(buddy.displayName)
                         .font(.system(size: 30, weight: .bold))
                         .foregroundColor(BMOTheme.textPrimary)
-                    Text(template?.onboardingCopy ?? "\(buddy.displayName) is the active companion for chat, skills, tasks, receipts, and results.")
+                    Text(template?.onboardingCopy ?? "\(buddy.displayName) helps with your day, your work, your follow-through, and the routines you teach over time.")
                         .font(.subheadline)
                         .foregroundColor(BMOTheme.textSecondary)
                 }
@@ -121,7 +121,7 @@ struct BuddyView: View {
                     Text("Teach Buddy")
                         .font(.headline)
                         .foregroundColor(BMOTheme.textPrimary)
-                    Text("Train \(buddy.displayName) on how you like to plan, then turn that teaching into a reminder, journal note, and message draft.")
+                    Text("Teach \(buddy.displayName) how you like to plan, then use that lesson for a reminder, journal note, or follow-up draft.")
                         .font(.subheadline)
                         .foregroundColor(BMOTheme.textSecondary)
                 }
@@ -184,7 +184,7 @@ struct BuddyView: View {
                 Text("Apple handoff")
                     .font(.subheadline.weight(.semibold))
                     .foregroundColor(BMOTheme.textPrimary)
-                Text("Reminders are created with EventKit after permission. Messages are draft-only and require you to press send in Apple's composer.")
+                Text("Reminders are created after permission. Messages stay as drafts until you choose to send them.")
                     .font(.caption)
                     .foregroundColor(BMOTheme.textSecondary)
 
@@ -327,7 +327,7 @@ struct BuddyView: View {
 
             BuddyAsciiView(buddy: buddy, template: template, mood: buddyMood(for: buddy))
 
-            Text(template?.onboardingCopy ?? "Buddy profile is ready for the BeMore runtime.")
+            Text(template?.onboardingCopy ?? "Buddy is ready to help with planning, notes, follow-through, and skills you train over time.")
                 .font(.subheadline)
                 .foregroundColor(BMOTheme.textSecondary)
 
@@ -422,7 +422,7 @@ struct BuddyView: View {
                 .foregroundColor(BMOTheme.textPrimary)
 
             if events.isEmpty {
-                Text("No runtime events recorded yet. Install, personalize, check in, or train to start the event stream.")
+                Text("No activity yet. Install, personalize, check in, or train Buddy to start building useful history.")
                     .font(.subheadline)
                     .foregroundColor(BMOTheme.textSecondary)
             } else {
@@ -459,7 +459,7 @@ struct BuddyView: View {
                     Text("Discover Buddies")
                         .font(.headline)
                         .foregroundColor(BMOTheme.textPrimary)
-                    Text("A curated Buddy marketplace beta. Install starter Buddies now; premium creator Buddies can live here when billing is ready.")
+                    Text("Try starter Buddies with different strengths. Pick the one that feels useful for how you plan, work, remember, or create.")
                         .font(.subheadline)
                         .foregroundColor(BMOTheme.textSecondary)
                 }
@@ -521,7 +521,7 @@ struct BuddyView: View {
                     Text("My Buddy Roster")
                         .font(.headline)
                         .foregroundColor(BMOTheme.textPrimary)
-                    Text("Owned Buddies stay separate from marketplace templates. Equip one active Buddy at a time.")
+                    Text("Keep a small roster of Buddies with different strengths. Equip the one you want helping right now.")
                         .font(.caption)
                         .foregroundColor(BMOTheme.textSecondary)
                 }
@@ -582,7 +582,7 @@ struct BuddyView: View {
             Text("Training and Plans")
                 .font(.headline)
                 .foregroundColor(BMOTheme.textPrimary)
-            Text("Training grows your active Buddy. Pricing controls future Buddy slots, premium marketplace access, and higher runtime capacity.")
+            Text("Training teaches Buddy what better help looks like. Use Chat for a real task, or Pricing when you want more Buddy slots and higher capacity.")
                 .font(.subheadline)
                 .foregroundColor(BMOTheme.textSecondary)
             HStack {
@@ -606,7 +606,7 @@ struct BuddyView: View {
                     Text("Create, Train, Sell")
                         .font(.headline)
                         .foregroundColor(BMOTheme.textPrimary)
-                    Text("Buddy templates are reusable blueprints. Training improves the owned Buddy; packaging creates a sanitized sell-ready draft.")
+                    Text("Buddy templates are reusable starting points. Training improves your owned Buddy; packaging creates a clean shareable draft without private history.")
                         .font(.subheadline)
                         .foregroundColor(BMOTheme.textSecondary)
                 }
@@ -622,12 +622,12 @@ struct BuddyView: View {
             lifecycleStep(
                 number: "2",
                 title: "Train",
-                body: "Record check-ins, training entries, and real task receipts. A trained Buddy should have proof: saved artifacts, skill runs, and clear capability growth."
+                body: "Record check-ins, training entries, and real tasks. A trained Buddy should show clearer preferences, stronger skills, and useful results."
             )
             lifecycleStep(
                 number: "3",
                 title: "Package",
-                body: "Package the active Buddy to create JSON and Markdown artifacts. The package strips private memory, chat transcripts, raw check-ins, and raw training notes."
+                body: "Package the active Buddy into a clean template. Private memory, chat transcripts, raw check-ins, and raw training notes stay out."
             )
             lifecycleStep(
                 number: "4",
@@ -680,7 +680,7 @@ struct BuddyView: View {
             Text("No Buddy Installed Yet")
                 .font(.headline)
                 .foregroundColor(BMOTheme.textPrimary)
-            Text("Install a starter Buddy to create a local companion, start the Buddy event stream, and keep receipt-backed continuity.")
+            Text("Install a starter Buddy to begin with a companion you can name, teach, train, and rely on for everyday follow-through.")
                 .font(.subheadline)
                 .foregroundColor(BMOTheme.textSecondary)
         }
