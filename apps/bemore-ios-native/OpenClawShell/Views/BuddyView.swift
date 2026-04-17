@@ -6,6 +6,8 @@ private struct BuddyPersonalizationDraft {
     var displayName: String = ""
     var nickname: String = ""
     var currentFocus: String = ""
+    var palette: String = "mint_cream"
+    var asciiVariantID: String = "starter_a"
 }
 
 private struct BuddyTeachingDraft {
@@ -341,6 +343,8 @@ struct BuddyView: View {
             VStack(alignment: .leading, spacing: 6) {
                 profileRow(label: "Template", value: template?.name ?? "Legacy Buddy")
                 profileRow(label: "Focus", value: buddy.state.currentFocus ?? "No active focus")
+                profileRow(label: "Palette", value: paletteLabel(for: buddy.identity.palette))
+                profileRow(label: "ASCII style", value: asciiVariantLabel(for: buddy.visual?.asciiVariantId))
                 profileRow(label: "Last active", value: BuddyMarkdownRenderer.iso8601(buddy.state.lastActiveAt))
                 profileRow(label: "Top move", value: buddy.equippedMoves.sorted(by: { $0.slot < $1.slot }).first?.name ?? "None")
             }
@@ -349,7 +353,9 @@ struct BuddyView: View {
                 personalizationDraft = BuddyPersonalizationDraft(
                     displayName: buddy.displayName,
                     nickname: buddy.nickname ?? "",
-                    currentFocus: buddy.state.currentFocus ?? ""
+                    currentFocus: buddy.state.currentFocus ?? "",
+                    palette: buddy.identity.palette,
+                    asciiVariantID: buddy.visual?.asciiVariantId ?? defaultASCIIVariantID
                 )
                 isShowingPersonalizationSheet = true
             }
@@ -733,6 +739,20 @@ struct BuddyView: View {
                 Section("Current Focus") {
                     TextField("Focus", text: $personalizationDraft.currentFocus, axis: .vertical)
                 }
+
+                Section("Appearance") {
+                    Picker("Palette", selection: $personalizationDraft.palette) {
+                        ForEach(availablePalettes, id: \.id) { palette in
+                            Text(palette.label).tag(palette.id)
+                        }
+                    }
+
+                    Picker("ASCII style", selection: $personalizationDraft.asciiVariantID) {
+                        ForEach(asciiVariantOptions, id: \.id) { option in
+                            Text(option.label).tag(option.id)
+                        }
+                    }
+                }
             }
             .navigationTitle("Personalize Buddy")
             .toolbar {
@@ -747,6 +767,8 @@ struct BuddyView: View {
                             displayName: personalizationDraft.displayName,
                             nickname: personalizationDraft.nickname,
                             currentFocus: personalizationDraft.currentFocus,
+                            palette: personalizationDraft.palette,
+                            asciiVariantID: personalizationDraft.asciiVariantID,
                             using: appState
                         )
                         isShowingPersonalizationSheet = false
@@ -837,6 +859,31 @@ struct BuddyView: View {
         default:
             return BMOTheme.textSecondary
         }
+    }
+
+    private var availablePalettes: [BuddyPaletteOption] {
+        store.contracts?.creationOptions.options.palettes ?? []
+    }
+
+    private var asciiVariantOptions: [BuddyChoiceOption] {
+        [
+            BuddyChoiceOption(id: "starter_a", label: "Classic", description: "Default Buddy shell look."),
+            BuddyChoiceOption(id: "starter_b", label: "Soft", description: "Rounded expression and antenna accent."),
+            BuddyChoiceOption(id: "starter_c", label: "Bold", description: "Sharper framing for a stronger look.")
+        ]
+    }
+
+    private var defaultASCIIVariantID: String {
+        store.contracts?.creationOptions.defaults.asciiVariant ?? "starter_a"
+    }
+
+    private func paletteLabel(for paletteID: String) -> String {
+        availablePalettes.first(where: { $0.id == paletteID })?.label ?? paletteID
+    }
+
+    private func asciiVariantLabel(for asciiVariantID: String?) -> String {
+        let variantID = asciiVariantID ?? defaultASCIIVariantID
+        return asciiVariantOptions.first(where: { $0.id == variantID })?.label ?? variantID
     }
 
     private func buddyMood(for buddy: BuddyInstance) -> BuddyAnimationMood {

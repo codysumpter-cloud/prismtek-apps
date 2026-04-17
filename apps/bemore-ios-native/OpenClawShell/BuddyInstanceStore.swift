@@ -241,7 +241,14 @@ final class BuddyProfileStore: ObservableObject {
         }
     }
 
-    func personalizeActive(displayName: String, nickname: String?, currentFocus: String?, using appState: AppState) {
+    func personalizeActive(
+        displayName: String,
+        nickname: String?,
+        currentFocus: String?,
+        palette: String?,
+        asciiVariantID: String?,
+        using appState: AppState
+    ) {
         guard let activeBuddy else { return }
         mutate(using: appState) { contracts in
             try BuddyEventEngine(contracts: contracts).personalize(
@@ -249,6 +256,8 @@ final class BuddyProfileStore: ObservableObject {
                 displayName: displayName,
                 nickname: nickname,
                 currentFocus: currentFocus,
+                palette: palette,
+                asciiVariantID: asciiVariantID,
                 currentState: libraryState,
                 currentEvents: eventLog
             )
@@ -412,6 +421,8 @@ final class BuddyProfileStore: ObservableObject {
             displayName: cleanedName.isEmpty ? template.name : cleanedName,
             nickname: nil,
             currentFocus: cleanedFocus.isEmpty ? template.canonicalRole : cleanedFocus,
+            palette: CouncilBuddyIdentityCatalog.identity(for: template).palette,
+            asciiVariantID: contracts?.creationOptions.defaults.asciiVariant,
             using: appState
         )
     }

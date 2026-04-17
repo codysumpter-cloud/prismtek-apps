@@ -87,6 +87,8 @@ struct BuddyEventEngine {
         displayName: String,
         nickname: String?,
         currentFocus: String?,
+        palette: String?,
+        asciiVariantID: String?,
         currentState: BuddyLibraryState,
         currentEvents: BuddyRuntimeEventLog,
         now: Date = .now
@@ -104,6 +106,19 @@ struct BuddyEventEngine {
         instance.displayName = cleanedName
         instance.nickname = nickname?.trimmingCharacters(in: .whitespacesAndNewlines).nilIfBlank
         instance.state.currentFocus = currentFocus?.trimmingCharacters(in: .whitespacesAndNewlines).nilIfBlank ?? instance.state.currentFocus
+        if let palette = palette?.trimmingCharacters(in: .whitespacesAndNewlines).nilIfBlank {
+            instance.identity.palette = palette
+        }
+        var visual = instance.visual ?? BuddyVisualState(
+            asciiVariantId: nil,
+            pixelVariantId: nil,
+            currentAnimationState: nil,
+            evolutionCosmetics: []
+        )
+        if let asciiVariantID = asciiVariantID?.trimmingCharacters(in: .whitespacesAndNewlines).nilIfBlank {
+            visual.asciiVariantId = asciiVariantID
+        }
+        instance.visual = visual
         instance.state.mood = nextMood(from: instance.state.mood, preferred: "happy")
         instance.state.lastActiveAt = now
         let actualBondDelta = cappedBondDelta(currentEvents, on: now, requested: 1)
@@ -126,7 +141,9 @@ struct BuddyEventEngine {
                 payload: [
                     "displayName": cleanedName,
                     "nickname": updated.nickname ?? "",
-                    "currentFocus": updated.state.currentFocus ?? ""
+                    "currentFocus": updated.state.currentFocus ?? "",
+                    "palette": updated.identity.palette,
+                    "asciiVariantId": updated.visual?.asciiVariantId ?? ""
                 ],
                 effects: BuddyRuntimeEventEffects(
                     xpDelta: nil,
