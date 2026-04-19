@@ -40,6 +40,7 @@ enum BuddyMarkdownRenderer {
         - Trust: \(care.trust)
         - Confidence: \(care.confidence)
         - Curiosity: \(care.curiosity)
+        - Active appearance: \(activeAppearanceLabel(for: instance))
 
         ## What changed recently
         \(bulletList(recent.isEmpty ? ["No Buddy events recorded yet."] : recent))
@@ -61,6 +62,9 @@ enum BuddyMarkdownRenderer {
 
         ## Trade status
         \(bulletList(tradeLines(for: instance, tradeHistory: tradeHistory)))
+
+        ## Appearance studio
+        \(bulletList(appearanceLines(for: instance)))
 
         ## What is stale
         \(bulletList(staleLines(for: instance, now: now)))
@@ -103,6 +107,7 @@ enum BuddyMarkdownRenderer {
             - Vitality / trust / confidence: \(care.vitality) / \(care.trust) / \(care.confidence)
             - Battles logged: \(battles.count)
             - Trade history: \(trades.count)
+            - Active appearance: \(activeAppearanceLabel(for: instance))
             - Last active: \(iso8601(instance.state.lastActiveAt))
             \(recent.isEmpty ? "- Recent note: No Buddy events recorded yet." : recent.map { "- Recent note: \($0)" }.joined(separator: "\n"))
             """
@@ -221,6 +226,27 @@ enum BuddyMarkdownRenderer {
             return ["No trade packages imported for this Buddy yet. Export a package to share or keep as a backup."]
         }
         return recent.map { "\($0.type.capitalized): \($0.summary)" }
+    }
+
+    private static func appearanceLines(for instance: BuddyInstance) -> [String] {
+        let profiles = (instance.appearanceProfiles ?? [])
+            .sorted { lhs, rhs in
+                if lhs.updatedAt == rhs.updatedAt { return lhs.name < rhs.name }
+                return lhs.updatedAt > rhs.updatedAt
+            }
+            .prefix(4)
+        guard profiles.isEmpty == false else {
+            return ["No saved appearance profiles yet. Open Appearance Studio to create one."]
+        }
+        return profiles.map { profile in
+            let activeMarker = profile.id == instance.visual?.activeAppearanceProfileId ? "active" : "saved"
+            return "\(profile.name): \(profile.archetype), \(profile.palette), ASCII \(profile.asciiVariantId), tone \(profile.expressionTone) (\(activeMarker))."
+        }
+    }
+
+    private static func activeAppearanceLabel(for instance: BuddyInstance) -> String {
+        let profile = (instance.appearanceProfiles ?? []).first(where: { $0.id == instance.visual?.activeAppearanceProfileId })
+        return profile?.name ?? "Starter look"
     }
 
     private static func staleLines(for instance: BuddyInstance, now: Date) -> [String] {

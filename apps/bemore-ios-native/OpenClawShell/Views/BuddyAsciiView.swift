@@ -63,6 +63,10 @@ struct BuddyAsciiView: View {
         buddy?.visual?.asciiVariantId ?? "starter_a"
     }
 
+    private var archetypeID: String {
+        buddy?.identity.archetype ?? "console_pet"
+    }
+
     private var framesForMood: [String] {
         if let template {
             let state = moodKey
@@ -154,20 +158,39 @@ struct BuddyAsciiView: View {
 
     private func style(_ frames: [String]) -> [String] {
         frames.map { frame in
+            let variantFrame: String
             switch asciiVariantID {
             case "starter_b":
-                return frame
+                variantFrame = frame
                     .replacingOccurrences(of: "<", with: "(")
                     .replacingOccurrences(of: ">", with: ")")
                     .replacingOccurrences(of: "/\\", with: "/\\+")
             case "starter_c":
-                return frame
+                variantFrame = frame
                     .replacingOccurrences(of: "<", with: "[")
                     .replacingOccurrences(of: ">", with: "]")
                     .replacingOccurrences(of: "/\\", with: "/\\#")
             default:
-                return frame
+                variantFrame = frame
             }
+            return decorateForArchetype(variantFrame)
+        }
+    }
+
+    private func decorateForArchetype(_ frame: String) -> String {
+        switch archetypeID {
+        case "spirit":
+            return Self.wrap(frame, top: "  ~~~", bottom: " ~ drift")
+        case "companion_orb":
+            return Self.wrap(frame, top: " ( o )", bottom: "  orbit")
+        case "slime":
+            return Self.wrap(frame, top: "  ___", bottom: " ~squish")
+        case "robot":
+            return Self.wrap(frame, top: " [::]", bottom: "  //\\\\")
+        case "tiny_monster":
+            return Self.wrap(frame, top: "  ^^", bottom: "  claws")
+        default:
+            return frame
         }
     }
 }

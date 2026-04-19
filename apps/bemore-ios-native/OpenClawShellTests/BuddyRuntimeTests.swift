@@ -221,6 +221,49 @@ final class BuddyRuntimeTests: XCTestCase {
         XCTAssertTrue(buddyMarkdown.contains("Trust"))
     }
 
+    func testAppearanceStudioSavesAndEquipsHermesASCIIProfile() throws {
+        let contracts = try BuddyContractLoader.loadCanonicalResources()
+        let runtime = OpenClawWorkspaceRuntime()
+        runtime.bootstrap(config: .default, preferences: .default, routeSummary: "Direct cloud model route")
+        let engine = BuddyEventEngine(contracts: contracts)
+
+        let installed = try engine.install(
+            templateID: "bmo",
+            currentState: BuddyLibraryState(),
+            currentEvents: BuddyRuntimeEventLog(),
+            now: Date(timeIntervalSince1970: 1_744_314_400)
+        )
+        let styled = try engine.saveAppearanceProfile(
+            instanceID: try XCTUnwrap(installed.libraryState.activeBuddy?.instanceId),
+            profileName: "Moonlight Scout",
+            archetype: "spirit",
+            palette: "sky_navy",
+            asciiVariantID: "starter_c",
+            expressionTone: "focused",
+            accentLabel: "signal ribbon",
+            setActive: true,
+            currentState: installed.libraryState,
+            currentEvents: installed.eventLog,
+            now: Date(timeIntervalSince1970: 1_744_315_000)
+        )
+
+        let activeBuddy = try XCTUnwrap(styled.libraryState.activeBuddy)
+        XCTAssertEqual(activeBuddy.identity.archetype, "spirit")
+        XCTAssertEqual(activeBuddy.identity.palette, "sky_navy")
+        XCTAssertEqual(activeBuddy.visual?.asciiVariantId, "starter_c")
+        XCTAssertEqual(activeBuddy.appearanceProfiles?.contains(where: { $0.name == "Moonlight Scout" }), true)
+        XCTAssertEqual(activeBuddy.visual?.currentAnimationState, "happy")
+        XCTAssertTrue(styled.eventLog.events.contains(where: { $0.type == "buddy.appearance.saved" }))
+
+        let receipt = runtime.persistBuddyBundle(styled)
+        XCTAssertEqual(receipt.status, .persisted)
+
+        let buddyMarkdown = try String(contentsOf: Paths.openClawDirectory.appendingPathComponent("buddy.md"), encoding: .utf8)
+        XCTAssertTrue(buddyMarkdown.contains("## Appearance studio"))
+        XCTAssertTrue(buddyMarkdown.contains("Moonlight Scout"))
+        XCTAssertTrue(buddyMarkdown.contains("starter_c"))
+    }
+
     func testLegacyBuddySystemMigratesIntoBuild18State() throws {
         let legacyJSON = """
         {

@@ -601,8 +601,22 @@ struct BuddyMemoryBindings: Codable, Hashable {
 struct BuddyVisualState: Codable, Hashable {
     var asciiVariantId: String?
     var pixelVariantId: String?
+    var activeAppearanceProfileId: String?
     var currentAnimationState: String?
     var evolutionCosmetics: [String]
+}
+
+struct BuddyAppearanceProfile: Identifiable, Codable, Hashable {
+    var id: String
+    var name: String
+    var archetype: String
+    var palette: String
+    var asciiVariantId: String
+    var expressionTone: String
+    var accentLabel: String
+    var source: String
+    var createdAt: Date
+    var updatedAt: Date
 }
 
 struct BuddyTrainingRecord: Identifiable, Codable, Hashable {
@@ -741,6 +755,7 @@ struct BuddyTradeSnapshot: Codable, Hashable {
     var equippedMoves: [BuddyEquippedMove]
     var proficiencies: BuddyProficiencies
     var visual: BuddyVisualState?
+    var appearanceProfiles: [BuddyAppearanceProfile]?
     var publicBadges: [String]
     var publicNotes: [String]
     var rarityLabel: String
@@ -814,6 +829,7 @@ struct BuddyInstance: Identifiable, Codable, Hashable {
     var provenance: BuddyProvenance
     var memory: BuddyMemoryBindings
     var visual: BuddyVisualState?
+    var appearanceProfiles: [BuddyAppearanceProfile]?
     var trainingHistory: [BuddyTrainingRecord]
     var learnedPreferences: [BuddyLearnedPreference]?
     var learnedSkills: [BuddySkillState]?

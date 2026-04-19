@@ -17,6 +17,15 @@ private struct BuddyTeachingDraft {
     var supportStyle = "Calm, specific, and low-pressure"
 }
 
+private struct BuddyAppearanceStudioDraft {
+    var profileName = "Everyday Look"
+    var archetype = "console_pet"
+    var palette = "mint_cream"
+    var asciiVariantID = "starter_a"
+    var expressionTone = "friendly"
+    var accentLabel = "pocket glow"
+}
+
 struct BuddyView: View {
     @EnvironmentObject private var appState: AppState
     @ObservedObject var store: BuddyProfileStore
@@ -30,6 +39,8 @@ struct BuddyView: View {
     @State private var isShowingMessageComposer = false
     @State private var messageDraft = ""
     @State private var isShowingPersonalizationSheet = false
+    @State private var isShowingAppearanceStudioSheet = false
+    @State private var appearanceDraft = BuddyAppearanceStudioDraft()
     @State private var battleArenaName = "Pocket Garden Ring"
     @State private var selectedBattleModifier: BuddyBattleArenaModifier = .balanced
     @State private var tradeImportDraft = ""
@@ -42,6 +53,7 @@ struct BuddyView: View {
                     if let activeBuddy = store.activeBuddy {
                         myBuddyHeader(for: activeBuddy)
                         activeBuddyCard(for: activeBuddy)
+                        appearanceStudioCard(for: activeBuddy)
                         teachBuddyPlanningCard(for: activeBuddy)
                         memoryAndSkillsCard(for: activeBuddy)
                         actionCard(for: activeBuddy)
@@ -79,6 +91,9 @@ struct BuddyView: View {
         }
         .sheet(isPresented: $isShowingPersonalizationSheet) {
             personalizationSheet
+        }
+        .sheet(isPresented: $isShowingAppearanceStudioSheet) {
+            appearanceStudioSheet
         }
         .sheet(isPresented: $isShowingMessageComposer) {
             BuddyMessageComposer(body: messageDraft)
@@ -371,6 +386,89 @@ struct BuddyView: View {
                 isShowingPersonalizationSheet = true
             }
             .buttonStyle(BMOButtonStyle(isPrimary: false))
+
+            Button("Open Appearance Studio") {
+                appearanceDraft = appearanceDraft(for: buddy)
+                isShowingAppearanceStudioSheet = true
+            }
+            .buttonStyle(BMOButtonStyle())
+        }
+        .bmoCard()
+    }
+
+    private func appearanceStudioCard(for buddy: BuddyInstance) -> some View {
+        let template = store.contracts?.templateForInstance(buddy)
+        let profiles = (buddy.appearanceProfiles ?? [])
+            .sorted { lhs, rhs in
+                if lhs.updatedAt == rhs.updatedAt { return lhs.name < rhs.name }
+                return lhs.updatedAt > rhs.updatedAt
+            }
+
+        return VStack(alignment: .leading, spacing: BMOTheme.spacingMD) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Appearance Studio")
+                        .font(.headline)
+                        .foregroundColor(BMOTheme.textPrimary)
+                    Text("Hermes-native ASCII is the default path. Save named looks, map Buddy state into animation, and keep richer pixel art as an optional later upgrade.")
+                        .font(.subheadline)
+                        .foregroundColor(BMOTheme.textSecondary)
+                }
+                Spacer()
+                StatusBadge(label: profiles.first(where: { $0.id == buddy.visual?.activeAppearanceProfileId })?.name ?? "Starter look", color: BMOTheme.success)
+            }
+
+            BuddyAsciiView(
+                buddy: previewBuddy(for: buddy, using: appearanceDraft),
+                template: template,
+                mood: buddyMood(for: previewBuddy(for: buddy, using: appearanceDraft)),
+                compact: true
+            )
+
+            VStack(alignment: .leading, spacing: 6) {
+                profileRow(label: "Archetype", value: archetypeLabel(for: buddy.identity.archetype))
+                profileRow(label: "Palette", value: paletteLabel(for: buddy.identity.palette))
+                profileRow(label: "ASCII style", value: asciiVariantLabel(for: buddy.visual?.asciiVariantId))
+                profileRow(label: "State", value: buddy.visual?.currentAnimationState ?? buddy.state.mood.capitalized)
+                profileRow(label: "Saved looks", value: "\(profiles.count)")
+            }
+
+            if profiles.isEmpty {
+                Text("No saved looks yet. Create a first Hermes ASCII profile to make Buddy feel more like yours.")
+                    .font(.subheadline)
+                    .foregroundColor(BMOTheme.textSecondary)
+            } else {
+                ForEach(profiles.prefix(3)) { profile in
+                    HStack(alignment: .top) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(profile.name)
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundColor(BMOTheme.textPrimary)
+                            Text("\(archetypeLabel(for: profile.archetype)) • \(paletteLabel(for: profile.palette)) • \(asciiVariantLabel(for: profile.asciiVariantId))")
+                                .font(.caption)
+                                .foregroundColor(BMOTheme.textSecondary)
+                            Text("Tone: \(profile.expressionTone.capitalized) • Accent: \(profile.accentLabel)")
+                                .font(.caption)
+                                .foregroundColor(BMOTheme.textTertiary)
+                        }
+                        Spacer()
+                        Button(profile.id == buddy.visual?.activeAppearanceProfileId ? "Active" : "Equip") {
+                            store.activateAppearanceProfile(profile.id, using: appState)
+                        }
+                        .buttonStyle(BMOButtonStyle(isPrimary: profile.id != buddy.visual?.activeAppearanceProfileId))
+                        .disabled(profile.id == buddy.visual?.activeAppearanceProfileId)
+                    }
+                    .padding(BMOTheme.spacingMD)
+                    .background(BMOTheme.backgroundSecondary)
+                    .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusSmall, style: .continuous))
+                }
+            }
+
+            Button("Design New Look") {
+                appearanceDraft = appearanceDraft(for: buddy)
+                isShowingAppearanceStudioSheet = true
+            }
+            .buttonStyle(BMOButtonStyle())
         }
         .bmoCard()
     }
@@ -957,6 +1055,82 @@ struct BuddyView: View {
         }
     }
 
+    private var appearanceStudioSheet: some View {
+        NavigationStack {
+            Form {
+                if let buddy = store.activeBuddy {
+                    Section("Preview") {
+                        BuddyAsciiView(
+                            buddy: previewBuddy(for: buddy, using: appearanceDraft),
+                            template: store.contracts?.templateForInstance(buddy),
+                            mood: buddyMood(for: previewBuddy(for: buddy, using: appearanceDraft)),
+                            compact: true
+                        )
+                    }
+                }
+
+                Section("Profile") {
+                    TextField("Look name", text: $appearanceDraft.profileName)
+                    TextField("Accent label", text: $appearanceDraft.accentLabel)
+                    Picker("Expression tone", selection: $appearanceDraft.expressionTone) {
+                        ForEach(expressionToneOptions, id: \.id) { option in
+                            Text(option.label).tag(option.id)
+                        }
+                    }
+                }
+
+                Section("Hermes ASCII") {
+                    Picker("Archetype", selection: $appearanceDraft.archetype) {
+                        ForEach(availableArchetypes, id: \.id) { archetype in
+                            Text(archetype.label).tag(archetype.id)
+                        }
+                    }
+
+                    Picker("Palette", selection: $appearanceDraft.palette) {
+                        ForEach(availablePalettes, id: \.id) { palette in
+                            Text(palette.label).tag(palette.id)
+                        }
+                    }
+
+                    Picker("ASCII style", selection: $appearanceDraft.asciiVariantID) {
+                        ForEach(asciiVariantOptions, id: \.id) { option in
+                            Text(option.label).tag(option.id)
+                        }
+                    }
+                }
+
+                Section("PixelLab") {
+                    Text("Optional later enhancement only. Buddy ownership ships through Hermes-native ASCII first; richer pixel art can layer on later without blocking this loop.")
+                        .font(.caption)
+                        .foregroundColor(BMOTheme.textSecondary)
+                }
+            }
+            .navigationTitle("Appearance Studio")
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        isShowingAppearanceStudioSheet = false
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save Look") {
+                        store.saveAppearanceProfile(
+                            profileName: appearanceDraft.profileName,
+                            archetype: appearanceDraft.archetype,
+                            palette: appearanceDraft.palette,
+                            asciiVariantID: appearanceDraft.asciiVariantID,
+                            expressionTone: appearanceDraft.expressionTone,
+                            accentLabel: appearanceDraft.accentLabel,
+                            setActive: true,
+                            using: appState
+                        )
+                        isShowingAppearanceStudioSheet = false
+                    }
+                }
+            }
+        }
+    }
+
     private func asciiArt(for buddy: BuddyInstance, template: CouncilStarterBuddyTemplate?) -> String {
         guard let template else {
             return buddy.visual?.currentAnimationState ?? buddy.displayName
@@ -1044,11 +1218,23 @@ struct BuddyView: View {
         store.contracts?.creationOptions.options.palettes ?? []
     }
 
+    private var availableArchetypes: [BuddyArchetypeOption] {
+        store.contracts?.creationOptions.options.archetypes ?? []
+    }
+
     private var asciiVariantOptions: [BuddyChoiceOption] {
         [
             BuddyChoiceOption(id: "starter_a", label: "Classic", description: "Default Buddy shell look."),
             BuddyChoiceOption(id: "starter_b", label: "Soft", description: "Rounded expression and antenna accent."),
             BuddyChoiceOption(id: "starter_c", label: "Bold", description: "Sharper framing for a stronger look.")
+        ]
+    }
+
+    private var expressionToneOptions: [BuddyChoiceOption] {
+        [
+            BuddyChoiceOption(id: "friendly", label: "Friendly", description: "Soft and welcoming"),
+            BuddyChoiceOption(id: "curious", label: "Curious", description: "Question-forward and bright"),
+            BuddyChoiceOption(id: "focused", label: "Focused", description: "Sharper and more task-ready")
         ]
     }
 
@@ -1060,13 +1246,47 @@ struct BuddyView: View {
         availablePalettes.first(where: { $0.id == paletteID })?.label ?? paletteID
     }
 
+    private func archetypeLabel(for archetypeID: String) -> String {
+        availableArchetypes.first(where: { $0.id == archetypeID })?.label ?? archetypeID
+    }
+
     private func asciiVariantLabel(for asciiVariantID: String?) -> String {
         let variantID = asciiVariantID ?? defaultASCIIVariantID
         return asciiVariantOptions.first(where: { $0.id == variantID })?.label ?? variantID
     }
 
+    private func appearanceDraft(for buddy: BuddyInstance) -> BuddyAppearanceStudioDraft {
+        let activeProfile = (buddy.appearanceProfiles ?? []).first(where: { $0.id == buddy.visual?.activeAppearanceProfileId })
+        return BuddyAppearanceStudioDraft(
+            profileName: activeProfile?.name ?? "Everyday Look",
+            archetype: activeProfile?.archetype ?? buddy.identity.archetype,
+            palette: activeProfile?.palette ?? buddy.identity.palette,
+            asciiVariantID: activeProfile?.asciiVariantId ?? buddy.visual?.asciiVariantId ?? defaultASCIIVariantID,
+            expressionTone: activeProfile?.expressionTone ?? "friendly",
+            accentLabel: activeProfile?.accentLabel ?? "pocket glow"
+        )
+    }
+
+    private func previewBuddy(for buddy: BuddyInstance, using draft: BuddyAppearanceStudioDraft) -> BuddyInstance {
+        var preview = buddy
+        preview.identity.archetype = draft.archetype
+        preview.identity.palette = draft.palette
+        var visual = preview.visual ?? BuddyVisualState(
+            asciiVariantId: nil,
+            pixelVariantId: nil,
+            activeAppearanceProfileId: nil,
+            currentAnimationState: nil,
+            evolutionCosmetics: []
+        )
+        visual.asciiVariantId = draft.asciiVariantID
+        visual.currentAnimationState = previewAnimationState(for: draft.expressionTone)
+        preview.visual = visual
+        return preview
+    }
+
     private func buddyMood(for buddy: BuddyInstance) -> BuddyAnimationMood {
-        switch buddy.state.mood.lowercased() {
+        let state = buddy.visual?.currentAnimationState?.lowercased() ?? buddy.state.mood.lowercased()
+        switch state {
         case "happy", "excited":
             return .happy
         case "working":
@@ -1075,10 +1295,23 @@ struct BuddyView: View {
             return .thinking
         case "sleepy", "tired":
             return .sleepy
+        case "levelup", "level up":
+            return .levelUp
         case "needsattention", "needs attention", "stressed":
             return .needsAttention
         default:
             return .idle
+        }
+    }
+
+    private func previewAnimationState(for expressionTone: String) -> String {
+        switch expressionTone {
+        case "curious":
+            return "thinking"
+        case "focused":
+            return "working"
+        default:
+            return "happy"
         }
     }
 
