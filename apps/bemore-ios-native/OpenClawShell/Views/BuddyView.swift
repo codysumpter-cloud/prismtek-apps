@@ -30,6 +30,10 @@ struct BuddyView: View {
     @State private var isShowingMessageComposer = false
     @State private var messageDraft = ""
     @State private var isShowingPersonalizationSheet = false
+    @State private var battleArenaName = "Pocket Garden Ring"
+    @State private var selectedBattleModifier: BuddyBattleArenaModifier = .balanced
+    @State private var tradeImportDraft = ""
+    @State private var tradeLocalStatus: String?
 
     var body: some View {
         NavigationStack {
@@ -41,6 +45,8 @@ struct BuddyView: View {
                         teachBuddyPlanningCard(for: activeBuddy)
                         memoryAndSkillsCard(for: activeBuddy)
                         actionCard(for: activeBuddy)
+                        battleCard(for: activeBuddy)
+                        tradeOutpostCard(for: activeBuddy)
                         recentEventsCard(for: activeBuddy)
                     } else {
                         emptyStateCard
@@ -80,8 +86,8 @@ struct BuddyView: View {
     }
 
     private func myBuddyHeader(for buddy: BuddyInstance) -> some View {
-        let status = appState.buddyRuntimeStatus
         let template = store.contracts?.templateForInstance(buddy)
+        let care = careSnapshot(for: buddy, template: template)
         return VStack(alignment: .leading, spacing: BMOTheme.spacingMD) {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 4) {
@@ -91,24 +97,25 @@ struct BuddyView: View {
                     Text(buddy.displayName)
                         .font(.system(size: 30, weight: .bold))
                         .foregroundColor(BMOTheme.textPrimary)
-                    Text(template?.onboardingCopy ?? "\(buddy.displayName) helps with your day, your work, your follow-through, and the routines you teach over time.")
+                    Text(template?.onboardingCopy ?? "\(buddy.displayName) helps with your day, your plans, your routines, and the identity you build together over time.")
                         .font(.subheadline)
                         .foregroundColor(BMOTheme.textSecondary)
                 }
                 Spacer()
                 StatusBadge(
-                    label: status.runtimeAvailable ? "Connected" : "Phone-first",
-                    color: status.runtimeAvailable ? BMOTheme.success : BMOTheme.warning
+                    label: "Phone-first",
+                    color: BMOTheme.success
                 )
             }
 
             BuddyAsciiView(buddy: buddy, template: template, mood: buddyMood(for: buddy), compact: true)
 
             HStack(spacing: BMOTheme.spacingSM) {
-                metricPill(title: "Owned", value: "\(status.installedBuddyCount)")
-                metricPill(title: "Skills", value: "\(status.registeredSkillCount)")
+                metricPill(title: "Owned", value: "\(store.installedBuddies.count)")
+                metricPill(title: "Battles", value: "\(battleRecords(for: buddy).count)")
+                metricPill(title: "Trades", value: "\(tradeRecords(for: buddy).count)")
                 metricPill(title: "Level", value: "\(buddy.progression.level)")
-                metricPill(title: "Bond", value: "\(buddy.progression.bond)")
+                metricPill(title: "Trust", value: "\(care.trust)")
             }
         }
         .bmoCard()
@@ -306,6 +313,7 @@ struct BuddyView: View {
     private func activeBuddyCard(for buddy: BuddyInstance) -> some View {
         let template = store.contracts?.templateForInstance(buddy)
         let bondLabel = store.contracts.map { BuddyMarkdownRenderer.bondLabel(for: buddy.progression.bond, contracts: $0) } ?? "Bond"
+        let care = careSnapshot(for: buddy, template: template)
 
         return VStack(alignment: .leading, spacing: BMOTheme.spacingMD) {
             HStack(alignment: .top, spacing: BMOTheme.spacingMD) {
@@ -329,14 +337,16 @@ struct BuddyView: View {
 
             BuddyAsciiView(buddy: buddy, template: template, mood: buddyMood(for: buddy))
 
-            Text(template?.onboardingCopy ?? "Buddy is ready to help with planning, notes, follow-through, and skills you train over time.")
+            Text("Buddy is already useful right here on iPhone: care, training, sparring, roster building, and trade package sharing all work without Mac or repo access.")
                 .font(.subheadline)
                 .foregroundColor(BMOTheme.textSecondary)
 
-            HStack(spacing: BMOTheme.spacingSM) {
-                metricPill(title: "Level", value: "\(buddy.progression.level)")
-                metricPill(title: "XP", value: "\(buddy.progression.xp)")
-                metricPill(title: "Bond", value: "\(buddy.progression.bond)")
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: BMOTheme.spacingSM) {
+                metricPill(title: "Vitality", value: "\(care.vitality)")
+                metricPill(title: "Focus", value: "\(care.focus)")
+                metricPill(title: "Trust", value: "\(care.trust)")
+                metricPill(title: "Confidence", value: "\(care.confidence)")
+                metricPill(title: "Curiosity", value: "\(care.curiosity)")
                 metricPill(title: "Tier", value: "\(buddy.progression.evolutionTier)")
             }
 
@@ -345,6 +355,7 @@ struct BuddyView: View {
                 profileRow(label: "Focus", value: buddy.state.currentFocus ?? "No active focus")
                 profileRow(label: "Palette", value: paletteLabel(for: buddy.identity.palette))
                 profileRow(label: "ASCII style", value: asciiVariantLabel(for: buddy.visual?.asciiVariantId))
+                profileRow(label: "Rarity", value: rarityLabel(for: buddy))
                 profileRow(label: "Last active", value: BuddyMarkdownRenderer.iso8601(buddy.state.lastActiveAt))
                 profileRow(label: "Top move", value: buddy.equippedMoves.sorted(by: { $0.slot < $1.slot }).first?.name ?? "None")
             }
@@ -366,9 +377,22 @@ struct BuddyView: View {
 
     private func actionCard(for buddy: BuddyInstance) -> some View {
         VStack(alignment: .leading, spacing: BMOTheme.spacingMD) {
-            Text("Buddy Actions")
+            Text("Care and Training")
                 .font(.headline)
                 .foregroundColor(BMOTheme.textPrimary)
+
+            Text("Buddy should invite return, not anxiety. Missing a day does not punish the bond. Come back, care, and keep growing.")
+                .font(.subheadline)
+                .foregroundColor(BMOTheme.textSecondary)
+
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                ForEach(BuddyCareAction.allCases) { action in
+                    Button(action.title) {
+                        store.performCare(action, using: appState)
+                    }
+                    .buttonStyle(BMOButtonStyle(isPrimary: action == .encourage))
+                }
+            }
 
             VStack(alignment: .leading, spacing: 10) {
                 Text("Check-in")
@@ -420,6 +444,161 @@ struct BuddyView: View {
         .bmoCard()
     }
 
+    private func battleCard(for buddy: BuddyInstance) -> some View {
+        let records = battleRecords(for: buddy)
+        return VStack(alignment: .leading, spacing: BMOTheme.spacingMD) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Sparring Ring")
+                        .font(.headline)
+                        .foregroundColor(BMOTheme.textPrimary)
+                    Text("Use local sparring to express training, moves, and Buddy identity in a real repeatable loop.")
+                        .font(.subheadline)
+                        .foregroundColor(BMOTheme.textSecondary)
+                }
+                Spacer()
+                StatusBadge(label: records.first?.result.capitalized ?? "Ready", color: records.first?.result == "victory" ? BMOTheme.success : BMOTheme.accent)
+            }
+
+            TextField("Arena name", text: $battleArenaName)
+                .textFieldStyle(.plain)
+                .foregroundColor(BMOTheme.textPrimary)
+                .padding(BMOTheme.spacingMD)
+                .background(BMOTheme.backgroundSecondary)
+                .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusMedium, style: .continuous))
+
+            Picker("Battle intensity", selection: $selectedBattleModifier) {
+                ForEach(BuddyBattleArenaModifier.allCases) { modifier in
+                    Text(modifier.title).tag(modifier)
+                }
+            }
+            .pickerStyle(.segmented)
+
+            Text(selectedBattleModifier.summary)
+                .font(.caption)
+                .foregroundColor(BMOTheme.textSecondary)
+
+            Button("Start Spar") {
+                store.startSparring(arenaName: battleArenaName, modifier: selectedBattleModifier, using: appState)
+            }
+            .buttonStyle(BMOButtonStyle())
+
+            if records.isEmpty {
+                Text("No sparring record yet. Your Buddy's training, bond, energy, and move loadout will all affect the result.")
+                    .font(.subheadline)
+                    .foregroundColor(BMOTheme.textSecondary)
+            } else {
+                ForEach(records.prefix(3)) { record in
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack {
+                            Text(record.opponentName)
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundColor(BMOTheme.textPrimary)
+                            Spacer()
+                            StatusBadge(label: record.result.capitalized, color: record.result == "victory" ? BMOTheme.success : BMOTheme.warning)
+                        }
+                        Text(record.summary)
+                            .font(.subheadline)
+                            .foregroundColor(BMOTheme.textSecondary)
+                        Text("Score: \(record.scoreline)")
+                            .font(.caption)
+                            .foregroundColor(BMOTheme.textTertiary)
+                        Text("Next training: \(record.recommendedTraining.joined(separator: ", "))")
+                            .font(.caption)
+                            .foregroundColor(BMOTheme.textTertiary)
+                    }
+                    .padding(BMOTheme.spacingMD)
+                    .background(BMOTheme.backgroundSecondary)
+                    .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusMedium, style: .continuous))
+                }
+            }
+        }
+        .bmoCard()
+    }
+
+    private func tradeOutpostCard(for buddy: BuddyInstance) -> some View {
+        return VStack(alignment: .leading, spacing: BMOTheme.spacingMD) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Trade Outpost")
+                        .font(.headline)
+                        .foregroundColor(BMOTheme.textPrimary)
+                    Text("Export a sanitized Buddy package, copy the token, or import one from someone else. This is the real trade-ready wedge for iPhone.")
+                        .font(.subheadline)
+                        .foregroundColor(BMOTheme.textSecondary)
+                }
+                Spacer()
+                StatusBadge(label: rarityLabel(for: buddy), color: BMOTheme.accent)
+            }
+
+            HStack {
+                Button("Export Trade Package") {
+                    store.exportActiveTradePackage(using: appState)
+                    tradeLocalStatus = "Exported \(buddy.displayName)."
+                }
+                .buttonStyle(BMOButtonStyle())
+
+                if let code = store.lastTradeExportCode, code.isEmpty == false {
+                    Button("Copy Token") {
+                        UIPasteboard.general.string = code
+                        tradeLocalStatus = "Trade token copied. Share it directly or keep it as a backup."
+                    }
+                    .buttonStyle(BMOButtonStyle(isPrimary: false))
+                }
+            }
+
+            if let code = store.lastTradeExportCode, code.isEmpty == false {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Latest export token")
+                        .font(.caption.weight(.semibold))
+                        .foregroundColor(BMOTheme.textTertiary)
+                    Text(code)
+                        .font(.system(.caption2, design: .monospaced))
+                        .foregroundColor(BMOTheme.textPrimary)
+                        .padding(BMOTheme.spacingMD)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(BMOTheme.backgroundSecondary)
+                        .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusSmall, style: .continuous))
+                }
+            }
+
+            Divider().overlay(BMOTheme.divider)
+
+            TextField("Paste Buddy trade token or JSON package", text: $tradeImportDraft, axis: .vertical)
+                .textFieldStyle(.plain)
+                .foregroundColor(BMOTheme.textPrimary)
+                .padding(BMOTheme.spacingMD)
+                .background(BMOTheme.backgroundSecondary)
+                .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusMedium, style: .continuous))
+
+            Button("Import Trade Package") {
+                store.importTradePackage(tradeImportDraft, using: appState)
+                tradeImportDraft = ""
+            }
+            .buttonStyle(BMOButtonStyle(isPrimary: false))
+
+            if let tradeStatus = tradeLocalStatus ?? store.tradeStatusMessage {
+                Text(tradeStatus)
+                    .font(.caption)
+                    .foregroundColor(BMOTheme.textSecondary)
+            }
+
+            if tradeHistoryRows.isEmpty == false {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Recent trade history")
+                        .font(.caption.weight(.semibold))
+                        .foregroundColor(BMOTheme.textTertiary)
+                    ForEach(tradeHistoryRows.prefix(3)) { trade in
+                        Text("\(trade.type.capitalized): \(trade.summary)")
+                            .font(.caption)
+                            .foregroundColor(BMOTheme.textSecondary)
+                    }
+                }
+            }
+        }
+        .bmoCard()
+    }
+
     private func recentEventsCard(for buddy: BuddyInstance) -> some View {
         let events = store.recentEvents(for: buddy)
         return VStack(alignment: .leading, spacing: BMOTheme.spacingMD) {
@@ -465,12 +644,12 @@ struct BuddyView: View {
                     Text("Discover Buddies")
                         .font(.headline)
                         .foregroundColor(BMOTheme.textPrimary)
-                    Text("Try starter Buddies with different strengths. Pick the one that feels useful for how you plan, work, remember, or create.")
+                    Text("Grow a collectible roster of starter Buddies with distinct roles, moves, palettes, and future battle paths.")
                         .font(.subheadline)
                         .foregroundColor(BMOTheme.textSecondary)
                 }
                 Spacer()
-                StatusBadge(label: "Marketplace beta", color: BMOTheme.accent)
+                StatusBadge(label: "Collection", color: BMOTheme.accent)
             }
 
             ForEach(store.templates) { template in
@@ -585,21 +764,21 @@ struct BuddyView: View {
 
     private var trainingAndManagementCard: some View {
         VStack(alignment: .leading, spacing: BMOTheme.spacingMD) {
-            Text("Training and Plans")
+            Text("What Buddy Can Do Here")
                 .font(.headline)
                 .foregroundColor(BMOTheme.textPrimary)
-            Text("Training teaches Buddy what better help looks like. Use Chat for a real task, or Pricing when you want more Buddy slots and higher capacity.")
+            Text("Buddy can already help you care, train, customize, collect, spar, and trade on iPhone. Repo/runtime power stays optional and secondary.")
                 .font(.subheadline)
                 .foregroundColor(BMOTheme.textSecondary)
             HStack {
-                Button("Open Pricing") {
-                    appState.route(to: .pricing)
-                }
-                .buttonStyle(BMOButtonStyle(isPrimary: false))
                 Button("Open Chat") {
                     appState.openChat(from: .buddy)
                 }
                 .buttonStyle(BMOButtonStyle())
+                Button("Go Home") {
+                    appState.route(to: .missionControl)
+                }
+                .buttonStyle(BMOButtonStyle(isPrimary: false))
             }
         }
         .bmoCard()
@@ -609,36 +788,36 @@ struct BuddyView: View {
         VStack(alignment: .leading, spacing: BMOTheme.spacingMD) {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Create, Train, Sell")
+                    Text("Care, Train, Spar, Trade")
                         .font(.headline)
                         .foregroundColor(BMOTheme.textPrimary)
-                    Text("Buddy templates are reusable starting points. Training improves your owned Buddy; packaging creates a clean shareable draft without private history.")
+                    Text("The strongest phone-first loop is simple: care for Buddy, train useful strengths, spar to express that growth, and share a safe package when you want to trade.")
                         .font(.subheadline)
                         .foregroundColor(BMOTheme.textSecondary)
                 }
                 Spacer()
-                StatusBadge(label: "Creator path", color: BMOTheme.accent)
+                StatusBadge(label: "Standalone loop", color: BMOTheme.accent)
             }
 
             lifecycleStep(
                 number: "1",
-                title: "Create",
-                body: "Install a starter Buddy or personalize one. Pick a clear role, use case, voice, and focus so buyers understand what the Buddy is for."
+                title: "Care",
+                body: "Check in, encourage, play, rest, and explore. The loop is return-friendly and never punishes you for missing a day."
             )
             lifecycleStep(
                 number: "2",
                 title: "Train",
-                body: "Record check-ins, training entries, and real tasks. A trained Buddy should show clearer preferences, stronger skills, and useful results."
+                body: "Use check-ins, taught preferences, and training sessions to strengthen identity, focus, and skill proficiencies."
             )
             lifecycleStep(
                 number: "3",
-                title: "Package",
-                body: "Package the active Buddy into a clean template. Private memory, chat transcripts, raw check-ins, and raw training notes stay out."
+                title: "Spar",
+                body: "Run lightweight local battles where growth, energy, bond, and trained proficiencies change the outcome."
             )
             lifecycleStep(
                 number: "4",
-                title: "Sell",
-                body: "Paid marketplace submission is not live yet. Sell-ready means the listing package is sanitized and ready for future billing, moderation, and review."
+                title: "Trade",
+                body: "Export or import a sanitized Buddy package today. Live marketplace selling stays optional future work."
             )
         }
         .bmoCard()
@@ -651,7 +830,7 @@ struct BuddyView: View {
                     Text("Template Workshop")
                         .font(.headline)
                         .foregroundColor(BMOTheme.textPrimary)
-                    Text("Turn the active Buddy into a clean package that explains what buyers get and what stays private.")
+                    Text("Template packaging is still here for creator workflows, but trading and sharing now come first on iPhone.")
                         .font(.subheadline)
                         .foregroundColor(BMOTheme.textSecondary)
                 }
@@ -900,6 +1079,43 @@ struct BuddyView: View {
             return .needsAttention
         default:
             return .idle
+        }
+    }
+
+    private var tradeHistoryRows: [BuddyTradeRecord] {
+        store.tradeHistory.sorted { $0.createdAt > $1.createdAt }
+    }
+
+    private func battleRecords(for buddy: BuddyInstance) -> [BuddyBattleRecord] {
+        store.battleHistory
+            .filter { $0.buddyInstanceId == buddy.instanceId }
+            .sorted { $0.createdAt > $1.createdAt }
+    }
+
+    private func tradeRecords(for buddy: BuddyInstance) -> [BuddyTradeRecord] {
+        store.tradeHistory
+            .filter { $0.buddyDisplayName == buddy.displayName }
+            .sorted { $0.createdAt > $1.createdAt }
+    }
+
+    private func careSnapshot(for buddy: BuddyInstance, template: CouncilStarterBuddyTemplate?) -> BuddyCareSnapshot {
+        BuddyCareCalculator.snapshot(
+            for: buddy,
+            template: template,
+            battles: battleRecords(for: buddy)
+        )
+    }
+
+    private func rarityLabel(for buddy: BuddyInstance) -> String {
+        switch (buddy.progression.evolutionTier, buddy.progression.level) {
+        case (3, _):
+            return "Ascendant"
+        case (2, 7...):
+            return "Elite"
+        case (_, 5...):
+            return "Seasoned"
+        default:
+            return "Starter"
         }
     }
 

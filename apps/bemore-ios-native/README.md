@@ -4,7 +4,16 @@ Native SwiftUI iPhone shell for the BeMoreAgent operator stack.
 
 ## Current product shell
 
-The app currently exposes six product surfaces:
+The app is no longer just a thin operator shell. The strongest shipped wedge is now a standalone Buddy experience on iPhone:
+
+- companion care with visible return-friendly stats
+- customization across name, focus, palette, ASCII style, and identity expression
+- training and taught-preference loops that persist locally
+- collectible Buddy roster growth from the starter pack
+- lightweight local sparring with persisted battle records
+- trade-ready Buddy export/import packages with validation
+
+The shell still exposes the broader technical surfaces too:
 
 - `Control` for Mission Control style operator visibility over live local state, routing posture, provider linkage, and persistence health.
 - `Models` as the primary route and model control surface for local installs, cloud route activation, and active-route visibility.
@@ -41,6 +50,7 @@ This subtree does not claim a completed on-device runtime. It builds without `ML
 Today the honest split is:
 
 - local state, model import/download, route selection, and shell persistence are real
+- Buddy care, training, collection, sparring, and trade package loops are real
 - cloud chat routes are real when the operator links valid provider credentials
 - on-device inference remains gated on the missing runtime package and packaged model libraries
 
@@ -65,9 +75,9 @@ Admin and release notes live in [`ADMIN_TESTFLIGHT_RUNBOOK.md`](./ADMIN_TESTFLIG
 
 - Use `Models` to choose the active local model or cloud route.
 - Use `Settings` to edit provider credentials and manage tab visibility/order.
-- Use `Control` to inspect current routing posture and local durability.
-- Use `Buddy` to install a Council starter Buddy, make a Buddy active, personalize its identity, and
-  record receipt-backed check-ins or training updates.
+- Use `Control` to inspect the companion-first home and then optional operator depth.
+- Use `Buddy` to care for a Buddy, train them, build a roster, spar locally, export/import trade
+  packages, and only then reach for deeper operator behavior if needed.
 - Buddy actions regenerate the readable `.openclaw/buddy.md` and `.openclaw/buddies.md` continuity
   files alongside the machine-readable JSON state.
 
@@ -76,5 +86,6 @@ Admin and release notes live in [`ADMIN_TESTFLIGHT_RUNBOOK.md`](./ADMIN_TESTFLIG
 - The local runtime path is still a stub unless the runtime package is added and configured.
 - Provider testing depends on real upstream credentials and network reachability.
 - Simulator builds can be blocked by host-side Xcode/CoreSimulator state even when the project files are valid.
-- Buddy Workshop publishing, marketplace distribution, and creator workflows are not part of this
-  shell wedge yet; this build only ships the bundled canonical starter pack plus local instance continuity.
+- Live marketplace selling, billing, moderation, and networked trading are not part of this shell
+  wedge yet; the current phone-first implementation ships real local trade package export/import and
+  a standalone Buddy loop first.

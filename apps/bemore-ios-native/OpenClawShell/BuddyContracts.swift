@@ -648,6 +648,158 @@ struct BuddyDailyPlan: Identifiable, Codable, Hashable {
     var messageDraft: String
 }
 
+enum BuddyCareAction: String, CaseIterable, Codable, Hashable, Identifiable {
+    case encourage
+    case play
+    case rest
+    case explore
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .encourage: return "Encourage"
+        case .play: return "Play"
+        case .rest: return "Rest"
+        case .explore: return "Explore"
+        }
+    }
+
+    var summary: String {
+        switch self {
+        case .encourage: return "Boost trust and confidence with a quick supportive moment."
+        case .play: return "Raise bond with a lighthearted check-in that feels fun."
+        case .rest: return "Recover energy without punishing time away from the app."
+        case .explore: return "Turn curiosity into growth, ideas, and future battle options."
+        }
+    }
+}
+
+enum BuddyBattleArenaModifier: String, CaseIterable, Codable, Hashable, Identifiable {
+    case calm
+    case balanced
+    case charged
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .calm: return "Calm"
+        case .balanced: return "Balanced"
+        case .charged: return "Charged"
+        }
+    }
+
+    var summary: String {
+        switch self {
+        case .calm: return "Gentler sparring with lower risk and steadier growth."
+        case .balanced: return "Solid everyday sparring tuned for steady progression."
+        case .charged: return "Harder matches with sharper swings and better rewards."
+        }
+    }
+
+    var challengeBonus: Int {
+        switch self {
+        case .calm: return -6
+        case .balanced: return 0
+        case .charged: return 10
+        }
+    }
+
+    var rewardBonus: Int {
+        switch self {
+        case .calm: return 0
+        case .balanced: return 4
+        case .charged: return 8
+        }
+    }
+}
+
+struct BuddyBattleRecord: Identifiable, Codable, Hashable {
+    var id: String
+    var buddyInstanceId: String
+    var buddyDisplayName: String
+    var opponentName: String
+    var opponentStyle: String
+    var arenaName: String
+    var modifier: String
+    var result: String
+    var summary: String
+    var scoreline: String
+    var rewards: [String]
+    var recommendedTraining: [String]
+    var createdAt: Date
+}
+
+struct BuddyTradeSnapshot: Codable, Hashable {
+    var templateId: String
+    var displayName: String
+    var nickname: String?
+    var identity: BuddyIdentity
+    var progression: BuddyProgressionState
+    var state: BuddyStateSnapshot
+    var equippedMoves: [BuddyEquippedMove]
+    var proficiencies: BuddyProficiencies
+    var visual: BuddyVisualState?
+    var publicBadges: [String]
+    var publicNotes: [String]
+    var rarityLabel: String
+}
+
+struct BuddyTradePackage: Codable, Hashable {
+    var schemaVersion: String
+    var packageId: String
+    var exportedAt: Date
+    var sourceApp: String
+    var buddy: BuddyTradeSnapshot
+}
+
+struct BuddyTradeRecord: Identifiable, Codable, Hashable {
+    var id: String
+    var packageId: String
+    var type: String
+    var buddyDisplayName: String
+    var summary: String
+    var createdAt: Date
+}
+
+struct BuddyCareSnapshot: Hashable {
+    var vitality: Int
+    var focus: Int
+    var trust: Int
+    var confidence: Int
+    var curiosity: Int
+}
+
+enum BuddyCareCalculator {
+    static func snapshot(
+        for instance: BuddyInstance,
+        template: CouncilStarterBuddyTemplate?,
+        battles: [BuddyBattleRecord]
+    ) -> BuddyCareSnapshot {
+        let wins = battles.filter { $0.result == "victory" }.count
+        let losses = battles.filter { $0.result == "setback" }.count
+        let templateFocus = template?.stats.focus ?? 0
+        let templateCuriosity = template?.stats.creativity ?? 0
+        let trust = clamp(28 + (instance.progression.bond * 6) + (instance.progression.streakDays * 2) + ((instance.learnedPreferences ?? []).count * 3))
+        let confidence = clamp(24 + (instance.progression.level * 7) + (wins * 5) + (instance.proficiencies.building * 4) + (instance.proficiencies.verification * 3) - (losses * 2))
+        let curiosity = clamp(22 + templateCuriosity + (instance.proficiencies.research * 6) + (instance.proficiencies.creativity * 6) + ((instance.dailyPlans ?? []).count * 2))
+        let focus = clamp(24 + templateFocus + (instance.proficiencies.planning * 7) + (instance.proficiencies.organization * 5) + (instance.state.currentFocus == nil ? 0 : 8))
+        let vitality = clamp((instance.state.energy * 7 / 10) + (instance.progression.bond * 3) + (instance.progression.level * 2))
+        return BuddyCareSnapshot(
+            vitality: vitality,
+            focus: focus,
+            trust: trust,
+            confidence: confidence,
+            curiosity: curiosity
+        )
+    }
+
+    private static func clamp(_ value: Int) -> Int {
+        min(100, max(0, value))
+    }
+}
+
 struct BuddyInstance: Identifiable, Codable, Hashable {
     var id: String { instanceId }
     var instanceId: String
@@ -672,6 +824,8 @@ struct BuddyLibraryState: Codable, Hashable {
     var version: String = "1.0.0"
     var activeBuddyInstanceId: String?
     var instances: [BuddyInstance] = []
+    var battleHistory: [BuddyBattleRecord]?
+    var tradeHistory: [BuddyTradeRecord]?
     var lastUpdatedAt: Date = .now
 
     var activeBuddy: BuddyInstance? {

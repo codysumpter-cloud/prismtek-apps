@@ -182,6 +182,9 @@ final class BuddyProfileStore: ObservableObject {
     @Published private(set) var eventLog = BuddyRuntimeEventLog()
     @Published private(set) var lastReceipt: OpenClawReceipt?
     @Published private(set) var loadError: String?
+    @Published private(set) var lastTradeExportCode: String?
+    @Published private(set) var lastTradeExportJSON: String?
+    @Published private(set) var tradeStatusMessage: String?
     @Published var selectedTrainingCategory: String = "Planning"
 
     private let store = BuddyInstanceStore()
@@ -196,6 +199,14 @@ final class BuddyProfileStore: ObservableObject {
 
     var installedBuddies: [BuddyInstance] {
         libraryState.instances
+    }
+
+    var battleHistory: [BuddyBattleRecord] {
+        libraryState.battleHistory ?? []
+    }
+
+    var tradeHistory: [BuddyTradeRecord] {
+        libraryState.tradeHistory ?? []
     }
 
     func recentEvents(for instance: BuddyInstance?, limit: Int = 6) -> [BuddyRuntimeEvent] {
@@ -293,6 +304,31 @@ final class BuddyProfileStore: ObservableObject {
                 instanceID: activeBuddy.instanceId,
                 category: selectedTrainingCategory,
                 note: note,
+                currentState: libraryState,
+                currentEvents: eventLog
+            )
+        }
+    }
+
+    func performCare(_ action: BuddyCareAction, using appState: AppState) {
+        guard let activeBuddy else { return }
+        mutate(using: appState) { contracts in
+            try BuddyEventEngine(contracts: contracts).performCare(
+                instanceID: activeBuddy.instanceId,
+                action: action,
+                currentState: libraryState,
+                currentEvents: eventLog
+            )
+        }
+    }
+
+    func startSparring(arenaName: String, modifier: BuddyBattleArenaModifier, using appState: AppState) {
+        guard let activeBuddy else { return }
+        mutate(using: appState) { contracts in
+            try BuddyEventEngine(contracts: contracts).startBattle(
+                instanceID: activeBuddy.instanceId,
+                arenaName: arenaName,
+                modifier: modifier,
                 currentState: libraryState,
                 currentEvents: eventLog
             )
@@ -400,6 +436,150 @@ final class BuddyProfileStore: ObservableObject {
         }
     }
 
+    func exportActiveTradePackage(using appState: AppState) {
+        guard let activeBuddy else {
+            loadError = "Install or equip a Buddy before exporting a trade package."
+            return
+        }
+        guard let contracts else {
+            loadError = "Buddy contracts are not loaded yet."
+            return
+        }
+
+        do {
+            let package = makeTradePackage(for: activeBuddy, contracts: contracts)
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+            encoder.dateEncodingStrategy = .iso8601
+            let data = try encoder.encode(package)
+            let json = String(decoding: data, as: UTF8.self)
+            let token = data
+                .base64EncodedString()
+                .replacingOccurrences(of: "+", with: "-")
+                .replacingOccurrences(of: "/", with: "_")
+                .replacingOccurrences(of: "=", with: "")
+
+            let slug = safeTemplateSlug(activeBuddy.displayName)
+            let jsonPath = "buddies/trades/\(slug)-trade-package.json"
+            let tokenPath = "buddies/trades/\(slug)-trade-token.txt"
+            _ = appState.writeWorkspaceArtifact(path: jsonPath, content: json)
+            lastReceipt = appState.writeWorkspaceArtifact(path: tokenPath, content: token)
+            lastTradeExportJSON = json
+            lastTradeExportCode = token
+            tradeStatusMessage = "Exported a trade-ready package for \(activeBuddy.displayName)."
+            loadError = nil
+        } catch {
+            loadError = error.localizedDescription
+        }
+    }
+
+    func importTradePackage(_ rawValue: String, using appState: AppState) {
+        guard let contracts else {
+            loadError = "Buddy contracts are not loaded yet."
+            return
+        }
+
+        let trimmed = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else {
+            loadError = "Paste a Buddy trade token or JSON package first."
+            return
+        }
+
+        do {
+            let package = try decodeTradePackage(trimmed)
+            try validateTradePackage(package)
+            if tradeHistory.contains(where: { $0.packageId == package.packageId && $0.type == "import" }) {
+                throw NSError(domain: "BuddyTrade", code: 1, userInfo: [NSLocalizedDescriptionKey: "This Buddy trade package was already imported on this device."])
+            }
+
+            let now = Date()
+            let imported = importedBuddy(from: package, now: now)
+            var nextState = libraryState
+            nextState.upsertImported(imported)
+            nextState.activeBuddyInstanceId = imported.instanceId
+            nextState.tradeHistory = [
+                BuddyTradeRecord(
+                    id: "trade_\(UUID().uuidString.lowercased())",
+                    packageId: package.packageId,
+                    type: "import",
+                    buddyDisplayName: imported.displayName,
+                    summary: "Imported \(imported.displayName) from a trade package.",
+                    createdAt: now
+                )
+            ] + Array(tradeHistory.prefix(19))
+            nextState.lastUpdatedAt = now
+
+            var nextEvents = eventLog
+            nextEvents.events.append(
+                BuddyRuntimeEvent(
+                    id: UUID().uuidString.lowercased(),
+                    type: "buddy.trade.imported",
+                    buddyInstanceId: imported.instanceId,
+                    buddyDisplayName: imported.displayName,
+                    actor: "user",
+                    occurredAt: now,
+                    summary: "Imported \(imported.displayName) from a trade package.",
+                    payload: [
+                        "packageId": package.packageId,
+                        "sourceApp": package.sourceApp,
+                        "rarity": package.buddy.rarityLabel
+                    ],
+                    effects: BuddyRuntimeEventEffects(
+                        xpDelta: nil,
+                        bondDelta: nil,
+                        proficiencyDeltas: nil,
+                        moodTarget: imported.state.mood,
+                        stateTransition: "trade_import",
+                        memoryPromotion: "Installed a trade-imported Buddy package.",
+                        badgeGrant: nil,
+                        passiveUnlock: imported.progression.passiveUnlocked ? "tier2-passive" : nil,
+                        signatureUpgrade: imported.progression.signatureUpgradeUnlocked ? "tier3-signature" : nil,
+                        receiptRef: nil,
+                        sanitationReport: "Imported only the sanitized trade payload."
+                    )
+                )
+            )
+
+            let bundle = BuddyPersistenceBundle(
+                libraryState: nextState,
+                eventLog: nextEvents,
+                activeBuddyMarkdown: BuddyMarkdownRenderer.renderActiveBuddy(
+                    instance: imported,
+                    template: contracts.templateForInstance(imported),
+                    contracts: contracts,
+                    events: nextEvents.events,
+                    battleHistory: nextState.battleHistory ?? [],
+                    tradeHistory: nextState.tradeHistory ?? [],
+                    now: now
+                ),
+                rosterMarkdown: BuddyMarkdownRenderer.renderRoster(
+                    instances: nextState.instances,
+                    activeBuddyInstanceId: nextState.activeBuddyInstanceId,
+                    contracts: contracts,
+                    events: nextEvents.events,
+                    battleHistory: nextState.battleHistory ?? [],
+                    tradeHistory: nextState.tradeHistory ?? [],
+                    now: now
+                ),
+                actionTitle: "Import \(imported.displayName)",
+                summary: "Imported \(imported.displayName) from a Buddy trade package."
+            )
+
+            let receipt = appState.persistBuddyBundle(bundle)
+            lastReceipt = receipt
+            if receipt.status == .persisted {
+                libraryState = bundle.libraryState
+                eventLog = bundle.eventLog
+                tradeStatusMessage = "Imported \(imported.displayName) and made them your active Buddy."
+                loadError = nil
+            } else {
+                loadError = receipt.error ?? receipt.summary
+            }
+        } catch {
+            loadError = error.localizedDescription
+        }
+    }
+
     func ensureStarterBuddy(templateID: String, displayName: String, focus: String, using appState: AppState) {
         if contracts == nil {
             load(for: appState.stackConfig)
@@ -440,12 +620,140 @@ final class BuddyProfileStore: ObservableObject {
             if receipt.status == .persisted {
                 libraryState = bundle.libraryState
                 eventLog = bundle.eventLog
+                tradeStatusMessage = nil
                 loadError = nil
             } else {
                 loadError = receipt.error ?? receipt.summary
             }
         } catch {
             loadError = error.localizedDescription
+        }
+    }
+
+    private func makeTradePackage(for buddy: BuddyInstance, contracts: BuddyCanonicalResources) -> BuddyTradePackage {
+        let rarity = tradeRarity(for: buddy)
+        return BuddyTradePackage(
+            schemaVersion: "buddy-trade-package.v1",
+            packageId: "trade.\(safeTemplateSlug(buddy.displayName)).\(UUID().uuidString.lowercased())",
+            exportedAt: .now,
+            sourceApp: "BeMore iPhone",
+            buddy: BuddyTradeSnapshot(
+                templateId: buddy.templateId,
+                displayName: buddy.displayName,
+                nickname: buddy.nickname,
+                identity: buddy.identity,
+                progression: buddy.progression,
+                state: buddy.state,
+                equippedMoves: buddy.equippedMoves.sorted { $0.slot < $1.slot },
+                proficiencies: buddy.proficiencies,
+                visual: buddy.visual,
+                publicBadges: buddy.progression.badges,
+                publicNotes: [
+                    "Sanitized Buddy trade package exported from iPhone.",
+                    "Private memory, raw notes, and chat transcripts are excluded.",
+                    "Rarity: \(rarity)"
+                ],
+                rarityLabel: rarity
+            )
+        )
+    }
+
+    private func importedBuddy(from package: BuddyTradePackage, now: Date) -> BuddyInstance {
+        let snapshot = package.buddy
+        let clampedProgress = BuddyProgressionState(
+            level: min(10, max(1, snapshot.progression.level)),
+            xp: max(0, snapshot.progression.xp),
+            bond: min(10, max(0, snapshot.progression.bond)),
+            evolutionTier: min(3, max(1, snapshot.progression.evolutionTier)),
+            growthStageLabel: snapshot.progression.growthStageLabel,
+            badges: Array(snapshot.publicBadges.prefix(12)),
+            streakDays: max(0, snapshot.progression.streakDays),
+            passiveUnlocked: snapshot.progression.passiveUnlocked,
+            signatureUpgradeUnlocked: snapshot.progression.signatureUpgradeUnlocked
+        )
+        return BuddyInstance(
+            instanceId: "buddy_trade_\(UUID().uuidString.lowercased())",
+            templateId: snapshot.templateId,
+            displayName: snapshot.displayName,
+            nickname: snapshot.nickname,
+            identity: snapshot.identity,
+            progression: clampedProgress,
+            state: BuddyStateSnapshot(
+                mood: snapshot.state.mood,
+                energy: min(100, max(20, snapshot.state.energy)),
+                activityMode: snapshot.state.activityMode,
+                lastActiveAt: now,
+                currentFocus: snapshot.state.currentFocus,
+                favoriteTasks: Array(snapshot.state.favoriteTasks.prefix(5))
+            ),
+            equippedMoves: Array(snapshot.equippedMoves.sorted { $0.slot < $1.slot }.prefix(4)),
+            proficiencies: snapshot.proficiencies,
+            provenance: BuddyProvenance(
+                installedFrom: "trade_import",
+                derivedFromTemplate: snapshot.templateId.hasPrefix("starter."),
+                sanitizedSource: true,
+                creatorId: nil,
+                installedAt: now
+            ),
+            memory: BuddyMemoryBindings(
+                buddyFile: ".openclaw/buddy.md",
+                userFile: ".openclaw/user.md",
+                memoryFile: ".openclaw/memory.md",
+                sessionFile: ".openclaw/session.md",
+                skillsFile: ".openclaw/skills.md",
+                lastStateSyncAt: now
+            ),
+            visual: snapshot.visual ?? BuddyVisualState(
+                asciiVariantId: nil,
+                pixelVariantId: nil,
+                currentAnimationState: "happy",
+                evolutionCosmetics: []
+            ),
+            trainingHistory: [],
+            learnedPreferences: [],
+            learnedSkills: BuddyEventEngine.defaultStarterSkills(now: now),
+            dailyPlans: []
+        )
+    }
+
+    private func validateTradePackage(_ package: BuddyTradePackage) throws {
+        guard package.schemaVersion == "buddy-trade-package.v1" else {
+            throw NSError(domain: "BuddyTrade", code: 2, userInfo: [NSLocalizedDescriptionKey: "Unsupported Buddy trade package version."])
+        }
+        guard package.buddy.displayName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false else {
+            throw NSError(domain: "BuddyTrade", code: 3, userInfo: [NSLocalizedDescriptionKey: "Buddy trade package is missing a display name."])
+        }
+        guard package.buddy.equippedMoves.isEmpty == false else {
+            throw NSError(domain: "BuddyTrade", code: 4, userInfo: [NSLocalizedDescriptionKey: "Buddy trade package is missing move data."])
+        }
+    }
+
+    private func decodeTradePackage(_ rawValue: String) throws -> BuddyTradePackage {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+
+        if let jsonData = rawValue.data(using: .utf8),
+           let decoded = try? decoder.decode(BuddyTradePackage.self, from: jsonData) {
+            return decoded
+        }
+
+        let normalized = rawValue
+            .replacingOccurrences(of: "-", with: "+")
+            .replacingOccurrences(of: "_", with: "/")
+        let paddedLength = ((normalized.count + 3) / 4) * 4
+        let padded = normalized.padding(toLength: paddedLength, withPad: "=", startingAt: 0)
+        guard let data = Data(base64Encoded: padded) else {
+            throw NSError(domain: "BuddyTrade", code: 5, userInfo: [NSLocalizedDescriptionKey: "Trade token is not valid JSON or base64."])
+        }
+        return try decoder.decode(BuddyTradePackage.self, from: data)
+    }
+
+    private func tradeRarity(for buddy: BuddyInstance) -> String {
+        switch (buddy.progression.evolutionTier, buddy.progression.level) {
+        case (3, _): return "Ascendant"
+        case (2, 7...): return "Elite"
+        case (_, 5...): return "Seasoned"
+        default: return "Starter"
         }
     }
 
@@ -579,4 +887,15 @@ private struct LegacyBuddySystemState: Codable {
     var collection: [LegacyGeneratedBuddy]
     var tradeOffers: [LegacyGeneratedBuddy]
     var battleHistory: [LegacyBuddyBattleRecord]
+}
+
+private extension BuddyLibraryState {
+    mutating func upsertImported(_ instance: BuddyInstance) {
+        if let existingIndex = instances.firstIndex(where: { $0.instanceId == instance.instanceId }) {
+            instances[existingIndex] = instance
+        } else {
+            instances.append(instance)
+        }
+        instances.sort { $0.provenance.installedAt > $1.provenance.installedAt }
+    }
 }

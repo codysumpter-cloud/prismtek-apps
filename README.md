@@ -6,6 +6,8 @@ Canonical product monorepo for **BeMore** and future **Prismtek** apps.
 
 This repository is the implementation home for the Prismtek app family. It owns product-facing apps, shared product packages, and app-level APIs. It does **not** own the assistant runtime substrate, the council and Buddy policy layer, or the public Prismtek website.
 
+Current product priority: make the iPhone Buddy app intrinsically valuable on its own. The BeMore iPhone surface now centers a standalone Buddy loop with companion care, training, customization, collection, local sparring, and trade-ready export/import packages. Repo/runtime/operator integrations still matter, but they are secondary depth, not the main reason to open the app.
+
 ## Quick start
 
 ```bash
@@ -42,7 +44,8 @@ This repo owns:
 - future Prismtek apps that share product infrastructure
 - shared product packages
 - product-facing APIs and services
-- Buddy UI and Buddy Workshop product surfaces
+- Buddy UI and the standalone Buddy companion loop on iPhone
+- Buddy care, training, sparring, collection, customization, and trade package UX
 - Buddy Appearance Studio, saved appearance profiles, and preview rendering
 - app-facing Codex task controls and result presentation
 - shared auth, account, and profile systems
@@ -194,6 +197,12 @@ npm run clean
 
 ## Current product slices
 
+- **Standalone Buddy on iPhone**
+  - care stats and return-friendly daily check-ins
+  - teachable preferences and training progression
+  - collectible Buddy roster with archetype identity
+  - lightweight local sparring that reflects growth and loadout
+  - sanitized Buddy trade package export/import
 - **Buddy Appearance Studio**
   - guided Buddy look creation
   - reusable saved appearance profiles

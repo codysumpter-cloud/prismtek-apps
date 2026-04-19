@@ -1939,10 +1939,10 @@ final class AppState: ObservableObject {
 
     private var activeBuddyChatContext: String {
         guard let buddy = buddyStore.activeBuddy else {
-            return "Active Buddy: none yet. Encourage the user to create or install a Buddy before treating chat as personalized."
+            return "Active Buddy: none yet. Lead with what BeMore can already do on iPhone: create a Buddy, customize them, train them, build a roster, spar locally, and import/export trade packages."
         }
         let focus = buddy.state.currentFocus ?? "no active focus"
-        return "Active Buddy: \(buddy.displayName). Role: \(buddy.identity.role). Class: \(buddy.identity.class). Mood: \(buddy.state.mood). Focus: \(focus). Reply as a practical companion first: help with the user's day, work, plans, follow-through, memory, and training. Technical work can still use Buddy tasks, skills, results, and verified operator actions when requested."
+        return "Active Buddy: \(buddy.displayName). Role: \(buddy.identity.role). Class: \(buddy.identity.class). Mood: \(buddy.state.mood). Focus: \(focus). Lead as a practical companion first: help with care, plans, follow-through, memory, training, collection, sparring, and identity-building that works entirely on iPhone. Technical work can still use Buddy tasks, skills, results, and verified operator actions when the user asks for them."
     }
 
     private func generatedSetupChecklist(for config: StackConfig) -> [String] {

@@ -438,6 +438,216 @@ struct BuddyEventEngine {
         )
     }
 
+    func performCare(
+        instanceID: String,
+        action: BuddyCareAction,
+        currentState: BuddyLibraryState,
+        currentEvents: BuddyRuntimeEventLog,
+        now: Date = .now
+    ) throws -> BuddyPersistenceBundle {
+        guard var instance = currentState.instances.first(where: { $0.instanceId == instanceID }) else {
+            throw BuddyEventEngineError.instanceNotFound(instanceID)
+        }
+
+        let previousLastActive = instance.state.lastActiveAt
+        let awardedXP = cappedXP(currentEvents, on: now, requested: 6)
+        let bondDelta = cappedBondDelta(currentEvents, on: now, requested: 1)
+        var rewardLines: [String] = []
+        var summary = ""
+
+        switch action {
+        case .encourage:
+            instance.state.mood = nextMood(from: instance.state.mood, preferred: "happy")
+            instance.state.energy = min(100, instance.state.energy + 4)
+            summary = "Spent a quick supportive moment with \(instance.displayName)."
+            rewardLines = ["Trust feels steadier.", "Confidence nudged upward."]
+        case .play:
+            instance.state.mood = nextMood(from: instance.state.mood, preferred: "happy")
+            instance.state.energy = max(0, instance.state.energy - 3)
+            instance.progression.badges = Array((instance.progression.badges + ["playful-checkin"]).uniqued()).prefix(12).map { $0 }
+            summary = "Played with \(instance.displayName) to keep the bond warm."
+            rewardLines = ["Bond increased without pressure.", "Buddy feels more playful."]
+        case .rest:
+            instance.state.mood = nextMood(from: instance.state.mood, preferred: "sleepy")
+            instance.state.energy = min(100, instance.state.energy + 14)
+            summary = "Let \(instance.displayName) recharge and reset."
+            rewardLines = ["Vitality recovered.", "No missed-day penalty applied."]
+        case .explore:
+            instance.state.mood = nextMood(from: instance.state.mood, preferred: "thinking")
+            instance.state.energy = max(0, instance.state.energy - 5)
+            instance.proficiencies.increment(category: "Research", cap: contracts.progression.maxSkillProficiency)
+            instance.proficiencies.increment(category: "Creativity", cap: contracts.progression.maxSkillProficiency)
+            summary = "\(instance.displayName) explored something new and brought back ideas."
+            rewardLines = ["Curiosity increased.", "Research and creativity both improved."]
+        }
+
+        instance.progression.xp += awardedXP
+        instance.progression.bond = min(contracts.progression.maxBond, instance.progression.bond + bondDelta)
+        instance.progression.streakDays = nextStreakDays(current: instance.progression.streakDays, lastActiveAt: previousLastActive, now: now)
+        instance.state.lastActiveAt = now
+
+        let updated = recalculateProgression(for: instance, template: contracts.templateForInstance(instance), now: now)
+        var nextState = currentState
+        nextState.upsert(updated)
+        nextState.activeBuddyInstanceId = updated.instanceId
+        nextState.lastUpdatedAt = now
+
+        var nextEvents = currentEvents
+        nextEvents.events.append(
+            makeEvent(
+                type: "buddy.care.completed",
+                instance: updated,
+                actor: "user",
+                summary: summary,
+                payload: [
+                    "careAction": action.rawValue,
+                    "rewardNotes": rewardLines.joined(separator: " | "),
+                    "xpAwarded": String(awardedXP)
+                ],
+                effects: BuddyRuntimeEventEffects(
+                    xpDelta: awardedXP,
+                    bondDelta: bondDelta,
+                    proficiencyDeltas: action == .explore ? ["Research": 1, "Creativity": 1] : nil,
+                    moodTarget: updated.state.mood,
+                    stateTransition: "care",
+                    memoryPromotion: nil,
+                    badgeGrant: action == .play ? "playful-checkin" : nil,
+                    passiveUnlock: nil,
+                    signatureUpgrade: nil,
+                    receiptRef: nil,
+                    sanitationReport: nil
+                ),
+                occurredAt: now
+            )
+        )
+
+        return finalize(
+            state: nextState,
+            eventLog: nextEvents,
+            summary: summary,
+            actionTitle: "\(action.title) \(updated.displayName)",
+            activeInstanceID: updated.instanceId,
+            now: now
+        )
+    }
+
+    func startBattle(
+        instanceID: String,
+        arenaName: String,
+        modifier: BuddyBattleArenaModifier,
+        currentState: BuddyLibraryState,
+        currentEvents: BuddyRuntimeEventLog,
+        now: Date = .now
+    ) throws -> BuddyPersistenceBundle {
+        guard var instance = currentState.instances.first(where: { $0.instanceId == instanceID }) else {
+            throw BuddyEventEngineError.instanceNotFound(instanceID)
+        }
+
+        let template = contracts.templateForInstance(instance)
+        let existingBattles = currentState.battleHistory ?? []
+        let battleIndex = existingBattles.filter { $0.buddyInstanceId == instance.instanceId }.count
+        let previousLastActive = instance.state.lastActiveAt
+        let opponent = battleOpponent(for: instance, template: template, battleIndex: battleIndex)
+        let playerPower = battlePower(for: instance, template: template, modifier: modifier)
+        let rivalPower = opponent.basePower + modifier.challengeBonus + battleIndex * 2
+        let victory = playerPower >= rivalPower
+        let xpAwarded = cappedXP(currentEvents, on: now, requested: (victory ? 18 : 10) + modifier.rewardBonus)
+        let bondDelta = cappedBondDelta(currentEvents, on: now, requested: victory ? 1 : 0)
+        let recommendations = battleRecommendations(for: instance)
+
+        instance.state.energy = max(0, instance.state.energy - (modifier == .charged ? 16 : 11))
+        instance.state.lastActiveAt = now
+        instance.state.mood = nextMood(from: instance.state.mood, preferred: victory ? "levelUp" : "working")
+        instance.progression.xp += xpAwarded
+        instance.progression.bond = min(contracts.progression.maxBond, instance.progression.bond + bondDelta)
+        instance.progression.streakDays = nextStreakDays(current: instance.progression.streakDays, lastActiveAt: previousLastActive, now: now)
+        if victory {
+            instance.proficiencies.increment(category: recommendations.first ?? "Building", cap: contracts.progression.maxSkillProficiency)
+        } else {
+            instance.proficiencies.increment(category: recommendations.first ?? "Planning", cap: contracts.progression.maxSkillProficiency)
+        }
+        var visual = instance.visual ?? BuddyVisualState(
+            asciiVariantId: nil,
+            pixelVariantId: nil,
+            currentAnimationState: nil,
+            evolutionCosmetics: []
+        )
+        if victory {
+            let cosmetic = opponent.rewardCosmetic
+            visual.evolutionCosmetics = Array((visual.evolutionCosmetics + [cosmetic]).uniqued()).prefix(8).map { $0 }
+        }
+        instance.visual = visual
+
+        let updated = recalculateProgression(for: instance, template: template, now: now)
+        let result = victory ? "victory" : "setback"
+        let scoreline = "\(playerPower) - \(rivalPower)"
+        let record = BuddyBattleRecord(
+            id: "battle_\(UUID().uuidString.lowercased())",
+            buddyInstanceId: updated.instanceId,
+            buddyDisplayName: updated.displayName,
+            opponentName: opponent.name,
+            opponentStyle: opponent.style,
+            arenaName: arenaName.nilIfBlank ?? "Pocket Arena",
+            modifier: modifier.rawValue,
+            result: result,
+            summary: victory
+                ? "\(updated.displayName) won a \(modifier.title.lowercased()) spar against \(opponent.name)."
+                : "\(updated.displayName) lost a \(modifier.title.lowercased()) spar to \(opponent.name), but learned something useful.",
+            scoreline: scoreline,
+            rewards: victory
+                ? ["+\(xpAwarded) XP", "\(opponent.rewardCosmetic) unlocked", recommendations.first.map { "Training bonus: \($0)" }].compactMap { $0 }
+                : ["+\(xpAwarded) XP", "Recovery path prepared", recommendations.first.map { "Train \($0) next" }].compactMap { $0 },
+            recommendedTraining: recommendations,
+            createdAt: now
+        )
+
+        var nextState = currentState
+        nextState.upsert(updated)
+        nextState.activeBuddyInstanceId = updated.instanceId
+        nextState.battleHistory = [record] + Array(existingBattles.prefix(19))
+        nextState.lastUpdatedAt = now
+
+        var nextEvents = currentEvents
+        nextEvents.events.append(
+            makeEvent(
+                type: "buddy.battle.completed",
+                instance: updated,
+                actor: "runtime",
+                summary: record.summary,
+                payload: [
+                    "opponentName": opponent.name,
+                    "arenaName": record.arenaName,
+                    "modifier": modifier.rawValue,
+                    "result": result,
+                    "scoreline": scoreline
+                ],
+                effects: BuddyRuntimeEventEffects(
+                    xpDelta: xpAwarded,
+                    bondDelta: bondDelta == 0 ? nil : bondDelta,
+                    proficiencyDeltas: [recommendations.first ?? "Planning": 1],
+                    moodTarget: updated.state.mood,
+                    stateTransition: "battle",
+                    memoryPromotion: "Persisted a Buddy sparring record.",
+                    badgeGrant: victory ? "sparring-win" : nil,
+                    passiveUnlock: updated.progression.passiveUnlocked ? "tier2-passive" : nil,
+                    signatureUpgrade: updated.progression.signatureUpgradeUnlocked ? "tier3-signature" : nil,
+                    receiptRef: nil,
+                    sanitationReport: nil
+                ),
+                occurredAt: now
+            )
+        )
+
+        return finalize(
+            state: nextState,
+            eventLog: nextEvents,
+            summary: record.summary,
+            actionTitle: "Spar \(updated.displayName)",
+            activeInstanceID: updated.instanceId,
+            now: now
+        )
+    }
+
     func makeActive(
         instanceID: String,
         currentState: BuddyLibraryState,
@@ -535,6 +745,8 @@ struct BuddyEventEngine {
                 template: contracts.templateForInstance($0),
                 contracts: contracts,
                 events: nextEvents.events,
+                battleHistory: nextState.battleHistory ?? [],
+                tradeHistory: nextState.tradeHistory ?? [],
                 now: now
             )
         }
@@ -543,6 +755,8 @@ struct BuddyEventEngine {
             activeBuddyInstanceId: nextState.activeBuddyInstanceId,
             contracts: contracts,
             events: nextEvents.events,
+            battleHistory: nextState.battleHistory ?? [],
+            tradeHistory: nextState.tradeHistory ?? [],
             now: now
         )
 
@@ -709,6 +923,62 @@ struct BuddyEventEngine {
             return 1
         }
         return current + 1
+    }
+
+    private func battlePower(
+        for instance: BuddyInstance,
+        template: CouncilStarterBuddyTemplate?,
+        modifier: BuddyBattleArenaModifier
+    ) -> Int {
+        let templateTotal = template?.total ?? 36
+        let movePower = instance.equippedMoves.reduce(0) { partial, move in
+            partial + move.mastery + (move.kind == "signature" ? 3 : 1)
+        }
+        return templateTotal
+            + (instance.progression.level * 4)
+            + (instance.progression.bond * 2)
+            + (instance.state.energy / 5)
+            + (instance.proficiencies.planning * 2)
+            + (instance.proficiencies.building * 2)
+            + (instance.proficiencies.verification * 2)
+            + movePower
+            + modifier.rewardBonus
+    }
+
+    private func battleOpponent(
+        for instance: BuddyInstance,
+        template: CouncilStarterBuddyTemplate?,
+        battleIndex: Int
+    ) -> (name: String, style: String, basePower: Int, rewardCosmetic: String) {
+        let rivals = [
+            ("Signal Fox", "fast pressure", 58, "signal-scarf"),
+            ("Lantern Moth", "evasive tempo", 54, "lantern-wings"),
+            ("Harbor Wisp", "curious trickster", 56, "harbor-glow"),
+            ("Stone Pup", "steady defender", 60, "stone-band"),
+            ("Circuit Sprout", "adaptive learner", 57, "circuit-bloom")
+        ]
+        let seed = instance.instanceId.unicodeScalars.map(\.value).reduce(0, +)
+        let offset = Int(seed) + battleIndex + (template?.name.count ?? 0)
+        let rival = rivals[offset % rivals.count]
+        return rival
+    }
+
+    private func battleRecommendations(for instance: BuddyInstance) -> [String] {
+        let ordered: [(String, Int)] = [
+            ("Planning", instance.proficiencies.planning),
+            ("Building", instance.proficiencies.building),
+            ("Research", instance.proficiencies.research),
+            ("Verification", instance.proficiencies.verification),
+            ("Creativity", instance.proficiencies.creativity),
+            ("Coordination", instance.proficiencies.coordination)
+        ]
+        return ordered
+            .sorted { lhs, rhs in
+                if lhs.1 == rhs.1 { return lhs.0 < rhs.0 }
+                return lhs.1 < rhs.1
+            }
+            .prefix(2)
+            .map(\.0)
     }
 
     private func makeEvent(

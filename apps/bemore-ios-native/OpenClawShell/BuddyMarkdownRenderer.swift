@@ -6,6 +6,8 @@ enum BuddyMarkdownRenderer {
         template: CouncilStarterBuddyTemplate?,
         contracts: BuddyCanonicalResources,
         events: [BuddyRuntimeEvent],
+        battleHistory: [BuddyBattleRecord],
+        tradeHistory: [BuddyTradeRecord],
         now: Date = .now
     ) -> String {
         let bondLabel = bondLabel(for: instance.progression.bond, contracts: contracts)
@@ -13,6 +15,11 @@ enum BuddyMarkdownRenderer {
         let roleProfile = template.flatMap { contracts.progression.roleProfiles[$0.id] }
         let recent = recentEvents(for: instance, events: events, limit: 4)
         let topProficiencies = topProficiencyLabels(for: instance)
+        let care = BuddyCareCalculator.snapshot(
+            for: instance,
+            template: template,
+            battles: battleHistory.filter { $0.buddyInstanceId == instance.instanceId }
+        )
 
         return """
         # buddy.md
@@ -28,6 +35,11 @@ enum BuddyMarkdownRenderer {
         - Activity mode: \(instance.state.activityMode.capitalized)
         - Current focus: \(instance.state.currentFocus ?? "No active focus")
         - Last active: \(iso8601(instance.state.lastActiveAt))
+        - Vitality: \(care.vitality)
+        - Focus: \(care.focus)
+        - Trust: \(care.trust)
+        - Confidence: \(care.confidence)
+        - Curiosity: \(care.curiosity)
 
         ## What changed recently
         \(bulletList(recent.isEmpty ? ["No Buddy events recorded yet."] : recent))
@@ -44,6 +56,12 @@ enum BuddyMarkdownRenderer {
         ## Latest daily plan
         \(bulletList(dailyPlanLines(for: instance)))
 
+        ## Recent sparring
+        \(bulletList(battleLines(for: instance, battleHistory: battleHistory)))
+
+        ## Trade status
+        \(bulletList(tradeLines(for: instance, tradeHistory: tradeHistory)))
+
         ## What is stale
         \(bulletList(staleLines(for: instance, now: now)))
 
@@ -57,6 +75,8 @@ enum BuddyMarkdownRenderer {
         activeBuddyInstanceId: String?,
         contracts: BuddyCanonicalResources,
         events: [BuddyRuntimeEvent],
+        battleHistory: [BuddyBattleRecord],
+        tradeHistory: [BuddyTradeRecord],
         now: Date = .now
     ) -> String {
         let sections = instances.map { instance -> String in
@@ -64,6 +84,9 @@ enum BuddyMarkdownRenderer {
             let recent = recentEvents(for: instance, events: events, limit: 2)
             let status = instance.instanceId == activeBuddyInstanceId ? "Active" : (isStale(instance, now: now) ? "Needs attention" : "Installed")
             let bond = bondLabel(for: instance.progression.bond, contracts: contracts)
+            let battles = battleHistory.filter { $0.buddyInstanceId == instance.instanceId }
+            let trades = tradeHistory.filter { $0.buddyDisplayName == instance.displayName }
+            let care = BuddyCareCalculator.snapshot(for: instance, template: template, battles: battles)
 
             return """
             ## \(instance.displayName)
@@ -77,6 +100,9 @@ enum BuddyMarkdownRenderer {
             - Focus: \(instance.state.currentFocus ?? "No active focus")
             - Learned preferences: \(instance.learnedPreferences?.count ?? 0)
             - Equipped skills: \((instance.learnedSkills ?? []).filter(\.isEquipped).count)
+            - Vitality / trust / confidence: \(care.vitality) / \(care.trust) / \(care.confidence)
+            - Battles logged: \(battles.count)
+            - Trade history: \(trades.count)
             - Last active: \(iso8601(instance.state.lastActiveAt))
             \(recent.isEmpty ? "- Recent note: No Buddy events recorded yet." : recent.map { "- Recent note: \($0)" }.joined(separator: "\n"))
             """
@@ -171,6 +197,30 @@ enum BuddyMarkdownRenderer {
             "Reminder: \(plan.reminderTitle)",
             "Journal: \(plan.journalPrompt)"
         ]
+    }
+
+    private static func battleLines(for instance: BuddyInstance, battleHistory: [BuddyBattleRecord]) -> [String] {
+        let recent = battleHistory
+            .filter { $0.buddyInstanceId == instance.instanceId }
+            .sorted { $0.createdAt > $1.createdAt }
+            .prefix(3)
+        guard recent.isEmpty == false else {
+            return ["No sparring record yet. Start a local battle to test training and loadout."]
+        }
+        return recent.map {
+            "\($0.result.capitalized) vs \($0.opponentName) in \($0.arenaName) (\($0.scoreline)). Recommended next training: \($0.recommendedTraining.joined(separator: ", "))."
+        }
+    }
+
+    private static func tradeLines(for instance: BuddyInstance, tradeHistory: [BuddyTradeRecord]) -> [String] {
+        let recent = tradeHistory
+            .filter { $0.buddyDisplayName == instance.displayName }
+            .sorted { $0.createdAt > $1.createdAt }
+            .prefix(3)
+        guard recent.isEmpty == false else {
+            return ["No trade packages imported for this Buddy yet. Export a package to share or keep as a backup."]
+        }
+        return recent.map { "\($0.type.capitalized): \($0.summary)" }
     }
 
     private static func staleLines(for instance: BuddyInstance, now: Date) -> [String] {

@@ -45,7 +45,6 @@ struct MissionControlView: View {
     }
 
     private var buddyHomeCard: some View {
-        let status = appState.buddyRuntimeStatus
         let buddy = store.activeBuddy
         return VStack(alignment: .leading, spacing: BMOTheme.spacingMD) {
             HStack(alignment: .top) {
@@ -61,16 +60,20 @@ struct MissionControlView: View {
                         .foregroundColor(BMOTheme.textSecondary)
                 }
                 Spacer()
-                StatusBadge(label: buddy == nil ? "Needs Buddy" : status.runtimeAvailable ? "Ready" : "Phone-first", color: buddy == nil ? BMOTheme.warning : status.runtimeAvailable ? BMOTheme.success : BMOTheme.accent)
+                StatusBadge(label: buddy == nil ? "Needs Buddy" : "Phone-first", color: buddy == nil ? BMOTheme.warning : BMOTheme.success)
             }
 
-            BuddyAsciiView(buddy: buddy, template: buddy.flatMap { store.contracts?.templateForInstance($0) }, mood: buddyMood(for: status, buddy: buddy))
+            BuddyAsciiView(
+                buddy: buddy,
+                template: buddy.flatMap { store.contracts?.templateForInstance($0) },
+                mood: buddyMood(for: appState.buddyRuntimeStatus, buddy: buddy)
+            )
 
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
                 dashboardMetric("Owned", value: "\(store.installedBuddies.count)", icon: "person.2.fill")
-                dashboardMetric("Skills", value: "\(status.registeredSkillCount)", icon: "sparkles.rectangle.stack")
-                dashboardMetric("Receipts", value: "\(status.recentChanges.count)", icon: "checklist.checked")
-                dashboardMetric("Mac", value: appState.macRuntimeSnapshot == nil ? "pair" : "live", icon: "macbook.and.iphone")
+                dashboardMetric("Battles", value: "\(store.battleHistory.count)", icon: "shield.lefthalf.filled")
+                dashboardMetric("Trades", value: "\(store.tradeHistory.count)", icon: "arrow.triangle.swap")
+                dashboardMetric("Bond", value: "\(buddy?.progression.bond ?? 0)", icon: "heart.fill")
             }
         }
         .bmoCard()
@@ -78,33 +81,33 @@ struct MissionControlView: View {
 
     private var primaryFlowCard: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Start with Buddy")
+            Text("Start with what works here")
                 .font(.headline)
                 .foregroundColor(BMOTheme.textPrimary)
-            Text("Talk to your active Buddy, train them, run a skill, or inspect the latest result. Runtime setup stays secondary until you ask for more power.")
+            Text("Care for Buddy, train them, grow a roster, spar, and trade packages on iPhone. Runtime setup stays secondary until you explicitly want more power.")
                 .font(.subheadline)
                 .foregroundColor(BMOTheme.textSecondary)
 
             HStack(spacing: 8) {
-                Button("Chat with \(store.activeBuddy?.displayName ?? "Buddy")") {
-                    appState.openChat(from: .missionControl)
+                Button("Care & Train") {
+                    appState.route(to: .buddy)
                 }
                 .buttonStyle(BMOButtonStyle())
 
-                Button("Train Buddy") {
-                    appState.route(to: .buddy)
+                Button("Chat with \(store.activeBuddy?.displayName ?? "Buddy")") {
+                    appState.openChat(from: .missionControl)
                 }
                 .buttonStyle(BMOButtonStyle(isPrimary: false))
             }
 
             HStack(spacing: 8) {
-                Button("Discover") {
+                Button("Battle & Trade") {
                     appState.route(to: .buddy)
                 }
                 .buttonStyle(BMOButtonStyle(isPrimary: false))
 
-                Button("Plans") {
-                    appState.route(to: .pricing)
+                Button("Collect") {
+                    appState.route(to: .buddy)
                 }
                 .buttonStyle(BMOButtonStyle(isPrimary: false))
             }
@@ -117,10 +120,10 @@ struct MissionControlView: View {
         return VStack(alignment: .leading, spacing: 12) {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("\(store.activeBuddy?.displayName ?? "Buddy")'s next result")
+                    Text("Operator depth")
                         .font(.headline)
                         .foregroundColor(BMOTheme.textPrimary)
-                    Text("Receipt-backed work is the proof surface on iPhone too.")
+                    Text("Repo, runtime, and sandbox controls still exist, but they are no longer the reason the app matters.")
                         .font(.caption)
                         .foregroundColor(BMOTheme.textSecondary)
                 }
@@ -144,7 +147,7 @@ struct MissionControlView: View {
             }
 
             if status.recentChanges.isEmpty {
-                Text("Run a Buddy action, skill, or Mac inspection to create the next visible result.")
+                Text("No recent operator actions. Buddy care, training, battles, and trade packages work entirely without them.")
                     .font(.caption)
                     .foregroundColor(BMOTheme.textTertiary)
             } else {
@@ -159,13 +162,13 @@ struct MissionControlView: View {
     private var skillsCard: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("Buddy skills")
+                Text("Optional skill power")
                     .font(.headline)
                     .foregroundColor(BMOTheme.textPrimary)
                 Spacer()
                 StatusBadge(label: "\(appState.workspaceRuntime.skills.count) registered", color: BMOTheme.accent)
             }
-            Text("Skills make Buddy more useful: they produce artifacts, receipts, and task context rather than decorative shortcuts.")
+            Text("Skills can deepen the app later, but Buddy already has a strong self-contained loop before any runtime-backed skill run.")
                 .font(.subheadline)
                 .foregroundColor(BMOTheme.textSecondary)
             Button("Open Skills") {
@@ -179,13 +182,13 @@ struct MissionControlView: View {
     private var macPowerCard: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("Mac power mode")
+                Text("Mac power mode later")
                     .font(.headline)
                     .foregroundColor(BMOTheme.textPrimary)
                 Spacer()
                 StatusBadge(label: appState.macRuntimeSnapshot == nil ? "Not paired" : "Paired", color: appState.macRuntimeSnapshot == nil ? BMOTheme.warning : BMOTheme.success)
             }
-            Text(appState.macPowerModeSummary)
+            Text("Pairing with a Mac adds operator depth, but it is optional. The iPhone app should already be worth checking even with no external connection.")
                 .font(.subheadline)
                 .foregroundColor(BMOTheme.textSecondary)
             Button("Inspect Mac runtime") {
