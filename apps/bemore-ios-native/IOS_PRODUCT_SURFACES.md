@@ -7,11 +7,19 @@ This file is the current source of truth for what the BeMoreAgent iOS shell actu
 
 ### Mission Control
 
-- current route mode, target, and health
-- live local state counts for files, messages, and installed models
-- provider linkage visibility
-- tab posture summary
-- bundled BMO Stack surface briefs sourced from repo docs
+- companion-first Buddy home
+- roster, battle, and trade status summary
+- optional operator depth for routes, runtime, and receipts
+- bundled BMO Stack surface briefs sourced from repo docs when needed
+
+### Buddy
+
+- Buddy care actions with visible stats
+- teachable preferences and training persistence
+- Buddy customization and appearance expression
+- collectible starter roster installs and equip flow
+- lightweight local sparring with persisted battle history
+- Buddy trade package export/import with validation
 
 ### Models
 
@@ -23,12 +31,11 @@ This file is the current source of truth for what the BeMoreAgent iOS shell actu
 - cloud route activation and day-to-day model switching
 - saved model source URLs
 
-### Buddy
+### Chat
 
-- onboarding-derived buddy generation
-- rename
-- explicit make-active selection
-- local persistence for active buddy, collection, trades, and battle history
+- practical Buddy-first conversation flow
+- in-app capability framing before operator/runtime depth
+- file-context assisted prompts when the user wants them
 
 ### Product shell customization
 
@@ -80,8 +87,7 @@ Why:
 
 ### Full OpenClaw dashboard parity
 
-Deferred because the current phone shell is still a summary/control surface, not the full desktop
-operator workstation.
+Deferred because the current phone shell is product-first, not a full desktop operator workstation.
 
 ### Enterprise administration suite
 
@@ -95,8 +101,8 @@ dependency and still falls back to the stub local-runtime path when `MLCSwift` i
 
 ## Guidance
 
-- Use Mission Control for status, provenance, and repo-surface briefs.
-- Use Models for live route selection.
-- Use Settings for maintenance, credentials, and tab management.
+- Lead with the standalone Buddy loop on iPhone.
+- Use Mission Control for the companion-first home and only then optional operator context.
+- Use Models for live route selection when the user wants deeper technical help.
 - Keep wrapped surfaces clearly labeled as wrapped.
-- Do not imply local on-device inference is available until PR B proves it on a device.
+- Do not imply local on-device inference is available until a device-backed runtime proves it.

@@ -104,9 +104,9 @@ struct OnboardingFlow: View {
                 .padding(.horizontal, BMOTheme.spacingXL)
 
             VStack(alignment: .leading, spacing: 10) {
-                featureRow("Choose the Buddy who will help with your day, work, notes, and follow-through")
-                featureRow("Name them and teach the first thing you want help with")
-                featureRow("Add operator power later when you want repo, runtime, or skill execution help")
+                featureRow("Choose the Buddy who will help with your day, follow-through, and routines")
+                featureRow("Name them, teach preferences, and grow them through care, training, and sparring")
+                featureRow("Trade and share Buddy packages later, then add operator power only when you want deeper runtime help")
             }
             .padding(.horizontal, BMOTheme.spacingXL)
 
@@ -190,7 +190,7 @@ struct OnboardingFlow: View {
         ScrollView {
             VStack(alignment: .leading, spacing: BMOTheme.spacingLG) {
                 Spacer().frame(height: BMOTheme.spacingXL)
-                onboardingTitle("Mode choice is optional", subtitle: "Begin in companion mode on iPhone. Operator setup is there when you want deeper technical work, not something you need to learn first.")
+                onboardingTitle("Mode choice is optional", subtitle: "Begin in companion mode on iPhone. Care, customization, training, collection, sparring, and trade packages work before any operator setup.")
 
                 VStack(spacing: 12) {
                     ForEach(BuddyPowerMode.allCases) { mode in
