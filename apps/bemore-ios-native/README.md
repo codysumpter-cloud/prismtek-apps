@@ -2,6 +2,11 @@
 
 Native SwiftUI iPhone shell for the BeMoreAgent operator stack.
 
+Architecture boundary:
+- `prismtek-apps` (this repo) is the iPhone-native primary host and user surface.
+- `prismtek-site` / prismtek.dev is the web shell + relay layer.
+- `bmo-stack` is canonical for posture, council behavior, skills/manifests, and Codex/runtime discipline.
+
 ## Current product shell
 
 The app is no longer just a thin operator shell. The strongest shipped wedge is now a standalone Buddy experience on iPhone:
@@ -50,9 +55,9 @@ The Buddy surface now bundles repo-owned canonical Buddy contracts and starter c
 main `BeMore-stack` repo. Installing or personalizing a Buddy persists:
 
 - `State/buddy-instances.json`
-- `.openclaw/state/buddy-runtime-events.json`
-- `.openclaw/buddy.md`
-- `.openclaw/buddies.md`
+- `.bemore/state/buddy-runtime-events.json`
+- `.bemore/buddy.md`
+- `.bemore/buddies.md`
 
 Bundle identity continuity matters for this state. See [`BUILD_14_CONTINUITY_NOTE.md`](./BUILD_14_CONTINUITY_NOTE.md) for why build 14 could look like a fresh install after the bundle identifier briefly changed.
 
@@ -91,7 +96,7 @@ Admin and release notes live in [`ADMIN_TESTFLIGHT_RUNBOOK.md`](./ADMIN_TESTFLIG
 - Use `Control` to inspect the companion-first home and then optional operator depth.
 - Use `Buddy` to care for a Buddy, train them, build a roster, spar locally, export/import trade
   packages, and only then reach for deeper operator behavior if needed.
-- Buddy actions regenerate the readable `.openclaw/buddy.md` and `.openclaw/buddies.md` continuity
+- Buddy actions regenerate the readable `.bemore/buddy.md` and `.bemore/buddies.md` continuity
   files alongside the machine-readable JSON state.
 
 ## Known limits

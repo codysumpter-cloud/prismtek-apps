@@ -14,7 +14,7 @@ struct SkillsView: View {
                         ActionReceiptCard(receipt: lastReceipt)
                     }
 
-                    clawHubCard
+                    skillLibraryCard
 
                     if !appState.workspaceRuntime.builtInCapabilities.isEmpty {
                         builtInCapabilitiesCard
@@ -158,11 +158,11 @@ struct SkillsView: View {
         .bmoCard()
     }
 
-    private var clawHubCard: some View {
+    private var skillLibraryCard: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Buddy Skill Hub")
+                    Text("Buddy Skill Library")
                         .font(.headline)
                         .foregroundColor(BMOTheme.textPrimary)
                     Text("Install starter skills into the BeMore workspace registry with real README, manifest, artifact, and receipt output.")
@@ -173,7 +173,7 @@ struct SkillsView: View {
                 StatusBadge(label: "Local", color: BMOTheme.success)
             }
 
-            ForEach(ClawHubCatalog.templates) { template in
+            ForEach(BuddySkillCatalog.templates) { template in
                 let installed = appState.workspaceRuntime.skills.contains(where: { $0.id == template.id })
                 HStack(alignment: .top, spacing: 10) {
                     Image(systemName: template.systemImage)
@@ -190,7 +190,7 @@ struct SkillsView: View {
                     }
                     Spacer()
                     Button(installed ? "Installed" : "Install") {
-                        lastReceipt = appState.installClawHubSkill(template)
+                        lastReceipt = appState.installBuddySkillTemplate(template)
                     }
                     .disabled(installed)
                     .buttonStyle(.bordered)

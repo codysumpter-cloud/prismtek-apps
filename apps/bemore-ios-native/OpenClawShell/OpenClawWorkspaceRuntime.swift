@@ -35,7 +35,7 @@ enum OpenClawActionKind: String, Codable, CaseIterable, Hashable {
     case webBrowse = "web.browse"
 }
 
-struct ClawHubSkillTemplate: Identifiable, Hashable {
+struct BuddySkillTemplate: Identifiable, Hashable {
     var id: String
     var name: String
     var description: String
@@ -138,6 +138,9 @@ struct SkillManifest: Identifiable, Codable, Hashable {
     var ui: UIMetadata
     var entrypoint: String
     var enabled: Bool
+    var source: String? = nil
+    var isEquipped: Bool? = nil
+    var config: [String: String]? = nil
 }
 
 struct ChatSkillDraft: Identifiable, Codable, Hashable {
@@ -193,7 +196,10 @@ enum BuiltInSkillRegistry {
                 outputSchema: ["results": "array", "summary": "string"],
                 ui: .init(route: "/skills/github-search", systemImage: "magnifyingglass", accent: "accent"),
                 entrypoint: "builtin.githubSearch",
-                enabled: true
+                enabled: true,
+                source: "built-in",
+                isEquipped: true,
+                config: [:]
             ),
             SkillManifest(
                 id: webBrowseID,
@@ -207,7 +213,10 @@ enum BuiltInSkillRegistry {
                 outputSchema: ["status": "string"],
                 ui: .init(route: "/skills/web-browse", systemImage: "globe", accent: "accent"),
                 entrypoint: "builtin.webBrowse",
-                enabled: true
+                enabled: true,
+                source: "built-in",
+                isEquipped: true,
+                config: [:]
             ),
             SkillManifest(
                 id: pokemonTeamBuilderID,
@@ -234,7 +243,10 @@ enum BuiltInSkillRegistry {
                 ],
                 ui: .init(route: "/skills/pokemon-team-builder", systemImage: "gamecontroller.fill", accent: "accent"),
                 entrypoint: "builtin.pokemonTeamBuilder",
-                enabled: true
+                enabled: true,
+                source: "built-in",
+                isEquipped: true,
+                config: ["mode": "local-runtime"]
             ),
             SkillManifest(
                 id: artifactRebuilderID,
@@ -248,7 +260,10 @@ enum BuiltInSkillRegistry {
                 outputSchema: ["paths": "array"],
                 ui: .init(route: "/skills/artifact-rebuilder", systemImage: "arrow.triangle.2.circlepath", accent: "accent"),
                 entrypoint: "builtin.artifactRebuilder",
-                enabled: true
+                enabled: true,
+                source: "built-in",
+                isEquipped: true,
+                config: [:]
             ),
             SkillManifest(
                 id: memoryInspectorID,
@@ -262,20 +277,23 @@ enum BuiltInSkillRegistry {
                 outputSchema: ["summary": "string"],
                 ui: .init(route: "/skills/memory-inspector", systemImage: "brain.head.profile", accent: "accent"),
                 entrypoint: "builtin.memoryInspector",
-                enabled: true
+                enabled: true,
+                source: "built-in",
+                isEquipped: true,
+                config: [:]
             )
         ]
     }
 }
 
-enum ClawHubCatalog {
-    static let templates: [ClawHubSkillTemplate] = [
-        ClawHubSkillTemplate(
-            id: "clawhub-skill-composer",
+enum BuddySkillCatalog {
+    static let templates: [BuddySkillTemplate] = [
+        BuddySkillTemplate(
+            id: "buddyskill-skill-composer",
             name: "Skill Composer",
             description: "Draft and evolve custom BeMore skills as manifest-backed workspace artifacts.",
             category: "Authoring",
-            tags: ["skills", "authoring", "clawhub"],
+            tags: ["skills", "authoring", "buddy-skill-library"],
             starterMarkdown: """
             # Skill Composer
 
@@ -283,14 +301,14 @@ enum ClawHubCatalog {
             Help the agent turn repeated operator workflows into clear skill manifests, instructions, inputs, outputs, and verification notes.
 
             ## Runtime contract
-            - Read existing `.openclaw/registry/skills.json`.
+            - Read existing `.bemore/registry/skills.json`.
             - Propose changes first when the request is ambiguous.
             - Persist new skill files only through workspace receipts.
             """,
             systemImage: "wand.and.stars"
         ),
-        ClawHubSkillTemplate(
-            id: "clawhub-buddy-battle-coach",
+        BuddySkillTemplate(
+            id: "buddyskill-buddy-battle-coach",
             name: "Buddy Battle Coach",
             description: "Analyze buddy stats, recent battles, and suggested training before a duel.",
             category: "Buddy",
@@ -308,17 +326,17 @@ enum ClawHubCatalog {
             """,
             systemImage: "bolt.shield"
         ),
-        ClawHubSkillTemplate(
-            id: "clawhub-workspace-architect",
+        BuddySkillTemplate(
+            id: "buddyskill-workspace-architect",
             name: "Workspace Architect",
-            description: "Review `.openclaw` artifacts and suggest better soul, memory, session, and skill files.",
+            description: "Review `.bemore` artifacts and suggest better soul, memory, session, and skill files.",
             category: "Workspace",
             tags: ["artifacts", "memory", "workspace"],
             starterMarkdown: """
             # Workspace Architect
 
             ## Purpose
-            Keep `.openclaw` coherent by improving canonical markdown and state files with receipt-backed edits.
+            Keep `.bemore` coherent by improving canonical markdown and state files with receipt-backed edits.
 
             ## Runtime contract
             - Read canonical artifacts before editing.
@@ -327,8 +345,8 @@ enum ClawHubCatalog {
             """,
             systemImage: "building.columns"
         ),
-        ClawHubSkillTemplate(
-            id: "clawhub-file-crafter",
+        BuddySkillTemplate(
+            id: "buddyskill-file-crafter",
             name: "File Crafter",
             description: "Create, revise, export, and clean up workspace files through receipt-backed file actions.",
             category: "Workspace",
@@ -337,7 +355,7 @@ enum ClawHubCatalog {
             # File Crafter
 
             ## Purpose
-            Help the agent turn user requests into durable files in the Files or `.openclaw` workspace surfaces.
+            Help the agent turn user requests into durable files in the Files or `.bemore` workspace surfaces.
 
             ## Runtime contract
             - Ask for a filename when the path is ambiguous.
@@ -346,8 +364,8 @@ enum ClawHubCatalog {
             """,
             systemImage: "doc.badge.plus"
         ),
-        ClawHubSkillTemplate(
-            id: "clawhub-memory-gardener",
+        BuddySkillTemplate(
+            id: "buddyskill-memory-gardener",
             name: "Memory Gardener",
             description: "Review durable facts and preferences, then propose precise memory.md and state-store improvements.",
             category: "Memory",
@@ -365,8 +383,8 @@ enum ClawHubCatalog {
             """,
             systemImage: "leaf.fill"
         ),
-        ClawHubSkillTemplate(
-            id: "clawhub-model-route-doctor",
+        BuddySkillTemplate(
+            id: "buddyskill-model-route-doctor",
             name: "Model Route Doctor",
             description: "Diagnose cloud/local route configuration without pretending unavailable runtimes are online.",
             category: "Runtime",
@@ -384,8 +402,8 @@ enum ClawHubCatalog {
             """,
             systemImage: "stethoscope"
         ),
-        ClawHubSkillTemplate(
-            id: "clawhub-response-cleaner",
+        BuddySkillTemplate(
+            id: "buddyskill-response-cleaner",
             name: "Response Cleaner",
             description: "Keep assistant answers concise, answer-first, and free of hidden reasoning unless explanation is requested.",
             category: "Chat",
@@ -403,8 +421,8 @@ enum ClawHubCatalog {
             """,
             systemImage: "text.bubble"
         ),
-        ClawHubSkillTemplate(
-            id: "clawhub-battle-arena",
+        BuddySkillTemplate(
+            id: "buddyskill-battle-arena",
             name: "Buddy Battle Arena",
             description: "Create receipt-backed buddy battle records, outcomes, and training recommendations.",
             category: "Buddy",
@@ -428,7 +446,7 @@ enum ClawHubCatalog {
 // MARK: - Workspace Runtime
 
 @MainActor
-final class OpenClawWorkspaceRuntime: ObservableObject {
+final class BeMoreWorkspaceRuntime: ObservableObject {
     @Published private(set) var skills: [SkillManifest] = []
     @Published private(set) var artifacts: [OpenClawArtifactMetadata] = []
     @Published private(set) var recentActions: [OpenClawActionRecord] = []
@@ -448,7 +466,7 @@ final class OpenClawWorkspaceRuntime: ObservableObject {
         return decoder
     }()
 
-    var rootURL: URL { Paths.openClawDirectory }
+    var rootURL: URL { Paths.beMoreRuntimeDirectory }
     var isBootstrapped: Bool { fileManager.fileExists(atPath: rootURL.appendingPathComponent("soul.md").path) }
     var executableSkills: [SkillManifest] {
         skills.filter { !BuiltInSkillRegistry.builtInCapabilityIDs.contains($0.id) }
@@ -458,6 +476,7 @@ final class OpenClawWorkspaceRuntime: ObservableObject {
     }
 
     func bootstrap(config: StackConfig, preferences: UserPreferences, routeSummary: String) {
+        migrateLegacyRuntimeIfNeeded()
         ensureWorkspaceTree()
         skills = loadSkillRegistry()
         persistSkillRegistry()
@@ -465,6 +484,22 @@ final class OpenClawWorkspaceRuntime: ObservableObject {
         regenerateCanonicalArtifactsIfMissing(config: config, preferences: preferences, routeSummary: routeSummary)
         refreshMetadata()
         appendEvent(type: "workspace.bootstrapped", message: "BeMore workspace runtime bootstrapped.")
+    }
+
+    private func migrateLegacyRuntimeIfNeeded() {
+        let legacy = Paths.openClawDirectory
+        guard legacy.path != rootURL.path else { return }
+        guard fileManager.fileExists(atPath: legacy.path) else { return }
+        let targetContents = (try? fileManager.contentsOfDirectory(at: rootURL, includingPropertiesForKeys: nil, options: [.skipsHiddenFiles])) ?? []
+        guard targetContents.isEmpty else { return }
+        let legacyContents = (try? fileManager.contentsOfDirectory(at: legacy, includingPropertiesForKeys: nil, options: [.skipsHiddenFiles])) ?? []
+        guard !legacyContents.isEmpty else { return }
+
+        for source in legacyContents {
+            let destination = rootURL.appendingPathComponent(source.lastPathComponent)
+            guard !fileManager.fileExists(atPath: destination.path) else { continue }
+            try? fileManager.copyItem(at: source, to: destination)
+        }
     }
 
     func readFile(_ path: String) throws -> String {
@@ -638,16 +673,16 @@ final class OpenClawWorkspaceRuntime: ObservableObject {
         case BuiltInSkillRegistry.memoryInspectorID:
             return runMemoryInspector(manifest: manifest)
         default:
-            if manifest.entrypoint.hasPrefix("clawhub.") {
-                return runClawHubSkill(manifest: manifest, input: input)
+            if manifest.entrypoint.hasPrefix("buddyskill.") {
+                return runManifestSkillWorkflow(manifest: manifest, input: input)
             }
             let action = begin(kind: .skillRun, source: "skills", title: manifest.name, input: input)
             return finish(action, status: .failed, summary: "Entrypoint is not implemented", error: "Missing entrypoint: \(manifest.entrypoint)")
         }
     }
 
-    func installClawHubSkill(_ template: ClawHubSkillTemplate) -> OpenClawReceipt {
-        let action = begin(kind: .skillRun, source: "clawhub", title: "Install \(template.name)", input: ["skillId": template.id])
+    func installBuddySkillTemplate(_ template: BuddySkillTemplate) -> OpenClawReceipt {
+        let action = begin(kind: .skillRun, source: "buddyskill.library", title: "Install \(template.name)", input: ["skillId": template.id])
         if skills.contains(where: { $0.id == template.id }) {
             return finish(action, status: .completed, summary: "\(template.name) is already installed", output: ["skillId": template.id])
         }
@@ -663,8 +698,11 @@ final class OpenClawWorkspaceRuntime: ObservableObject {
             inputSchema: ["request": "string"],
             outputSchema: ["summary": "string", "artifactPath": "string"],
             ui: .init(route: "/skills/\(template.id)", systemImage: template.systemImage, accent: "accent"),
-            entrypoint: "clawhub.\(template.id)",
-            enabled: true
+            entrypoint: "buddyskill.\(template.id)",
+            enabled: true,
+            source: "imported",
+            isEquipped: true,
+            config: [:]
         )
 
         do {
@@ -672,9 +710,9 @@ final class OpenClawWorkspaceRuntime: ObservableObject {
             skills.append(manifest)
             skills.sort { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
             persistSkillRegistry()
-            _ = try writeFile("\(folder)/README.md", content: template.starterMarkdown, source: "clawhub")
+            _ = try writeFile("\(folder)/README.md", content: template.starterMarkdown, source: "buddyskill.library")
             let manifestData = try encoder.encode(manifest)
-            _ = try writeFile("\(folder)/manifest.json", content: String(data: manifestData, encoding: .utf8) ?? "{}", source: "clawhub")
+            _ = try writeFile("\(folder)/manifest.json", content: String(data: manifestData, encoding: .utf8) ?? "{}", source: "buddyskill.library")
             refreshMetadata()
             appendEvent(type: "skill.installed", message: "Installed \(template.name) from Buddy Skill Hub.", metadata: ["skillId": template.id])
             return finish(action, status: .persisted, summary: "Installed \(template.name) from Buddy Skill Hub", output: ["skillId": template.id], artifacts: ["registry/skills.json", "\(folder)/README.md", "\(folder)/manifest.json"])
@@ -688,6 +726,9 @@ final class OpenClawWorkspaceRuntime: ObservableObject {
         let action = begin(kind: .skillRun, source: "chat.skill-draft", title: "Draft skill from chat", input: ["request": normalized])
         guard !normalized.isEmpty else {
             return finish(action, status: .failed, summary: "No skill request supplied", error: "Skill draft request cannot be empty.")
+        }
+        guard normalized.count >= 8 else {
+            return finish(action, status: .failed, summary: "Skill request needs more detail", error: "Please describe the skill in at least 8 characters.")
         }
 
         let slug = slugify(normalized, fallback: "user-skill")
@@ -774,8 +815,11 @@ final class OpenClawWorkspaceRuntime: ObservableObject {
             inputSchema: ["request": "string"],
             outputSchema: ["summary": "string", "nextSteps": "string", "artifactPath": "string"],
             ui: .init(route: "/skills/\(draft.id)", systemImage: "bolt.badge.checkmark", accent: "accent"),
-            entrypoint: "clawhub.\(draft.id)",
-            enabled: true
+            entrypoint: "buddyskill.\(draft.id)",
+            enabled: true,
+            source: "user-taught",
+            isEquipped: true,
+            config: ["reviewed": "true", "requestedBy": draft.requestedBy]
         )
 
         do {
@@ -811,10 +855,10 @@ final class OpenClawWorkspaceRuntime: ObservableObject {
 
         switch op {
         case "pwd":
-            return finish(action, status: .completed, summary: "Printed workspace root", output: ["stdout": "/.openclaw", "exitCode": "0"])
+            return finish(action, status: .completed, summary: "Printed workspace root", output: ["stdout": "/.bemore", "exitCode": "0"])
         case "ls":
             let target = parts.dropFirst().first ?? ""
-            return finish(action, status: .completed, summary: "Listed \(target.isEmpty ? "/.openclaw" : target)", output: ["stdout": listFiles(target).joined(separator: "\n"), "exitCode": "0"])
+            return finish(action, status: .completed, summary: "Listed \(target.isEmpty ? "/.bemore" : target)", output: ["stdout": listFiles(target).joined(separator: "\n"), "exitCode": "0"])
         case "cat":
             guard let target = parts.dropFirst().first else {
                 return finish(action, status: .failed, summary: "cat requires a file path", error: "Usage: cat soul.md")
@@ -965,7 +1009,7 @@ final class OpenClawWorkspaceRuntime: ObservableObject {
                 "Ship a real on-device inference runtime or hardened host process runner when available."
             ],
             "completedTasks": [
-                "Created .openclaw workspace runtime structure.",
+                "Created .bemore workspace runtime structure.",
                 "Registered Pokemon Team Builder as a skill."
             ]
         ], to: rootURL.appendingPathComponent("state/tasks.json"))
@@ -1027,7 +1071,7 @@ final class OpenClawWorkspaceRuntime: ObservableObject {
 
             ## Durable facts
             - BeMore should feel like a real agent workspace, not a chat-only shell.
-            - Canonical artifacts live under `.openclaw/`.
+            - Canonical artifacts live under `.bemore/`.
             - Pokemon Team Builder is a first-class skill and saves artifacts.
             - Completion language must be receipt-aware.
 
@@ -1060,7 +1104,7 @@ final class OpenClawWorkspaceRuntime: ObservableObject {
             }.joined(separator: "\n"))
 
             ## Buddy Skill Hub starters
-            \(ClawHubCatalog.templates.map { "- **\($0.name)** (`\($0.id)`): \($0.description)" }.joined(separator: "\n"))
+            \(BuddySkillCatalog.templates.map { "- **\($0.name)** (`\($0.id)`): \($0.description)" }.joined(separator: "\n"))
 
             ## Skill authoring rules
             - New skills need a manifest in `registry/skills.json`.
@@ -1176,7 +1220,7 @@ final class OpenClawWorkspaceRuntime: ObservableObject {
         return finish(action, status: .completed, summary: "Read memory stores", output: ["summary": body], artifacts: paths)
     }
 
-    private func runClawHubSkill(manifest: SkillManifest, input: [String: String]) -> OpenClawReceipt {
+    private func runManifestSkillWorkflow(manifest: SkillManifest, input: [String: String]) -> OpenClawReceipt {
         let action = begin(kind: .skillRun, source: "skill.\(manifest.id)", title: manifest.name, input: input)
         let request = input["request"].nilIfBlank ?? "Inspect this skill."
         let runPath = "skills/\(manifest.id)/runs/\(runSlug(Date())).md"
@@ -1228,8 +1272,9 @@ final class OpenClawWorkspaceRuntime: ObservableObject {
 
     private func runSlug(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyyMMdd-HHmmss"
-        return formatter.string(from: date)
+        formatter.dateFormat = "yyyyMMdd-HHmmss-SSS"
+        let base = formatter.string(from: date)
+        return "\(base)-\(UUID().uuidString.prefix(4).lowercased())"
     }
 
     private func slugify(_ value: String, fallback: String) -> String {
@@ -1460,13 +1505,13 @@ final class OpenClawWorkspaceRuntime: ObservableObject {
         guard !cleaned.isEmpty else { return rootURL }
         let components = cleaned.split(separator: "/").map(String.init)
         guard components.allSatisfy({ !$0.isEmpty && $0 != "." && $0 != ".." }) else {
-            throw NSError(domain: "OpenClawWorkspaceRuntime", code: 400, userInfo: [NSLocalizedDescriptionKey: "Unsafe workspace path: \(path)"])
+            throw NSError(domain: "BeMoreWorkspaceRuntime", code: 400, userInfo: [NSLocalizedDescriptionKey: "Unsafe workspace path: \(path)"])
         }
         let url = components.reduce(rootURL) { $0.appendingPathComponent($1) }
         let standardizedRoot = rootURL.standardizedFileURL.path
         let standardizedPath = url.standardizedFileURL.path
         guard standardizedPath == standardizedRoot || standardizedPath.hasPrefix(standardizedRoot + "/") else {
-            throw NSError(domain: "OpenClawWorkspaceRuntime", code: 401, userInfo: [NSLocalizedDescriptionKey: "Path escapes .openclaw workspace: \(path)"])
+            throw NSError(domain: "BeMoreWorkspaceRuntime", code: 401, userInfo: [NSLocalizedDescriptionKey: "Path escapes .bemore workspace: \(path)"])
         }
         return url
     }
@@ -1539,6 +1584,9 @@ final class OpenClawWorkspaceRuntime: ObservableObject {
         return state
     }
 }
+
+// Temporary compatibility alias while call sites migrate to BeMore naming.
+typealias OpenClawWorkspaceRuntime = BeMoreWorkspaceRuntime
 
 struct BuddyRuntimeStatus {
     var activeModelAdapter: String

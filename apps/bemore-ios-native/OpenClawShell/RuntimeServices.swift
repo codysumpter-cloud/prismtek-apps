@@ -48,6 +48,12 @@ enum Paths {
         return folder
     }
 
+    static var beMoreRuntimeDirectory: URL {
+        let folder = workspaceDirectory.appendingPathComponent(".bemore", isDirectory: true)
+        ensureDirectoryExists(folder)
+        return folder
+    }
+
     static var stateDirectory: URL {
         let folder = applicationSupportDirectory.appendingPathComponent("State", isDirectory: true)
         ensureDirectoryExists(folder)
@@ -1280,7 +1286,7 @@ final class AppState: ObservableObject {
     @Published var providerModels: [ProviderKind: [CloudModel]] = [:]
     @Published var providerModelLoading = Set<ProviderKind>()
     @Published var providerModelErrors: [ProviderKind: String] = [:]
-    @Published var workspaceRuntime = OpenClawWorkspaceRuntime()
+    @Published var workspaceRuntime = BeMoreWorkspaceRuntime()
     @Published var macRuntimeSnapshot: MacRuntimeSnapshot?
     @Published var macRuntimeStatus = "Mac not inspected"
     @Published var chatReturnTab: AppTab?
@@ -1806,7 +1812,7 @@ final class AppState: ObservableObject {
             let requestedBy = buddyStore.activeBuddy?.displayName ?? "Buddy Operator"
             let receipt = workspaceRuntime.draftSkillFromChat(request: teachRequest, requestedBy: requestedBy)
             chatStore.messages.append(ChatMessage(role: .user, content: cleaned))
-            let status = receipt.status == .persisted
+            let status = (receipt.status == .persisted || receipt.status == .completed)
                 ? "Drafted skill \(receipt.output["skillId"] ?? "") from chat. Review it, then approve with `approve skill <id>`."
                 : "Could not draft skill: \(receipt.error ?? receipt.summary)"
             chatStore.messages.append(ChatMessage(role: .assistant, content: status))
@@ -1818,7 +1824,7 @@ final class AppState: ObservableObject {
         if let approvalID = parseSkillApproval(cleaned) {
             let receipt = workspaceRuntime.approveChatSkillDraft(id: approvalID)
             chatStore.messages.append(ChatMessage(role: .user, content: cleaned))
-            let status = receipt.status == .persisted
+            let status = (receipt.status == .persisted || receipt.status == .completed)
                 ? "Approved and installed \(receipt.output["skillId"] ?? approvalID). You can now run it from Skills."
                 : "Could not approve skill: \(receipt.error ?? receipt.summary)"
             chatStore.messages.append(ChatMessage(role: .assistant, content: status))
@@ -1937,8 +1943,8 @@ final class AppState: ObservableObject {
         return receipt
     }
 
-    func installClawHubSkill(_ template: ClawHubSkillTemplate) -> OpenClawReceipt {
-        let receipt = workspaceRuntime.installClawHubSkill(template)
+    func installBuddySkillTemplate(_ template: BuddySkillTemplate) -> OpenClawReceipt {
+        let receipt = workspaceRuntime.installBuddySkillTemplate(template)
         _ = regenerateArtifacts(target: "skills.md")
         chatStore.messages.append(ChatMessage(role: .system, content: ReceiptFormatter.confirmedSummary(for: receipt)))
         chatStore.persist()
@@ -2060,7 +2066,7 @@ final class AppState: ObservableObject {
     private func configureConversationForCurrentStack(forceReplace: Bool = false) {
         if let activeStack {
             let currentFirst = chatStore.messages.first?.content ?? ""
-            let shouldReplace = forceReplace || chatStore.messages.isEmpty || currentFirst.contains("OpenClawShell is ready.") || currentFirst.contains("Conversation cleared.")
+            let shouldReplace = forceReplace || chatStore.messages.isEmpty || currentFirst.contains("BeMoreAgent is ready.") || currentFirst.contains("Conversation cleared.")
             if shouldReplace {
                 chatStore.messages = [ChatMessage(role: .system, content: activeStack.chatSystemPrompt)]
                 chatStore.persist()
@@ -2069,7 +2075,7 @@ final class AppState: ObservableObject {
         }
         
         if forceReplace || chatStore.messages.isEmpty {
-            chatStore.messages = [ChatMessage(role: .system, content: "OpenClawShell is ready. Add a packaged MLC runtime or use the stub path until then.")]
+            chatStore.messages = [ChatMessage(role: .system, content: "BeMoreAgent is ready. Add a packaged runtime route or use a linked cloud provider.")]
             chatStore.persist()
         }
     }
