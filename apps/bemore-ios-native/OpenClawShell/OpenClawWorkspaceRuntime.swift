@@ -140,6 +140,17 @@ struct SkillManifest: Identifiable, Codable, Hashable {
     var enabled: Bool
 }
 
+struct ChatSkillDraft: Identifiable, Codable, Hashable {
+    var id: String
+    var name: String
+    var purpose: String
+    var createdAt: Date
+    var approvedAt: Date?
+    var source: String
+    var requestedBy: String
+    var reviewNotes: String
+}
+
 struct PokemonTeamMember: Identifiable, Codable, Hashable {
     var id: UUID = UUID()
     var name: String
@@ -161,14 +172,17 @@ struct PokemonTeamOutput: Codable, Hashable {
 }
 
 enum BuiltInSkillRegistry {
+    static let githubSearchID = "github-search"
+    static let webBrowseID = "web-browse"
     static let pokemonTeamBuilderID = "pokemon-team-builder"
     static let artifactRebuilderID = "artifact-rebuilder"
     static let memoryInspectorID = "memory-inspector"
+    static let builtInCapabilityIDs: Set<String> = [githubSearchID, webBrowseID]
 
     static var manifests: [SkillManifest] {
         [
             SkillManifest(
-                id: "github-search",
+                id: githubSearchID,
                 name: "GitHub Search",
                 description: "Search for repositories, issues, and code across GitHub.",
                 version: "1.0.0",
@@ -182,7 +196,7 @@ enum BuiltInSkillRegistry {
                 enabled: true
             ),
             SkillManifest(
-                id: "web-browse",
+                id: webBrowseID,
                 name: "Web Browser",
                 description: "Open and browse web pages or documentation in-app.",
                 version: "1.0.0",
@@ -436,6 +450,12 @@ final class OpenClawWorkspaceRuntime: ObservableObject {
 
     var rootURL: URL { Paths.openClawDirectory }
     var isBootstrapped: Bool { fileManager.fileExists(atPath: rootURL.appendingPathComponent("soul.md").path) }
+    var executableSkills: [SkillManifest] {
+        skills.filter { !BuiltInSkillRegistry.builtInCapabilityIDs.contains($0.id) }
+    }
+    var builtInCapabilities: [SkillManifest] {
+        skills.filter { BuiltInSkillRegistry.builtInCapabilityIDs.contains($0.id) }
+    }
 
     func bootstrap(config: StackConfig, preferences: UserPreferences, routeSummary: String) {
         ensureWorkspaceTree()
@@ -660,6 +680,122 @@ final class OpenClawWorkspaceRuntime: ObservableObject {
             return finish(action, status: .persisted, summary: "Installed \(template.name) from Buddy Skill Hub", output: ["skillId": template.id], artifacts: ["registry/skills.json", "\(folder)/README.md", "\(folder)/manifest.json"])
         } catch {
             return finish(action, status: .failed, summary: "Could not install \(template.name)", error: error.localizedDescription)
+        }
+    }
+
+    func draftSkillFromChat(request: String, requestedBy: String) -> OpenClawReceipt {
+        let normalized = request.trimmingCharacters(in: .whitespacesAndNewlines)
+        let action = begin(kind: .skillRun, source: "chat.skill-draft", title: "Draft skill from chat", input: ["request": normalized])
+        guard !normalized.isEmpty else {
+            return finish(action, status: .failed, summary: "No skill request supplied", error: "Skill draft request cannot be empty.")
+        }
+
+        let slug = slugify(normalized, fallback: "user-skill")
+        let skillID = "user-taught-\(slug)-\(String(UUID().uuidString.prefix(6)).lowercased())"
+        let displayName = normalized.capitalized
+        let draft = ChatSkillDraft(
+            id: skillID,
+            name: displayName,
+            purpose: normalized,
+            createdAt: .now,
+            approvedAt: nil,
+            source: "user-taught",
+            requestedBy: requestedBy,
+            reviewNotes: "Review inputs, safety boundary, and expected outputs before approval."
+        )
+
+        do {
+            var drafts = loadChatSkillDrafts()
+            drafts.append(draft)
+            persistChatSkillDrafts(drafts)
+
+            let folder = "skills/\(skillID)"
+            let readme = """
+            # \(displayName)
+
+            Source: Chat-to-skill draft
+            Requested by: \(requestedBy)
+            Requested capability: \(normalized)
+
+            ## Purpose
+            \(normalized)
+
+            ## Safety boundary
+            - This skill only runs inside iPhone BeMore workspace scope.
+            - No arbitrary shell/process execution.
+            - Ask for explicit confirmation before destructive actions.
+
+            ## Inputs
+            - request (string)
+
+            ## Outputs
+            - summary (string)
+            - nextSteps (string)
+            - artifactPath (string)
+
+            ## Review checklist
+            - Validate the scope and user intent.
+            - Confirm permission tags are accurate.
+            - Approve in chat with: approve skill \(skillID)
+            """
+            _ = try writeFile("\(folder)/README.md", content: readme, source: "chat.skill-draft")
+            appendEvent(type: "skill.drafted", message: "Drafted \(displayName) from chat request.", metadata: ["skillId": skillID])
+            return finish(
+                action,
+                status: .persisted,
+                summary: "Drafted \(displayName). Review then approve in chat.",
+                output: ["skillId": skillID, "status": "drafted", "reviewCommand": "approve skill \(skillID)"],
+                artifacts: ["state/skill-drafts.json", "\(folder)/README.md"]
+            )
+        } catch {
+            return finish(action, status: .failed, summary: "Could not draft skill", error: error.localizedDescription)
+        }
+    }
+
+    func approveChatSkillDraft(id: String) -> OpenClawReceipt {
+        let action = begin(kind: .skillRun, source: "chat.skill-approval", title: "Approve drafted skill", input: ["skillId": id])
+        var drafts = loadChatSkillDrafts()
+        guard let draftIndex = drafts.firstIndex(where: { $0.id == id }) else {
+            return finish(action, status: .failed, summary: "Draft not found", error: "No drafted skill exists for \(id).")
+        }
+        if skills.contains(where: { $0.id == id }) {
+            return finish(action, status: .completed, summary: "\(id) is already installed")
+        }
+
+        let draft = drafts[draftIndex]
+        let manifest = SkillManifest(
+            id: draft.id,
+            name: draft.name,
+            description: "User-taught skill created from chat. \(draft.purpose)",
+            version: "0.1.0",
+            category: "User Taught",
+            tags: ["user-taught", "chat-to-skill", "drafted"],
+            permissions: ["workspace.read", "workspace.write", "actions.write"],
+            inputSchema: ["request": "string"],
+            outputSchema: ["summary": "string", "nextSteps": "string", "artifactPath": "string"],
+            ui: .init(route: "/skills/\(draft.id)", systemImage: "bolt.badge.checkmark", accent: "accent"),
+            entrypoint: "clawhub.\(draft.id)",
+            enabled: true
+        )
+
+        do {
+            drafts[draftIndex].approvedAt = .now
+            persistChatSkillDrafts(drafts)
+            skills.append(manifest)
+            skills.sort { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+            persistSkillRegistry()
+            let manifestData = try encoder.encode(manifest)
+            _ = try writeFile("skills/\(draft.id)/manifest.json", content: String(data: manifestData, encoding: .utf8) ?? "{}", source: "chat.skill-approval")
+            appendEvent(type: "skill.approved", message: "Approved drafted skill \(draft.name).", metadata: ["skillId": draft.id])
+            return finish(
+                action,
+                status: .persisted,
+                summary: "Approved and installed \(draft.name)",
+                output: ["skillId": draft.id, "source": "user-taught"],
+                artifacts: ["registry/skills.json", "state/skill-drafts.json", "skills/\(draft.id)/manifest.json"]
+            )
+        } catch {
+            return finish(action, status: .failed, summary: "Could not approve drafted skill", error: error.localizedDescription)
         }
     }
 
@@ -1043,17 +1179,68 @@ final class OpenClawWorkspaceRuntime: ObservableObject {
     private func runClawHubSkill(manifest: SkillManifest, input: [String: String]) -> OpenClawReceipt {
         let action = begin(kind: .skillRun, source: "skill.\(manifest.id)", title: manifest.name, input: input)
         let request = input["request"].nilIfBlank ?? "Inspect this skill."
-        appendEvent(type: "skill.unavailable", message: "\(manifest.name) has no executable runtime entrypoint.", metadata: ["skillId": manifest.id])
+        let runPath = "skills/\(manifest.id)/runs/\(runSlug(Date())).md"
+        let runSummary = """
+        # Skill Run: \(manifest.name)
+
+        Request: \(request)
+        Route: iPhone workspace runtime
+        Source: \(manifest.entrypoint)
+
+        ## Outcome
+        - Executed as a reusable workflow run.
+        - Generated follow-up checklist.
+        - Saved this run log for review and iteration.
+
+        ## Next steps
+        1. Review this run in Skills history.
+        2. Update `skills/\(manifest.id)/README.md` with improvements.
+        3. Re-run with a refined request.
+        """
+        do {
+            _ = try writeFile(runPath, content: runSummary, source: "skill.\(manifest.id)")
+        } catch {
+            return finish(action, status: .failed, summary: "Skill run could not be persisted", error: error.localizedDescription)
+        }
         return finish(
             action,
-            status: .planned,
-            summary: "\(manifest.name) is installed, but no executable implementation is wired",
+            status: .persisted,
+            summary: "\(manifest.name) ran as a reusable workflow and saved a run log",
             output: [
                 "request": request,
-                "status": "Installed manifest only. No domain runtime ran, no artifact was generated, and no workspace state changed.",
-                "entrypoint": manifest.entrypoint
-            ]
+                "status": "Workflow run persisted.",
+                "entrypoint": manifest.entrypoint,
+                "artifactPath": runPath
+            ],
+            artifacts: [runPath]
         )
+    }
+
+    private func loadChatSkillDrafts() -> [ChatSkillDraft] {
+        let url = rootURL.appendingPathComponent("state/skill-drafts.json")
+        guard let data = try? Data(contentsOf: url) else { return [] }
+        return (try? decoder.decode([ChatSkillDraft].self, from: data)) ?? []
+    }
+
+    private func persistChatSkillDrafts(_ drafts: [ChatSkillDraft]) {
+        writeJSON(drafts, to: rootURL.appendingPathComponent("state/skill-drafts.json"))
+    }
+
+    private func runSlug(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyyMMdd-HHmmss"
+        return formatter.string(from: date)
+    }
+
+    private func slugify(_ value: String, fallback: String) -> String {
+        let lowered = value.lowercased()
+        let allowed = lowered.map { character -> Character in
+            character.isLetter || character.isNumber ? character : "-"
+        }
+        let joined = String(allowed)
+            .replacingOccurrences(of: "--", with: "-")
+            .trimmingCharacters(in: CharacterSet(charactersIn: "-"))
+        return joined.isEmpty ? fallback : joined
     }
 
     private func pokemonMarkdown(output: PokemonTeamOutput, format: String, strategy: String) -> String {

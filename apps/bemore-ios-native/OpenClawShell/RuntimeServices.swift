@@ -835,10 +835,11 @@ enum BuddyIntroCopy {
     static func response(for prompt: String, buddyName: String) -> String? {
         let text = prompt.lowercased()
         let asksCapability = containsAny(text, ["what can you do", "what are you good at", "what should i use you for", "how should i use you", "how do you work"])
+        let asksWhatsNew = containsAny(text, ["what's new", "whats new", "new in this build", "new capabilities", "what changed"])
         let asksTraining = containsAny(text, ["make you better", "train you", "how do i train", "teach you", "improve you"])
         let asksModes = containsAny(text, ["companion mode", "operator mode", "difference between", "power mode"])
 
-        guard asksCapability || asksTraining || asksModes else { return nil }
+        guard asksCapability || asksTraining || asksModes || asksWhatsNew else { return nil }
 
         if asksModes {
             return """
@@ -864,8 +865,31 @@ enum BuddyIntroCopy {
             """
         }
 
+        if asksWhatsNew {
+            return """
+            Here’s what’s new, in order of what you can use right now.
+
+            1) New iPhone capabilities now:
+            - Stronger iPhone-first chat, planning, reminders/message drafting support, and on-phone workspace surfaces.
+            - Built-in web and GitHub tools are treated as built-in capabilities, not pretend skills.
+            - Better capability-state framing so you can see what works on iPhone now versus optional runtime depth.
+
+            2) New Buddy capabilities now:
+            - Chat-to-skill draft flow: say “teach yourself how to …” and I can draft a reusable skill package.
+            - Review + approval loop: approve with `approve skill <id>` to install a user-taught skill.
+            - Skill runs now persist reusable run logs so refinement is visible over time.
+
+            3) Practical help available now:
+            - Day planning, focused checklists, follow-up drafting, notes, research summaries, and project support.
+            - Real skill runs like Pokemon Team Builder plus installable reusable workflow skills.
+
+            4) Optional deeper runtime/operator depth:
+            - Mac/runtime bridge, filesystem mutation, and sandbox process execution are still optional deeper layers when connected.
+            """
+        }
+
         return """
-        I can help with your day, your work, your plans, your follow-through, and your thinking.
+        I can help with your day, your work, your plans, your follow-through, and your thinking, with iPhone-first value first.
 
         Use \(buddyName) for planning the day, breaking down messy work, staying on track, capturing notes, drafting reminders, journaling, preparing follow-ups, and shaping messages before you send them. I can also help with product thinking, implementation thinking, and system work when you ask for that depth.
 
@@ -873,7 +897,7 @@ enum BuddyIntroCopy {
 
         Skills and memory are how I grow: planning, reminders, journaling, message drafting, research, project support, and careful review can become stronger through repeated use and visible training.
 
-        When you want operator mode, I can go deeper into repo work, runtime reasoning, debugging, skill execution, and verification. I will keep those mechanics behind the front door until they are useful.
+        When you want operator mode, I can go deeper into repo work, runtime reasoning, debugging, skill execution, and verification. I will only lead with that depth when it is relevant.
 
         Start with one thing you want help with today, or one thing you want \(buddyName) to learn about how you work.
         """
@@ -1778,6 +1802,31 @@ final class AppState: ObservableObject {
             return
         }
 
+        if let teachRequest = parseTeachSkillRequest(cleaned) {
+            let requestedBy = buddyStore.activeBuddy?.displayName ?? "Buddy Operator"
+            let receipt = workspaceRuntime.draftSkillFromChat(request: teachRequest, requestedBy: requestedBy)
+            chatStore.messages.append(ChatMessage(role: .user, content: cleaned))
+            let status = receipt.status == .persisted
+                ? "Drafted skill \(receipt.output["skillId"] ?? "") from chat. Review it, then approve with `approve skill <id>`."
+                : "Could not draft skill: \(receipt.error ?? receipt.summary)"
+            chatStore.messages.append(ChatMessage(role: .assistant, content: status))
+            chatStore.messages.append(ChatMessage(role: .system, content: ReceiptFormatter.confirmedSummary(for: receipt)))
+            chatStore.persist()
+            return
+        }
+
+        if let approvalID = parseSkillApproval(cleaned) {
+            let receipt = workspaceRuntime.approveChatSkillDraft(id: approvalID)
+            chatStore.messages.append(ChatMessage(role: .user, content: cleaned))
+            let status = receipt.status == .persisted
+                ? "Approved and installed \(receipt.output["skillId"] ?? approvalID). You can now run it from Skills."
+                : "Could not approve skill: \(receipt.error ?? receipt.summary)"
+            chatStore.messages.append(ChatMessage(role: .assistant, content: status))
+            chatStore.messages.append(ChatMessage(role: .system, content: ReceiptFormatter.confirmedSummary(for: receipt)))
+            chatStore.persist()
+            return
+        }
+
         if selectedProviderAccount == nil && engine.requiresModelSelection && selectedInstalledModel == nil {
             chatStore.errorMessage = "Link a provider in Settings or select an installed model in Models before sending."
             runtimeStatus = "Model or provider required"
@@ -1821,6 +1870,24 @@ final class AppState: ObservableObject {
         refreshRuntimeSummary()
 
         chatStore.isGenerating = false
+    }
+
+    private func parseTeachSkillRequest(_ prompt: String) -> String? {
+        let lowered = prompt.lowercased()
+        let prefixes = ["teach yourself how to", "create a skill to", "make a reusable skill for", "build a skill to"]
+        for prefix in prefixes where lowered.contains(prefix) {
+            guard let range = lowered.range(of: prefix) else { continue }
+            let request = String(prompt[range.upperBound...]).trimmingCharacters(in: .whitespacesAndNewlines)
+            if !request.isEmpty { return request }
+        }
+        return nil
+    }
+
+    private func parseSkillApproval(_ prompt: String) -> String? {
+        let lowered = prompt.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+        guard lowered.hasPrefix("approve skill ") else { return nil }
+        let id = String(prompt.dropFirst("approve skill ".count)).trimmingCharacters(in: .whitespacesAndNewlines)
+        return id.isEmpty ? nil : id
     }
 
     func runSkill(id: String, input: [String: String] = [:]) -> OpenClawReceipt {

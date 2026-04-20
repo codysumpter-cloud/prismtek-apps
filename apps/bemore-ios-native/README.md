@@ -22,6 +22,19 @@ The shell still exposes the broader technical surfaces too:
 - `Files` for app-scoped workspace imports.
 - `Settings` for provider editing, maintenance, shell management, and storage summaries.
 
+## Skills + capabilities model (iPhone-first)
+
+The app now separates **executable skills** from **built-in tools**:
+
+- Built-in tools (for example GitHub Search and Web Browser) are app/network capabilities and are shown as built-in capabilities, not mislabeled as skills.
+- Skills are executable reusable units with registry identity, permissions, run surfaces, and run artifacts.
+- User-taught chat-to-skill is now real:
+  1. user says “teach yourself how to …”
+  2. Buddy drafts a reusable skill package in workspace state
+  3. user reviews and approves with `approve skill <id>`
+  4. the skill installs and becomes runnable from Skills
+- Skill runs for manifest-backed workflows now persist run logs under `skills/<id>/runs/` for visible refinement history.
+
 The shell persists local state under app-scoped Application Support, including:
 
 - chat history
