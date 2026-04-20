@@ -12,9 +12,10 @@ import {
   BUDDY_VISUAL_STATES,
   type BmoStackAdapterSnapshot,
   type BuddyAppearanceGenerationResult,
+  type BuddyAppearanceStudioDraft,
+  type BuddyGenerationProviderConfig,
   type BuddyAppearancePalette,
   type BuddyAppearanceProfile,
-  type BuddyAppearanceStudioDraft,
   type BuddyAsciiFrames,
   type BuddyPixelAssetSet,
   type BuddyVisualState,
@@ -210,6 +211,50 @@ function buildAsciiStateSet(draft: BuddyAppearanceStudioDraft): BuddyAsciiFrames
   };
 }
 
+async function callPixelLabApi(draft: BuddyAppearanceStudioDraft, palette: BuddyAppearancePalette, config: BuddyGenerationProviderConfig): Promise<BuddyPixelAssetSet> {
+  try {
+    if (config.mode === 'disabled' || !config.enabled) {
+      throw new Error('PixelLab provider is disabled');
+    }
+
+    const apiKey = process.env[config.apiKeyEnvVar || 'PIXELLAB_API_KEY'];
+    if (!apiKey) {
+      throw new Error('PIXELLAB_API_KEY not found in environment');
+    }
+
+    const description = `A pixel-art buddy character. Archetype: ${draft.archetype}, Vibe: ${draft.vibe}, Palette: ${draft.paletteName} (Primary: ${palette.primary}, Secondary: ${palette.secondary}, Accent: ${palette.accent}), Silhouette: ${draft.silhouette}, Face: ${draft.face}, Expression: ${draft.expression}, Accessories: ${draft.accessories.join(', ')}.`;
+
+    const response = await fetch(`${config.apiBaseUrl}/generate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        description,
+        width: 12,
+        height: 12,
+        model: 'bitforge',
+        palette: palette,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`PixelLab API responded with ${response.status}: ${await response.text()}`);
+    }
+
+    const data = await response.json();
+    
+    return {
+      ...data,
+      provider: config.mode === 'api' ? 'pixellab-api' : 'pixellab-mcp',
+    };
+  } catch (error) {
+    console.error('PixelLab API call failed, falling back to local preview:', error);
+    return buildLocalPixelAssetSet(draft, palette);
+  }
+}
+
 function buildLocalPixelAssetSet(draft: BuddyAppearanceStudioDraft, palette: BuddyAppearancePalette): BuddyPixelAssetSet {
   const width = 12;
   const height = 12;
@@ -274,14 +319,14 @@ function buildAnimationMapping(ascii: BuddyAsciiFrames, pixel?: BuddyPixelAssetS
   };
 }
 
-function materializeAppearanceProfile(draft: BuddyAppearanceStudioDraft, profileId?: string): BuddyAppearanceGenerationResult {
+async function materializeAppearanceProfile(draft: BuddyAppearanceStudioDraft, profileId?: string): Promise<BuddyAppearanceGenerationResult> {
   const timestamp = nowIso();
   const palette = buildPalette(draft.paletteName);
   const ascii = buildAsciiStateSet(draft);
   const asciiValidation = validateBuddyAsciiFrames(ascii);
   const providerConfig = resolvePixelLabProviderConfig();
   const wantsPixel = draft.outputMode === 'pixel' || draft.outputMode === 'both';
-  const pixel = wantsPixel ? buildLocalPixelAssetSet(draft, palette) : undefined;
+  const pixel = wantsPixel ? await callPixelLabApi(draft, palette, providerConfig) : undefined;
 
   const profile: BuddyAppearanceProfile = {
     id: profileId || crypto.randomUUID(),
@@ -307,7 +352,7 @@ function materializeAppearanceProfile(draft: BuddyAppearanceStudioDraft, profile
     },
     providerConfig,
     source: {
-      generator: wantsPixel ? 'local-preview' : 'local-ascii',
+      generator: pixel?.provider === 'local-preview' ? 'local-preview' : (wantsPixel ? (pixel?.provider || 'pixellab-api') : 'local-ascii'),
       sourceOfTruth: 'prismtek-apps',
       reusedFrom: [
         'packages/core/buddyPersonalizationEngine.ts',
@@ -771,7 +816,7 @@ app.post('/api/buddies/:buddyId/appearance-profiles/generate', authenticateToken
       notes: rawDraft.notes ? String(rawDraft.notes) : undefined,
     };
 
-    const generated = materializeAppearanceProfile(draft);
+    const generated = await materializeAppearanceProfile(draft);
     const makeDefault = req.body?.makeDefault !== false;
 
     if (makeDefault) {

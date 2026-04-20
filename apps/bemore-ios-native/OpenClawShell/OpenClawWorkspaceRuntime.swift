@@ -25,6 +25,7 @@ enum OpenClawActionStatus: String, Codable, CaseIterable, Hashable {
 
 enum OpenClawActionKind: String, Codable, CaseIterable, Hashable {
     case skillRun = "skill.run"
+    case skillRegister = "skill.register"
     case artifactRegenerate = "artifact.regenerate"
     case memoryRefresh = "memory.refresh"
     case sandboxRun = "sandbox.run"
@@ -168,34 +169,6 @@ enum BuiltInSkillRegistry {
     static var manifests: [SkillManifest] {
         [
             SkillManifest(
-                id: "github-search",
-                name: "GitHub Search",
-                description: "Search for repositories, issues, and code across GitHub.",
-                version: "1.0.0",
-                category: "Research",
-                tags: ["github", "search", "code"],
-                permissions: ["workspace.read", "actions.write"],
-                inputSchema: ["query": "string"],
-                outputSchema: ["results": "array", "summary": "string"],
-                ui: .init(route: "/skills/github-search", systemImage: "magnifyingglass", accent: "accent"),
-                entrypoint: "builtin.githubSearch",
-                enabled: true
-            ),
-            SkillManifest(
-                id: "web-browse",
-                name: "Web Browser",
-                description: "Open and browse web pages or documentation in-app.",
-                version: "1.0.0",
-                category: "Research",
-                tags: ["web", "browser", "docs"],
-                permissions: ["actions.write"],
-                inputSchema: ["url": "string"],
-                outputSchema: ["status": "string"],
-                ui: .init(route: "/skills/web-browse", systemImage: "globe", accent: "accent"),
-                entrypoint: "builtin.webBrowse",
-                enabled: true
-            ),
-            SkillManifest(
                 id: pokemonTeamBuilderID,
                 name: "Pokemon Team Builder",
                 description: "Draft, analyze, save, and export structured Pokemon teams as BeMore workspace artifacts.",
@@ -222,34 +195,6 @@ enum BuiltInSkillRegistry {
                 entrypoint: "builtin.pokemonTeamBuilder",
                 enabled: true
             ),
-            SkillManifest(
-                id: artifactRebuilderID,
-                name: "Artifact Rebuilder",
-                description: "Regenerate canonical soul, user, memory, session, and skills artifacts from current BeMore workspace state.",
-                version: "1.0.0",
-                category: "System",
-                tags: ["artifacts", "memory", "workspace"],
-                permissions: ["workspace.write", "state.read", "actions.write"],
-                inputSchema: ["target": "all or artifact path"],
-                outputSchema: ["paths": "array"],
-                ui: .init(route: "/skills/artifact-rebuilder", systemImage: "arrow.triangle.2.circlepath", accent: "accent"),
-                entrypoint: "builtin.artifactRebuilder",
-                enabled: true
-            ),
-            SkillManifest(
-                id: memoryInspectorID,
-                name: "Memory Inspector",
-                description: "Read current facts, preferences, session state, and recent memory-derived changes.",
-                version: "1.0.0",
-                category: "System",
-                tags: ["memory", "facts", "session"],
-                permissions: ["state.read", "workspace.read"],
-                inputSchema: [:],
-                outputSchema: ["summary": "string"],
-                ui: .init(route: "/skills/memory-inspector", systemImage: "brain.head.profile", accent: "accent"),
-                entrypoint: "builtin.memoryInspector",
-                enabled: true
-            )
         ]
     }
 }
@@ -713,6 +658,36 @@ final class OpenClawWorkspaceRuntime: ObservableObject {
                 output: ["exitCode": "127"],
                 error: "Unsupported command '\(op)'. iPhone uses a controlled BeMore command surface; pair with Mac for full process execution."
             )
+        }
+    }
+
+    func registerSkill(manifest: SkillManifest, instructions: String? = nil, source: String = "runtime") -> OpenClawReceipt {
+        let action = begin(kind: .skillRegister, source: source, title: "Register skill: \(manifest.name)", input: ["skillId": manifest.id])
+        do {
+            var currentSkills = loadSkillRegistry()
+            if let index = currentSkills.firstIndex(where: { $0.id == manifest.id }) {
+                currentSkills[index] = manifest
+            } else {
+                currentSkills.append(manifest)
+            }
+            
+            self.skills = currentSkills.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+            persistSkillRegistry()
+
+            let folder = "skills/\(manifest.id)"
+            let manifestData = try encoder.encode(manifest)
+            _ = try writeFile("\(folder)/manifest.json", content: String(data: manifestData, encoding: .utf8) ?? "{}", source: source)
+            
+            if let instructions = instructions {
+                _ = try writeFile("\(folder)/README.md", content: instructions, source: source)
+            }
+
+            refreshMetadata()
+            appendEvent(type: "skill.registered", message: "Registered skill \(manifest.name) (\(manifest.id)).", metadata: ["skillId": manifest.id])
+            
+            return finish(action, status: .persisted, summary: "Registered skill \(manifest.name)", output: ["skillId": manifest.id], artifacts: ["registry/skills.json", "\(folder)/manifest.json"])
+        } catch {
+            return finish(action, status: .failed, summary: "Could not register skill \(manifest.name)", error: error.localizedDescription)
         }
     }
 
