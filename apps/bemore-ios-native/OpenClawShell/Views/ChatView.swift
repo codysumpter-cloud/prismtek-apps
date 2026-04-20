@@ -159,16 +159,14 @@ struct ChatView: View {
 
     private var inputBar: some View {
         VStack(spacing: 8) {
-            if appState.selectedProviderAccount != nil || appState.selectedInstalledModel != nil || appState.usesStubRuntime {
-                HStack(spacing: 6) {
-                    Image(systemName: appState.selectedProviderAccount != nil ? "link.circle.fill" : appState.usesStubRuntime ? "exclamationmark.triangle.fill" : "cpu")
-                        .font(.caption)
-                    Text(statusLine)
-                        .font(.caption)
-                }
-                .foregroundColor(appState.selectedProviderAccount != nil || appState.selectedInstalledModel != nil ? BMOTheme.textSecondary : BMOTheme.warning)
-                .padding(.horizontal, BMOTheme.spacingMD)
+            HStack(spacing: 6) {
+                Image(systemName: statusIcon)
+                    .font(.caption)
+                Text(statusLine)
+                    .font(.caption)
             }
+            .foregroundColor(statusColor)
+            .padding(.horizontal, BMOTheme.spacingMD)
 
             HStack(alignment: .bottom, spacing: 10) {
                 TextField("Message \(store.activeBuddy?.displayName ?? "your Buddy")...", text: $prompt, axis: .vertical)
@@ -186,7 +184,7 @@ struct ChatView: View {
                     let value = prompt
                     prompt = ""
                     isInputFocused = false
-                    Task { await appState.send(prompt: value) }
+                    Task { await appState.sendValueFirst(prompt: value) }
                 } label: {
                     Image(systemName: "arrow.up.circle.fill")
                         .font(.system(size: 34))
@@ -205,6 +203,7 @@ struct ChatView: View {
         return !appState.chatStore.isGenerating &&
         !trimmedPrompt.isEmpty &&
         (
+            BeMoreChatCommandParser.isLocalCommand(trimmedPrompt) ||
             BuddyIntroCopy.response(for: trimmedPrompt, buddyName: store.activeBuddy?.displayName ?? "Buddy") != nil ||
             appState.selectedProviderAccount != nil ||
             (appState.selectedInstalledModel != nil && !appState.usesStubRuntime)
@@ -223,9 +222,26 @@ struct ChatView: View {
             return "\(store.activeBuddy?.displayName ?? "Buddy") via \(account.provider.displayName) • \(account.modelSlug)"
         }
         if let model = appState.selectedInstalledModel {
-            return appState.usesStubRuntime ? "Local model selected, runtime not included in this build" : "\(store.activeBuddy?.displayName ?? "Buddy") on-device • \(model.displayName)"
+            return appState.usesStubRuntime ? "Local model selected, but this build is still using local Buddy workflows." : "\(store.activeBuddy?.displayName ?? "Buddy") on-device • \(model.displayName)"
         }
-        return "Ask what Buddy can do, or link a cloud provider for open-ended live chat."
+        return "Buddy local workflow is ready: teach, review, refine, validate, or approve skills here on iPhone."
+    }
+
+    private var statusIcon: String {
+        if appState.selectedProviderAccount != nil {
+            return "link.circle.fill"
+        }
+        if appState.selectedInstalledModel != nil && !appState.usesStubRuntime {
+            return "cpu"
+        }
+        return "sparkles"
+    }
+
+    private var statusColor: Color {
+        if appState.selectedProviderAccount != nil || (appState.selectedInstalledModel != nil && !appState.usesStubRuntime) {
+            return BMOTheme.textSecondary
+        }
+        return BMOTheme.success
     }
 
     private var buddyChatSubtitle: String {
