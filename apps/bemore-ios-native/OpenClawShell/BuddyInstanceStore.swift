@@ -164,9 +164,11 @@ struct BuddyInstanceStore {
             visual: BuddyVisualState(
                 asciiVariantId: nil,
                 pixelVariantId: nil,
+                activeAppearanceProfileId: nil,
                 currentAnimationState: "neutral",
                 evolutionCosmetics: []
             ),
+            appearanceProfiles: [],
             trainingHistory: [],
             learnedPreferences: [],
             learnedSkills: BuddyEventEngine.defaultStarterSkills(now: installedAt),
@@ -223,11 +225,11 @@ final class BuddyProfileStore: ObservableObject {
             let contracts = try BuddyContractLoader.loadCanonicalResources()
             self.contracts = contracts
             if let existing = store.loadLibraryState() {
-                libraryState = existing
+                libraryState = normalizedLibraryState(existing, contracts: contracts)
             } else if let migrated = store.migrateLegacyState(contracts: contracts) {
-                libraryState = migrated
+                libraryState = normalizedLibraryState(migrated, contracts: contracts)
                 // Persist immediately so migration doesn't re-run on every launch.
-                try store.persistLibraryState(migrated)
+                try store.persistLibraryState(libraryState)
             } else {
                 libraryState = BuddyLibraryState()
             }
@@ -240,6 +242,43 @@ final class BuddyProfileStore: ObservableObject {
         } catch {
             loadError = error.localizedDescription
         }
+    }
+
+    private func normalizedLibraryState(_ state: BuddyLibraryState, contracts: BuddyCanonicalResources) -> BuddyLibraryState {
+        var normalized = state
+        normalized.instances = state.instances.map { buddy in
+            var updated = buddy
+            if updated.appearanceProfiles?.isEmpty != false {
+                let defaultProfile = BuddyAppearanceProfile(
+                    id: "appearance_\(updated.instanceId)_starter",
+                    name: "Starter Look",
+                    archetype: updated.identity.archetype,
+                    palette: updated.identity.palette,
+                    asciiVariantId: updated.visual?.asciiVariantId ?? contracts.creationOptions.defaults.asciiVariant,
+                    expressionTone: "friendly",
+                    accentLabel: updated.visual?.evolutionCosmetics.first ?? "starter glow",
+                    source: "hermes_ascii",
+                    createdAt: updated.provenance.installedAt,
+                    updatedAt: updated.memory.lastStateSyncAt ?? updated.provenance.installedAt
+                )
+                updated.appearanceProfiles = [defaultProfile]
+                if updated.visual == nil {
+                    updated.visual = BuddyVisualState(
+                        asciiVariantId: defaultProfile.asciiVariantId,
+                        pixelVariantId: nil,
+                        activeAppearanceProfileId: defaultProfile.id,
+                        currentAnimationState: updated.state.mood,
+                        evolutionCosmetics: []
+                    )
+                } else {
+                    updated.visual?.activeAppearanceProfileId = defaultProfile.id
+                }
+            } else if updated.visual?.activeAppearanceProfileId == nil {
+                updated.visual?.activeAppearanceProfileId = updated.appearanceProfiles?.first?.id
+            }
+            return updated
+        }
+        return normalized
     }
 
     func install(template: CouncilStarterBuddyTemplate, using appState: AppState) {
@@ -269,6 +308,45 @@ final class BuddyProfileStore: ObservableObject {
                 currentFocus: currentFocus,
                 palette: palette,
                 asciiVariantID: asciiVariantID,
+                currentState: libraryState,
+                currentEvents: eventLog
+            )
+        }
+    }
+
+    func saveAppearanceProfile(
+        profileName: String,
+        archetype: String,
+        palette: String,
+        asciiVariantID: String,
+        expressionTone: String,
+        accentLabel: String,
+        setActive: Bool,
+        using appState: AppState
+    ) {
+        guard let activeBuddy else { return }
+        mutate(using: appState) { contracts in
+            try BuddyEventEngine(contracts: contracts).saveAppearanceProfile(
+                instanceID: activeBuddy.instanceId,
+                profileName: profileName,
+                archetype: archetype,
+                palette: palette,
+                asciiVariantID: asciiVariantID,
+                expressionTone: expressionTone,
+                accentLabel: accentLabel,
+                setActive: setActive,
+                currentState: libraryState,
+                currentEvents: eventLog
+            )
+        }
+    }
+
+    func activateAppearanceProfile(_ profileID: String, using appState: AppState) {
+        guard let activeBuddy else { return }
+        mutate(using: appState) { contracts in
+            try BuddyEventEngine(contracts: contracts).activateAppearanceProfile(
+                instanceID: activeBuddy.instanceId,
+                profileID: profileID,
                 currentState: libraryState,
                 currentEvents: eventLog
             )
@@ -647,6 +725,7 @@ final class BuddyProfileStore: ObservableObject {
                 equippedMoves: buddy.equippedMoves.sorted { $0.slot < $1.slot },
                 proficiencies: buddy.proficiencies,
                 visual: buddy.visual,
+                appearanceProfiles: buddy.appearanceProfiles,
                 publicBadges: buddy.progression.badges,
                 publicNotes: [
                     "Sanitized Buddy trade package exported from iPhone.",
@@ -706,9 +785,11 @@ final class BuddyProfileStore: ObservableObject {
             visual: snapshot.visual ?? BuddyVisualState(
                 asciiVariantId: nil,
                 pixelVariantId: nil,
+                activeAppearanceProfileId: nil,
                 currentAnimationState: "happy",
                 evolutionCosmetics: []
             ),
+            appearanceProfiles: snapshot.appearanceProfiles ?? [],
             trainingHistory: [],
             learnedPreferences: [],
             learnedSkills: BuddyEventEngine.defaultStarterSkills(now: now),
