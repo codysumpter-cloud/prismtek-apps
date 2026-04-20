@@ -169,6 +169,34 @@ enum BuiltInSkillRegistry {
     static var manifests: [SkillManifest] {
         [
             SkillManifest(
+                id: "github-search",
+                name: "GitHub Search",
+                description: "Search for repositories, issues, and code across GitHub.",
+                version: "1.0.0",
+                category: "Research",
+                tags: ["github", "search", "code"],
+                permissions: ["workspace.read", "actions.write"],
+                inputSchema: ["query": "string"],
+                outputSchema: ["results": "array", "summary": "string"],
+                ui: .init(route: "/skills/github-search", systemImage: "magnifyingglass", accent: "accent"),
+                entrypoint: "builtin.githubSearch",
+                enabled: true
+            ),
+            SkillManifest(
+                id: "web-browse",
+                name: "Web Browser",
+                description: "Open and browse web pages or documentation in-app.",
+                version: "1.0.0",
+                category: "Research",
+                tags: ["web", "browser", "docs"],
+                permissions: ["actions.write"],
+                inputSchema: ["url": "string"],
+                outputSchema: ["status": "string"],
+                ui: .init(route: "/skills/web-browse", systemImage: "globe", accent: "accent"),
+                entrypoint: "builtin.webBrowse",
+                enabled: true
+            ),
+            SkillManifest(
                 id: pokemonTeamBuilderID,
                 name: "Pokemon Team Builder",
                 description: "Draft, analyze, save, and export structured Pokemon teams as BeMore workspace artifacts.",
@@ -195,6 +223,34 @@ enum BuiltInSkillRegistry {
                 entrypoint: "builtin.pokemonTeamBuilder",
                 enabled: true
             ),
+            SkillManifest(
+                id: artifactRebuilderID,
+                name: "Artifact Rebuilder",
+                description: "Regenerate canonical soul, user, memory, session, and skills artifacts from current BeMore workspace state.",
+                version: "1.0.0",
+                category: "System",
+                tags: ["artifacts", "memory", "workspace"],
+                permissions: ["workspace.write", "state.read", "actions.write"],
+                inputSchema: ["target": "all or artifact path"],
+                outputSchema: ["paths": "array"],
+                ui: .init(route: "/skills/artifact-rebuilder", systemImage: "arrow.triangle.2.circlepath", accent: "accent"),
+                entrypoint: "builtin.artifactRebuilder",
+                enabled: true
+            ),
+            SkillManifest(
+                id: memoryInspectorID,
+                name: "Memory Inspector",
+                description: "Read current facts, preferences, session state, and recent memory-derived changes.",
+                version: "1.0.0",
+                category: "System",
+                tags: ["memory", "facts", "session"],
+                permissions: ["state.read", "workspace.read"],
+                inputSchema: [:],
+                outputSchema: ["summary": "string"],
+                ui: .init(route: "/skills/memory-inspector", systemImage: "brain.head.profile", accent: "accent"),
+                entrypoint: "builtin.memoryInspector",
+                enabled: true
+            )
         ]
     }
 }
