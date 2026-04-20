@@ -25,6 +25,7 @@ enum OpenClawActionStatus: String, Codable, CaseIterable, Hashable {
 
 enum OpenClawActionKind: String, Codable, CaseIterable, Hashable {
     case skillRun = "skill.run"
+    case skillRegister = "skill.register"
     case artifactRegenerate = "artifact.regenerate"
     case memoryRefresh = "memory.refresh"
     case sandboxRun = "sandbox.run"
@@ -893,6 +894,36 @@ final class BeMoreWorkspaceRuntime: ObservableObject {
                 output: ["exitCode": "127"],
                 error: "Unsupported command '\(op)'. iPhone uses a controlled BeMore command surface; pair with Mac for full process execution."
             )
+        }
+    }
+
+    func registerSkill(manifest: SkillManifest, instructions: String? = nil, source: String = "runtime") -> OpenClawReceipt {
+        let action = begin(kind: .skillRegister, source: source, title: "Register skill: \(manifest.name)", input: ["skillId": manifest.id])
+        do {
+            var currentSkills = loadSkillRegistry()
+            if let index = currentSkills.firstIndex(where: { $0.id == manifest.id }) {
+                currentSkills[index] = manifest
+            } else {
+                currentSkills.append(manifest)
+            }
+            
+            self.skills = currentSkills.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+            persistSkillRegistry()
+
+            let folder = "skills/\(manifest.id)"
+            let manifestData = try encoder.encode(manifest)
+            _ = try writeFile("\(folder)/manifest.json", content: String(data: manifestData, encoding: .utf8) ?? "{}", source: source)
+            
+            if let instructions = instructions {
+                _ = try writeFile("\(folder)/README.md", content: instructions, source: source)
+            }
+
+            refreshMetadata()
+            appendEvent(type: "skill.registered", message: "Registered skill \(manifest.name) (\(manifest.id)).", metadata: ["skillId": manifest.id])
+            
+            return finish(action, status: .persisted, summary: "Registered skill \(manifest.name)", output: ["skillId": manifest.id], artifacts: ["registry/skills.json", "\(folder)/manifest.json"])
+        } catch {
+            return finish(action, status: .failed, summary: "Could not register skill \(manifest.name)", error: error.localizedDescription)
         }
     }
 
