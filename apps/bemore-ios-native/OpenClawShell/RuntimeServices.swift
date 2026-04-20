@@ -824,7 +824,7 @@ enum CloudPromptBuilder {
         - Companion mode helps decide what matters, plan, reflect, teach, remember preferences, and stay aligned.
         - Operator mode handles technical execution, repo/runtime reasoning, debugging, structured work, and confirmed skill or workspace actions.
 
-        Be honest about capabilities. This direct cloud chat route can reason and use attached file context. Real filesystem, durable memory, skill, and sandbox changes require confirmed BeMore Workspace Runtime action. If a capability is unavailable in this iOS runtime, say unavailable or failed instead of claiming completion.
+        Be honest about capabilities. This direct cloud chat route can reason, use attached file context, and browse the web or GitHub directly within the app. Real filesystem changes on the Mac, durable workspace memory, and arbitrary sandbox commands still require confirmed BeMore Workspace Runtime action. If a capability is genuinely unavailable, say unavailable or failed instead of claiming completion.
 
         Reply with the answer only. Do not reveal hidden reasoning, chain-of-thought, scratchpad notes, analysis sections, or internal deliberation unless the operator explicitly asks for an explanation. If asked to explain, give a concise rationale, not private step-by-step thoughts.
         """
@@ -1913,7 +1913,7 @@ final class AppState: ObservableObject {
                     config: stackConfig,
                     operatorName: operatorDisplayName,
                     routeLabel: routeLabel
-                ) + "\n\n\(activeBuddyChatContext)\n\nOperator depth, when requested: BeMore can coordinate workspace actions, memory updates, skill runs, sandbox commands, and repo/runtime work only when confirmed by the Workspace Runtime. Registered skills: \(workspaceRuntime.skills.map(\.name).joined(separator: ", ")). Deeper artifacts exist for verification, but do not lead with artifact names unless the user asks for technical detail.\n\nMac power: \(macPowerModeSummary)"
+                ) + "\n\n\(activeBuddyChatContext)\n\nOperator depth, when requested: BeMore can coordinate workspace actions, memory updates, skill runs, and sandbox commands only when confirmed by the Workspace Runtime. However, web browsing, GitHub search, and native app actions (Reminders, etc.) are available directly in this session. Registered skills: \(workspaceRuntime.skills.map(\.name).joined(separator: ", ")). Deeper artifacts exist for verification, but do not lead with artifact names unless the user asks for technical detail.\n\nMac power: \(macPowerModeSummary)"
             )
         ]
 

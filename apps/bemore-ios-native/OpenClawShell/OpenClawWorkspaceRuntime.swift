@@ -31,6 +31,8 @@ enum OpenClawActionKind: String, Codable, CaseIterable, Hashable {
     case buddyMutation = "buddy.mutation"
     case workspaceWrite = "workspace.write"
     case workspaceRead = "workspace.read"
+    case githubSearch = "github.search"
+    case webBrowse = "web.browse"
 }
 
 struct ClawHubSkillTemplate: Identifiable, Hashable {
@@ -165,6 +167,34 @@ enum BuiltInSkillRegistry {
 
     static var manifests: [SkillManifest] {
         [
+            SkillManifest(
+                id: "github-search",
+                name: "GitHub Search",
+                description: "Search for repositories, issues, and code across GitHub.",
+                version: "1.0.0",
+                category: "Research",
+                tags: ["github", "search", "code"],
+                permissions: ["workspace.read", "actions.write"],
+                inputSchema: ["query": "string"],
+                outputSchema: ["results": "array", "summary": "string"],
+                ui: .init(route: "/skills/github-search", systemImage: "magnifyingglass", accent: "accent"),
+                entrypoint: "builtin.githubSearch",
+                enabled: true
+            ),
+            SkillManifest(
+                id: "web-browse",
+                name: "Web Browser",
+                description: "Open and browse web pages or documentation in-app.",
+                version: "1.0.0",
+                category: "Research",
+                tags: ["web", "browser", "docs"],
+                permissions: ["actions.write"],
+                inputSchema: ["url": "string"],
+                outputSchema: ["status": "string"],
+                ui: .init(route: "/skills/web-browse", systemImage: "globe", accent: "accent"),
+                entrypoint: "builtin.webBrowse",
+                enabled: true
+            ),
             SkillManifest(
                 id: pokemonTeamBuilderID,
                 name: "Pokemon Team Builder",
@@ -558,6 +588,29 @@ final class OpenClawWorkspaceRuntime: ObservableObject {
 
         appendEvent(type: "skill.invoked", message: "Invoked \(manifest.name).", metadata: ["skillId": id])
         switch id {
+        case "builtin.githubSearch":
+            let query = input["query"] ?? ""
+            let action = begin(kind: .skillRun, source: "skills", title: "GitHub Search", input: ["query": query])
+            Task {
+                do {
+                    let results = try await GitHubService.shared.searchRepositories(query: query)
+                    let summary = "Found \(results.count) repositories matching '\(query)'. Top result: \(results.first?.fullName ?? "none")."
+                    let output = ["results": results.map { "\($0.fullName): \($0.description ?? "")" }.joined(separator: "\n"), "summary": summary]
+                    _ = finish(action, status: .completed, summary: summary, output: output)
+                } catch {
+                    _ = finish(action, status: .failed, summary: "GitHub search failed", error: error.localizedDescription)
+                }
+            }
+            return OpenClawReceipt(actionId: action.id, status: .running, title: "Searching GitHub...", summary: "Searching for \(query)...", output: [:], artifacts: [], logs: [], error: nil)
+        case "builtin.webBrowse":
+            let urlString = input["url"] ?? ""
+            let action = begin(kind: .skillRun, source: "skills", title: "Web Browser", input: ["url": urlString])
+            if let url = WebBrowserService.shared.validateURL(urlString) {
+                Task { await WebBrowserService.shared.openURL(url) }
+                return finish(action, status: .completed, summary: "Opened \(urlString) in browser", output: ["status": "opened"])
+            } else {
+                return finish(action, status: .failed, summary: "Invalid URL", error: "The provided URL is not valid.")
+            }
         case BuiltInSkillRegistry.pokemonTeamBuilderID:
             return runPokemonTeamBuilder(input: input, manifest: manifest)
         case BuiltInSkillRegistry.artifactRebuilderID:
