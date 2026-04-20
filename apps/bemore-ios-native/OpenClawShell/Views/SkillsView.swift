@@ -14,9 +14,13 @@ struct SkillsView: View {
                         ActionReceiptCard(receipt: lastReceipt)
                     }
 
-                    clawHubCard
+                    skillLibraryCard
 
-                    ForEach(appState.workspaceRuntime.skills) { skill in
+                    if !appState.workspaceRuntime.builtInCapabilities.isEmpty {
+                        builtInCapabilitiesCard
+                    }
+
+                    ForEach(appState.workspaceRuntime.executableSkills) { skill in
                         skillCard(skill)
                     }
                 }
@@ -45,11 +49,44 @@ struct SkillsView: View {
                     .font(.system(size: 28, weight: .bold))
                     .foregroundColor(BMOTheme.textPrimary)
                 Spacer()
-                StatusBadge(label: "\(appState.workspaceRuntime.skills.count) registered", color: BMOTheme.accent)
+                StatusBadge(label: "\(appState.workspaceRuntime.executableSkills.count) executable", color: BMOTheme.accent)
             }
-            Text("Skills are practical abilities Buddy can learn, equip, and use for planning, review, building, and deeper operator work when you ask for it.")
+            Text("Skills are executable reusable abilities Buddy can learn, equip, and run. Built-in app/network tools are shown separately so Skills stays honest.")
                 .font(.subheadline)
                 .foregroundColor(BMOTheme.textSecondary)
+        }
+        .bmoCard()
+    }
+
+    private var builtInCapabilitiesCard: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text("Built-in Tools (Not Skills)")
+                    .font(.headline)
+                    .foregroundColor(BMOTheme.textPrimary)
+                Spacer()
+                StatusBadge(label: "\(appState.workspaceRuntime.builtInCapabilities.count)", color: BMOTheme.success)
+            }
+
+            Text("These are native app/network capabilities available in this session. They are intentionally separated from executable skills.")
+                .font(.caption)
+                .foregroundColor(BMOTheme.textSecondary)
+
+            ForEach(appState.workspaceRuntime.builtInCapabilities) { capability in
+                HStack(alignment: .top, spacing: 8) {
+                    Image(systemName: capability.ui.systemImage)
+                        .foregroundColor(BMOTheme.accent)
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(capability.name)
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(BMOTheme.textPrimary)
+                        Text(capability.description)
+                            .font(.caption)
+                            .foregroundColor(BMOTheme.textSecondary)
+                    }
+                }
+            }
         }
         .bmoCard()
     }
@@ -121,11 +158,11 @@ struct SkillsView: View {
         .bmoCard()
     }
 
-    private var clawHubCard: some View {
+    private var skillLibraryCard: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Buddy Skill Hub")
+                    Text("Buddy Skill Library")
                         .font(.headline)
                         .foregroundColor(BMOTheme.textPrimary)
                     Text("Install starter skills into the BeMore workspace registry with real README, manifest, artifact, and receipt output.")
@@ -136,7 +173,7 @@ struct SkillsView: View {
                 StatusBadge(label: "Local", color: BMOTheme.success)
             }
 
-            ForEach(ClawHubCatalog.templates) { template in
+            ForEach(BuddySkillCatalog.templates) { template in
                 let installed = appState.workspaceRuntime.skills.contains(where: { $0.id == template.id })
                 HStack(alignment: .top, spacing: 10) {
                     Image(systemName: template.systemImage)
@@ -153,7 +190,7 @@ struct SkillsView: View {
                     }
                     Spacer()
                     Button(installed ? "Installed" : "Install") {
-                        lastReceipt = appState.installClawHubSkill(template)
+                        lastReceipt = appState.installBuddySkillTemplate(template)
                     }
                     .disabled(installed)
                     .buttonStyle(.bordered)

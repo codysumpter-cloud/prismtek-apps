@@ -11,7 +11,7 @@ struct BuddyShortcutService {
     ) async throws -> String {
         let contracts = try BuddyContractLoader.loadCanonicalResources()
         let store = BuddyInstanceStore()
-        let runtime = OpenClawWorkspaceRuntime()
+        let runtime = BeMoreWorkspaceRuntime()
         runtime.bootstrap(config: .default, preferences: .default, routeSummary: "Shortcut")
 
         var libraryState = store.loadLibraryState() ?? BuddyLibraryState()

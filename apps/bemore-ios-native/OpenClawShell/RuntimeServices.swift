@@ -48,6 +48,12 @@ enum Paths {
         return folder
     }
 
+    static var beMoreRuntimeDirectory: URL {
+        let folder = workspaceDirectory.appendingPathComponent(".bemore", isDirectory: true)
+        ensureDirectoryExists(folder)
+        return folder
+    }
+
     static var stateDirectory: URL {
         let folder = applicationSupportDirectory.appendingPathComponent("State", isDirectory: true)
         ensureDirectoryExists(folder)
@@ -832,13 +838,19 @@ enum CloudPromptBuilder {
 }
 
 enum BuddyIntroCopy {
-    static func response(for prompt: String, buddyName: String) -> String? {
+    struct SessionSnapshot {
+        var runtimeConnected: Bool
+        var macPairingActive: Bool
+    }
+
+    static func response(for prompt: String, buddyName: String, session: SessionSnapshot) -> String? {
         let text = prompt.lowercased()
-        let asksCapability = containsAny(text, ["what can you do", "what are you good at", "what should i use you for", "how should i use you", "how do you work"])
+        let asksCapability = containsAny(text, ["what can you do", "what are you good at", "what should i use you for", "how should i use you", "how do you work", "more capabilities", "do you have more capabilities"])
+        let asksWhatsNew = containsAny(text, ["what's new", "whats new", "new in this build", "new capabilities", "what changed", "new build just hit"])
         let asksTraining = containsAny(text, ["make you better", "train you", "how do i train", "teach you", "improve you"])
         let asksModes = containsAny(text, ["companion mode", "operator mode", "difference between", "power mode"])
 
-        guard asksCapability || asksTraining || asksModes else { return nil }
+        guard asksCapability || asksTraining || asksModes || asksWhatsNew else { return nil }
 
         if asksModes {
             return """
@@ -864,8 +876,34 @@ enum BuddyIntroCopy {
             """
         }
 
+        if asksWhatsNew {
+            let optionalDepth = session.runtimeConnected || session.macPairingActive
+                ? "- Runtime/operator layers are available in this session when you explicitly ask for technical depth."
+                : "- Runtime/operator layers are available if you connect provider/runtime surfaces later; they are optional, not the front door."
+            return """
+            Here’s what’s new, in order of what you can use right now.
+
+            1) New iPhone capabilities now:
+            - Stronger iPhone-first chat, planning, reminders/message drafting support, and on-phone workspace surfaces.
+            - Built-in web and GitHub tools are treated as built-in capabilities, not pretend skills.
+            - Better capability-state framing so you can see what works on iPhone now versus optional runtime depth.
+
+            2) New Buddy capabilities now:
+            - Chat-to-skill draft flow: say “teach yourself how to …” and I can draft a reusable skill package.
+            - Review + approval loop: approve with `approve skill <id>` to install a user-taught skill.
+            - Skill runs now persist reusable run logs so refinement is visible over time.
+
+            3) Practical help available now:
+            - Day planning, focused checklists, follow-up drafting, notes, research summaries, and project support.
+            - Real skill runs like Pokemon Team Builder plus installable reusable workflow skills.
+
+            4) Optional deeper runtime/operator depth:
+            \(optionalDepth)
+            """
+        }
+
         return """
-        I can help with your day, your work, your plans, your follow-through, and your thinking.
+        I can help with your day, your work, your plans, your follow-through, and your thinking, with iPhone-first value first.
 
         Use \(buddyName) for planning the day, breaking down messy work, staying on track, capturing notes, drafting reminders, journaling, preparing follow-ups, and shaping messages before you send them. I can also help with product thinking, implementation thinking, and system work when you ask for that depth.
 
@@ -873,7 +911,7 @@ enum BuddyIntroCopy {
 
         Skills and memory are how I grow: planning, reminders, journaling, message drafting, research, project support, and careful review can become stronger through repeated use and visible training.
 
-        When you want operator mode, I can go deeper into repo work, runtime reasoning, debugging, skill execution, and verification. I will keep those mechanics behind the front door until they are useful.
+        When you want operator mode, I can go deeper into repo work, runtime reasoning, debugging, skill execution, and verification. I will only lead with that depth when it is relevant.
 
         Start with one thing you want help with today, or one thing you want \(buddyName) to learn about how you work.
         """
@@ -910,7 +948,30 @@ enum AgentReplySanitizer {
             }
         }
 
+        lines = lines.filter { line in
+            let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
+            if trimmed.isEmpty { return true }
+            let bannedFragments = [
+                "the user is asking",
+                "i should ",
+                "i need to ",
+                "specifics:",
+                "plan:",
+                "reasoning:",
+                "internal:",
+                "hidden reasoning",
+                "developer instruction",
+                "system prompt"
+            ]
+            return !bannedFragments.contains(where: { trimmed.lowercased().contains($0) })
+        }
+
         text = lines.joined(separator: "\n").trimmingCharacters(in: .whitespacesAndNewlines)
+        text = removePlanningBullets(from: text)
+
+        if looksLikeLeakedScaffolding(text) {
+            return "I’m here and ready. I can help with planning, follow-through, reminders/message drafts, and practical Buddy tasks right now."
+        }
         return text.isEmpty ? "I do not have a user-visible answer from that route." : text
     }
 
@@ -924,6 +985,41 @@ enum AgentReplySanitizer {
             result.removeSubrange(startRange.lowerBound..<endRange.upperBound)
         }
         return result
+    }
+
+    private static func removePlanningBullets(from value: String) -> String {
+        let filtered = value
+            .components(separatedBy: .newlines)
+            .filter { line in
+                let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+                let planningStarts = [
+                    "- i should",
+                    "- i need to",
+                    "- plan",
+                    "* i should",
+                    "* i need to",
+                    "1) i should",
+                    "2) i should",
+                    "3) i should"
+                ]
+                return !planningStarts.contains(where: { trimmed.hasPrefix($0) })
+            }
+        return filtered.joined(separator: "\n").trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private static func looksLikeLeakedScaffolding(_ value: String) -> Bool {
+        let lower = value.lowercased()
+        let markers = [
+            "the user is asking",
+            "i should maintain",
+            "i need to reinforce",
+            "specifics:",
+            "how to answer",
+            "analysis section",
+            "chain of thought"
+        ]
+        let hits = markers.filter { lower.contains($0) }
+        return hits.count >= 1
     }
 }
 
@@ -1256,7 +1352,7 @@ final class AppState: ObservableObject {
     @Published var providerModels: [ProviderKind: [CloudModel]] = [:]
     @Published var providerModelLoading = Set<ProviderKind>()
     @Published var providerModelErrors: [ProviderKind: String] = [:]
-    @Published var workspaceRuntime = OpenClawWorkspaceRuntime()
+    @Published var workspaceRuntime = BeMoreWorkspaceRuntime()
     @Published var macRuntimeSnapshot: MacRuntimeSnapshot?
     @Published var macRuntimeStatus = "Mac not inspected"
     @Published var chatReturnTab: AppTab?
@@ -1771,9 +1867,41 @@ final class AppState: ObservableObject {
         let cleaned = prompt.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !cleaned.isEmpty else { return }
 
-        if let intro = BuddyIntroCopy.response(for: cleaned, buddyName: buddyStore.activeBuddy?.displayName ?? "Buddy") {
+        if let intro = BuddyIntroCopy.response(
+            for: cleaned,
+            buddyName: buddyStore.activeBuddy?.displayName ?? "Buddy",
+            session: .init(
+                runtimeConnected: selectedProviderAccount != nil || canUseSelectedLocalModel,
+                macPairingActive: macRuntimeSnapshot != nil
+            )
+        ) {
             chatStore.messages.append(ChatMessage(role: .user, content: cleaned))
             chatStore.messages.append(ChatMessage(role: .assistant, content: intro))
+            chatStore.persist()
+            return
+        }
+
+        if let teachRequest = parseTeachSkillRequest(cleaned) {
+            let requestedBy = buddyStore.activeBuddy?.displayName ?? "Buddy Operator"
+            let receipt = workspaceRuntime.draftSkillFromChat(request: teachRequest, requestedBy: requestedBy)
+            chatStore.messages.append(ChatMessage(role: .user, content: cleaned))
+            let status = (receipt.status == .persisted || receipt.status == .completed)
+                ? "Drafted skill \(receipt.output["skillId"] ?? "") from chat. Review it, then approve with `approve skill <id>`."
+                : "Could not draft skill: \(receipt.error ?? receipt.summary)"
+            chatStore.messages.append(ChatMessage(role: .assistant, content: status))
+            chatStore.messages.append(ChatMessage(role: .system, content: ReceiptFormatter.confirmedSummary(for: receipt)))
+            chatStore.persist()
+            return
+        }
+
+        if let approvalID = parseSkillApproval(cleaned) {
+            let receipt = workspaceRuntime.approveChatSkillDraft(id: approvalID)
+            chatStore.messages.append(ChatMessage(role: .user, content: cleaned))
+            let status = (receipt.status == .persisted || receipt.status == .completed)
+                ? "Approved and installed \(receipt.output["skillId"] ?? approvalID). You can now run it from Skills."
+                : "Could not approve skill: \(receipt.error ?? receipt.summary)"
+            chatStore.messages.append(ChatMessage(role: .assistant, content: status))
+            chatStore.messages.append(ChatMessage(role: .system, content: ReceiptFormatter.confirmedSummary(for: receipt)))
             chatStore.persist()
             return
         }
@@ -1823,6 +1951,24 @@ final class AppState: ObservableObject {
         chatStore.isGenerating = false
     }
 
+    private func parseTeachSkillRequest(_ prompt: String) -> String? {
+        let lowered = prompt.lowercased()
+        let prefixes = ["teach yourself how to", "create a skill to", "make a reusable skill for", "build a skill to"]
+        for prefix in prefixes where lowered.contains(prefix) {
+            guard let range = lowered.range(of: prefix) else { continue }
+            let request = String(prompt[range.upperBound...]).trimmingCharacters(in: .whitespacesAndNewlines)
+            if !request.isEmpty { return request }
+        }
+        return nil
+    }
+
+    private func parseSkillApproval(_ prompt: String) -> String? {
+        let lowered = prompt.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+        guard lowered.hasPrefix("approve skill ") else { return nil }
+        let id = String(prompt.dropFirst("approve skill ".count)).trimmingCharacters(in: .whitespacesAndNewlines)
+        return id.isEmpty ? nil : id
+    }
+
     func runSkill(id: String, input: [String: String] = [:]) -> OpenClawReceipt {
         let receipt = workspaceRuntime.runSkill(id: id, input: input, config: stackConfig, preferences: userPreferencesStore.preferences, routeSummary: activeRouteModeLabel)
         chatStore.messages.append(ChatMessage(role: .system, content: ReceiptFormatter.confirmedSummary(for: receipt)))
@@ -1870,8 +2016,8 @@ final class AppState: ObservableObject {
         return receipt
     }
 
-    func installClawHubSkill(_ template: ClawHubSkillTemplate) -> OpenClawReceipt {
-        let receipt = workspaceRuntime.installClawHubSkill(template)
+    func installBuddySkillTemplate(_ template: BuddySkillTemplate) -> OpenClawReceipt {
+        let receipt = workspaceRuntime.installBuddySkillTemplate(template)
         _ = regenerateArtifacts(target: "skills.md")
         chatStore.messages.append(ChatMessage(role: .system, content: ReceiptFormatter.confirmedSummary(for: receipt)))
         chatStore.persist()
@@ -1993,7 +2139,7 @@ final class AppState: ObservableObject {
     private func configureConversationForCurrentStack(forceReplace: Bool = false) {
         if let activeStack {
             let currentFirst = chatStore.messages.first?.content ?? ""
-            let shouldReplace = forceReplace || chatStore.messages.isEmpty || currentFirst.contains("OpenClawShell is ready.") || currentFirst.contains("Conversation cleared.")
+            let shouldReplace = forceReplace || chatStore.messages.isEmpty || currentFirst.contains("BeMoreAgent is ready.") || currentFirst.contains("Conversation cleared.")
             if shouldReplace {
                 chatStore.messages = [ChatMessage(role: .system, content: activeStack.chatSystemPrompt)]
                 chatStore.persist()
@@ -2002,7 +2148,7 @@ final class AppState: ObservableObject {
         }
         
         if forceReplace || chatStore.messages.isEmpty {
-            chatStore.messages = [ChatMessage(role: .system, content: "OpenClawShell is ready. Add a packaged MLC runtime or use the stub path until then.")]
+            chatStore.messages = [ChatMessage(role: .system, content: "BeMoreAgent is ready. Add a packaged runtime route or use a linked cloud provider.")]
             chatStore.persist()
         }
     }

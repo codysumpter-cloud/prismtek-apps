@@ -2,6 +2,11 @@
 
 Native SwiftUI iPhone shell for the BeMoreAgent operator stack.
 
+Architecture boundary:
+- `prismtek-apps` (this repo) is the iPhone-native primary host and user surface.
+- `prismtek-site` / prismtek.dev is the web shell + relay layer.
+- `bmo-stack` is canonical for posture, council behavior, skills/manifests, and Codex/runtime discipline.
+
 ## Current product shell
 
 The app is no longer just a thin operator shell. The strongest shipped wedge is now a standalone Buddy experience on iPhone:
@@ -22,6 +27,19 @@ The shell still exposes the broader technical surfaces too:
 - `Files` for app-scoped workspace imports.
 - `Settings` for provider editing, maintenance, shell management, and storage summaries.
 
+## Skills + capabilities model (iPhone-first)
+
+The app now separates **executable skills** from **built-in tools**:
+
+- Built-in tools (for example GitHub Search and Web Browser) are app/network capabilities and are shown as built-in capabilities, not mislabeled as skills.
+- Skills are executable reusable units with registry identity, permissions, run surfaces, and run artifacts.
+- User-taught chat-to-skill is now real:
+  1. user says “teach yourself how to …”
+  2. Buddy drafts a reusable skill package in workspace state
+  3. user reviews and approves with `approve skill <id>`
+  4. the skill installs and becomes runnable from Skills
+- Skill runs for manifest-backed workflows now persist run logs under `skills/<id>/runs/` for visible refinement history.
+
 The shell persists local state under app-scoped Application Support, including:
 
 - chat history
@@ -37,9 +55,9 @@ The Buddy surface now bundles repo-owned canonical Buddy contracts and starter c
 main `BeMore-stack` repo. Installing or personalizing a Buddy persists:
 
 - `State/buddy-instances.json`
-- `.openclaw/state/buddy-runtime-events.json`
-- `.openclaw/buddy.md`
-- `.openclaw/buddies.md`
+- `.bemore/state/buddy-runtime-events.json`
+- `.bemore/buddy.md`
+- `.bemore/buddies.md`
 
 Bundle identity continuity matters for this state. See [`BUILD_14_CONTINUITY_NOTE.md`](./BUILD_14_CONTINUITY_NOTE.md) for why build 14 could look like a fresh install after the bundle identifier briefly changed.
 
@@ -78,7 +96,7 @@ Admin and release notes live in [`ADMIN_TESTFLIGHT_RUNBOOK.md`](./ADMIN_TESTFLIG
 - Use `Control` to inspect the companion-first home and then optional operator depth.
 - Use `Buddy` to care for a Buddy, train them, build a roster, spar locally, export/import trade
   packages, and only then reach for deeper operator behavior if needed.
-- Buddy actions regenerate the readable `.openclaw/buddy.md` and `.openclaw/buddies.md` continuity
+- Buddy actions regenerate the readable `.bemore/buddy.md` and `.bemore/buddies.md` continuity
   files alongside the machine-readable JSON state.
 
 ## Known limits

@@ -150,7 +150,8 @@ final class AppStateRuntimeTests: XCTestCase {
     func testBuddyIntroCopyAnswersCapabilitiesWithTrainingBeforeRuntimeMechanics() {
         let reply = BuddyIntroCopy.response(
             for: "What can you do for me and how can I make you better?",
-            buddyName: "Prism"
+            buddyName: "Prism",
+            session: .init(runtimeConnected: false, macPairingActive: false)
         )
 
         XCTAssertNotNil(reply)
@@ -176,6 +177,41 @@ final class AppStateRuntimeTests: XCTestCase {
 
         XCTAssertEqual(cleaned, "Here is the actual answer.")
         XCTAssertFalse(cleaned.localizedCaseInsensitiveContains("private chain"))
+    }
+
+    func testAgentReplySanitizerRemovesPlanningLeakScaffolding() {
+        let raw = """
+        The user is asking again what changed.
+        I should maintain the BMO persona.
+        Specifics:
+        - I need to reinforce platform story.
+
+        Here's what you can use right now: planning, reminders, and Buddy training.
+        """
+
+        let cleaned = AgentReplySanitizer.userVisibleAnswer(from: raw)
+
+        XCTAssertFalse(cleaned.localizedCaseInsensitiveContains("the user is asking"))
+        XCTAssertFalse(cleaned.localizedCaseInsensitiveContains("i should"))
+        XCTAssertFalse(cleaned.localizedCaseInsensitiveContains("specifics"))
+        XCTAssertTrue(cleaned.localizedCaseInsensitiveContains("what you can use right now"))
+    }
+
+    func testWhatsNewResponseLeadsWithInAppAndBuddyBeforeRuntimeDepth() {
+        let reply = BuddyIntroCopy.response(
+            for: "Yo, new build just hit do you have more capabilities",
+            buddyName: "Prism",
+            session: .init(runtimeConnected: false, macPairingActive: false)
+        )
+
+        XCTAssertNotNil(reply)
+        let value = reply ?? ""
+        XCTAssertTrue(value.contains("1) New iPhone capabilities now"))
+        XCTAssertTrue(value.contains("2) New Buddy capabilities now"))
+        XCTAssertTrue(value.contains("3) Practical help available now"))
+        XCTAssertTrue(value.contains("4) Optional deeper runtime/operator depth"))
+        XCTAssertTrue(value.localizedCaseInsensitiveContains("available if you connect"))
+        XCTAssertFalse(value.localizedCaseInsensitiveContains("workspace runtime first"))
     }
 
     func testWorkspaceBootstrapCreatesCanonicalBeMoreArtifacts() throws {
