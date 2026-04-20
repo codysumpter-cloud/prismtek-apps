@@ -2,8 +2,8 @@
 import SwiftUI
 import SafariServices
 
-actor WebBrowserService {
-    static let shared = WebBrowserService()
+public class WebBrowserService {
+    public static let shared = WebBrowserService()
     private init() {}
 
     func openURL(_ url: URL) {

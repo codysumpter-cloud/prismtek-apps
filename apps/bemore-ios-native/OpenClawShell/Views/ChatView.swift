@@ -205,7 +205,14 @@ struct ChatView: View {
         return !appState.chatStore.isGenerating &&
         !trimmedPrompt.isEmpty &&
         (
-            BuddyIntroCopy.response(for: trimmedPrompt, buddyName: store.activeBuddy?.displayName ?? "Buddy") != nil ||
+            BuddyIntroCopy.response(
+                for: trimmedPrompt,
+                buddyName: store.activeBuddy?.displayName ?? "Buddy",
+                session: .init(
+                    runtimeConnected: appState.selectedProviderAccount != nil || appState.canUseSelectedLocalModel,
+                    macPairingActive: appState.macRuntimeSnapshot != nil
+                )
+            ) != nil ||
             appState.selectedProviderAccount != nil ||
             (appState.selectedInstalledModel != nil && !appState.usesStubRuntime)
         )
