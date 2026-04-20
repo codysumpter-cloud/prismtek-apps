@@ -838,10 +838,15 @@ enum CloudPromptBuilder {
 }
 
 enum BuddyIntroCopy {
-    static func response(for prompt: String, buddyName: String) -> String? {
+    struct SessionSnapshot {
+        var runtimeConnected: Bool
+        var macPairingActive: Bool
+    }
+
+    static func response(for prompt: String, buddyName: String, session: SessionSnapshot) -> String? {
         let text = prompt.lowercased()
-        let asksCapability = containsAny(text, ["what can you do", "what are you good at", "what should i use you for", "how should i use you", "how do you work"])
-        let asksWhatsNew = containsAny(text, ["what's new", "whats new", "new in this build", "new capabilities", "what changed"])
+        let asksCapability = containsAny(text, ["what can you do", "what are you good at", "what should i use you for", "how should i use you", "how do you work", "more capabilities", "do you have more capabilities"])
+        let asksWhatsNew = containsAny(text, ["what's new", "whats new", "new in this build", "new capabilities", "what changed", "new build just hit"])
         let asksTraining = containsAny(text, ["make you better", "train you", "how do i train", "teach you", "improve you"])
         let asksModes = containsAny(text, ["companion mode", "operator mode", "difference between", "power mode"])
 
@@ -872,6 +877,9 @@ enum BuddyIntroCopy {
         }
 
         if asksWhatsNew {
+            let optionalDepth = session.runtimeConnected || session.macPairingActive
+                ? "- Runtime/operator layers are available in this session when you explicitly ask for technical depth."
+                : "- Runtime/operator layers are available if you connect provider/runtime surfaces later; they are optional, not the front door."
             return """
             Here’s what’s new, in order of what you can use right now.
 
@@ -890,7 +898,7 @@ enum BuddyIntroCopy {
             - Real skill runs like Pokemon Team Builder plus installable reusable workflow skills.
 
             4) Optional deeper runtime/operator depth:
-            - Mac/runtime bridge, filesystem mutation, and sandbox process execution are still optional deeper layers when connected.
+            \(optionalDepth)
             """
         }
 
@@ -940,7 +948,30 @@ enum AgentReplySanitizer {
             }
         }
 
+        lines = lines.filter { line in
+            let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
+            if trimmed.isEmpty { return true }
+            let bannedFragments = [
+                "the user is asking",
+                "i should ",
+                "i need to ",
+                "specifics:",
+                "plan:",
+                "reasoning:",
+                "internal:",
+                "hidden reasoning",
+                "developer instruction",
+                "system prompt"
+            ]
+            return !bannedFragments.contains(where: { trimmed.lowercased().contains($0) })
+        }
+
         text = lines.joined(separator: "\n").trimmingCharacters(in: .whitespacesAndNewlines)
+        text = removePlanningBullets(from: text)
+
+        if looksLikeLeakedScaffolding(text) {
+            return "I’m here and ready. I can help with planning, follow-through, reminders/message drafts, and practical Buddy tasks right now."
+        }
         return text.isEmpty ? "I do not have a user-visible answer from that route." : text
     }
 
@@ -954,6 +985,41 @@ enum AgentReplySanitizer {
             result.removeSubrange(startRange.lowerBound..<endRange.upperBound)
         }
         return result
+    }
+
+    private static func removePlanningBullets(from value: String) -> String {
+        let filtered = value
+            .components(separatedBy: .newlines)
+            .filter { line in
+                let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+                let planningStarts = [
+                    "- i should",
+                    "- i need to",
+                    "- plan",
+                    "* i should",
+                    "* i need to",
+                    "1) i should",
+                    "2) i should",
+                    "3) i should"
+                ]
+                return !planningStarts.contains(where: { trimmed.hasPrefix($0) })
+            }
+        return filtered.joined(separator: "\n").trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private static func looksLikeLeakedScaffolding(_ value: String) -> Bool {
+        let lower = value.lowercased()
+        let markers = [
+            "the user is asking",
+            "i should maintain",
+            "i need to reinforce",
+            "specifics:",
+            "how to answer",
+            "analysis section",
+            "chain of thought"
+        ]
+        let hits = markers.filter { lower.contains($0) }
+        return hits.count >= 1
     }
 }
 
@@ -1801,7 +1867,14 @@ final class AppState: ObservableObject {
         let cleaned = prompt.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !cleaned.isEmpty else { return }
 
-        if let intro = BuddyIntroCopy.response(for: cleaned, buddyName: buddyStore.activeBuddy?.displayName ?? "Buddy") {
+        if let intro = BuddyIntroCopy.response(
+            for: cleaned,
+            buddyName: buddyStore.activeBuddy?.displayName ?? "Buddy",
+            session: .init(
+                runtimeConnected: selectedProviderAccount != nil || canUseSelectedLocalModel,
+                macPairingActive: macRuntimeSnapshot != nil
+            )
+        ) {
             chatStore.messages.append(ChatMessage(role: .user, content: cleaned))
             chatStore.messages.append(ChatMessage(role: .assistant, content: intro))
             chatStore.persist()
