@@ -16,7 +16,7 @@ actor WebBrowserService {
         }
     }
 
-    func validateURL(_ urlString: String) -> URL? {
+    nonisolated func validateURL(_ urlString: String) -> URL? {
         return URL(string: urlString)
     }
 }
