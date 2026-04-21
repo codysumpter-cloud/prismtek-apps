@@ -13,6 +13,7 @@ final class BeMoreChatDispatchTests: XCTestCase {
         try? FileManager.default.createDirectory(at: documents, withIntermediateDirectories: true)
         Paths.applicationSupportOverride = appSupport
         Paths.documentsOverride = documents
+        PixelStudioStore.shared.load()
     }
 
     override func tearDown() {
@@ -41,11 +42,14 @@ final class BeMoreChatDispatchTests: XCTestCase {
         XCTAssertFalse(cleaned.localizedCaseInsensitiveContains("internal plan"))
     }
 
-    func testCommandParserRecognizesTeachReviewRefineValidateApprove() {
+    func testCommandParserRecognizesTeachReviewRefineValidateApproveAndPixelHelp() {
         XCTAssertEqual(BeMoreChatCommandParser.parse("teach yourself how to triage my bug inbox"), .teach("triage my bug inbox"))
         XCTAssertEqual(BeMoreChatCommandParser.parse("review skill user-taught-demo"), .review("user-taught-demo"))
         XCTAssertEqual(BeMoreChatCommandParser.parse("validate skill user-taught-demo"), .validate("user-taught-demo"))
         XCTAssertEqual(BeMoreChatCommandParser.parse("approve skill user-taught-demo"), .approve("user-taught-demo"))
+        XCTAssertEqual(BeMoreChatCommandParser.parse("finish this pixel art"), .pixelAssist(.finish, ""))
+        XCTAssertEqual(BeMoreChatCommandParser.parse("improve this sprite for mobile readability"), .pixelAssist(.improve, "for mobile readability"))
+        XCTAssertEqual(BeMoreChatCommandParser.parse("animate this sprite with a stronger idle loop"), .pixelAssist(.animate, "with a stronger idle loop"))
 
         guard case let .refine(id, instruction)? = BeMoreChatCommandParser.parse("refine skill user-taught-demo: add an approval prompt") else {
             return XCTFail("Expected refine command")
