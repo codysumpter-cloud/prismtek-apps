@@ -10,10 +10,13 @@ Use this guide when handing the native app to someone with a Mac and Apple Devel
 
 - the app target is `BeMoreAgent`
 - the project definition is generated from `project.yml`
+- the native iPhone source of truth now lives in this repo
+- the current GitHub-hosted iOS validate/TestFlight lane also lives in this repo
 - first launch routes into onboarding
 - onboarding completion persists locally
 - the app has native Home, Chat, Files, and Models surfaces
 - the current runtime is still a stub until the real on-device runtime bridge is wired in
+- the current repo build number is 40 in `BeMoreAgentShell/Info.plist`
 
 ## Generate and open the project
 
@@ -53,34 +56,39 @@ xcodebuild -project BeMoreAgent.xcodeproj \
 
 ## GitHub Actions setup for future PRs and releases
 
-Two workflows matter:
+The current repo-owned iOS workflows are:
 
-- `.github/workflows/bemoreagent-ios-validate.yml` builds the app on pull requests and pushes
-- `.github/workflows/testflight.yml` archives and uploads to TestFlight on `main`
+- `.github/workflows/bemoreagent-platform-ios-validate.yml` for platform-specific validation
+- `.github/workflows/bemore-ios-ci-testflight.yml` for the main iOS validate + TestFlight lane
 
 Required GitHub repo configuration:
 
-### Repository variable
+### App Store Connect secrets
 
-- `BEMOREAGENT_IOS_RUNS_ON` → JSON array of runner labels for the self-hosted Mac runner
-  - example: `["self-hosted","macOS"]`
+- `APPSTORE_CONNECT_API_KEY`
+- `APPSTORE_CONNECT_KEY_ID`
+- `APPSTORE_CONNECT_ISSUER_ID`
 
-### Repository secrets
+### iOS signing secrets
 
-- `APPSTORE_CONNECT_API_KEY` → contents of the `.p8` private key
-- `APPSTORE_CONNECT_KEY_ID` → App Store Connect API key ID
-- `APPSTORE_CONNECT_ISSUER_ID` → App Store Connect issuer ID
+- `BEMORE_IOS_DISTRIBUTION_CERTIFICATE_P12_BASE64`
+- `BEMORE_IOS_DISTRIBUTION_CERTIFICATE_PASSWORD`
+- `BEMORE_IOS_APPSTORE_PROFILE_BASE64`
+
+### Optional runner variable
+
+- `BEMOREAGENT_XCODE_DEVELOPER_DIR`
 
 Notes:
 
-- GitHub-hosted macOS runners may be too old for this project, so these workflows are pinned to the self-hosted Mac path by default.
-- The workflow writes the App Store Connect `.p8` key to a temporary file and uses Xcode's authentication-key flags, so it does not depend on an interactive Xcode account login.
-- The API key must be a team App Store Connect key with enough access to sign, export, and upload builds.
-- Keep `.p8` files local only, never commit them.
+- the main iOS workflow is currently pinned to a self-hosted runner label set that includes `prismtek-apps`
+- the workflow writes the App Store Connect `.p8` key to a temporary file and uses Xcode authentication-key flags, so it does not depend on an interactive Xcode account login
+- keep `.p8` files, signing certificates, and provisioning profiles out of git
 
 ## Honest limits
 
-This repo is now set up for native Xcode handoff, onboarding demos, model/file management, and repeatable TestFlight automation. The remaining Mac-only work is:
+This repo is now set up for native Xcode handoff, onboarding demos, model/file management, and repo-owned iOS validation/TestFlight automation. The remaining Mac-only work is:
 
 - validating the Xcode build end to end when project structure changes
 - replacing the stub runtime with the real local inference backend
+- proving each TestFlight submission against the currently configured runner, signing assets, and App Store Connect state
