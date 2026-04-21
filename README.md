@@ -4,9 +4,11 @@
 
 Canonical product monorepo for **BeMore** and future **Prismtek** apps.
 
-This repository is the implementation home for the Prismtek app family. It owns product-facing apps, shared product packages, and app-level APIs. It does **not** own the assistant runtime substrate, the council and Buddy policy layer, or the public Prismtek website.
+This repository implements the BeMore iOS app — a companion-first product where users adopt, train, and care for AI Buddies. It does **not** own the runtime substrate, policy layer, or public website.
 
-Current product priority: make the iPhone Buddy app intrinsically valuable on its own. The BeMore iPhone surface now centers a standalone Buddy loop with companion care, training, customization, collection, local sparring, and trade-ready export/import packages. Repo/runtime/operator integrations still matter, but they are secondary depth, not the main reason to open the app.
+## What BeMore Is
+
+A **native iPhone app** with a loop: create Buddy instances from archetypes, customize their appearance with ASCII or pixel art, train their proficiencies through daily interaction, spar locally to test growth, and export/import trade packages. OAuth linking surfaces for GitHub and ChatGPT enable runtime-powered workflows. A macOS dual-target supports operator command execution when paired.
 
 ## Quick start
 
@@ -15,220 +17,118 @@ npm install
 npm run dev
 ```
 
-Use this repo when the work is about shipped product implementation.
-If the work is really runtime substrate, policy/identity, or public-site ownership, it probably belongs elsewhere.
+For iOS development:
+```bash
+cd apps/bemore-ios-native
+xcodegen generate
+open BeMoreAgent.xcodeproj
+```
 
 ## At a glance
 
-- **Umbrella brand:** Prismtek
-- **Flagship product:** BeMore
-- **Current App Store display bridge:** BeMore iOS
-- **Internal technical app lineage:** BeMoreAgent
-- **Repo role:** canonical product monorepo
-
-## Ownership map
-
-Use this mental model:
-
-- **BeMore runtime substrate** = execution engine and inherited runtime primitives
-- **`BeMore-stack`** = brain / policy / council / identity
-- **`prismtek-site`** = public web world
-- **`prismtek-apps`** = shipped app family
-
-If a change belongs to product implementation, it probably belongs here.
+- **Product:** BeMore — AI companion
+- **Target:** iPhone iOS app (with macOS dual-target for operator commands)
+- **Current version:** 0.2 (build 41 in TestFlight)
+- **Architecture:** Native SwiftUI + TCA pattern + sync-over-async relay to runtime
 
 ## What this repo owns
 
-This repo owns:
-- app implementation for **BeMore**
-- future Prismtek apps that share product infrastructure
-- shared product packages
-- product-facing APIs and services
-- Buddy UI and the standalone Buddy companion loop on iPhone
-- Buddy care, training, sparring, collection, customization, and trade package UX
-- Buddy Appearance Studio, saved appearance profiles, and preview rendering
-- app-facing Codex task controls and result presentation
-- shared auth, account, and profile systems
-- app-shell, design-system, and product UX patterns
-- product build and release automation over time
+- **BeMore iOS app** — SwiftUI-based Buddy management UI
+- **Buddy lifecycle** — creation, equipment, training, care, trade
+- **Appearance studio** — ASCII/PixelLab hybrid customization
+- **OAuth surfaces** — GitHub, ChatGPT account linking (relay-based)
+- **Tamagotchi loop** — daily check-ins, care actions, streaks
+- **Local sparring** — Buddy v. Buddy battles with growth reflection
+- **Trade packages** — export/import with sanitation
+- **Operator command UI** — macOS only; iOS shows "use Mac relay" fallback
 
-## What this repo does not own
+## What it does not own
 
-This repo does **not** own:
-- deep runtime substrate, tools, sessions, nodes, channels, and execution primitives outside the BeMore product adapter
-- **`BeMore-stack`** council policy, Buddy identity rules, memory philosophy, agent operating behavior, and cross-repo governance
-- **`prismtek-site`** public website ownership for `prismtek.dev`, site-backed public experiences, and site-specific APIs
+- Execution runtime (lives in BeMore-stack)
+- LLM inference (relayed)
+- Public marketing site (prismtek-site)
+- Council/policy (BeMore-stack)
 
-## Product naming layers
+## Product architecture
 
-Use these deliberately instead of flattening everything into one label.
-
-- **Prismtek Apps** = repo / monorepo identity
-- **BeMore** = flagship product identity
-- **BeMore iOS** = current practical display name where needed
-- **BeMoreAgent** = internal technical identifiers that do not need immediate renaming
-
-## Current repository structure
-
-```text
-apps/
-  api/             Product-facing backend/API
-  web/             Current web app surface
-
-packages/
-  app-factory/     Product scaffolding and generation primitives
-  core/            Shared types and core product contracts
-  sandbox/         Product-level sandbox/session adapters
-
-docs/
-  DECISIONS/           Short architecture decisions
-  ORGANIZATION.md      Naming layers, ownership split, migration posture
-  REPO_POSITIONING.md  Repo role and cleanup posture
+```
+┌─────────────────────────────────────────┐
+│           BeMore iOS App               │
+│  ┌─────────┐ ┌──────────┐ ┌─────────┐  │
+│  │  Buddy  │ │ Appearance│ │  OAuth  │  │
+│  │  View   │ │ Studio    │ │ Links   │  │
+│  └────┬────┘ └─────┬─────┘ └────┬────┘  │
+│       └────────────┴────────────┘      │
+│                  │                       │
+│           BuddyInstanceStore            │
+│                  │                       │
+│         ┌──────┴─────┐                 │
+│         ▼            ▼                 │
+│   Tamagotchi    RelayServices         │
+│   Engine        (sync-over-async)     │
+└─────────────────────────────────────────┘
+                    │
+                    ▼
+              BeMore-stack
+         (execution substrate)
 ```
 
-## Near-term structure direction
+## Current features
 
-This repo is expected to grow toward a clearer product layout over time.
-
-```text
-apps/
-  bemore-web/
-  bemore-ios/
-  api/
-  arcade/            (only if it becomes part of the product family here)
-
-packages/
-  buddy-core/
-  design-system/
-  runtime-adapter/
-  product-core/
-```
-
-That future structure is directional, not a promise that everything moves at once.
-
-## Working rules
-
-1. Do not duplicate runtime substrate ownership in product packages.
-2. Do not duplicate policy and identity ownership already held by `BeMore-stack`.
-3. Do not treat this repo as the owner of the public marketing and site layer unless that ownership is explicitly moved here.
-4. Prefer clear product boundaries over "just put it here for now."
-5. If a feature is experimental and not product-canonical, label it clearly.
-6. Product implementation lives here, policy and operating philosophy live elsewhere.
-
-## Migration posture
-
-This repo is being promoted from an ambiguously positioned platform monorepo into the canonical Prismtek product repo.
-
-That means:
-- ambiguous legacy positioning should be removed
-- stale scaffold leftovers should be cleaned up deliberately
-- overlapping app repos should eventually be folded in, renamed, or archived
-- product-owned automation should migrate here over time when safe
-- working systems should not be broken just to satisfy architectural neatness
+- **Guided Buddy creation** — archetype selection, appearance mode (ASCII/Pixel), voice config
+- **Daily care loop** — feed, play, train, check-in with streaks
+- **Proficiency training** — 12 skill categories, incremental growth
+- **Local sparring** — Buddy battles with loadout strategy
+- **Trade packages** — sanitized export/import with validation
+- **OAuth account linking** — GitHub (private repo access), ChatGPT (API integration)
+- **Tamagotchi-like care** — energy, attention, mood, daily goals
+- **Operator commands** — macOS dual-target only; security-audited shell execution
 
 ## Getting started
 
 ### Prerequisites
 
-- Node.js 18+
-- npm 10+
+- Xcode 16.3+
+- iOS 18.3+ target
+- macOS 15.3+ (for dual-target)
 
-### Install dependencies
-
-```bash
-npm install
-```
-
-### Run the product apps in development
+### Build the app
 
 ```bash
-npm run dev
-```
-
-### Build the repo
-
-```bash
-npm run build
+cd apps/bemore-ios-native
+xcodegen generate
+xcodebuild -project BeMoreAgent.xcodeproj -scheme BeMoreAgent -sdk iphonesimulator build
 ```
 
 ### Useful commands
 
 ```bash
 npm run lint
-npm run clean
+npm run build
+npm run dev
 ```
 
-## Docs
+## Structure
 
-### Core repo docs
-- `docs/REPO_POSITIONING.md` — repo ownership summary and cleanup posture
-- `docs/ORGANIZATION.md` — naming layers, ownership split, and migration posture
-- `docs/STRUCTURE.md` — current and intended file structure
-- `docs/REPO_OWNERSHIP_MAP.md` — canonical repo roles across the legacy runtime substrate, BMO, Prismtek Site, and Prismtek Apps
-- `CONTRIBUTING.md` — contribution boundaries and repo expectations
+```
+apps/
+  bemore-ios-native/    SwiftUI app, Xcode project
+  api/                  Product-facing backend
+  web/                  React web surface
 
-### Product structure and boundaries
-- `docs/PACKAGE_BOUNDARIES.md` — current package roles and future package direction
-- `docs/APP_SURFACES.md` — current and intended app surfaces
-- `docs/NEXT_STRUCTURE_PASS.md` — recommended next structural cleanup without premature churn
-- `docs/PACKAGE_ROLE_AUDIT.md` — package-by-package review of current roles and likely direction
+packages/
+  agent-protocol/       Runtime communication contracts
+  core/                 Shared types
+  app-factory/          App scaffolding
 
-### Migration and release ownership
-- `docs/AUTOMATION_MIGRATION.md` — how product-owned automation should move here over time
-- `docs/BEMORE_IOS_BUILD_MIGRATION.md` — target migration path for BeMore iOS build ownership
-- `docs/BUILD_OWNERSHIP_AUDIT.md` — audit table for current vs target build/release ownership
-- `docs/IOS_BUILD_OWNERSHIP.md` — current notes on iOS build ownership posture
+Docs in docs/ORGANIZATION.md
+```
 
-### Working checklists
-- `docs/DEV_CHECKLIST.md` — lightweight checklist for meaningful repo changes
-- `docs/RELEASE_CHECKLIST.md` — lightweight release-path checklist
+## Runtime boundary
 
-### Decisions
-- `docs/DECISIONS/0001-product-monorepo.md` — why this repo is the canonical product monorepo
-- `docs/DECISIONS/0002-naming-layers.md` — why repo, product, and technical naming are intentionally separated
-
-## Current cleanup priorities
-
-1. keep repo naming and docs aligned
-2. clarify package responsibilities
-3. move product-owned automation here over time
-4. reduce overlap with shadow or transitional app repos
-5. keep BeMore implementation decisions close to the product repo
-
-## Current product slices
-
-- **Standalone Buddy on iPhone**
-  - care stats and return-friendly daily check-ins
-  - teachable preferences and training progression
-  - collectible Buddy roster with archetype identity
-  - lightweight local sparring that reflects growth and loadout
-  - sanitized Buddy trade package export/import
-- **Buddy Appearance Studio**
-  - guided Buddy look creation
-  - reusable saved appearance profiles
-  - local ASCII validation and preview
-  - optional PixelLab upgrade configuration without hard dependency
-- **Codex task controls**
-  - submit a bounded technical brief from the app
-  - select repo scope and approval mode
-  - poll live run status
-  - inspect logs, branch, worktree, and final summary
-  - keep execution owned by `BeMore-stack`
-
-## Runtime adapter boundary
-
-- `prismtek-apps` renders product UX for Buddy and operator controls.
-- `BeMore-stack` remains the source of truth for council posture, operator rules, skills/manifests, and Codex execution.
-- The app adapter should wrap `BeMore-stack`, not replace it.
-
-## Branding assets
-
-A polished app logo is important for shipped product surfaces, especially iOS, but it is not required for this repo README to do its job.
-
-Current priority order:
-1. real app icon and branding system for the BeMore app
-2. consistent product naming across app surfaces
-3. optional repo-level branding assets once the product identity is more stable
+- **Product (this repo)** renders UI, manages Buddy state, handles OAuth flows
+- **BeMore-stack** owns execution, skills, council decisions, Codex runs
+- **Relay** sync-over-async bridge between them
 
 ## License
 
