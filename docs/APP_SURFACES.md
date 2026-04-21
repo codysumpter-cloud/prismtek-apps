@@ -28,6 +28,18 @@ Direction:
 - avoid letting it become a vague system backend for things owned elsewhere
 - over time, regroup routes around BeMore product capabilities instead of generic platform/factory framing
 
+### `apps/bemore-ios-native`
+Current role:
+- native iPhone app source of truth for BeMoreAgent / BeMore iOS
+- owns the current XcodeGen project inputs, Info.plist, and native app structure
+- is the repo path targeted by the current iOS validate/TestFlight workflows
+- hosts the product-owned Buddy iPhone surface, not just a placeholder handoff stub
+
+Direction:
+- remain the working native iPhone source until there is a deliberate re-home or rename
+- keep product-facing Buddy UX and native app release docs truthful here
+- avoid docs that still describe the iOS project as if it only lives in `bmo-stack`
+
 ### `apps/bemore-macos`
 Current role:
 - BeMore Mac Build 1 local workstation surface
@@ -45,7 +57,7 @@ Direction:
 Possible future rename or replacement for `apps/web` once the BeMore identity and app structure are mature enough to justify it.
 
 ### `apps/bemore-ios`
-Future home for app-owned iOS project structure, bridge docs, or release automation ownership. The working Build 18 app and TestFlight path still live in `BeMore-stack` until re-homing is proven.
+Possible future rename or re-home for `apps/bemore-ios-native` once the native iPhone project structure is ready for that change. Until then, `apps/bemore-ios-native` is the real working path and should be documented that way.
 
 ### `apps/arcade`
 Only if an arcade surface truly belongs in the shared product family here rather than staying web-owned elsewhere.
