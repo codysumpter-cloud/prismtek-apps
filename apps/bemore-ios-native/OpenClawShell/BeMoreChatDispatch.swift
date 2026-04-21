@@ -7,6 +7,7 @@ enum BeMoreChatCommandParser {
         case refine(id: String, instruction: String)
         case validate(String)
         case approve(String)
+        case pixelAssist(PixelBuddyAction, String)
     }
 
     static func parse(_ prompt: String) -> LocalCommand? {
@@ -24,6 +25,9 @@ enum BeMoreChatCommandParser {
         }
         if let id = commandID(prefixes: ["approve skill "], from: prompt) {
             return .approve(id)
+        }
+        if let pixel = pixelCommand(from: prompt) {
+            return pixel
         }
         return nil
     }
@@ -72,6 +76,47 @@ enum BeMoreChatCommandParser {
                     return (id, instruction)
                 }
             }
+        }
+        return nil
+    }
+
+    private static func pixelCommand(from prompt: String) -> LocalCommand? {
+        let lowered = prompt.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+        let finishPrefixes = [
+            "finish this pixel art",
+            "help finish this pixel art",
+            "polish this pixel art",
+            "finish this sprite"
+        ]
+        let improvePrefixes = [
+            "improve this pixel art",
+            "help improve this pixel art",
+            "improve this sprite",
+            "help improve this sprite"
+        ]
+        let animatePrefixes = [
+            "animate this pixel art",
+            "animate this sprite",
+            "make an animation plan for this sprite",
+            "help animate this sprite"
+        ]
+
+        if let request = requestAfter(prefixes: finishPrefixes, lowered: lowered, original: prompt) {
+            return .pixelAssist(.finish, request)
+        }
+        if let request = requestAfter(prefixes: improvePrefixes, lowered: lowered, original: prompt) {
+            return .pixelAssist(.improve, request)
+        }
+        if let request = requestAfter(prefixes: animatePrefixes, lowered: lowered, original: prompt) {
+            return .pixelAssist(.animate, request)
+        }
+        return nil
+    }
+
+    private static func requestAfter(prefixes: [String], lowered: String, original: String) -> String? {
+        for prefix in prefixes where lowered.hasPrefix(prefix) {
+            let request = String(original.dropFirst(prefix.count)).trimmingCharacters(in: .whitespacesAndNewlines)
+            return request
         }
         return nil
     }
@@ -501,6 +546,16 @@ extension AppState {
                 : "Could not approve skill: \(receipt.error ?? receipt.summary)"
             chatStore.messages.append(ChatMessage(role: .assistant, content: assistant))
             chatStore.messages.append(ChatMessage(role: .system, content: ReceiptFormatter.confirmedSummary(for: receipt)))
+            chatStore.persist()
+            return
+
+        case .pixelAssist(let action, let request):
+            chatStore.messages.append(ChatMessage(role: .user, content: cleaned))
+            let receipt = runPixelStudioBuddyAction(action, request: request.isEmpty ? nil : request)
+            let assistant = receipt.status == .failed
+                ? "Could not prepare the Buddy \(action.title.lowercased()): \(receipt.error ?? receipt.summary)"
+                : "Prepared a Buddy \(action.title.lowercased()) for \(receipt.output["project"] ?? "your project"). Open Studio or Results to use it."
+            chatStore.messages.append(ChatMessage(role: .assistant, content: assistant))
             chatStore.persist()
             return
 
