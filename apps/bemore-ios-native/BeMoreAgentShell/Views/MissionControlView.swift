@@ -140,11 +140,6 @@ struct MissionControlView: View {
             }
 
             HStack(spacing: 8) {
-                Button("Skills") {
-                    appState.route(to: .skills)
-                }
-                .buttonStyle(BMOButtonStyle(isPrimary: false))
-
                 Button("Mac Runtime") {
                     Task { await appState.refreshMacRuntimeSnapshot() }
                 }
@@ -214,10 +209,7 @@ struct MissionControlView: View {
             Text("Skills can deepen the app later, but Buddy already has a strong self-contained loop before any runtime-backed skill run.")
                 .font(.subheadline)
                 .foregroundColor(BMOTheme.textSecondary)
-            Button("Open Skills") {
-                appState.route(to: .skills)
-            }
-            .buttonStyle(BMOButtonStyle(isPrimary: false))
+            // Skill routing removed as part of 'natural skills' shift
         }
         .bmoCard()
     }

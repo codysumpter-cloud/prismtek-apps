@@ -21,7 +21,6 @@
 		143E627CD370A25348F1EE39 /* BeMoreCapabilityMirror.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2740FE950F2636D09E098F60 /* BeMoreCapabilityMirror.swift */; };
 		15CA2612F5AF8F3A4F69C1E0 /* buddy-runtime-events.schema.json in Resources */ = {isa = PBXBuildFile; fileRef = 88DD0F807A59AAAF582AE30F /* buddy-runtime-events.schema.json */; };
 		16B10AB4B3797A3604750520 /* PixelStudioStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B01D9C27C2C675DC0E7C06D8 /* PixelStudioStoreTests.swift */; };
-		1B1AC1729B35C9CB527540BF /* SkillsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76C19201465D0BFED56A9890 /* SkillsView.swift */; };
 		23CD030FD3A9AEF27CE63E43 /* buddy-runtime-events.v1.json in Resources */ = {isa = PBXBuildFile; fileRef = C2D2861D54E92B8C145B6B77 /* buddy-runtime-events.v1.json */; };
 		2464451FB6121B2014117546 /* AppStateRuntimeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98417662936110DAC0CA5200 /* AppStateRuntimeTests.swift */; };
 		252CC362EE9927FFEDBB2AE2 /* buddy-template-package.schema.json in Resources */ = {isa = PBXBuildFile; fileRef = 59C1C24DAF709E2C9DD49403 /* buddy-template-package.schema.json */; };
@@ -146,7 +145,6 @@
 		6C9C7A24250B6F3AD08E4B06 /* editor.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = editor.html; sourceTree = "<group>"; };
 		755F6AFB131E7E2031FCD4FE /* buddy-progression.v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "buddy-progression.v1.json"; sourceTree = "<group>"; };
 		765B1C073CA1E977EA63F10D /* BeMoreLinkedRelayStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeMoreLinkedRelayStore.swift; sourceTree = "<group>"; };
-		76C19201465D0BFED56A9890 /* SkillsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkillsView.swift; sourceTree = "<group>"; };
 		78F5C09E05947011EA3A70D5 /* PixelStudioModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelStudioModels.swift; sourceTree = "<group>"; };
 		79189FEB9698AFBB082E5C11 /* BuddyPixelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyPixelView.swift; sourceTree = "<group>"; };
 		7AB7971C3FE6806475C00946 /* BuddyAppleIntegrationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyAppleIntegrationService.swift; sourceTree = "<group>"; };
@@ -328,7 +326,6 @@
 				80511E10BA1B0BA0D5EF20CD /* PricingView.swift */,
 				EE48FD3645ED608321400BB5 /* RepoSurfaceDetailView.swift */,
 				9B560F8452BEB8745BAA93E4 /* SettingsView.swift */,
-				76C19201465D0BFED56A9890 /* SkillsView.swift */,
 				553746FA3677CEC0FC995772 /* TextShareSheet.swift */,
 			);
 			path = Views;
@@ -640,7 +637,6 @@
 				D7DC9D1211CEA93782CADFB7 /* RepoSurfaceDetailView.swift in Sources */,
 				0AE4B7EF34A1275D3EB24F44 /* RuntimeServices.swift in Sources */,
 				4855967C3F46D35084EC248A /* SettingsView.swift in Sources */,
-				1B1AC1729B35C9CB527540BF /* SkillsView.swift in Sources */,
 				5F23F3B5B7020FEA4AD355A5 /* StackBuilderModels.swift in Sources */,
 				75CCEEDDDA846FF59E32043B /* StackBuilderStore.swift in Sources */,
 				F4D829FD2A5C7E6D652079C9 /* TextShareSheet.swift in Sources */,

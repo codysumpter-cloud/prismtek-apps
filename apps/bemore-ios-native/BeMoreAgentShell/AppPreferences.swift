@@ -8,7 +8,6 @@ enum AppTab: String, Codable, CaseIterable, Hashable, Identifiable {
     case editor
     case buddy
     case files
-    case skills
     case artifacts
     case pairing
     case models
@@ -41,7 +40,6 @@ enum AppTab: String, Codable, CaseIterable, Hashable, Identifiable {
         case .editor: return "Studio"
         case .buddy: return "Buddy"
         case .files: return "Workspace"
-        case .skills: return "Skills"
         case .artifacts: return "Results"
         case .pairing: return "Mac"
         case .models: return "Models"
@@ -57,7 +55,6 @@ enum AppTab: String, Codable, CaseIterable, Hashable, Identifiable {
         case .editor: return "paintpalette.fill"
         case .buddy: return "person.crop.circle.badge.checkmark"
         case .files: return "folder.fill"
-        case .skills: return "sparkles.rectangle.stack.fill"
         case .artifacts: return "checklist.checked"
         case .pairing: return "macbook.and.iphone"
         case .models: return "cpu"
@@ -84,7 +81,7 @@ struct ShellPreferences: Codable, Hashable {
     var selectedTab: AppTab
 
     static let `default` = ShellPreferences(
-        orderedTabs: [.missionControl, .buddy, .chat, .editor, .skills, .models, .artifacts, .files, .settings, .pairing, .pricing],
+        orderedTabs: [.missionControl, .buddy, .chat, .editor, .models, .artifacts, .files, .settings, .pairing, .pricing],
         hiddenTabs: [.pairing, .pricing],
         selectedTab: .missionControl
     )
@@ -98,18 +95,13 @@ struct ShellPreferences: Codable, Hashable {
             guard AppTab.allCases.contains(tab), !result.contains(tab) else { return }
             result.append(tab)
         }
-
-        if let modelsIndex = order.firstIndex(of: .models), let skillsIndex = order.firstIndex(of: .skills), modelsIndex > skillsIndex + 1 {
-            order.remove(at: modelsIndex)
-            order.insert(.models, at: skillsIndex + 1)
-        }
-
+        
         var hidden = hiddenTabs.filter { ($0.allowsHiding || $0.isInternalDraft) && AppTab.allCases.contains($0) }
-        hidden.subtract([.buddy, .chat, .editor, .skills, .models, .artifacts, .files, .settings])
+        hidden.subtract([.buddy, .chat, .editor, .models, .artifacts, .files, .settings])
         if order.filter({ !hidden.contains($0) }).isEmpty {
             hidden.removeAll()
         }
-
+        
         let selected = hidden.contains(selectedTab) ? order.first(where: { !hidden.contains($0) }) ?? .missionControl : selectedTab
         return ShellPreferences(orderedTabs: order, hiddenTabs: hidden, selectedTab: selected)
     }

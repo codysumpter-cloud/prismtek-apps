@@ -188,27 +188,16 @@ struct GuidedBuddyCreationFlow: View {
                 }
                 
                 // Install the Buddy
-                let receipt = try await appState.buddyStore.installFromCatalog(
-                    templateID: template.templateID,
-                    displayName: displayName,
-                    nickname: nickname.nilIfBlank
-                )
+                appState.buddyStore.install(template: template, using: appState)
                 
-                if receipt.status == .failed {
-                    errorMessage = receipt.error ?? "Failed to create buddy"
-                    isCreating = false
-                    return
-                }
-                
-                // Customize appearance
-                if let instanceId = receipt.output["instanceId"] {
-                    var instance = appState.buddyStore.instances.first { $0.instanceId == instanceId }
+                if let instanceId = appState.buddyStore.activeBuddy?.instanceId {
+                    var instance = appState.buddyStore.activeBuddy
                     if var inst = instance {
                         inst.identity.palette = selectedPalette
                         if selectedMode == .ascii {
                             inst.visual?.asciiVariantId = asciiVariant
                         }
-                        appState.buddyStore.upsert(inst)
+                        appState.buddyStore.upsert(inst, using: appState)
                     }
                 }
                 

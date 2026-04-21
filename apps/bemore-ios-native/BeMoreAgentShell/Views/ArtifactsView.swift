@@ -1,5 +1,50 @@
 import SwiftUI
 
+struct ActionReceiptCard: View {
+    let receipt: BeMoreReceipt
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Action Receipt")
+                    .font(.caption.weight(.semibold))
+                    .foregroundColor(BMOTheme.textTertiary)
+                Spacer()
+                StatusBadge(label: receipt.status.rawValue.capitalized, color: (receipt.status == .completed || receipt.status == .persisted) ? BMOTheme.success : BMOTheme.warning)
+            }
+            
+            Text(receipt.summary)
+                .font(.subheadline)
+                .foregroundColor(BMOTheme.textPrimary)
+            
+            if !receipt.output.isEmpty {
+                ScrollView {
+                    Text(receipt.output.map { "\($0.key): \($0.value)" }.joined(separator: "\n"))
+                        .font(.system(size: 12, design: .monospaced))
+                        .foregroundColor(BMOTheme.textSecondary)
+                        .padding(8)
+                        .background(BMOTheme.backgroundSecondary)
+                        .cornerRadius(8)
+                }
+                .frame(maxHeight: 200)
+            }
+            
+            if let error = receipt.error {
+                Text("Error: \(error)")
+                    .font(.caption)
+                    .foregroundColor(.red)
+            }
+        }
+        .padding()
+        .background(BMOTheme.backgroundCard)
+        .cornerRadius(BMOTheme.radiusMedium)
+        .overlay(
+            RoundedRectangle(cornerRadius: BMOTheme.radiusMedium)
+                .stroke(BMOTheme.divider, lineWidth: 1)
+        )
+    }
+}
+
 struct ArtifactsView: View {
     @EnvironmentObject private var appState: AppState
     @State private var selectedArtifact: BeMoreArtifactMetadata?

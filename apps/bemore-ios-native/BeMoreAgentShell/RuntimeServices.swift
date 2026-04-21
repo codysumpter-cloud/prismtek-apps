@@ -1372,7 +1372,7 @@ final class AppState: ObservableObject {
     }
 
     var desktopTabOrder: [AppTab] {
-        [.missionControl, .buddy, .chat, .files, .skills, .artifacts, .settings]
+        [.missionControl, .buddy, .chat, .files, .artifacts, .settings]
     }
 
     var stableHomeTab: AppTab {

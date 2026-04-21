@@ -281,6 +281,28 @@ final class BuddyProfileStore: ObservableObject {
         return normalized
     }
 
+    func upsert(_ instance: BuddyInstance, using appState: AppState) {
+        mutate(using: appState) { contracts in
+            // In a real system, this would be a BuddyEventEngine.updateInstance call.
+            // For now, we directly update the library state to support the onboarding flow.
+            if let index = libraryState.instances.firstIndex(where: { $0.instanceId == instance.instanceId }) {
+                libraryState.instances[index] = instance
+            } else {
+                libraryState.instances.append(instance)
+            }
+            try store.persistLibraryState(libraryState)
+            
+            return BuddyPersistenceBundle(
+                libraryState: libraryState,
+                eventLog: eventLog,
+                activeBuddyMarkdown: nil,
+                rosterMarkdown: "",
+                actionTitle: "Upsert Buddy",
+                summary: "Direct state update for \(instance.displayName)"
+            )
+        }
+    }
+
     func install(template: CouncilStarterBuddyTemplate, using appState: AppState) {
         mutate(using: appState) { contracts in
             try BuddyEventEngine(contracts: contracts).install(
