@@ -16,7 +16,6 @@ private enum StudioSurface: String, CaseIterable, Identifiable {
 
 struct EditorTabView: View {
     @EnvironmentObject private var appState: AppState
-    @Environment(\.openURL) private var openURL
     @ObservedObject private var studioStore = PixelStudioStore.shared
     @State private var selectedSurface: StudioSurface = .pixelStudio
     @State private var lastReceipt: BeMoreReceipt?
@@ -50,7 +49,7 @@ struct EditorTabView: View {
                     Text("Buddy Studio")
                         .font(.system(size: 28, weight: .bold))
                         .foregroundColor(BMOTheme.textPrimary)
-                    Text("Studio is back to being useful: draw sprites natively here, keep local file editing, and open web-only admin surfaces in the browser.")
+                    Text("Studio is back to being useful: draw sprites natively here, keep local file editing, and jump straight into the app’s builder, control, and profile surfaces.")
                         .font(.subheadline)
                         .foregroundColor(BMOTheme.textSecondary)
                 }
@@ -180,18 +179,18 @@ struct EditorTabView: View {
 
             Divider()
 
-            Text("Browser-only admin links")
+            Text("Native control surfaces")
                 .font(.subheadline)
                 .foregroundColor(BMOTheme.textPrimary)
 
-            Text("Builder, Mission Control, and account/profile pages open externally when needed, but Studio itself stays native.")
+            Text("Builder planning, Mission Control, and profile/account management now stay inside the BeMore app instead of bouncing out to a website.")
                 .font(.caption)
                 .foregroundColor(BMOTheme.textSecondary)
 
             HStack(spacing: 8) {
-                externalLinkButton(.builderStudio)
-                externalLinkButton(.missionControl)
-                externalLinkButton(.myAccount)
+                nativeRouteButton(title: "Builder", destination: .missionControl)
+                nativeRouteButton(title: "Mission", destination: .missionControl)
+                nativeRouteButton(title: "Profiles", destination: .settings)
             }
         }
         .bmoCard()
@@ -221,10 +220,9 @@ struct EditorTabView: View {
         }
     }
 
-    private func externalLinkButton(_ route: BeMoreWebFeatureRoute) -> some View {
-        Button(route.title) {
-            guard let url = route.resolvedURL(stackConfig: appState.stackConfig) else { return }
-            openURL(url)
+    private func nativeRouteButton(title: String, destination: AppTab) -> some View {
+        Button(title) {
+            appState.route(to: destination)
         }
         .buttonStyle(BMOButtonStyle(isPrimary: false))
     }

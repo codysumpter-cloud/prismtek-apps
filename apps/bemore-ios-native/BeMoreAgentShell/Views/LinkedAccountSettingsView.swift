@@ -46,7 +46,7 @@ struct LinkedAccountsSectionView: View {
                 }
                 .buttonStyle(.bordered)
 
-                Button("Open") {
+                Button("Authorize") {
                     appState.linkedAccountStore.markPending(provider)
                     if let url = OAuthLinkService().authorizationURL(for: provider, stackConfig: appState.stackConfig) {
                         openURL(url)
@@ -93,7 +93,7 @@ private struct LinkedAccountEditorSheet: View {
                 Section("Status") {
                     Text(record.isLinked ? "Linked locally on this device" : "Not linked yet")
                         .foregroundColor(record.isLinked ? BMOTheme.success : BMOTheme.textSecondary)
-                    Button("Open provider in browser") {
+                    Button("Start provider authorization") {
                         appState.linkedAccountStore.markPending(provider)
                         dismiss()
                     }

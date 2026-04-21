@@ -425,11 +425,11 @@ enum BeMoreWebFeatureRoute: String, CaseIterable, Hashable, Identifiable {
         case .pixelStudio:
             return "Draw sprites, frame loops, export, and use Buddy as a pixel-art copilot."
         case .builderStudio:
-            return "Open the admin builder tool from prismtek.dev in the browser."
+            return "Open the native stack-builder and creator planning surfaces in Home and Studio."
         case .missionControl:
-            return "Open the website admin Mission Control surface in the browser."
+            return "Open the native Mission Control and runtime posture surfaces in the app."
         case .myAccount:
-            return "Open user profiles and account surfaces in the browser."
+            return "Open native profile, linked-account, and operator settings surfaces in the app."
         }
     }
 

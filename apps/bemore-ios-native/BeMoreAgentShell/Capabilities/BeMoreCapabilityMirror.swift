@@ -107,9 +107,9 @@ enum BeMoreCapabilityMirror {
         .init(id: "pokemon.team-builder", title: "Pokemon Team Builder", groupID: "skills", permissions: ["workspace.read", "workspace.write", "artifact.write"], routeMode: .native, trustBoundary: .nativeApp, appSurface: "Skills / Results", notes: "Flagship real skill backed by receipts and saved artifacts."),
         .init(id: "studio.pixel", title: "Pixel Studio", groupID: "studio", permissions: ["workspace.write", "artifact.write"], routeMode: .native, trustBoundary: .nativeApp, appSurface: "Studio", notes: "Native pixel project editing, Buddy finish/improve/animate artifacts, and local sprite workflow inside the app."),
         .init(id: "studio.pixel.animate", title: "Pixel Animation Assist", groupID: "studio", permissions: ["workspace.write", "artifact.write"], routeMode: .native, trustBoundary: .nativeApp, appSurface: "Studio / Chat", notes: "Buddy animation plans and finish passes for pixel projects."),
-        .init(id: "admin.builder", title: "Builder Studio", groupID: "admin", permissions: ["admin.access"], routeMode: .webShell, trustBoundary: .webShell, appSurface: "Studio", notes: "Website builder/admin tool opened externally from the app when needed."),
-        .init(id: "admin.mission-control", title: "Admin Mission Control", groupID: "admin", permissions: ["admin.access"], routeMode: .webShell, trustBoundary: .webShell, appSurface: "Studio", notes: "Website admin Mission Control opened externally from the app when needed."),
-        .init(id: "profile.manage", title: "Profile Management", groupID: "admin", permissions: ["profile.manage"], routeMode: .webShell, trustBoundary: .webShell, appSurface: "Studio / Settings", notes: "User-created profiles and account surfaces opened externally from the app when needed."),
+        .init(id: "admin.builder", title: "Builder Studio", groupID: "admin", permissions: ["admin.access"], routeMode: .native, trustBoundary: .nativeApp, appSurface: "Home / Studio", notes: "The stack builder and creator planning flow live in the native BeMore app surfaces."),
+        .init(id: "admin.mission-control", title: "Admin Mission Control", groupID: "admin", permissions: ["admin.access"], routeMode: .native, trustBoundary: .nativeApp, appSurface: "Home / Settings", notes: "Mission Control summary, runtime posture, and shell management are available through native app surfaces."),
+        .init(id: "profile.manage", title: "Profile Management", groupID: "admin", permissions: ["profile.manage"], routeMode: .native, trustBoundary: .nativeApp, appSurface: "Settings / Buddy", notes: "Profile, linked-account, and companion-management surfaces live natively in the app."),
         .init(id: "runtime.exec.safe", title: "Safe Runtime Exec", groupID: "runtime", permissions: ["approval.request", "event.emit"], routeMode: .linkedRuntime, trustBoundary: .linkedRuntime, appSurface: "Mission Control / Chat", notes: "Controlled command execution routed through paired runtime."),
         .init(id: "runtime.exec.full", title: "Full Runtime Exec", groupID: "runtime", permissions: ["approval.request", "event.emit"], routeMode: .linkedRuntime, trustBoundary: .linkedRuntime, appSurface: "Mission Control", notes: "Deep operator execution only through paired runtime, never hidden in the app."),
         .init(id: "runtime.resume", title: "Runtime Resume", groupID: "runtime", permissions: ["workspace.read", "event.emit"], routeMode: .linkedRuntime, trustBoundary: .linkedRuntime, appSurface: "Mission Control / Results", notes: "Resume sessions, task/results, and open approvals from paired runtime."),
@@ -136,7 +136,7 @@ extension AppState {
                 reason = "Buddy has native artifact/project help plus a linked web Studio surface in the app."
             case .webShell:
                 availability = .availableViaWebSurface
-                reason = "Available in-app through the embedded prismtek.dev web shell surface."
+                reason = "Available through a linked web surface when that route is intentionally configured."
             case .linkedAccount:
                 availability = .requiresLinkedAccount
                 reason = "The contract is mirrored, but real account linking still needs a shipped OAuth flow."

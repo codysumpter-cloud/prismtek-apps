@@ -3,7 +3,6 @@ import SwiftUI
 struct SettingsView: View {
     @EnvironmentObject private var appState: AppState
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.openURL) private var openURL
     @StateObject private var linkedRelayStore = BeMoreLinkedRelayStore()
     @State private var editingProvider: ProviderKind?
     @State private var showingTabManager = false
@@ -76,14 +75,14 @@ struct SettingsView: View {
                         }
                     }
 
-                    Button("Open Prismtek Account") {
-                        guard let url = BeMoreWebFeatureRoute.myAccount.resolvedURL(stackConfig: appState.stackConfig) else { return }
-                        openURL(url)
+                    Button("Open Home Builder / Mission surfaces") {
+                        appState.route(to: .missionControl)
+                        dismiss()
                     }
                     .foregroundColor(BMOTheme.accent)
                     .listRowBackground(BMOTheme.backgroundCard)
 
-                    Button("Open Builder / Mission / Profiles") {
+                    Button("Open Studio / Profiles") {
                         appState.route(to: .editor)
                         dismiss()
                     }
