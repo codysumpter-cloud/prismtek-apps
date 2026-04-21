@@ -295,7 +295,7 @@ extension BuddyProfileStore {
             result = BuddyTamagotchiEngine.play(instance: &instanceCopy, passiveState: &passiveState)
         case .train:
             // Get current focus for training
-            let focus = instance.progression.proficiencies.currentFocus ?? "general"
+            let focus = instance.state.currentFocus ?? "general"
             result = BuddyTamagotchiEngine.train(instance: &instanceCopy, passiveState: &passiveState, skillFocus: focus)
         case .checkIn:
             result = BuddyTamagotchiEngine.checkIn(instance: &instanceCopy, passiveState: &passiveState, rhythm: &rhythm)

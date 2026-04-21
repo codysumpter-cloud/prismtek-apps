@@ -127,8 +127,8 @@ enum BuddyTamagotchiEngine {
         passiveState.lastInteractionAt = now
         passiveState.totalInteractions += 1
         
-        // Update proficiencies
-        instance.progression.proficiencies.train(skill: skillFocus)
+ // Update proficiencies
+ instance.proficiencies.train(skill: skillFocus)
         
         return .success("Trained \(instance.displayName) in \(skillFocus). Skills improving!", mood: "working")
     }
@@ -169,7 +169,7 @@ enum BuddyTamagotchiEngine {
         return BuddyDailyRhythm(
             morningCheckIn: hour < 12 && passiveState.lastInteractionAt.map { calendar.isDate($0, inSameDayAs: now) } ?? false,
             eveningWindDown: hour > 18,
-            trainingSessionsToday: instance.progression.proficiencies.currentFocus != nil ? 1 : 0,
+            trainingSessionsToday: instance.state.currentFocus != nil ? 1 : 0,
             lastTrainingAt: passiveState.lastInteractionAt,
             dailyGoalMet: passiveState.energy > 50 && passiveState.attention > 30
         )
