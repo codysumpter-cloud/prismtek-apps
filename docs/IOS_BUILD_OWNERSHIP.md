@@ -1,44 +1,41 @@
 # iOS Build Ownership
 
-`prismtek-apps` is the intended long-term owner of BeMore iOS product build and release automation.
+`prismtek-apps` is now the current owner of the BeMore iOS product build and release lane.
 
-At the moment, `BeMore-stack` still owns the working BeMoreAgent iOS validation and TestFlight workflows.
-That is a transitional state, not the target state.
+The working native iPhone project inputs live here in `apps/bemore-ios-native`, and the current repo-owned GitHub Actions path also lives here.
 
 ## Rule
 
-Do not move release workflow ownership here until the actual iOS project inputs live in this repo.
+Treat `prismtek-apps` as the canonical product repo for the native iPhone app source, build docs, and iOS workflow references unless and until there is a deliberate rename or re-home.
 
-## Required assets before workflow migration
+## Current assets already in this repo
 
-Before canonical iOS build ownership can move here, this repo should contain:
-- a real BeMore iOS app path
+This repo now contains:
+- the real native BeMore iPhone app path in `apps/bemore-ios-native`
 - XcodeGen `project.yml`
 - `Info.plist`
-- export options plist for TestFlight upload
-- any build/runbook files needed for release
+- export options plist for upload
+- handoff and build docs for the current native app path
+- current repo-owned iOS workflow files
 
-Recommended target path:
-- `apps/bemore-ios`
+## Current workflow ownership
 
-## Intended future workflows
+The active repo-owned iOS workflows are:
+- `.github/workflows/bemoreagent-platform-ios-validate.yml`
+- `.github/workflows/bemore-ios-ci-testflight.yml`
 
-Once the project lives here, this repo should own:
-- `.github/workflows/bemore-ios-validate.yml`
-- `.github/workflows/bemore-ios-testflight.yml`
-- optional: platform-specific validation workflow only if a second iOS target still exists
+## Practical boundary
 
-## Safe migration order
+`prismtek-apps` owns:
+- native app source and project inputs
+- product-facing iOS build/release docs
+- workflow references and repo-side release hygiene for the native app
 
-1. Keep the working path alive in `BeMore-stack`
-2. Re-home the iOS project here
-3. Port validate workflow here
-4. Port TestFlight workflow here
-5. Mirror repo variables and secrets here
-6. Prove one real upload from this repo
-7. Then demote old workflow ownership in `BeMore-stack`
+`bmo-stack` still owns:
+- deeper operator/runtime posture
+- policy and council behavior
+- runtime contracts and integration depth that the app consumes
 
 ## Current status
 
-As of now, this repo is the product monorepo, but it is not yet the canonical iOS release owner.
-That changes only after the project and workflows are proven here.
+As of the current repo state, this repo is already the canonical iOS project and workflow owner. The remaining work is to keep the release lane green and the docs truthful, not to keep describing the working iOS project as if it lives somewhere else.
