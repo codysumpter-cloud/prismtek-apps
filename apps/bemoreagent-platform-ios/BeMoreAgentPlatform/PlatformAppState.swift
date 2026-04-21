@@ -104,28 +104,28 @@ final class PlatformAppState: ObservableObject {
     func launchSandbox(for workspaceName: String) {
         guard !workspaceName.isEmpty else { return }
         
-        let session = SandboxSessionRecord(workspaceName: workspaceName, status: \"launching\", connectURL: \"Connecting to backend...\", expiresAt: .now)
+        let session = SandboxSessionRecord(workspaceName: workspaceName, status: "launching", connectURL: "Connecting to backend...", expiresAt: .now)
         sessions.insert(session, at: 0)
         persistSessions()
         
         Task {
             do {
                 let response = try await apiService.launchSandbox(workspaceId: workspaceName)
-                if let url = response[\"url\"] as? String,
-                   let expiresAtStr = response[\"expiresAt\"] as? String,
+                if let url = response["url"] as? String,
+                   let expiresAtStr = response["expiresAt"] as? String,
                    let expiresAt = ISO8601DateFormatter().date(from: expiresAtStr),
                    let index = sessions.firstIndex(where: { $0.workspaceName == workspaceName }) {
                     
-                    sessions[index].status = \"running\"
+                    sessions[index].status = "running"
                     sessions[index].connectURL = url
                     sessions[index].expiresAt = expiresAt
                     persistSessions()
                 }
             } catch {
-                print(\"Sandbox API failed: \\(error)\")
+                print("Sandbox API failed: \\(error)")
                 if let index = sessions.firstIndex(where: { $0.workspaceName == workspaceName }) {
-                    sessions[index].status = \"failed\"
-                    sessions[index].connectURL = \"Failed to launch sandbox: \\(error.localizedDescription)\"
+                    sessions[index].status = "failed"
+                    sessions[index].connectURL = "Failed to launch sandbox: \\(error.localizedDescription)"
                     persistSessions()
                 }
             }
