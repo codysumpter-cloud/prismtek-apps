@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		03402B039CF9DF45B54DF223 /* GitHubService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7FECFDBD3D3AEC5E878025B /* GitHubService.swift */; };
+		0399E2C3FC3CE96A33636492 /* LinkedAccountFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE3C8999685EA6F0930AE1F /* LinkedAccountFlowTests.swift */; };
 		050E8AC29BD71DD2CE624EC5 /* AppState+OnboardingReset.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6B40F8A738278BBEE256BDA /* AppState+OnboardingReset.swift */; };
 		0AE4B7EF34A1275D3EB24F44 /* RuntimeServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563F4A15EF8152B7B1B52D97 /* RuntimeServices.swift */; };
 		0D0CAABB2A9B819C5AFD0056 /* BeMoreLinkedRelayStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765B1C073CA1E977EA63F10D /* BeMoreLinkedRelayStore.swift */; };
@@ -129,6 +130,7 @@
 		35A7E3F4783BF5FE1E200EF2 /* WebBrowserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebBrowserService.swift; sourceTree = "<group>"; };
 		36E9E960D904E8D231D97375 /* AppModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModels.swift; sourceTree = "<group>"; };
 		374355A842B897D2CBA658E1 /* MacPairingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacPairingView.swift; sourceTree = "<group>"; };
+		3AE3C8999685EA6F0930AE1F /* LinkedAccountFlowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedAccountFlowTests.swift; sourceTree = "<group>"; };
 		3EF7694C83936C35C3E8A3EF /* BeMoreChatDispatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeMoreChatDispatch.swift; sourceTree = "<group>"; };
 		4078CB06E5C5071B1AEB5ECA /* buddy-instance.schema.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "buddy-instance.schema.json"; sourceTree = "<group>"; };
 		4420ABF1EC389009DF514137 /* BuddyVisualView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyVisualView.swift; sourceTree = "<group>"; };
@@ -457,6 +459,7 @@
 				AD7B4DF2A69D1F91106A3B05 /* BeMoreCapabilityMirrorTests.swift */,
 				100128F33B7156476550D44E /* BeMoreChatDispatchTests.swift */,
 				01918E461FB736E2F15B0BDE /* BuddyRuntimeTests.swift */,
+				3AE3C8999685EA6F0930AE1F /* LinkedAccountFlowTests.swift */,
 				B01D9C27C2C675DC0E7C06D8 /* PixelStudioStoreTests.swift */,
 			);
 			path = BeMoreAgentShellTests;
@@ -654,6 +657,7 @@
 				9F4F08017919E300A977DB45 /* BeMoreCapabilityMirrorTests.swift in Sources */,
 				AB5F790ED8DBD20ABCFB9237 /* BeMoreChatDispatchTests.swift in Sources */,
 				DC499597B6A14E3FC52DFCE8 /* BuddyRuntimeTests.swift in Sources */,
+				0399E2C3FC3CE96A33636492 /* LinkedAccountFlowTests.swift in Sources */,
 				16B10AB4B3797A3604750520 /* PixelStudioStoreTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

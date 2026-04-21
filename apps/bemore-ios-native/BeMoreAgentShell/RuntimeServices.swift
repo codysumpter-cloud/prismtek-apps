@@ -1972,7 +1972,14 @@ final class AppState: ObservableObject {
     }
 
     func runSkill(id: String, input: [String: String] = [:]) -> BeMoreReceipt {
-        let receipt = workspaceRuntime.runSkill(id: id, input: input, config: stackConfig, preferences: userPreferencesStore.preferences, routeSummary: activeRouteModeLabel)
+        var enrichedInput = input
+        if id == "builtin.githubSearch" {
+            let githubRecord = linkedAccountStore.record(for: .github)
+            if let token = githubRecord.accessToken?.trimmingCharacters(in: .whitespacesAndNewlines), !token.isEmpty {
+                enrichedInput["accessToken"] = token
+            }
+        }
+        let receipt = workspaceRuntime.runSkill(id: id, input: enrichedInput, config: stackConfig, preferences: userPreferencesStore.preferences, routeSummary: activeRouteModeLabel)
         chatStore.messages.append(ChatMessage(role: .system, content: ReceiptFormatter.confirmedSummary(for: receipt)))
         chatStore.persist()
         return receipt

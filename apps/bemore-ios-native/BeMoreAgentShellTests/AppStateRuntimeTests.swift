@@ -123,6 +123,16 @@ final class AppStateRuntimeTests: XCTestCase {
         XCTAssertNil(appState.chatReturnTab)
     }
 
+    func testOpenChatWithPromptQueuesAndConsumesPrompt() {
+        let appState = AppState(engine: FakeLocalLLMEngine())
+
+        appState.openChat(with: "teach yourself how to triage my private repo inbox")
+
+        XCTAssertEqual(appState.selectedTab, .chat)
+        XCTAssertEqual(appState.consumePendingPrompt(), "teach yourself how to triage my private repo inbox")
+        XCTAssertNil(appState.consumePendingPrompt())
+    }
+
     func testCloudSystemPromptLeadsWithCompanionValueBeforeOperatorDepth() {
         var config = StackConfig.default
         config.stackName = "BeMoreAgent"

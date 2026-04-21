@@ -56,6 +56,7 @@ struct ChatView: View {
                     fileChipsBar
                 }
 
+                teachBuddyBar
                 inputBar
             }
             .background(BMOTheme.backgroundPrimary)
@@ -97,6 +98,9 @@ struct ChatView: View {
             .onAppear {
                 appState.workspaceRuntime.refreshMetadata()
                 store.load(for: appState.stackConfig)
+                if let queued = appState.consumePendingPrompt() {
+                    prompt = queued
+                }
             }
         }
     }
@@ -155,6 +159,19 @@ struct ChatView: View {
             .padding(.horizontal, BMOTheme.spacingMD)
             .padding(.vertical, BMOTheme.spacingSM)
         }
+    }
+
+    private var teachBuddyBar: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                teachPromptChip("Teach a skill", prompt: "teach yourself how to review my private GitHub repos and summarize the important changes")
+                teachPromptChip("Teach planning", prompt: "teach yourself how to turn my check-ins into a daily plan with one concrete next step")
+                teachPromptChip("Teach research", prompt: "teach yourself how to research a topic and save the result as a reusable skill")
+            }
+            .padding(.horizontal, BMOTheme.spacingMD)
+            .padding(.vertical, BMOTheme.spacingSM)
+        }
+        .background(BMOTheme.backgroundPrimary)
     }
 
     private var inputBar: some View {
@@ -256,6 +273,26 @@ struct ChatView: View {
             return "Create a Buddy so chat has a real companion identity."
         }
         return "\(buddy.identity.role) • \(buddy.state.currentFocus ?? "ready for the next useful step")"
+    }
+
+    private func teachPromptChip(_ title: String, prompt: String) -> some View {
+        Button {
+            self.prompt = prompt
+            isInputFocused = true
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: "sparkles")
+                    .font(.caption2)
+                Text(title)
+                    .font(.caption.weight(.semibold))
+            }
+            .foregroundColor(BMOTheme.accent)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 8)
+            .background(BMOTheme.accent.opacity(0.12))
+            .clipShape(Capsule())
+        }
+        .buttonStyle(.plain)
     }
 
     private var buddyMood: BuddyAnimationMood {

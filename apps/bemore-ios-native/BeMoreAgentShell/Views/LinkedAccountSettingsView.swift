@@ -12,7 +12,7 @@ struct LinkedAccountsSectionView: View {
                     .listRowBackground(BMOTheme.backgroundCard)
             }
 
-            Text("GitHub private repos can use a linked token immediately. ChatGPT/OpenAI and PixelLab now have native link state in the app. Full zero-auth callback completion still depends on the matching provider/backend setup, but the native link shell and local persistence are now in place.")
+            Text("GitHub private repos can use a linked token immediately. ChatGPT/OpenAI and PixelLab keep native link state here too. Provider browser hops now open the most relevant account/token page instead of a generic homepage. Full zero-auth callback completion still depends on matching provider/backend setup.")
                 .font(.caption)
                 .foregroundColor(BMOTheme.textSecondary)
                 .listRowBackground(BMOTheme.backgroundCard)
@@ -46,7 +46,7 @@ struct LinkedAccountsSectionView: View {
                 }
                 .buttonStyle(.bordered)
 
-                Button("Authorize") {
+                Button(browserActionLabel(for: provider)) {
                     appState.linkedAccountStore.markPending(provider)
                     if let url = OAuthLinkService().authorizationURL(for: provider, stackConfig: appState.stackConfig) {
                         openURL(url)
@@ -68,6 +68,17 @@ struct LinkedAccountsSectionView: View {
 
     private func statusColor(for record: LinkedAccountRecord) -> Color {
         record.isLinked ? BMOTheme.success : (record.status == .pending ? BMOTheme.warning : BMOTheme.textSecondary)
+    }
+
+    private func browserActionLabel(for provider: LinkedAccountProvider) -> String {
+        switch provider {
+        case .github:
+            return "Get Token"
+        case .chatgpt:
+            return "Open Keys"
+        case .pixelLab:
+            return "Open Site"
+        }
     }
 }
 

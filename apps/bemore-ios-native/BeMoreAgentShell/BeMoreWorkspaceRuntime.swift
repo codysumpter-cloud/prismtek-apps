@@ -646,11 +646,13 @@ final class BeMoreWorkspaceRuntime: ObservableObject {
         switch id {
         case "builtin.githubSearch":
             let query = input["query"] ?? ""
+            let accessToken = input["accessToken"]?.trimmingCharacters(in: .whitespacesAndNewlines)
             let action = begin(kind: .skillRun, source: "skills", title: "GitHub Search", input: ["query": query])
             Task {
                 do {
-                    let results = try await GitHubService.shared.searchRepositories(query: query)
-                    let summary = "Found \(results.count) repositories matching '\(query)'. Top result: \(results.first?.fullName ?? "none")."
+                    let results = try await GitHubService.shared.searchRepositories(query: query, accessToken: accessToken)
+                    let scopeSummary = (accessToken?.isEmpty == false) ? "including linked-account access" : "using public access"
+                    let summary = "Found \(results.count) repositories matching '\(query)' \(scopeSummary). Top result: \(results.first?.fullName ?? "none")."
                     let output = ["results": results.map { "\($0.fullName): \($0.description ?? "")" }.joined(separator: "\n"), "summary": summary]
                     _ = finish(action, status: .completed, summary: summary, output: output)
                 } catch {
