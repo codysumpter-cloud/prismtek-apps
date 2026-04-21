@@ -4,15 +4,15 @@ This is the single source of truth for producing a BeMoreAgent TestFlight upload
 
 ## Safe baseline
 
-- Known-good baseline merge: PR #202
 - Current safe runtime baseline: `main` still uses `MLCBridgeEngine()` from `BeMoreAgentShellApp.swift`
-- Do not merge speculative LiteRT runtime branches just to force a build.
+- Do not merge speculative local-runtime branches just to force a build green
+- The current source build number in `apps/bemore-ios-native/BeMoreAgentShell/Info.plist` is `40`
 
 ## Required repo state
 
 ### Secrets
 
-The `Build & TestFlight` workflow expects these GitHub repository secrets:
+The `BeMore iOS CI & TestFlight` workflow expects these GitHub repository secrets:
 
 - `APPSTORE_CONNECT_API_KEY`
 - `APPSTORE_CONNECT_KEY_ID`
@@ -39,42 +39,35 @@ Current expected signing inputs:
 
 If the `.p12` private-key export is blocked by macOS Keychain UI authorization, export it from Keychain
 Access on the Mac with the matching private key, base64 encode it, and set the three `BEMORE_IOS_*`
-secrets before rerunning `Build & TestFlight`.
+secrets before rerunning `BeMore iOS CI & TestFlight`.
 
-### Variables
+### Runner / variables
 
-The iOS validation and TestFlight jobs use:
+The current native iPhone workflow is pinned to a self-hosted runner label set that includes:
 
-- `BEMOREAGENT_IOS_RUNS_ON`
+- `self-hosted`
+- `prismtek-apps`
 
-Current expected value:
+Optional variable used by the workflow:
 
-```json
-["macos-latest"]
-```
+- `BEMOREAGENT_XCODE_DEVELOPER_DIR`
+
+This is an optional Xcode path override. If unset, the workflow defaults to `/Applications/Xcode.app/Contents/Developer`.
 
 ## What must be true before merge
 
 1. `apps/bemore-ios-native/project.yml` generates cleanly with `xcodegen generate`.
 2. `BeMoreAgent` builds for `generic/platform=iOS Simulator`.
 3. `apps/bemore-ios-native/project.yml` keeps `PRODUCT_BUNDLE_IDENTIFIER: BeMoreAgent` exactly. Do not change it to a reverse-DNS id unless the Apple identifier itself is changed first.
-4. The PR body includes the required task contract:
-
-```md
-## Task contract
-- Plan: `context/plans/<file>.md`
-- Verification: yes
-- Rollback: yes
-```
-
+4. The PR body includes the required task contract when the repo is using that contract for the change.
 5. The PR is mergeable and the relevant checks are green.
-6. `CFBundleVersion` is higher than the last uploaded build.
+6. `CFBundleVersion` is higher than the last uploaded build **only if** App Store Connect requires a newer build than the current source value.
 
-## How to ship the next build
+## How to ship the current build
 
 1. Branch from current `main`.
 2. Make the smallest safe iOS change.
-3. If the build must reach TestFlight, bump `apps/bemore-ios-native/BeMoreAgentShell/Info.plist` `CFBundleVersion`.
+3. Keep `apps/bemore-ios-native/BeMoreAgentShell/Info.plist` `CFBundleVersion` at `40` unless App Store Connect rejects it and forces a bump.
 4. Run local verification:
 
 ```bash
@@ -89,33 +82,39 @@ xcodebuild \
   build
 ```
 
-5. Open the PR with a plan file under `context/plans/` and the task contract in the body.
-6. Wait for `Generate and build BeMoreAgent` and the standard repo checks to pass.
+5. Open the PR with a clear summary, verification, and rollback notes.
+6. Wait for the relevant iOS/native checks to pass.
 7. Merge to `main`.
-8. Confirm the `Build & TestFlight` workflow starts automatically.
+8. Confirm `.github/workflows/bemore-ios-ci-testflight.yml` starts automatically, or run it manually with `workflow_dispatch` if needed.
 9. Open the workflow run summary and verify the archived/source version and build number match the intended release.
+10. Do not claim success until the upload path actually succeeds.
 
 ## Workflow triggers
 
-### PR validation
+### Main native iOS validation + TestFlight upload
 
-`BeMoreAgent iOS validation` now runs on every PR and push to `main` so the check is consistently visible to admins.
+`.github/workflows/bemore-ios-ci-testflight.yml` runs on:
 
-### TestFlight upload
-
-`Build & TestFlight` runs on:
-
-- pushes to `main` touching `apps/bemore-ios-native/**`, or
+- pushes to `main` for changes touching `apps/bemore-ios-native/**`, relevant shared packages, or the workflow file itself
+- pull requests touching the same paths
 - manual `workflow_dispatch`
+
+This is the main current repo-owned lane for the native iPhone app in `apps/bemore-ios-native`.
+
+### Separate platform validation workflow
+
+`.github/workflows/bemoreagent-platform-ios-validate.yml` validates `apps/bemoreagent-platform-ios/**`.
+
+Do not confuse that workflow with the current BeMore native iPhone source of truth in `apps/bemore-ios-native`.
 
 ## What counts as proof
 
 A release candidate is valid when all of the following are true:
 
-- the PR merge commit is on `main`,
-- the `Build & TestFlight` workflow run for that commit succeeds,
-- the workflow summary shows the expected version/build pair,
-- there is no archive/export/upload failure in the run logs.
+- the intended commit is on `main`
+- the `.github/workflows/bemore-ios-ci-testflight.yml` run for that commit succeeds
+- the workflow summary shows the expected version/build pair
+- there is no archive/export/upload failure in the run logs
 
 ## External beta readiness checklist
 
@@ -133,6 +132,6 @@ A build is only considered external-tester ready when **both** the GitHub upload
 
 If any Apple-side item above is missing, report the exact blocker plainly instead of claiming the build is ready for external testers.
 
-## Current LiteRT note
+## Current local-runtime note
 
-As of 2026-04-09, LiteRT runtime work should be rebuilt as a fresh minimal PR from `main`. Do not merge PRs #203, #204, or #205 as a shortcut.
+The local runtime should be rebuilt as a fresh minimal PR from current `main`. Do not merge speculative historical runtime branches as a shortcut. Start from the implementation boundaries documented in `apps/bemore-ios-native/LOCAL_RUNTIME_IMPLEMENTATION_PLAN.md` and prove real-device first-token generation before expanding native power claims.
