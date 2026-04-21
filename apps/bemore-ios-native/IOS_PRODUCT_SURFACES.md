@@ -47,7 +47,7 @@ This file is the current source of truth for what the BeMoreAgent iOS shell actu
 ### Repo-backed surface briefs
 
 - `docs/MISSION_CONTROL.md`
-- `apps/openclaw-shell-ios/ADMIN_TESTFLIGHT_RUNBOOK.md`
+- `apps/bemore-ios-native/ADMIN_TESTFLIGHT_RUNBOOK.md`
 - `docs/POKEMON_CHAMPIONS_TEAM_BUILDER_BACKEND.md`
 
 These are wrapped as mobile briefs inside Mission Control so the app can expose real stack scope
@@ -85,7 +85,7 @@ Why:
 
 ## Deferred
 
-### Full OpenClaw dashboard parity
+### Full BeMore dashboard parity
 
 Deferred because the current phone shell is product-first, not a full desktop operator workstation.
 

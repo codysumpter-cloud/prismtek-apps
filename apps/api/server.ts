@@ -356,7 +356,7 @@ async function materializeAppearanceProfile(draft: BuddyAppearanceStudioDraft, p
       sourceOfTruth: 'prismtek-apps',
       reusedFrom: [
         'packages/core/buddyPersonalizationEngine.ts',
-        'apps/bemore-ios-native/OpenClawShell/Views/BuddyAsciiView.swift',
+        'apps/bemore-ios-native/BeMoreAgentShell/Views/BuddyAsciiView.swift',
       ],
     },
     createdAt: timestamp,

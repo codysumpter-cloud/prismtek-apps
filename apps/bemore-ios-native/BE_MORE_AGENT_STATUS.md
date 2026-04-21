@@ -1,12 +1,12 @@
 # BeMoreAgent native iOS status
 
-This file summarizes the current truthful state of the iOS shell on `master`.
+This file summarizes the current truthful state of the iOS shell on `main`.
 
 ## Current source of truth
 
 The native app lives in:
 
-- `apps/openclaw-shell-ios`
+- `apps/bemore-ios-native`
 
 Current shipped shell surfaces include:
 
@@ -42,7 +42,7 @@ Current shipped shell surfaces include:
 ## Local build path
 
 ```bash
-cd apps/openclaw-shell-ios
+cd apps/bemore-ios-native
 xcodegen generate
 xcodebuild -project BeMoreAgent.xcodeproj \
   -scheme BeMoreAgent \
@@ -57,7 +57,7 @@ xcodebuild -project BeMoreAgent.xcodeproj \
 - `CFBundleVersion` is currently `19` because App Store Connect already has build `18` and rejects duplicate uploads.
 - `IPHONEOS_DEPLOYMENT_TARGET` is currently `26.0`.
 - TestFlight delivery is repo-managed through `.github/workflows/testflight.yml`.
-- The operator runbook for that path is `apps/openclaw-shell-ios/ADMIN_TESTFLIGHT_RUNBOOK.md`.
+- The operator runbook for that path is `apps/bemore-ios-native/ADMIN_TESTFLIGHT_RUNBOOK.md`.
 - Xcode Cloud is not the required release path for this target right now.
 
 ## Honest limits

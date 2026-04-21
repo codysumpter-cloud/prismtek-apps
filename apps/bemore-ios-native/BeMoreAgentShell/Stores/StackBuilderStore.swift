@@ -6,7 +6,7 @@ struct StackCompiler {
         let operatorName = cleanOperator.isEmpty ? "Operator" : cleanOperator
 
         let cleanStackName = draft.stackName.trimmingCharacters(in: .whitespacesAndNewlines)
-        let stackName = cleanStackName.isEmpty ? "\(operatorName)'s OpenClaw" : cleanStackName
+        let stackName = cleanStackName.isEmpty ? "\(operatorName)'s BeMore" : cleanStackName
 
         let cleanOutcome = draft.primaryOutcome.trimmingCharacters(in: .whitespacesAndNewlines)
         let outcome = cleanOutcome.isEmpty ? defaultOutcome(for: draft.focus) : cleanOutcome
@@ -15,7 +15,7 @@ struct StackCompiler {
 
         let recommendedModelStrategy = modelStrategy(for: draft)
         let workspaceGuidance = workspaceStrategy(for: draft)
-        let chatSystemPrompt = "You are assisting inside \(stackName), a local-first OpenClaw operating system for \(operatorName). Focus area: \(draft.focus.title). Primary outcome: \(outcome). Favor concrete next steps, preserve local context, and treat the iPhone shell as the source of truth."
+        let chatSystemPrompt = "You are assisting inside \(stackName), a local-first BeMore operating system for \(operatorName). Focus area: \(draft.focus.title). Primary outcome: \(outcome). Favor concrete next steps, preserve local context, and treat the iPhone shell as the source of truth."
         let chatInputPlaceholder = placeholder(for: draft)
         let starterPrompts = prompts(for: draft, stackName: stackName, operatorName: operatorName, outcome: outcome)
         let quickActions = quickActions(for: draft)

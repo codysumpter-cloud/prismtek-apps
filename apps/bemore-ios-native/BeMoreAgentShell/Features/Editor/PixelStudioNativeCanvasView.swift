@@ -5,7 +5,7 @@ extension Paths {
     static var pixelStudioCanvasFile: URL { stateDirectory.appendingPathComponent("pixel-studio-canvas.json") }
 }
 
-struct PixelStudioFrame: Identifiable, Codable, Hashable {
+struct PixelStudioCanvasFrame: Identifiable, Codable, Hashable {
     var id: String
     var pixels: [String]
 }
@@ -15,7 +15,7 @@ struct PixelStudioCanvasDocument: Codable, Hashable {
     var palette: [String]
     var currentColor: String
     var selectedFrameID: String
-    var frames: [PixelStudioFrame]
+    var frames: [PixelStudioCanvasFrame]
     var lastUpdatedAt: Date
 
     static let `default` = PixelStudioCanvasDocument(
@@ -23,7 +23,7 @@ struct PixelStudioCanvasDocument: Codable, Hashable {
         palette: ["#9EF0D0", "#2B7A78", "#17252A", "#FEF6E8"],
         currentColor: "#9EF0D0",
         selectedFrameID: "frame-1",
-        frames: [PixelStudioFrame(id: "frame-1", pixels: Array(repeating: "", count: 32 * 32))],
+        frames: [PixelStudioCanvasFrame(id: "frame-1", pixels: Array(repeating: "", count: 32 * 32))],
         lastUpdatedAt: .now
     )
 }
@@ -38,7 +38,7 @@ final class PixelStudioCanvasStore: ObservableObject {
         load()
     }
 
-    var selectedFrame: PixelStudioFrame? {
+    var selectedFrame: PixelStudioCanvasFrame? {
         document.frames.first(where: { $0.id == document.selectedFrameID }) ?? document.frames.first
     }
 
@@ -63,7 +63,7 @@ final class PixelStudioCanvasStore: ObservableObject {
         if document.canvasSize != size {
             document.canvasSize = size
             document.frames = document.frames.map { frame in
-                PixelStudioFrame(id: frame.id, pixels: resizedPixels(frame.pixels, from: inferredOldSize(frame.pixels), to: size))
+                PixelStudioCanvasFrame(id: frame.id, pixels: resizedPixels(frame.pixels, from: inferredOldSize(frame.pixels), to: size))
             }
             changed = true
         }
@@ -77,7 +77,7 @@ final class PixelStudioCanvasStore: ObservableObject {
         }
 
         while document.frames.count < frameCount {
-            document.frames.append(PixelStudioFrame(id: "frame-\(document.frames.count + 1)", pixels: Array(repeating: "", count: size * size)))
+            document.frames.append(PixelStudioCanvasFrame(id: "frame-\(document.frames.count + 1)", pixels: Array(repeating: "", count: size * size)))
             changed = true
         }
         if document.frames.count > frameCount {
@@ -85,7 +85,7 @@ final class PixelStudioCanvasStore: ObservableObject {
             changed = true
         }
         if document.frames.isEmpty {
-            document.frames = [PixelStudioFrame(id: "frame-1", pixels: Array(repeating: "", count: size * size))]
+            document.frames = [PixelStudioCanvasFrame(id: "frame-1", pixels: Array(repeating: "", count: size * size))]
             changed = true
         }
         if document.frames.contains(where: { $0.id == document.selectedFrameID }) == false {
@@ -123,14 +123,14 @@ final class PixelStudioCanvasStore: ObservableObject {
 
     func duplicateSelectedFrame() {
         guard let frame = selectedFrame else { return }
-        let copy = PixelStudioFrame(id: "frame-\(document.frames.count + 1)", pixels: frame.pixels)
+        let copy = PixelStudioCanvasFrame(id: "frame-\(document.frames.count + 1)", pixels: frame.pixels)
         document.frames.append(copy)
         document.selectedFrameID = copy.id
         touchAndPersist()
     }
 
     func addBlankFrame() {
-        let frame = PixelStudioFrame(id: "frame-\(document.frames.count + 1)", pixels: Array(repeating: "", count: document.canvasSize * document.canvasSize))
+        let frame = PixelStudioCanvasFrame(id: "frame-\(document.frames.count + 1)", pixels: Array(repeating: "", count: document.canvasSize * document.canvasSize))
         document.frames.append(frame)
         document.selectedFrameID = frame.id
         touchAndPersist()
@@ -179,7 +179,7 @@ final class PixelStudioCanvasStore: ObservableObject {
 
     private func sanitize() {
         if document.frames.isEmpty {
-            document.frames = [PixelStudioFrame(id: "frame-1", pixels: Array(repeating: "", count: document.canvasSize * document.canvasSize))]
+            document.frames = [PixelStudioCanvasFrame(id: "frame-1", pixels: Array(repeating: "", count: document.canvasSize * document.canvasSize))]
         }
         if document.palette.isEmpty {
             document.palette = ["#9EF0D0", "#2B7A78", "#17252A", "#FEF6E8"]

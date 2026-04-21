@@ -5,7 +5,7 @@ This is the single source of truth for producing a BeMoreAgent TestFlight upload
 ## Safe baseline
 
 - Known-good baseline merge: PR #202
-- Current safe runtime baseline: `master` still uses `MLCBridgeEngine()` from `BeMoreAgentShellApp.swift`
+- Current safe runtime baseline: `main` still uses `MLCBridgeEngine()` from `BeMoreAgentShellApp.swift`
 - Do not merge speculative LiteRT runtime branches just to force a build.
 
 ## Required repo state
@@ -55,9 +55,9 @@ Current expected value:
 
 ## What must be true before merge
 
-1. `apps/openclaw-shell-ios/project.yml` generates cleanly with `xcodegen generate`.
+1. `apps/bemore-ios-native/project.yml` generates cleanly with `xcodegen generate`.
 2. `BeMoreAgent` builds for `generic/platform=iOS Simulator`.
-3. `apps/openclaw-shell-ios/project.yml` keeps `PRODUCT_BUNDLE_IDENTIFIER: BeMoreAgent` exactly. Do not change it to a reverse-DNS id unless the Apple identifier itself is changed first.
+3. `apps/bemore-ios-native/project.yml` keeps `PRODUCT_BUNDLE_IDENTIFIER: BeMoreAgent` exactly. Do not change it to a reverse-DNS id unless the Apple identifier itself is changed first.
 4. The PR body includes the required task contract:
 
 ```md
@@ -72,13 +72,13 @@ Current expected value:
 
 ## How to ship the next build
 
-1. Branch from current `master`.
+1. Branch from current `main`.
 2. Make the smallest safe iOS change.
-3. If the build must reach TestFlight, bump `apps/openclaw-shell-ios/BeMoreAgentShell/Info.plist` `CFBundleVersion`.
+3. If the build must reach TestFlight, bump `apps/bemore-ios-native/BeMoreAgentShell/Info.plist` `CFBundleVersion`.
 4. Run local verification:
 
 ```bash
-cd apps/openclaw-shell-ios
+cd apps/bemore-ios-native
 xcodegen generate
 xcodebuild \
   -project BeMoreAgent.xcodeproj \
@@ -91,7 +91,7 @@ xcodebuild \
 
 5. Open the PR with a plan file under `context/plans/` and the task contract in the body.
 6. Wait for `Generate and build BeMoreAgent` and the standard repo checks to pass.
-7. Merge to `master`.
+7. Merge to `main`.
 8. Confirm the `Build & TestFlight` workflow starts automatically.
 9. Open the workflow run summary and verify the archived/source version and build number match the intended release.
 
@@ -99,20 +99,20 @@ xcodebuild \
 
 ### PR validation
 
-`BeMoreAgent iOS validation` now runs on every PR and push to `master` so the check is consistently visible to admins.
+`BeMoreAgent iOS validation` now runs on every PR and push to `main` so the check is consistently visible to admins.
 
 ### TestFlight upload
 
 `Build & TestFlight` runs on:
 
-- pushes to `master` touching `apps/openclaw-shell-ios/**`, or
+- pushes to `main` touching `apps/bemore-ios-native/**`, or
 - manual `workflow_dispatch`
 
 ## What counts as proof
 
 A release candidate is valid when all of the following are true:
 
-- the PR merge commit is on `master`,
+- the PR merge commit is on `main`,
 - the `Build & TestFlight` workflow run for that commit succeeds,
 - the workflow summary shows the expected version/build pair,
 - there is no archive/export/upload failure in the run logs.
@@ -135,4 +135,4 @@ If any Apple-side item above is missing, report the exact blocker plainly instea
 
 ## Current LiteRT note
 
-As of 2026-04-09, LiteRT runtime work should be rebuilt as a fresh minimal PR from `master`. Do not merge PRs #203, #204, or #205 as a shortcut.
+As of 2026-04-09, LiteRT runtime work should be rebuilt as a fresh minimal PR from `main`. Do not merge PRs #203, #204, or #205 as a shortcut.

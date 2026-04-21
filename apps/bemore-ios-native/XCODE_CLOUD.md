@@ -5,19 +5,19 @@ This subtree is ready for Xcode Cloud setup with a small project-generation step
 ## Why the custom script exists
 
 The native iOS app uses `project.yml` and `xcodegen` to generate `BeMoreAgent.xcodeproj`.
-Xcode Cloud needs that project to exist before the build starts, so `ci_scripts/ci_post_clone.sh` installs `xcodegen` if needed and runs `xcodegen generate` inside `apps/openclaw-shell-ios`.
+Xcode Cloud needs that project to exist before the build starts, so `ci_scripts/ci_post_clone.sh` installs `xcodegen` if needed and runs `xcodegen generate` inside `apps/bemore-ios-native`.
 
 ## Repository path
 
 Use this app directory when setting up the project in Xcode:
 
-- `apps/openclaw-shell-ios`
+- `apps/bemore-ios-native`
 
 ## Expected generated project
 
 The post-clone script generates:
 
-- `apps/openclaw-shell-ios/BeMoreAgent.xcodeproj`
+- `apps/bemore-ios-native/BeMoreAgent.xcodeproj`
 
 ## Scheme / target
 
@@ -48,7 +48,7 @@ You still need to finish the Apple-side setup in Xcode / App Store Connect:
 
 ```bash
 brew install xcodegen
-cd apps/openclaw-shell-ios
+cd apps/bemore-ios-native
 xcodegen generate
 xcodebuild -project BeMoreAgent.xcodeproj \
   -scheme BeMoreAgent \

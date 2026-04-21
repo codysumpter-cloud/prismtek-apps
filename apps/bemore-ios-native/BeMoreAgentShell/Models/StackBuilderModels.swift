@@ -34,7 +34,7 @@ enum StackBuilderFocus: String, Codable, CaseIterable, Identifiable {
         case .personalOperator:
             return "Run a local-first operating system for your day."
         case .codeWorkbench:
-            return "Turn OpenClaw into a pocket builder for software stacks."
+            return "Turn BeMore into a pocket builder for software stacks."
         case .modelLab:
             return "Keep model experiments, packaging, and validation close at hand."
         case .creatorStudio:

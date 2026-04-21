@@ -1617,7 +1617,6 @@ final class BeMoreWorkspaceRuntime: ObservableObject {
 }
 
 // Temporary compatibility alias while call sites migrate to BeMore naming.
-typealias LegacyOpenClawWorkspaceRuntime = BeMoreWorkspaceRuntime
 
 struct BuddyRuntimeStatus {
     var activeModelAdapter: String

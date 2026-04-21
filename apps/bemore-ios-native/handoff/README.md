@@ -8,7 +8,7 @@ This folder is a single-download handoff for opening the native iPhone app in Xc
 
 ## What is inside the zip
 
-- the `apps/openclaw-shell-ios` scaffold packaged as a standalone Xcode handoff bundle
+- the `apps/bemore-ios-native` scaffold packaged as a standalone Xcode handoff bundle
 - `HANDOFF_INSTRUCTIONS.md`
 - the native SwiftUI source scaffold, project manifest, assets, and README needed to generate the Xcode project locally
 

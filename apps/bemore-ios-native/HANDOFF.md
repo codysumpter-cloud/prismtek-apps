@@ -4,7 +4,7 @@ Use this guide when handing the native app to someone with a Mac and Apple Devel
 
 ## App location
 
-- `apps/openclaw-shell-ios`
+- `apps/bemore-ios-native`
 
 ## What is already true in the repo
 
@@ -19,7 +19,7 @@ Use this guide when handing the native app to someone with a Mac and Apple Devel
 
 ```bash
 brew install xcodegen
-cd apps/openclaw-shell-ios
+cd apps/bemore-ios-native
 xcodegen generate
 open BeMoreAgent.xcodeproj
 ```
@@ -56,7 +56,7 @@ xcodebuild -project BeMoreAgent.xcodeproj \
 Two workflows matter:
 
 - `.github/workflows/bemoreagent-ios-validate.yml` builds the app on pull requests and pushes
-- `.github/workflows/testflight.yml` archives and uploads to TestFlight on `master`
+- `.github/workflows/testflight.yml` archives and uploads to TestFlight on `main`
 
 Required GitHub repo configuration:
 

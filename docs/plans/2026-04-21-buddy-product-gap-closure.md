@@ -6,7 +6,7 @@
 
 **Architecture:** Keep the iPhone app native-first. Use browser surfaces only for explicit OAuth/account flows. Move Buddy appearance and customization into a shared native surface reused by Buddy and onboarding. Treat built-in capabilities as built-in, not faux skills. Preserve the current chat-to-skill teaching flow and expand it where it is already real.
 
-**Tech Stack:** SwiftUI, local persisted app state in `OpenClawShell`, existing Buddy event/store/runtime services, XcodeGen project generation.
+**Tech Stack:** SwiftUI, local persisted app state in `BeMoreShell`, existing Buddy event/store/runtime services, XcodeGen project generation.
 
 ---
 
@@ -38,10 +38,10 @@
 **Objective:** Get the restored native Studio changes committed and ready as the new baseline before layering more product work.
 
 **Files:**
-- Modify: `apps/bemore-ios-native/OpenClawShell/Features/Editor/EditorView.swift`
-- Modify: `apps/bemore-ios-native/OpenClawShell/Features/Editor/PixelStudioModels.swift`
-- Create: `apps/bemore-ios-native/OpenClawShell/Features/Editor/PixelStudioNativeEditor.swift`
-- Create: `apps/bemore-ios-native/OpenClawShellTests/PixelStudioStoreTests.swift`
+- Modify: `apps/bemore-ios-native/BeMoreAgentShell/Features/Editor/EditorView.swift`
+- Modify: `apps/bemore-ios-native/BeMoreAgentShell/Features/Editor/PixelStudioModels.swift`
+- Create: `apps/bemore-ios-native/BeMoreAgentShell/Features/Editor/PixelStudioNativeEditor.swift`
+- Create: `apps/bemore-ios-native/BeMoreAgentShellTests/PixelStudioStoreTests.swift`
 - Modify: `apps/bemore-ios-native/BeMoreAgent.xcodeproj/project.pbxproj`
 
 **Verification:**
@@ -55,13 +55,13 @@
 **Objective:** Split `BuddyView.swift` into smaller surfaces so Buddy stops feeling long and chaotic.
 
 **Files:**
-- Create: `apps/bemore-ios-native/OpenClawShell/Features/Buddy/BuddyOverviewSection.swift`
-- Create: `apps/bemore-ios-native/OpenClawShell/Features/Buddy/BuddyAppearanceSection.swift`
-- Create: `apps/bemore-ios-native/OpenClawShell/Features/Buddy/BuddyCareSection.swift`
-- Create: `apps/bemore-ios-native/OpenClawShell/Features/Buddy/BuddyTrainingSection.swift`
-- Create: `apps/bemore-ios-native/OpenClawShell/Features/Buddy/BuddyRosterSection.swift`
-- Create: `apps/bemore-ios-native/OpenClawShell/Features/Buddy/BuddyTradeSection.swift`
-- Modify: `apps/bemore-ios-native/OpenClawShell/Views/BuddyView.swift`
+- Create: `apps/bemore-ios-native/BeMoreAgentShell/Features/Buddy/BuddyOverviewSection.swift`
+- Create: `apps/bemore-ios-native/BeMoreAgentShell/Features/Buddy/BuddyAppearanceSection.swift`
+- Create: `apps/bemore-ios-native/BeMoreAgentShell/Features/Buddy/BuddyCareSection.swift`
+- Create: `apps/bemore-ios-native/BeMoreAgentShell/Features/Buddy/BuddyTrainingSection.swift`
+- Create: `apps/bemore-ios-native/BeMoreAgentShell/Features/Buddy/BuddyRosterSection.swift`
+- Create: `apps/bemore-ios-native/BeMoreAgentShell/Features/Buddy/BuddyTradeSection.swift`
+- Modify: `apps/bemore-ios-native/BeMoreAgentShell/Views/BuddyView.swift`
 - Modify: `apps/bemore-ios-native/project.yml`
 
 **Acceptance criteria:**
@@ -80,11 +80,11 @@
 **Objective:** Let users customize Buddy appearance during onboarding.
 
 **Files:**
-- Modify: `apps/bemore-ios-native/OpenClawShell/OnboardingFlow.swift`
-- Modify: `apps/bemore-ios-native/OpenClawShell/AppModels.swift`
-- Create: `apps/bemore-ios-native/OpenClawShell/Features/Buddy/BuddyAppearanceEditorView.swift`
-- Modify: `apps/bemore-ios-native/OpenClawShell/BuddyInstanceStore.swift`
-- Modify: `apps/bemore-ios-native/OpenClawShell/BuddyEventEngine.swift`
+- Modify: `apps/bemore-ios-native/BeMoreAgentShell/OnboardingFlow.swift`
+- Modify: `apps/bemore-ios-native/BeMoreAgentShell/AppModels.swift`
+- Create: `apps/bemore-ios-native/BeMoreAgentShell/Features/Buddy/BuddyAppearanceEditorView.swift`
+- Modify: `apps/bemore-ios-native/BeMoreAgentShell/BuddyInstanceStore.swift`
+- Modify: `apps/bemore-ios-native/BeMoreAgentShell/BuddyEventEngine.swift`
 - Modify: `apps/bemore-ios-native/project.yml`
 
 **Acceptance criteria:**
@@ -104,11 +104,11 @@
 **Objective:** Reuse one native appearance editor in both Buddy and onboarding.
 
 **Files:**
-- Create: `apps/bemore-ios-native/OpenClawShell/Features/Buddy/BuddyAppearanceEditorView.swift`
-- Modify: `apps/bemore-ios-native/OpenClawShell/Views/BuddyView.swift`
-- Modify: `apps/bemore-ios-native/OpenClawShell/Views/BuddyVisualView.swift`
-- Modify: `apps/bemore-ios-native/OpenClawShell/Views/BuddyPixelView.swift`
-- Modify: `apps/bemore-ios-native/OpenClawShell/BuddyContracts.swift`
+- Create: `apps/bemore-ios-native/BeMoreAgentShell/Features/Buddy/BuddyAppearanceEditorView.swift`
+- Modify: `apps/bemore-ios-native/BeMoreAgentShell/Views/BuddyView.swift`
+- Modify: `apps/bemore-ios-native/BeMoreAgentShell/Views/BuddyVisualView.swift`
+- Modify: `apps/bemore-ios-native/BeMoreAgentShell/Views/BuddyPixelView.swift`
+- Modify: `apps/bemore-ios-native/BeMoreAgentShell/BuddyContracts.swift`
 
 **Acceptance criteria:**
 - One editor handles ASCII and pixel look setup.
@@ -122,13 +122,13 @@
 **Objective:** Put real native linked-account state and browser OAuth launch points into the app instead of placeholder copy.
 
 **Files:**
-- Create: `apps/bemore-ios-native/OpenClawShell/Services/LinkedAccountStore.swift`
-- Create: `apps/bemore-ios-native/OpenClawShell/Services/OAuthLinkService.swift`
-- Modify: `apps/bemore-ios-native/OpenClawShell/Views/SettingsView.swift`
-- Modify: `apps/bemore-ios-native/OpenClawShell/GitHubService.swift`
-- Modify: `apps/bemore-ios-native/OpenClawShell/AppModels.swift`
-- Modify: `apps/bemore-ios-native/OpenClawShell/Capabilities/BeMoreCapabilityMirror.swift`
-- Modify: `apps/bemore-ios-native/OpenClawShell/RuntimeServices.swift`
+- Create: `apps/bemore-ios-native/BeMoreAgentShell/Services/LinkedAccountStore.swift`
+- Create: `apps/bemore-ios-native/BeMoreAgentShell/Services/OAuthLinkService.swift`
+- Modify: `apps/bemore-ios-native/BeMoreAgentShell/Views/SettingsView.swift`
+- Modify: `apps/bemore-ios-native/BeMoreAgentShell/GitHubService.swift`
+- Modify: `apps/bemore-ios-native/BeMoreAgentShell/AppModels.swift`
+- Modify: `apps/bemore-ios-native/BeMoreAgentShell/Capabilities/BeMoreCapabilityMirror.swift`
+- Modify: `apps/bemore-ios-native/BeMoreAgentShell/RuntimeServices.swift`
 - Modify: `apps/bemore-ios-native/project.yml`
 
 **Acceptance criteria:**
@@ -147,9 +147,9 @@
 **Objective:** Support authenticated GitHub API requests once a user links GitHub.
 
 **Files:**
-- Modify: `apps/bemore-ios-native/OpenClawShell/GitHubService.swift`
-- Modify: `apps/bemore-ios-native/OpenClawShell/OpenClawWorkspaceRuntime.swift`
-- Modify: `apps/bemore-ios-native/OpenClawShell/RuntimeServices.swift`
+- Modify: `apps/bemore-ios-native/BeMoreAgentShell/GitHubService.swift`
+- Modify: `apps/bemore-ios-native/BeMoreAgentShell/BeMoreWorkspaceRuntime.swift`
+- Modify: `apps/bemore-ios-native/BeMoreAgentShell/RuntimeServices.swift`
 - Add tests around authenticated request header generation if test harness allows.
 
 **Acceptance criteria:**
@@ -164,11 +164,11 @@
 **Objective:** Stop misleading the user about local models and tighten the local route UX.
 
 **Files:**
-- Modify: `apps/bemore-ios-native/OpenClawShell/RuntimeServices.swift`
-- Modify: `apps/bemore-ios-native/OpenClawShell/Views/HomeView.swift`
-- Modify: `apps/bemore-ios-native/OpenClawShell/Views/ChatView.swift`
-- Modify: `apps/bemore-ios-native/OpenClawShell/Views/ModelsView.swift`
-- Modify: `apps/bemore-ios-native/OpenClawShell/Features/Models/ModelsTabView.swift`
+- Modify: `apps/bemore-ios-native/BeMoreAgentShell/RuntimeServices.swift`
+- Modify: `apps/bemore-ios-native/BeMoreAgentShell/Views/HomeView.swift`
+- Modify: `apps/bemore-ios-native/BeMoreAgentShell/Views/ChatView.swift`
+- Modify: `apps/bemore-ios-native/BeMoreAgentShell/Views/ModelsView.swift`
+- Modify: `apps/bemore-ios-native/BeMoreAgentShell/Features/Models/ModelsTabView.swift`
 
 **Acceptance criteria:**
 - If local runtime package is absent, copy is explicit and short.
@@ -182,11 +182,11 @@
 **Objective:** Make Buddy feel more like a living companion instead of a control panel.
 
 **Files:**
-- Modify: `apps/bemore-ios-native/OpenClawShell/Views/BuddyView.swift`
-- Modify: `apps/bemore-ios-native/OpenClawShell/Views/HomeView.swift`
-- Modify: `apps/bemore-ios-native/OpenClawShell/OnboardingFlow.swift`
-- Modify: `apps/bemore-ios-native/OpenClawShell/BuddyEventEngine.swift`
-- Modify: `apps/bemore-ios-native/OpenClawShell/BuddyContracts.swift`
+- Modify: `apps/bemore-ios-native/BeMoreAgentShell/Views/BuddyView.swift`
+- Modify: `apps/bemore-ios-native/BeMoreAgentShell/Views/HomeView.swift`
+- Modify: `apps/bemore-ios-native/BeMoreAgentShell/OnboardingFlow.swift`
+- Modify: `apps/bemore-ios-native/BeMoreAgentShell/BuddyEventEngine.swift`
+- Modify: `apps/bemore-ios-native/BeMoreAgentShell/BuddyContracts.swift`
 
 **Acceptance criteria:**
 - Daily loop leads with Buddy mood/care/growth.

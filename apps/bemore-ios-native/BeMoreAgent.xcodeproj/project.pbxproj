@@ -11,6 +11,7 @@
 		050E8AC29BD71DD2CE624EC5 /* AppState+OnboardingReset.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6B40F8A738278BBEE256BDA /* AppState+OnboardingReset.swift */; };
 		0AE4B7EF34A1275D3EB24F44 /* RuntimeServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563F4A15EF8152B7B1B52D97 /* RuntimeServices.swift */; };
 		0D0CAABB2A9B819C5AFD0056 /* BeMoreLinkedRelayStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765B1C073CA1E977EA63F10D /* BeMoreLinkedRelayStore.swift */; };
+		0D3B8230B5D99762D5B97A87 /* PixelStudioNativeCanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2A163B808646C6C437B7833 /* PixelStudioNativeCanvasView.swift */; };
 		0DB2ADC68BA8B2CD88033CFC /* BuddyEventEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2F1BA65A96A5A4A01F3494 /* BuddyEventEngine.swift */; };
 		123B73ACB2A5603DAF42148D /* ADMIN_TESTFLIGHT_RUNBOOK.md in Resources */ = {isa = PBXBuildFile; fileRef = A3D9625FAC37397348F059E3 /* ADMIN_TESTFLIGHT_RUNBOOK.md */; };
 		129BA1E8296E3C91F12E4584 /* MISSION_CONTROL.md in Resources */ = {isa = PBXBuildFile; fileRef = DF2B131780B1BE1F7253BC07 /* MISSION_CONTROL.md */; };
@@ -184,6 +185,7 @@
 		E840DF5092277B07E6835E87 /* ModelsTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelsTabView.swift; sourceTree = "<group>"; };
 		EE48FD3645ED608321400BB5 /* RepoSurfaceDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepoSurfaceDetailView.swift; sourceTree = "<group>"; };
 		F01D580A6BCE76B31FACF2CD /* EditorWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorWebView.swift; sourceTree = "<group>"; };
+		F2A163B808646C6C437B7833 /* PixelStudioNativeCanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelStudioNativeCanvasView.swift; sourceTree = "<group>"; };
 		FBB5ABF97DA954529C307CDC /* buddy-state-machine.v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "buddy-state-machine.v1.json"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -421,6 +423,7 @@
 			children = (
 				010CC4B6ABE96245F0C14F3D /* EditorView.swift */,
 				78F5C09E05947011EA3A70D5 /* PixelStudioModels.swift */,
+				F2A163B808646C6C437B7833 /* PixelStudioNativeCanvasView.swift */,
 				24DA04FF0EDA1DA4CE5A509F /* PixelStudioNativeEditor.swift */,
 			);
 			path = Editor;
@@ -628,6 +631,7 @@
 				FE9337F8299C2883890D1087 /* OAuthLinkService.swift in Sources */,
 				132AA71CEB44E6806B13FA31 /* OnboardingFlow.swift in Sources */,
 				6E28F92E146D9B4118987240 /* PixelStudioModels.swift in Sources */,
+				0D3B8230B5D99762D5B97A87 /* PixelStudioNativeCanvasView.swift in Sources */,
 				647B852D7F0297D70A75E6C1 /* PixelStudioNativeEditor.swift in Sources */,
 				F869E1F0C2B2B542A9673800 /* PricingView.swift in Sources */,
 				D7DC9D1211CEA93782CADFB7 /* RepoSurfaceDetailView.swift in Sources */,

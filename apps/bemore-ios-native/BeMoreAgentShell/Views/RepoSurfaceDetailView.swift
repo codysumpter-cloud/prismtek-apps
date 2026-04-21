@@ -34,7 +34,7 @@ enum RepoSurface: String, CaseIterable, Identifiable {
         case .missionControl:
             return "docs/MISSION_CONTROL.md"
         case .testFlightAdmin:
-            return "apps/openclaw-shell-ios/ADMIN_TESTFLIGHT_RUNBOOK.md"
+            return "apps/bemore-ios-native/ADMIN_TESTFLIGHT_RUNBOOK.md"
         case .pokemonChampions:
             return "docs/POKEMON_CHAMPIONS_TEAM_BUILDER_BACKEND.md"
         }
