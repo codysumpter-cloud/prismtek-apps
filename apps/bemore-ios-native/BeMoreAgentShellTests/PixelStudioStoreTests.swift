@@ -72,4 +72,23 @@ final class PixelStudioStoreTests: XCTestCase {
         XCTAssertEqual(PixelStudioStore.shared.project.frames.count, 4)
         XCTAssertEqual(PixelStudioStore.shared.project.frames[0].pixels[0], "#FEF6E8")
     }
+
+    func testFillAndMirrorShareTheSameActiveProjectFrame() {
+        PixelStudioStore.shared.load()
+        PixelStudioStore.shared.update { draft in
+            draft.canvasSize = 4
+            draft.frameCount = 1
+        }
+
+        PixelStudioStore.shared.selectColor("#17252A")
+        PixelStudioStore.shared.fillActiveFrame(with: "#17252A")
+        XCTAssertTrue(PixelStudioStore.shared.activeFrame.pixels.allSatisfy { $0 == "#17252A" })
+
+        PixelStudioStore.shared.paint(row: 1, column: 0, hex: "#FEF6E8")
+        PixelStudioStore.shared.mirrorActiveFrame()
+
+        let mirrored = PixelStudioStore.shared.activeFrame.pixels
+        XCTAssertEqual(mirrored[(1 * 4) + 3], "#FEF6E8")
+        XCTAssertEqual(mirrored[(1 * 4) + 0], "#17252A")
+    }
 }

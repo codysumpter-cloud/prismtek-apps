@@ -211,10 +211,9 @@ final class PixelStudioCanvasStore: ObservableObject {
 
 struct PixelStudioNativeCanvasView: View {
     @ObservedObject private var projectStore = PixelStudioStore.shared
-    @ObservedObject private var canvasStore = PixelStudioCanvasStore.shared
 
     private var cellSize: CGFloat {
-        switch canvasStore.document.canvasSize {
+        switch projectStore.project.canvasSize {
         case ...16: return 14
         case ...24: return 11
         case ...32: return 9
@@ -230,12 +229,12 @@ struct PixelStudioNativeCanvasView: View {
                     Text("Native Pixel Canvas")
                         .font(.headline)
                         .foregroundColor(BMOTheme.textPrimary)
-                    Text("Draw frames locally on iPhone, then use Buddy to finish, improve, or animate from the same project.")
+                    Text("One shared pixel project now powers drawing, Buddy copilot, and artifacts from the same native Studio surface.")
                         .font(.caption)
                         .foregroundColor(BMOTheme.textSecondary)
                 }
                 Spacer()
-                StatusBadge(label: "\(canvasStore.document.frames.count) frames", color: BMOTheme.accent)
+                StatusBadge(label: "\(projectStore.project.frames.count) frames", color: BMOTheme.accent)
             }
 
             paletteStrip
@@ -243,74 +242,64 @@ struct PixelStudioNativeCanvasView: View {
             frameTimeline
             canvasGrid
         }
-        .onAppear {
-            canvasStore.sync(with: projectStore.project)
-        }
-        .onChange(of: projectStore.project.canvasSize) { _ in
-            canvasStore.sync(with: projectStore.project)
-        }
-        .onChange(of: projectStore.project.frameCount) { _ in
-            canvasStore.sync(with: projectStore.project)
-        }
-        .onChange(of: projectStore.project.palette) { _ in
-            canvasStore.sync(with: projectStore.project)
-        }
     }
 
     private var paletteStrip: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
-                ForEach(canvasStore.document.palette, id: \.self) { color in
+                ForEach(projectStore.paletteSwatches) { swatch in
                     Button {
-                        canvasStore.setCurrentColor(color)
+                        projectStore.selectColor(swatch.hex)
                     } label: {
                         RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .fill(Color(hex: color))
+                            .fill(swatch.color)
                             .frame(width: 32, height: 32)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                    .stroke(canvasStore.document.currentColor == color ? BMOTheme.textPrimary : BMOTheme.divider, lineWidth: 2)
+                                    .stroke(projectStore.project.selectedHex == swatch.hex ? BMOTheme.textPrimary : BMOTheme.divider, lineWidth: 2)
                             )
                     }
                     .buttonStyle(.plain)
                 }
-                Button("Eraser") {
-                    canvasStore.setCurrentColor("")
-                }
-                .buttonStyle(BMOButtonStyle(isPrimary: false))
             }
         }
     }
 
     private var canvasToolbar: some View {
-        HStack(spacing: 8) {
-            Button("New Frame") { canvasStore.addBlankFrame() }
-                .buttonStyle(BMOButtonStyle(isPrimary: false))
-            Button("Duplicate") { canvasStore.duplicateSelectedFrame() }
-                .buttonStyle(BMOButtonStyle(isPrimary: false))
-            Button("Clear") { canvasStore.clearFrame() }
-                .buttonStyle(BMOButtonStyle(isPrimary: false))
-            Button("Delete") { canvasStore.removeSelectedFrame() }
-                .buttonStyle(BMOButtonStyle(isPrimary: false))
-                .disabled(canvasStore.document.frames.count <= 1)
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                Button("New Frame") { projectStore.addFrame() }
+                    .buttonStyle(BMOButtonStyle(isPrimary: false))
+                Button("Duplicate") { projectStore.duplicateActiveFrame() }
+                    .buttonStyle(BMOButtonStyle(isPrimary: false))
+                Button("Mirror") { projectStore.mirrorActiveFrame() }
+                    .buttonStyle(BMOButtonStyle(isPrimary: false))
+                Button("Fill") { projectStore.fillActiveFrame(with: projectStore.project.selectedHex) }
+                    .buttonStyle(BMOButtonStyle(isPrimary: false))
+                Button("Clear") { projectStore.clearActiveFrame() }
+                    .buttonStyle(BMOButtonStyle(isPrimary: false))
+                Button("Delete") { projectStore.removeActiveFrame() }
+                    .buttonStyle(BMOButtonStyle(isPrimary: false))
+                    .disabled(projectStore.project.frames.count <= 1)
+            }
         }
     }
 
     private var frameTimeline: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 10) {
-                ForEach(Array(canvasStore.document.frames.enumerated()), id: \.element.id) { index, frame in
+                ForEach(Array(projectStore.project.frames.enumerated()), id: \.element.id) { index, frame in
                     Button {
-                        canvasStore.selectFrame(frame.id)
+                        projectStore.selectFrame(index)
                     } label: {
                         VStack(spacing: 6) {
-                            PixelFrameThumbnailView(size: canvasStore.document.canvasSize, pixels: frame.pixels)
+                            PixelFrameThumbnailView(size: projectStore.project.canvasSize, pixels: frame.pixels)
                             Text("F\(index + 1)")
                                 .font(.caption2)
                                 .foregroundColor(BMOTheme.textSecondary)
                         }
                         .padding(8)
-                        .background(canvasStore.document.selectedFrameID == frame.id ? BMOTheme.backgroundCardHover : BMOTheme.backgroundSecondary)
+                        .background(projectStore.project.activeFrameIndex == index ? BMOTheme.backgroundCardHover : BMOTheme.backgroundSecondary)
                         .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusSmall, style: .continuous))
                     }
                     .buttonStyle(.plain)
@@ -322,22 +311,19 @@ struct PixelStudioNativeCanvasView: View {
     private var canvasGrid: some View {
         ScrollView([.horizontal, .vertical], showsIndicators: true) {
             VStack(spacing: 1) {
-                ForEach(0..<canvasStore.document.canvasSize, id: \.self) { row in
+                ForEach(0..<projectStore.project.canvasSize, id: \.self) { row in
                     HStack(spacing: 1) {
-                        ForEach(0..<canvasStore.document.canvasSize, id: \.self) { column in
-                            let index = (row * canvasStore.document.canvasSize) + column
-                            let pixel = canvasStore.selectedFrame?.pixels[index] ?? ""
+                        ForEach(0..<projectStore.project.canvasSize, id: \.self) { column in
+                            let index = (row * projectStore.project.canvasSize) + column
+                            let pixel = projectStore.activeFrame.pixels[index]
                             Rectangle()
-                                .fill(pixel.isEmpty ? BMOTheme.backgroundPrimary : Color(hex: pixel))
+                                .fill(pixel.isEmpty ? BMOTheme.backgroundPrimary : (Color(pixelStudioHex: pixel) ?? BMOTheme.backgroundPrimary))
                                 .frame(width: cellSize, height: cellSize)
                                 .overlay(Rectangle().stroke(BMOTheme.divider.opacity(0.35), lineWidth: 0.5))
                                 .contentShape(Rectangle())
                                 .onTapGesture {
-                                    if canvasStore.document.currentColor.isEmpty {
-                                        canvasStore.clearPixel(index: index)
-                                    } else {
-                                        canvasStore.setPixel(index: index, color: canvasStore.document.currentColor)
-                                    }
+                                    let hex = projectStore.activeFrame.pixels[index].isEmpty ? projectStore.project.selectedHex : nil
+                                    projectStore.paint(row: row, column: column, hex: hex)
                                 }
                         }
                     }

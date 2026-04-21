@@ -16,9 +16,7 @@ struct MissionControlView: View {
                     if let lastReceipt {
                         ActionReceiptCard(receipt: lastReceipt)
                     }
-                    taskAndResultsCard
-                    skillsCard
-                    macPowerCard
+                    optionalPowerCard
                 }
                 .padding(.horizontal, BMOTheme.spacingMD)
                 .padding(.bottom, BMOTheme.spacingXL)
@@ -88,41 +86,74 @@ struct MissionControlView: View {
                 .font(.subheadline)
                 .foregroundColor(BMOTheme.textSecondary)
 
-            HStack(spacing: 8) {
-                Button("Care & Train") {
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                primaryActionCard(
+                    title: "Care & Train",
+                    subtitle: "Feed, check in, teach, and keep Buddy growing.",
+                    systemImage: "heart.fill",
+                    isPrimary: true
+                ) {
                     appState.route(to: .buddy)
                 }
-                .buttonStyle(BMOButtonStyle())
 
-                Button("Chat with \(store.activeBuddy?.displayName ?? "Buddy")") {
+                primaryActionCard(
+                    title: "Chat",
+                    subtitle: "Talk with \(store.activeBuddy?.displayName ?? "Buddy") and keep the loop moving.",
+                    systemImage: "message.fill"
+                ) {
                     appState.openChat(from: .missionControl, resetConversation: true)
                 }
-                .buttonStyle(BMOButtonStyle(isPrimary: false))
+
+                primaryActionCard(
+                    title: "Studio",
+                    subtitle: "Draw sprites, use Buddy copilot, and keep pixel work native.",
+                    systemImage: "paintpalette.fill"
+                ) {
+                    appState.route(to: .editor)
+                }
+
+                primaryActionCard(
+                    title: "Results",
+                    subtitle: "Open artifacts, receipts, and generated output.",
+                    systemImage: "checklist.checked"
+                ) {
+                    appState.route(to: .artifacts)
+                }
+            }
+        }
+        .bmoCard()
+    }
+
+    private var optionalPowerCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Optional power")
+                        .font(.headline)
+                        .foregroundColor(BMOTheme.textPrimary)
+                    Text("Repo/runtime tools are still here, but they are secondary to the Buddy loop on iPhone.")
+                        .font(.caption)
+                        .foregroundColor(BMOTheme.textSecondary)
+                }
+                Spacer()
+                StatusBadge(label: appState.macRuntimeSnapshot == nil ? "Phone only" : "Mac paired", color: appState.macRuntimeSnapshot == nil ? BMOTheme.accent : BMOTheme.success)
             }
 
             HStack(spacing: 8) {
-                Button("Results") {
-                    appState.route(to: .artifacts)
-                }
-                .buttonStyle(BMOButtonStyle(isPrimary: false))
-
                 Button("Skills") {
                     appState.route(to: .skills)
                 }
                 .buttonStyle(BMOButtonStyle(isPrimary: false))
-            }
 
-            HStack(spacing: 8) {
-                Button("Open Studio") {
-                    appState.route(to: .editor)
-                }
-                .buttonStyle(BMOButtonStyle(isPrimary: false))
-
-                Button("Buddy Settings") {
-                    appState.route(to: .buddy)
+                Button("Mac Runtime") {
+                    Task { await appState.refreshMacRuntimeSnapshot() }
                 }
                 .buttonStyle(BMOButtonStyle(isPrimary: false))
             }
+
+            Text(appState.macPowerModeSummary)
+                .font(.caption)
+                .foregroundColor(BMOTheme.textTertiary)
         }
         .bmoCard()
     }
@@ -317,5 +348,33 @@ struct MissionControlView: View {
         .padding(10)
         .background(BMOTheme.backgroundSecondary)
         .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusSmall, style: .continuous))
+    }
+
+    private func primaryActionCard(
+        title: String,
+        subtitle: String,
+        systemImage: String,
+        isPrimary: Bool = false,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: 10) {
+                Image(systemName: systemImage)
+                    .font(.title3)
+                Text(title)
+                    .font(.headline)
+                Text(subtitle)
+                    .font(.caption)
+                    .multilineTextAlignment(.leading)
+                    .lineLimit(3)
+            }
+            .foregroundColor(isPrimary ? BMOTheme.backgroundPrimary : BMOTheme.textPrimary)
+            .frame(maxWidth: .infinity, minHeight: 112, alignment: .leading)
+            .padding(BMOTheme.spacingMD)
+            .background(isPrimary ? BMOTheme.accent : BMOTheme.backgroundSecondary)
+            .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusMedium, style: .continuous))
+            .contentShape(RoundedRectangle(cornerRadius: BMOTheme.radiusMedium, style: .continuous))
+        }
+        .buttonStyle(.plain)
     }
 }

@@ -1,23 +1,8 @@
 import SwiftUI
 
-private enum StudioSurface: String, CaseIterable, Identifiable {
-    case pixelStudio
-    case workspaceFile
-
-    var id: String { rawValue }
-
-    var title: String {
-        switch self {
-        case .pixelStudio: return "Pixel"
-        case .workspaceFile: return "Files"
-        }
-    }
-}
-
 struct EditorTabView: View {
     @EnvironmentObject private var appState: AppState
     @ObservedObject private var studioStore = PixelStudioStore.shared
-    @State private var selectedSurface: StudioSurface = .pixelStudio
     @State private var lastReceipt: BeMoreReceipt?
 
     var body: some View {
@@ -31,7 +16,8 @@ struct EditorTabView: View {
                     if let lastReceipt {
                         ActionReceiptCard(receipt: lastReceipt)
                     }
-                    surfacesCard
+                    workspaceFileCard
+                    nativeControlSurfacesCard
                 }
                 .padding(.horizontal, BMOTheme.spacingMD)
                 .padding(.bottom, BMOTheme.spacingXL)
@@ -130,7 +116,7 @@ struct EditorTabView: View {
                 .font(.caption)
                 .foregroundColor(BMOTheme.textSecondary)
 
-            HStack(spacing: 8) {
+            VStack(spacing: 8) {
                 actionButton(.finish)
                 actionButton(.improve)
                 actionButton(.animate)
@@ -144,43 +130,32 @@ struct EditorTabView: View {
         .bmoCard()
     }
 
-    private var surfacesCard: some View {
+    private var workspaceFileCard: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("Studio Surfaces")
+                Text("Workspace File")
                     .font(.headline)
                     .foregroundColor(BMOTheme.textPrimary)
                 Spacer()
-                StatusBadge(label: selectedSurface.title, color: BMOTheme.accent)
+                StatusBadge(label: appState.workspaceStore.selectedFile == nil ? "No file" : "Ready", color: appState.workspaceStore.selectedFile == nil ? BMOTheme.warning : BMOTheme.accent)
             }
 
-            Picker("Surface", selection: $selectedSurface) {
-                ForEach(StudioSurface.allCases) { surface in
-                    Text(surface.title).tag(surface)
-                }
-            }
-            .pickerStyle(.segmented)
-
-            Text(surfaceSummary)
+            Text("Local file editing still lives here for text-like workspace files when you need code or text next to the pixel workflow.")
                 .font(.caption)
                 .foregroundColor(BMOTheme.textSecondary)
 
-            Group {
-                switch selectedSurface {
-                case .pixelStudio:
-                    PixelStudioSurfaceView(store: studioStore)
-                case .workspaceFile:
-                    workspaceFileSurface
-                        .frame(minHeight: 320)
-                        .background(BMOTheme.backgroundSecondary)
-                        .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusMedium, style: .continuous))
-                }
-            }
+            workspaceFileSurface
+                .frame(minHeight: 320)
+                .background(BMOTheme.backgroundSecondary)
+                .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusMedium, style: .continuous))
+        }
+        .bmoCard()
+    }
 
-            Divider()
-
+    private var nativeControlSurfacesCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
             Text("Native control surfaces")
-                .font(.subheadline)
+                .font(.headline)
                 .foregroundColor(BMOTheme.textPrimary)
 
             Text("Builder planning, Mission Control, and profile/account management now stay inside the BeMore app instead of bouncing out to a website.")
@@ -208,15 +183,6 @@ struct EditorTabView: View {
             } else {
                 ContentUnavailableView("No workspace file selected", systemImage: "chevron.left.forwardslash.chevron.right", description: Text("Pick a file in Workspace first, or switch back to Pixel."))
             }
-        }
-    }
-
-    private var surfaceSummary: String {
-        switch selectedSurface {
-        case .pixelStudio:
-            return "Draw directly on a native frame grid, switch colors, duplicate frames, and rough in small animations on the phone."
-        case .workspaceFile:
-            return "Local file editing still lives here for text-like workspace files."
         }
     }
 

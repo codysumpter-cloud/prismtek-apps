@@ -38,6 +38,9 @@ struct BuddyView: View {
     @State private var selectedBattleModifier: BuddyBattleArenaModifier = .balanced
     @State private var tradeImportDraft = ""
     @State private var tradeLocalStatus: String?
+    @State private var showCollectionAndRoster = false
+    @State private var showBattleAndTrade = false
+    @State private var showCreatorTools = false
 
     var body: some View {
         NavigationStack {
@@ -49,19 +52,25 @@ struct BuddyView: View {
                         teachBuddyPlanningCard(for: activeBuddy)
                         memoryAndSkillsCard(for: activeBuddy)
                         actionCard(for: activeBuddy)
-                        battleCard(for: activeBuddy)
-                        tradeOutpostCard(for: activeBuddy)
+                        buddyExpansionCard
+                        if showCollectionAndRoster {
+                            rosterCard
+                            marketplaceCard
+                        }
+                        if showBattleAndTrade {
+                            battleCard(for: activeBuddy)
+                            tradeOutpostCard(for: activeBuddy)
+                        }
+                        if showCreatorTools {
+                            buddyTemplateLifecycleCard
+                            sellReadyTemplateCard
+                        }
                         recentEventsCard(for: activeBuddy)
                     } else {
                         emptyStateCard
+                        rosterCard
+                        marketplaceCard
                     }
-
-                    rosterCard
-                    marketplaceCard
-
-                    buddyTemplateLifecycleCard
-                    sellReadyTemplateCard
-                    trainingAndManagementCard
 
                     if let receipt = store.lastReceipt {
                         receiptCard(receipt)
@@ -621,14 +630,48 @@ struct BuddyView: View {
         .bmoCard()
     }
 
-    private var trainingAndManagementCard: some View {
+    private var buddyExpansionCard: some View {
         VStack(alignment: .leading, spacing: BMOTheme.spacingMD) {
-            Text("What Buddy Can Do Here")
+            Text("More Buddy spaces")
                 .font(.headline)
                 .foregroundColor(BMOTheme.textPrimary)
-            Text("Buddy can already help you care, train, customize, collect, spar, and trade on iPhone. Repo/runtime power stays optional and secondary.")
+            Text("Keep the main Buddy tab focused on care, appearance, and training. Open the deeper collection, battle, trade, and creator tools only when you need them.")
                 .font(.subheadline)
                 .foregroundColor(BMOTheme.textSecondary)
+
+            DisclosureGroup(isExpanded: $showCollectionAndRoster) {
+                Text("Roster switching, Buddy discovery, and install flows.")
+                    .font(.caption)
+                    .foregroundColor(BMOTheme.textTertiary)
+                    .padding(.top, 6)
+            } label: {
+                Label("Roster & Collection", systemImage: "person.2.fill")
+                    .foregroundColor(BMOTheme.textPrimary)
+            }
+            .tint(BMOTheme.accent)
+
+            DisclosureGroup(isExpanded: $showBattleAndTrade) {
+                Text("Local sparring, export tokens, imports, and trade history.")
+                    .font(.caption)
+                    .foregroundColor(BMOTheme.textTertiary)
+                    .padding(.top, 6)
+            } label: {
+                Label("Battle & Trade", systemImage: "shield.lefthalf.filled")
+                    .foregroundColor(BMOTheme.textPrimary)
+            }
+            .tint(BMOTheme.accent)
+
+            DisclosureGroup(isExpanded: $showCreatorTools) {
+                Text("Template packaging and creator-facing Buddy prep tools.")
+                    .font(.caption)
+                    .foregroundColor(BMOTheme.textTertiary)
+                    .padding(.top, 6)
+            } label: {
+                Label("Creator Tools", systemImage: "shippingbox.fill")
+                    .foregroundColor(BMOTheme.textPrimary)
+            }
+            .tint(BMOTheme.accent)
+
             HStack {
                 Button("Open Chat") {
                     appState.openChat(from: .buddy)
