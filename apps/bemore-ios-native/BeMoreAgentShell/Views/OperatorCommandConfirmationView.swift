@@ -126,7 +126,7 @@ class OperatorCommandPresenter: ObservableObject {
         // On iOS, we cannot execute shell commands locally.
         // In a real scenario, this would send a request to the Mac relay.
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            self?.state = .completed(result: .failure("Execution is only supported on macOS. Please use the Mac paired relay."))
+            self.state = .completed(result: .failure("Execution is only supported on macOS. Please use the Mac paired relay."))
         }
         #endif
     }
