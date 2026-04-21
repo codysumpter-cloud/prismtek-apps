@@ -1,5 +1,31 @@
 import Foundation
 
+enum ShellExecutionResult: Equatable {
+    case success(String)
+    case failure(String)
+    
+    var output: String {
+        switch self {
+        case .success(let output): return output
+        case .failure(let error): return "ERROR: \(error)"
+        }
+    }
+    
+    var error: String? {
+        switch self {
+        case .success: return nil
+        case .failure(let error): return error
+        }
+    }
+    
+    var isSuccess: Bool {
+        switch self {
+        case .success: return true
+        case .failure: return false
+        }
+    }
+}
+
 #if os(macOS)
 class CommandDispatcher {
     static let shared = CommandDispatcher()
@@ -144,32 +170,6 @@ class CommandDispatcher {
             print("Failed to write security audit log: \(error)")
         }
     }
-}
-
-enum ShellExecutionResult {
-    case success(String)
-    case failure(String)
-    
-    var output: String {
-        switch self {
-        case .success(let output): return output
-        case .failure(let error): return "ERROR: \(error)"
-        }
-    }
-    
-    var error: String? {
-        switch self {
-        case .success: return nil
-        case .failure(let error): return error
-        }
-    }
-    
- var isSuccess: Bool {
- switch self {
- case .success: return true
- case .failure: return false
- }
- }
 }
 
 #endif
