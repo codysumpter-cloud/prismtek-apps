@@ -32,8 +32,9 @@ private enum StudioSurface: String, CaseIterable, Identifiable {
 
 struct EditorTabView: View {
     @EnvironmentObject private var appState: AppState
+    @Environment(\.openURL) private var openURL
     @ObservedObject private var studioStore = PixelStudioStore.shared
-    @State private var selectedSurface: StudioSurface = .pixelStudio
+    @State private var selectedSurface: StudioSurface = .workspaceFile
     @State private var lastReceipt: OpenClawReceipt?
 
     var body: some View {
@@ -64,7 +65,7 @@ struct EditorTabView: View {
                     Text("Buddy Studio")
                         .font(.system(size: 28, weight: .bold))
                         .foregroundColor(BMOTheme.textPrimary)
-                    Text("Pixel Studio, Builder Studio, admin Mission Control, and profile surfaces now live inside the iPhone app shell.")
+                    Text("Pixel Studio is native here. Browser-only surfaces stay out of the embedded app shell.")
                         .font(.subheadline)
                         .foregroundColor(BMOTheme.textSecondary)
                 }
@@ -157,7 +158,7 @@ struct EditorTabView: View {
     private var surfacesCard: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("Website Surfaces in App")
+                Text("Native Studio Tools")
                     .font(.headline)
                     .foregroundColor(BMOTheme.textPrimary)
                 Spacer()
@@ -165,7 +166,7 @@ struct EditorTabView: View {
             }
 
             Picker("Surface", selection: $selectedSurface) {
-                ForEach(StudioSurface.allCases) { surface in
+                ForEach([StudioSurface.workspaceFile]) { surface in
                     Text(surface.title).tag(surface)
                 }
             }
@@ -175,30 +176,28 @@ struct EditorTabView: View {
                 .font(.caption)
                 .foregroundColor(BMOTheme.textSecondary)
 
-            Group {
-                switch selectedSurface {
-                case .workspaceFile:
-                    workspaceFileSurface
-                default:
-                    webSurface
-                }
+            workspaceFileSurface
+                .frame(minHeight: 320)
+                .background(BMOTheme.backgroundSecondary)
+                .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusMedium, style: .continuous))
+
+            Divider()
+
+            Text("External links")
+                .font(.subheadline)
+                .foregroundColor(BMOTheme.textPrimary)
+
+            Text("Builder, Mission Control, and account/profile pages can open in the browser when needed, but they are not embedded into the app.")
+                .font(.caption)
+                .foregroundColor(BMOTheme.textSecondary)
+
+            HStack(spacing: 8) {
+                externalLinkButton(.builderStudio)
+                externalLinkButton(.missionControl)
+                externalLinkButton(.myAccount)
             }
-            .frame(minHeight: 520)
-            .background(BMOTheme.backgroundSecondary)
-            .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusMedium, style: .continuous))
         }
         .bmoCard()
-    }
-
-    private var webSurface: some View {
-        Group {
-            if let route = selectedSurface.route,
-               let url = route.resolvedURL(stackConfig: appState.stackConfig) {
-                BeMoreWebShellView(url: url)
-            } else {
-                ContentUnavailableView("Surface unavailable", systemImage: "globe")
-            }
-        }
     }
 
     private var workspaceFileSurface: some View {
@@ -217,12 +216,15 @@ struct EditorTabView: View {
     }
 
     private var surfaceSummary: String {
-        switch selectedSurface {
-        case .workspaceFile:
-            return "Local file editing still lives here too, so Studio remains the place for both the native pixel-art workflow and workspace drafting."
-        default:
-            return selectedSurface.route?.summary ?? "Studio surface"
+        "Local file editing lives here beside the native pixel-art workflow. Web pages are browser-only now."
+    }
+
+    private func externalLinkButton(_ route: BeMoreWebFeatureRoute) -> some View {
+        Button(route.title) {
+            guard let url = route.resolvedURL(stackConfig: appState.stackConfig) else { return }
+            openURL(url)
         }
+        .buttonStyle(BMOButtonStyle(isPrimary: false))
     }
 
     private func actionButton(_ action: PixelBuddyAction) -> some View {

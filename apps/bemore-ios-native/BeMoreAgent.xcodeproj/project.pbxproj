@@ -13,7 +13,7 @@
 		AA1000000000000000000001 /* BeMoreChatDispatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000011 /* BeMoreChatDispatch.swift */; };
 		AA1000000000000000000006 /* BeMoreCapabilityMirror.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000016 /* BeMoreCapabilityMirror.swift */; };
 		AA1000000000000000000002 /* PixelStudioModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000012 /* PixelStudioModels.swift */; };
-		AA1000000000000000000003 /* BeMoreWebShellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000013 /* BeMoreWebShellView.swift */; };
+
 		AA1000000000000000000004 /* BeMoreChatDispatchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000014 /* BeMoreChatDispatchTests.swift */; };
 		AA1000000000000000000005 /* BeMoreCapabilityMirrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000015 /* BeMoreCapabilityMirrorTests.swift */; };
 		192A26C7CE80E9D98C1C67FA /* AppStateRuntimeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0DDCE1DC11078DEA6F36E17 /* AppStateRuntimeTests.swift */; };
@@ -138,7 +138,7 @@
 		A0DDCE1DC11078DEA6F36E17 /* AppStateRuntimeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStateRuntimeTests.swift; sourceTree = "<group>"; };
 		AA1000000000000000000011 /* BeMoreChatDispatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeMoreChatDispatch.swift; sourceTree = "<group>"; };
 		AA1000000000000000000012 /* PixelStudioModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelStudioModels.swift; sourceTree = "<group>"; };
-		AA1000000000000000000013 /* BeMoreWebShellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeMoreWebShellView.swift; sourceTree = "<group>"; };
+
 		AA1000000000000000000014 /* BeMoreChatDispatchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeMoreChatDispatchTests.swift; sourceTree = "<group>"; };
 		AA1000000000000000000015 /* BeMoreCapabilityMirrorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeMoreCapabilityMirrorTests.swift; sourceTree = "<group>"; };
 		AA1000000000000000000016 /* BeMoreCapabilityMirror.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Capabilities/BeMoreCapabilityMirror.swift; sourceTree = "<group>"; };
@@ -183,7 +183,7 @@
 			isa = PBXGroup;
 			children = (
 				1036F427909F906F1B7AA91E /* ArtifactsView.swift */,
-				AA1000000000000000000013 /* BeMoreWebShellView.swift */,
+
 				512CFA48CBDC61F47D623701 /* BuddyAsciiView.swift */,
 				CDB00B6ECA93DD3679EF9CBB /* BuddyPixelView.swift */,
 				E1D4AA3E57A38A4611202F96 /* BuddyView.swift */,
@@ -532,7 +532,7 @@
 				A179272D48BF05FC55683006 /* ArtifactsView.swift in Sources */,
 				AA1000000000000000000001 /* BeMoreChatDispatch.swift in Sources */,
 				AA1000000000000000000006 /* BeMoreCapabilityMirror.swift in Sources */,
-				AA1000000000000000000003 /* BeMoreWebShellView.swift in Sources */,
+
 				C92E5E41FCBF0FC576B3FCA6 /* BuddyAppleIntegrationService.swift in Sources */,
 				D5A36E685E397803707316F0 /* BuddyAsciiView.swift in Sources */,
 				85637F440829BA6420876E96 /* BuddyContractLoader.swift in Sources */,

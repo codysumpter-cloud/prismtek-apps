@@ -3,9 +3,9 @@ import SwiftUI
 struct SettingsView: View {
     @EnvironmentObject private var appState: AppState
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.openURL) private var openURL
     @State private var editingProvider: ProviderKind?
     @State private var showingTabManager = false
-    @State private var linkedFeatureRoute: BeMoreWebFeatureRoute?
 
     var body: some View {
         NavigationStack {
@@ -49,7 +49,8 @@ struct SettingsView: View {
                     settingsRow(title: "Needs linked runtime", value: "\(appState.linkedRuntimeCapabilityCount)")
 
                     Button("Open Prismtek Account") {
-                        linkedFeatureRoute = .myAccount
+                        guard let url = BeMoreWebFeatureRoute.myAccount.resolvedURL(stackConfig: appState.stackConfig) else { return }
+                        openURL(url)
                     }
                     .foregroundColor(BMOTheme.accent)
                     .listRowBackground(BMOTheme.backgroundCard)
@@ -115,22 +116,6 @@ struct SettingsView: View {
             .sheet(isPresented: $showingTabManager) {
                 TabManagementSheet()
                     .environmentObject(appState)
-            }
-            .sheet(item: $linkedFeatureRoute) { route in
-                NavigationStack {
-                    if let url = route.resolvedURL(stackConfig: appState.stackConfig) {
-                        BeMoreWebShellView(url: url)
-                            .navigationTitle(route.title)
-                            .navigationBarTitleDisplayMode(.inline)
-                            .toolbar {
-                                ToolbarItem(placement: .cancellationAction) {
-                                    Button("Close") { linkedFeatureRoute = nil }
-                                }
-                            }
-                    } else {
-                        ContentUnavailableView("Surface unavailable", systemImage: route.systemImage)
-                    }
-                }
             }
             .alert("Provider error", isPresented: Binding(get: {
                 appState.providerStore.lastError != nil
