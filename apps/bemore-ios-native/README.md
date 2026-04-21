@@ -59,7 +59,7 @@ main `BeMore-stack` repo. Installing or personalizing a Buddy persists:
 - `.bemore/buddy.md`
 - `.bemore/buddies.md`
 
-The active runtime identity is **BeMore workspace** under `.bemore`. Legacy `.openclaw` paths may still be migrated for continuity, but they are not the active platform model.
+The active runtime identity is **BeMore workspace** under `.bemore`. Legacy `.bemore` paths may still be migrated for continuity, but they are not the active platform model.
 
 Bundle identity continuity matters for this state. See [`BUILD_14_CONTINUITY_NOTE.md`](./BUILD_14_CONTINUITY_NOTE.md) for why build 14 could look like a fresh install after the bundle identifier briefly changed.
 

@@ -12,15 +12,15 @@ targets:
     type: application
     platform: iOS
     sources:
-      - path: OpenClawShell
+      - path: BeMoreAgentShell
         excludes:
           - "**/.DS_Store"
-      - path: OpenClawShell/Views/RepoSurfaceDetailView.swift
+      - path: BeMoreAgentShell/Views/RepoSurfaceDetailView.swift
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: BeMoreAgent
         INFOPLIST_KEY_CFBundleIdentifier: BeMoreAgent
-        INFOPLIST_FILE: OpenClawShell/Info.plist
+        INFOPLIST_FILE: BeMoreAgentShell/Info.plist
         DEVELOPMENT_TEAM: DY9FHPRZA9
         CODE_SIGN_STYLE: Automatic
         PRODUCT_NAME: BeMoreAgent
@@ -29,7 +29,7 @@ targets:
     type: bundle.unit-test
     platform: iOS
     sources:
-      - path: OpenClawShellTests
+      - path: BeMoreAgentShellTests
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: BeMoreAgentTests

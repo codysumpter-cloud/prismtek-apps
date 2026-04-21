@@ -14,14 +14,14 @@ Current shipped shell surfaces include:
 - Mission Control as the post-onboarding landing surface
 - Models as the route-control surface for local and cloud selection
 - Chat, Skills, Artifacts, Buddy, Files, and Settings tabs
-- `.openclaw/` workspace artifacts, JSON state stores, action/event logs, and a skills registry
+- `.bemore/` workspace artifacts, JSON state stores, action/event logs, and a skills registry
 - Pokémon Team Builder as a registry-backed skill that saves JSON and Markdown artifacts
 - ClawHub local starter-skill installs that persist manifest and README artifacts
-- editable/exportable/deletable Files workspace entries and `.openclaw` artifacts
+- editable/exportable/deletable Files workspace entries and `.bemore` artifacts
 - persisted tab ordering and visibility
 - bundled Council Starter Pack Buddy templates with local install flow
 - persisted Buddy library state, runtime events, active selection, and personalization
-- receipt-backed Buddy check-ins/training that regenerate `.openclaw/buddy.md` and `.openclaw/buddies.md`
+- receipt-backed Buddy check-ins/training that regenerate `.bemore/buddy.md` and `.bemore/buddies.md`
 - bundled repo-backed surface briefs inside Mission Control
 
 ## Important current behavior
@@ -62,7 +62,7 @@ xcodebuild -project BeMoreAgent.xcodeproj \
 
 ## Honest limits
 
-- `OpenClawShellApp.swift` still boots `AppState(engine: MLCBridgeEngine())`.
+- `BeMoreAgentShellApp.swift` still boots `AppState(engine: MLCBridgeEngine())`.
 - `project.yml` still has `dependencies: []`.
 - When `MLCSwift` is not importable, the app still uses the stub local-runtime path and cannot claim
   real on-device inference.

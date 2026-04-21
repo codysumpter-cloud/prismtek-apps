@@ -1,0 +1,368 @@
+import XCTest
+@testable import BeMoreAgent
+
+@MainActor
+final class BuddyRuntimeTests: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try? FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        let appSupport = root.appendingPathComponent("ApplicationSupport", isDirectory: true)
+        let documents = root.appendingPathComponent("Documents", isDirectory: true)
+        try? FileManager.default.createDirectory(at: appSupport, withIntermediateDirectories: true)
+        try? FileManager.default.createDirectory(at: documents, withIntermediateDirectories: true)
+        Paths.applicationSupportOverride = appSupport
+        Paths.documentsOverride = documents
+    }
+
+    override func tearDown() {
+        if let appSupport = Paths.applicationSupportOverride {
+            try? FileManager.default.removeItem(at: appSupport.deletingLastPathComponent())
+        }
+        Paths.applicationSupportOverride = nil
+        Paths.documentsOverride = nil
+        super.tearDown()
+    }
+
+    func testBundledBuddyResourcesDecodeAndCouncilStarterPackMatchesCanonicalRoster() throws {
+        let contracts = try BuddyContractLoader.loadCanonicalResources()
+
+        for resource in BuddyBundledResource.allCases {
+            if resource.resourceExtension == "json" {
+                let data = try BuddyContractLoader.loadData(resource: resource)
+                XCTAssertNoThrow(try JSONSerialization.jsonObject(with: data), resource.rawValue)
+            } else {
+                let text = try BuddyContractLoader.loadText(resource: resource)
+                XCTAssertFalse(text.isEmpty, resource.rawValue)
+            }
+        }
+
+        let expectedIDs = [
+            "bmo",
+            "prismo",
+            "neptr",
+            "princess-bubblegum",
+            "finn",
+            "jake",
+            "marceline",
+            "simon",
+            "peppermint-butler",
+            "lady-rainicorn",
+            "lemongrab",
+            "flame-princess"
+        ]
+
+        XCTAssertEqual(contracts.templates.count, 12)
+        XCTAssertEqual(contracts.templates.map(\.id), expectedIDs)
+    }
+
+    func testInstallingStarterBuddyCreatesCleanDerivedCopyAndPersistsArtifacts() throws {
+        let contracts = try BuddyContractLoader.loadCanonicalResources()
+        let originalTemplate = try XCTUnwrap(contracts.template(id: "bmo"))
+        let runtime = BeMoreWorkspaceRuntime()
+        runtime.bootstrap(config: .default, preferences: .default, routeSummary: "Direct cloud model route")
+
+        let engine = BuddyEventEngine(contracts: contracts)
+        let bundle = try engine.install(
+            templateID: "bmo",
+            currentState: BuddyLibraryState(),
+            currentEvents: BuddyRuntimeEventLog(),
+            now: Date(timeIntervalSince1970: 1_744_314_400)
+        )
+
+        XCTAssertEqual(originalTemplate.name, "BMO")
+        XCTAssertEqual(originalTemplate.moveSet.count, 4)
+        XCTAssertEqual(bundle.libraryState.instances.count, 1)
+        XCTAssertEqual(bundle.libraryState.activeBuddy?.templateId, "starter.bmo.v1")
+        XCTAssertEqual(bundle.libraryState.activeBuddy?.displayName, "BMO")
+        XCTAssertEqual(bundle.eventLog.events.first?.type, "buddy.template.installed")
+
+        let receipt = runtime.persistBuddyBundle(bundle)
+
+        XCTAssertEqual(receipt.status, .persisted)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: Paths.stateDirectory.appendingPathComponent("buddy-instances.json").path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: Paths.beMoreRuntimeDirectory.appendingPathComponent("state/buddy-runtime-events.json").path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: Paths.beMoreRuntimeDirectory.appendingPathComponent("buddy.md").path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: Paths.beMoreRuntimeDirectory.appendingPathComponent("buddies.md").path))
+
+        let persisted = try XCTUnwrap(BuddyInstanceStore().loadLibraryState())
+        XCTAssertEqual(persisted.activeBuddy?.displayName, "BMO")
+        XCTAssertEqual(persisted.instances.first?.provenance.derivedFromTemplate, true)
+    }
+
+    func testPersonalizeAppendsEventAndRegeneratesBuddyMarkdown() throws {
+        let contracts = try BuddyContractLoader.loadCanonicalResources()
+        let runtime = BeMoreWorkspaceRuntime()
+        runtime.bootstrap(config: .default, preferences: .default, routeSummary: "Direct cloud model route")
+        let engine = BuddyEventEngine(contracts: contracts)
+
+        let installBundle = try engine.install(
+            templateID: "bmo",
+            currentState: BuddyLibraryState(),
+            currentEvents: BuddyRuntimeEventLog(),
+            now: Date(timeIntervalSince1970: 1_744_314_400)
+        )
+        _ = runtime.persistBuddyBundle(installBundle)
+
+        let personalized = try engine.personalize(
+            instanceID: try XCTUnwrap(installBundle.libraryState.activeBuddy?.instanceId),
+            displayName: "BMO Prime",
+            nickname: "Bee",
+            currentFocus: "Morning planning and continuity",
+            palette: "mint_cream",
+            asciiVariantID: "starter_a",
+            currentState: installBundle.libraryState,
+            currentEvents: installBundle.eventLog,
+            now: Date(timeIntervalSince1970: 1_744_318_000)
+        )
+
+        let receipt = runtime.persistBuddyBundle(personalized)
+        XCTAssertEqual(receipt.status, .persisted)
+
+        let eventLog = try XCTUnwrap(BuddyInstanceStore().loadEventLog())
+        XCTAssertTrue(eventLog.events.contains(where: { $0.type == "buddy.personalized" }))
+        XCTAssertTrue(eventLog.events.contains(where: { $0.type == "buddy.memory.promoted" }))
+
+        let buddyMarkdown = try String(contentsOf: Paths.beMoreRuntimeDirectory.appendingPathComponent("buddy.md"), encoding: .utf8)
+        XCTAssertTrue(buddyMarkdown.contains("BMO Prime"))
+        XCTAssertTrue(buddyMarkdown.contains("## What changed recently"))
+        XCTAssertTrue(buddyMarkdown.contains("Morning planning and continuity"))
+    }
+
+    func testTeachingPlanningLoopStoresMemoryTrainsSkillAndRegeneratesMarkdown() throws {
+        let contracts = try BuddyContractLoader.loadCanonicalResources()
+        let runtime = BeMoreWorkspaceRuntime()
+        runtime.bootstrap(config: .default, preferences: .default, routeSummary: "Direct cloud model route")
+        let engine = BuddyEventEngine(contracts: contracts)
+
+        let installBundle = try engine.install(
+            templateID: "bmo",
+            currentState: BuddyLibraryState(),
+            currentEvents: BuddyRuntimeEventLog(),
+            now: Date(timeIntervalSince1970: 1_744_314_400)
+        )
+
+        let trained = try engine.teachPlanningLoop(
+            instanceID: try XCTUnwrap(installBundle.libraryState.activeBuddy?.instanceId),
+            preferenceTitle: "Daily planning style",
+            preferenceDetail: "I plan best with one clear priority and a small follow-up. Keep the language calm and concrete.",
+            topPriority: "Ship the Buddy planning loop",
+            supportStyle: "calm coach",
+            currentState: installBundle.libraryState,
+            currentEvents: installBundle.eventLog,
+            now: Date(timeIntervalSince1970: 1_744_318_000)
+        )
+
+        let activeBuddy = try XCTUnwrap(trained.libraryState.activeBuddy)
+        XCTAssertEqual(activeBuddy.learnedPreferences?.count, 1)
+        XCTAssertEqual(activeBuddy.learnedPreferences?.first?.category, "planning")
+        XCTAssertEqual(activeBuddy.dailyPlans?.first?.topPriority, "Ship the Buddy planning loop")
+
+        let planningSkill = try XCTUnwrap(activeBuddy.learnedSkills?.first(where: { $0.id == "daily-planning" }))
+        XCTAssertTrue(planningSkill.isUnlocked)
+        XCTAssertTrue(planningSkill.isEquipped)
+        XCTAssertGreaterThanOrEqual(planningSkill.mastery, 1)
+        XCTAssertGreaterThanOrEqual(activeBuddy.proficiencies.value(for: "Planning"), 1)
+        XCTAssertTrue(activeBuddy.progression.badges.contains("planning-student"))
+
+        let receipt = runtime.persistBuddyBundle(trained)
+        XCTAssertEqual(receipt.status, .persisted)
+
+        let buddyMarkdown = try String(contentsOf: Paths.beMoreRuntimeDirectory.appendingPathComponent("buddy.md"), encoding: .utf8)
+        XCTAssertTrue(buddyMarkdown.contains("## What Buddy learned from you"))
+        XCTAssertTrue(buddyMarkdown.contains("I plan best with one clear priority"))
+        XCTAssertTrue(buddyMarkdown.contains("## Equipped skills"))
+        XCTAssertTrue(buddyMarkdown.contains("Daily Planning"))
+        XCTAssertTrue(buddyMarkdown.contains("## Latest daily plan"))
+        XCTAssertTrue(buddyMarkdown.contains("Ship the Buddy planning loop"))
+    }
+
+    func testCareAndSparringCreateRealStandaloneBuddyLoop() throws {
+        let contracts = try BuddyContractLoader.loadCanonicalResources()
+        let runtime = BeMoreWorkspaceRuntime()
+        runtime.bootstrap(config: .default, preferences: .default, routeSummary: "Direct cloud model route")
+        let engine = BuddyEventEngine(contracts: contracts)
+
+        let installed = try engine.install(
+            templateID: "bmo",
+            currentState: BuddyLibraryState(),
+            currentEvents: BuddyRuntimeEventLog(),
+            now: Date(timeIntervalSince1970: 1_744_314_400)
+        )
+        let cared = try engine.performCare(
+            instanceID: try XCTUnwrap(installed.libraryState.activeBuddy?.instanceId),
+            action: .encourage,
+            currentState: installed.libraryState,
+            currentEvents: installed.eventLog,
+            now: Date(timeIntervalSince1970: 1_744_315_000)
+        )
+        let battled = try engine.startBattle(
+            instanceID: try XCTUnwrap(cared.libraryState.activeBuddy?.instanceId),
+            arenaName: "Pocket Garden Ring",
+            modifier: .calm,
+            currentState: cared.libraryState,
+            currentEvents: cared.eventLog,
+            now: Date(timeIntervalSince1970: 1_744_316_200)
+        )
+
+        let activeBuddy = try XCTUnwrap(battled.libraryState.activeBuddy)
+        XCTAssertGreaterThan(activeBuddy.progression.xp, 0)
+        XCTAssertEqual(battled.libraryState.battleHistory?.count, 1)
+        XCTAssertEqual(battled.libraryState.battleHistory?.first?.arenaName, "Pocket Garden Ring")
+        XCTAssertEqual(battled.libraryState.battleHistory?.first?.result, "victory")
+        XCTAssertTrue(battled.eventLog.events.contains(where: { $0.type == "buddy.care.completed" }))
+        XCTAssertTrue(battled.eventLog.events.contains(where: { $0.type == "buddy.battle.completed" }))
+
+        let receipt = runtime.persistBuddyBundle(battled)
+        XCTAssertEqual(receipt.status, .persisted)
+
+        let buddyMarkdown = try String(contentsOf: Paths.beMoreRuntimeDirectory.appendingPathComponent("buddy.md"), encoding: .utf8)
+        XCTAssertTrue(buddyMarkdown.contains("## Recent sparring"))
+        XCTAssertTrue(buddyMarkdown.contains("Pocket Garden Ring"))
+        XCTAssertTrue(buddyMarkdown.contains("Vitality"))
+        XCTAssertTrue(buddyMarkdown.contains("Trust"))
+    }
+
+    func testAppearanceStudioSavesAndEquipsHermesASCIIProfile() throws {
+        let contracts = try BuddyContractLoader.loadCanonicalResources()
+        let runtime = BeMoreWorkspaceRuntime()
+        runtime.bootstrap(config: .default, preferences: .default, routeSummary: "Direct cloud model route")
+        let engine = BuddyEventEngine(contracts: contracts)
+
+        let installed = try engine.install(
+            templateID: "bmo",
+            currentState: BuddyLibraryState(),
+            currentEvents: BuddyRuntimeEventLog(),
+            now: Date(timeIntervalSince1970: 1_744_314_400)
+        )
+        let styled = try engine.saveAppearanceProfile(
+            instanceID: try XCTUnwrap(installed.libraryState.activeBuddy?.instanceId),
+            profileName: "Moonlight Scout",
+            archetype: "spirit",
+            palette: "sky_navy",
+            asciiVariantID: "starter_c",
+            pixelVariantID: nil,
+            expressionTone: "focused",
+            accentLabel: "signal ribbon",
+            setActive: true,
+            currentState: installed.libraryState,
+            currentEvents: installed.eventLog,
+            now: Date(timeIntervalSince1970: 1_744_315_000)
+        )
+
+        let activeBuddy = try XCTUnwrap(styled.libraryState.activeBuddy)
+        XCTAssertEqual(activeBuddy.identity.archetype, "spirit")
+        XCTAssertEqual(activeBuddy.identity.palette, "sky_navy")
+        XCTAssertEqual(activeBuddy.visual?.asciiVariantId, "starter_c")
+        XCTAssertEqual(activeBuddy.appearanceProfiles?.contains(where: { $0.name == "Moonlight Scout" }), true)
+        XCTAssertEqual(activeBuddy.visual?.currentAnimationState, "neutral")
+        XCTAssertTrue(styled.eventLog.events.contains(where: { $0.type == "buddy.appearance.saved" }))
+
+        let receipt = runtime.persistBuddyBundle(styled)
+        XCTAssertEqual(receipt.status, .persisted)
+
+        let buddyMarkdown = try String(contentsOf: Paths.beMoreRuntimeDirectory.appendingPathComponent("buddy.md"), encoding: .utf8)
+        XCTAssertTrue(buddyMarkdown.contains("## Appearance studio"))
+        XCTAssertTrue(buddyMarkdown.contains("Moonlight Scout"))
+        XCTAssertTrue(buddyMarkdown.contains("starter_c"))
+    }
+
+    func testLegacyBuddySystemMigratesIntoBuild18State() throws {
+        let legacyJSON = """
+        {
+          "profileSignature": "legacy|operator",
+          "activeBuddy": {
+            "id": "6E3B5675-58CA-4FC9-9D4D-78D9A4E7F001",
+            "seed": 42,
+            "profileSignature": "legacy|operator",
+            "name": "Old Pal",
+            "archetype": "robot",
+            "title": "Generated Helper",
+            "originSummary": "Generated from legacy profile",
+            "specialty": "Keeping things moving",
+            "personalitySummary": "A legacy generated Buddy",
+            "asciiArt": "[o_o]",
+            "stats": {
+              "bond": 42,
+              "power": 55,
+              "focus": 61,
+              "curiosity": 48,
+              "care": 50
+            },
+            "createdAt": "2026-04-08T12:00:00Z"
+          },
+          "collection": [],
+          "tradeOffers": [],
+          "battleHistory": []
+        }
+        """
+
+        try legacyJSON.write(
+            to: Paths.stateDirectory.appendingPathComponent("buddy-system.json"),
+            atomically: true,
+            encoding: .utf8
+        )
+
+        let contracts = try BuddyContractLoader.loadCanonicalResources()
+        let migrated = try XCTUnwrap(BuddyInstanceStore().migrateLegacyState(contracts: contracts))
+
+        XCTAssertEqual(migrated.instances.count, 1)
+        XCTAssertEqual(migrated.activeBuddy?.displayName, "Old Pal")
+        XCTAssertEqual(migrated.activeBuddy?.templateId, "legacy.generated.v1")
+        XCTAssertEqual(migrated.activeBuddy?.provenance.installedFrom, "custom_creation")
+        XCTAssertEqual(migrated.activeBuddy?.progression.badges, ["legacy_migrated"])
+    }
+
+    // Verifies migration succeeds when the legacy file used JSONEncoder defaults
+    // (numeric timestamps — seconds since Apple reference date Jan 1 2001).
+    func testLegacyBuddySystemMigratesWithNumericDateTimestamps() throws {
+        // Date(timeIntervalSinceReferenceDate: 798_897_600) ≈ 2026-04-08T12:00:00Z
+        let numericCreatedAt = 798_897_600.0
+        let legacyJSON = """
+        {
+          "profileSignature": "legacy|operator",
+          "activeBuddy": {
+            "id": "A1B2C3D4-1234-5678-ABCD-000000000001",
+            "seed": 7,
+            "profileSignature": "legacy|operator",
+            "name": "Numeric Pal",
+            "archetype": "robot",
+            "title": "Numeric Helper",
+            "originSummary": "Generated from legacy numeric profile",
+            "specialty": "Time handling",
+            "personalitySummary": "A legacy Buddy with numeric dates",
+            "asciiArt": "[~_~]",
+            "stats": {
+              "bond": 30,
+              "power": 40,
+              "focus": 50,
+              "curiosity": 35,
+              "care": 45
+            },
+            "createdAt": \(numericCreatedAt)
+          },
+          "collection": [],
+          "tradeOffers": [],
+          "battleHistory": []
+        }
+        """
+
+        try legacyJSON.write(
+            to: Paths.stateDirectory.appendingPathComponent("buddy-system.json"),
+            atomically: true,
+            encoding: .utf8
+        )
+
+        let contracts = try BuddyContractLoader.loadCanonicalResources()
+        let migrated = try XCTUnwrap(BuddyInstanceStore().migrateLegacyState(contracts: contracts))
+
+        XCTAssertEqual(migrated.instances.count, 1)
+        XCTAssertEqual(migrated.activeBuddy?.displayName, "Numeric Pal")
+        XCTAssertEqual(migrated.activeBuddy?.templateId, "legacy.generated.v1")
+        XCTAssertEqual(migrated.activeBuddy?.provenance.installedFrom, "custom_creation")
+        XCTAssertEqual(migrated.activeBuddy?.progression.badges, ["legacy_migrated"])
+        // Installed date should decode to a valid non-nil Date (not epoch or distant-past)
+        let installedAt = try XCTUnwrap(migrated.activeBuddy?.provenance.installedAt)
+        XCTAssertGreaterThan(installedAt.timeIntervalSince1970, 0)
+    }
+}

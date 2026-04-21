@@ -1,10 +1,10 @@
-# OpenClawShell Xcode handoff bundle
+# BeMoreAgentShell Xcode handoff bundle
 
 This folder is a single-download handoff for opening the native iPhone app in Xcode.
 
 ## What to download
 
-- `OpenClawShell_Xcode_Handoff.zip`
+- `BeMoreAgentShell_Xcode_Handoff.zip`
 
 ## What is inside the zip
 
@@ -15,11 +15,11 @@ This folder is a single-download handoff for opening the native iPhone app in Xc
 ## Fast start on a Mac
 
 ```bash
-unzip OpenClawShell_Xcode_Handoff.zip
-cd OpenClawShell_Xcode_Handoff
+unzip BeMoreAgentShell_Xcode_Handoff.zip
+cd BeMoreAgentShell_Xcode_Handoff
 brew install xcodegen
 xcodegen generate
-open OpenClawShell.xcodeproj
+open BeMoreAgentShell.xcodeproj
 ```
 
 ## Signing / TestFlight

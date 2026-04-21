@@ -4,9 +4,9 @@ This file records the exact blockers for honest on-device runtime completion on 
 
 ## Current state
 
-- `apps/openclaw-shell-ios/OpenClawShell/OpenClawShellApp.swift` still boots `AppState(engine: MLCBridgeEngine())`.
+- `apps/openclaw-shell-ios/BeMoreAgentShell/BeMoreAgentShellApp.swift` still boots `AppState(engine: MLCBridgeEngine())`.
 - `apps/openclaw-shell-ios/project.yml` still has `dependencies: []`.
-- `apps/openclaw-shell-ios/OpenClawShell/RuntimeServices.swift` only runs real local generation behind `#if canImport(MLCSwift)`.
+- `apps/openclaw-shell-ios/BeMoreAgentShell/RuntimeServices.swift` only runs real local generation behind `#if canImport(MLCSwift)`.
 - When `MLCSwift` is unavailable, the app falls back to the stub response path and explicitly says the result is simulated.
 
 ## Exact blockers
