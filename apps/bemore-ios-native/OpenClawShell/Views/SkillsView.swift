@@ -4,6 +4,14 @@ struct SkillsView: View {
     @EnvironmentObject private var appState: AppState
     @State private var lastReceipt: OpenClawReceipt?
 
+    private var runtimeUtilities: [SkillManifest] {
+        appState.workspaceRuntime.executableSkills.filter { $0.category == "System" }
+    }
+
+    private var realBuddySkills: [SkillManifest] {
+        appState.workspaceRuntime.executableSkills.filter { $0.category != "System" }
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -15,12 +23,17 @@ struct SkillsView: View {
                     }
 
                     skillLibraryCard
+                    chatToSkillCard
 
                     if !appState.workspaceRuntime.builtInCapabilities.isEmpty {
                         builtInCapabilitiesCard
                     }
 
-                    ForEach(appState.workspaceRuntime.executableSkills) { skill in
+                    if !runtimeUtilities.isEmpty {
+                        runtimeUtilitiesCard
+                    }
+
+                    ForEach(realBuddySkills) { skill in
                         skillCard(skill)
                     }
                 }
@@ -49,11 +62,36 @@ struct SkillsView: View {
                     .font(.system(size: 28, weight: .bold))
                     .foregroundColor(BMOTheme.textPrimary)
                 Spacer()
-                StatusBadge(label: "\(appState.workspaceRuntime.executableSkills.count) executable", color: BMOTheme.accent)
+                StatusBadge(label: "\(realBuddySkills.count) real skills", color: BMOTheme.accent)
             }
-            Text("Skills are executable reusable abilities Buddy can learn, equip, and run. Built-in app/network tools are shown separately so Skills stays honest.")
+            Text("Skills are executable reusable Buddy abilities with runtime identity, install/equip state, permissions, config, run surface, and run history. Built-in tools and system utilities are shown separately so Skills stays honest.")
                 .font(.subheadline)
                 .foregroundColor(BMOTheme.textSecondary)
+        }
+        .bmoCard()
+    }
+
+    private var chatToSkillCard: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text("Chat-to-Skill")
+                    .font(.headline)
+                    .foregroundColor(BMOTheme.textPrimary)
+                Spacer()
+                StatusBadge(label: "Teach in chat", color: BMOTheme.success)
+            }
+
+            Text("Use chat to teach Buddy a reusable workflow. The strongest local path is: teach → review → refine → validate → approve. Approved drafts become installable skills with visible manifests and run history.")
+                .font(.caption)
+                .foregroundColor(BMOTheme.textSecondary)
+
+            VStack(alignment: .leading, spacing: 6) {
+                commandRow("teach yourself how to build daily standup notes from my check-ins")
+                commandRow("review skill user-taught-...")
+                commandRow("refine skill user-taught-...: add an example and ask before overwriting")
+                commandRow("validate skill user-taught-...")
+                commandRow("approve skill user-taught-...")
+            }
         }
         .bmoCard()
     }
@@ -91,6 +129,48 @@ struct SkillsView: View {
         .bmoCard()
     }
 
+    private var runtimeUtilitiesCard: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text("Runtime Utilities")
+                    .font(.headline)
+                    .foregroundColor(BMOTheme.textPrimary)
+                Spacer()
+                StatusBadge(label: "\(runtimeUtilities.count)", color: BMOTheme.warning)
+            }
+
+            Text("These are support utilities for the BeMore workspace itself. They are executable, but they are not presented as Buddy-facing flagship skills.")
+                .font(.caption)
+                .foregroundColor(BMOTheme.textSecondary)
+
+            ForEach(runtimeUtilities) { skill in
+                HStack(alignment: .top, spacing: 10) {
+                    Image(systemName: skill.ui.systemImage)
+                        .foregroundColor(BMOTheme.accent)
+                        .frame(width: 24)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(skill.name)
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundColor(BMOTheme.textPrimary)
+                        Text(skill.description)
+                            .font(.caption)
+                            .foregroundColor(BMOTheme.textSecondary)
+                        Text("Source: \(skill.source ?? "built-in")")
+                            .font(.caption2)
+                            .foregroundColor(BMOTheme.textTertiary)
+                    }
+                    Spacer()
+                    Button("Run") {
+                        let input = skill.id == BuiltInSkillRegistry.artifactRebuilderID ? ["target": "all"] : ["request": "Run \(skill.name) from Skills."]
+                        lastReceipt = appState.runSkill(id: skill.id, input: input)
+                    }
+                    .buttonStyle(.bordered)
+                }
+            }
+        }
+        .bmoCard()
+    }
+
     private func skillCard(_ skill: SkillManifest) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .top, spacing: 12) {
@@ -110,9 +190,16 @@ struct SkillsView: View {
                     Text(skill.description)
                         .font(.subheadline)
                         .foregroundColor(BMOTheme.textSecondary)
-                    Text("\(skill.category) • \(skill.tags.joined(separator: ", "))")
+                    Text("\(skill.category) • Source: \(skill.source ?? "built-in")")
                         .font(.caption)
                         .foregroundColor(BMOTheme.textTertiary)
+                }
+            }
+
+            HStack(spacing: 8) {
+                StatusBadge(label: (skill.isEquipped ?? false) ? "Equipped" : "Installed", color: (skill.isEquipped ?? false) ? BMOTheme.success : BMOTheme.accent)
+                if let config = skill.config, !config.isEmpty {
+                    StatusBadge(label: "Configured", color: BMOTheme.success)
                 }
             }
 
@@ -130,6 +217,19 @@ struct SkillsView: View {
                 }
             }
 
+            if let config = skill.config, !config.isEmpty {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Config")
+                        .font(.caption.weight(.semibold))
+                        .foregroundColor(BMOTheme.textTertiary)
+                    ForEach(config.keys.sorted(), id: \.self) { key in
+                        Text("\(key): \(config[key] ?? "")")
+                            .font(.caption)
+                            .foregroundColor(BMOTheme.textSecondary)
+                    }
+                }
+            }
+
             if skill.id == BuiltInSkillRegistry.pokemonTeamBuilderID {
                 NavigationLink {
                     PokemonTeamBuilderView()
@@ -143,8 +243,7 @@ struct SkillsView: View {
                 .buttonStyle(BMOButtonStyle())
             } else {
                 Button {
-                    let input = skill.id == BuiltInSkillRegistry.artifactRebuilderID ? ["target": "all"] : ["request": "Run \(skill.name) from Skills."]
-                    lastReceipt = appState.runSkill(id: skill.id, input: input)
+                    lastReceipt = appState.runSkill(id: skill.id, input: ["request": "Run \(skill.name) from Skills."])
                 } label: {
                     HStack {
                         Image(systemName: "play.fill")
@@ -198,6 +297,17 @@ struct SkillsView: View {
             }
         }
         .bmoCard()
+    }
+
+    private func commandRow(_ value: String) -> some View {
+        Text(value)
+            .font(.system(.caption, design: .monospaced))
+            .foregroundColor(BMOTheme.textPrimary)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 8)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(BMOTheme.backgroundSecondary)
+            .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusSmall, style: .continuous))
     }
 }
 
