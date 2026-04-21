@@ -1,5 +1,6 @@
 import Foundation
 
+#if os(macOS)
 class CommandDispatcher {
     static let shared = CommandDispatcher()
     
@@ -163,10 +164,12 @@ enum ShellExecutionResult {
         }
     }
     
-    var isSuccess: Bool {
-        switch self {
-        case .success: return true
-        case .failure: return false
-        }
-    }
+ var isSuccess: Bool {
+ switch self {
+ case .success: return true
+ case .failure: return false
+ }
+ }
 }
+
+#endif
