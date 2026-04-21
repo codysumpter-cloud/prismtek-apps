@@ -74,15 +74,21 @@ Dependabot is configured to keep npm and GitHub Actions dependencies fresh.
 Config file:
 - `.github/dependabot.yml`
 
+### 7. Repo-owned native iOS validation and TestFlight lane
+
+The current native iPhone app validate/upload path now lives in this repo.
+
+Current iOS workflow files:
+- `.github/workflows/bemoreagent-platform-ios-validate.yml`
+- `.github/workflows/bemore-ios-ci-testflight.yml`
+
+This automation now belongs in `prismtek-apps` because the native app project inputs also live here under `apps/bemore-ios-native`.
+
 ## Deliberately not moved here yet
 
 ### Workspace sync on merge
 
 Workspace sync is still a self-hosted runtime concern and should remain outside `prismtek-apps` until there is a real product-owned runner and workspace sync story for this repo.
-
-### BeMore iOS release automation
-
-The working iOS validate/TestFlight path is still owned by `BeMore-stack` until the actual iOS project is re-homed into this repo and proven here.
 
 ## Recommended repository settings
 
@@ -92,6 +98,7 @@ For best results, enable a ruleset or branch protection on `main` that requires:
 - the `ci / validate` check
 - the `codeql / Analyze (javascript-typescript)` check
 - the `codeql / Analyze (actions)` check
+- the primary iOS validation workflow once the runner/check naming is stable
 
 Recommended additional settings:
 - require conversation resolution before merge
@@ -103,4 +110,4 @@ Private CodeQL note:
 
 ## Why this matters
 
-These automations make `prismtek-apps` more durable by catching broken repo changes early, surfacing workflow and code scanning issues, keeping dependency drift under control, and providing bounded issue-to-PR and repair paths.
+These automations make `prismtek-apps` more durable by catching broken repo changes early, surfacing workflow and code scanning issues, keeping dependency drift under control, and providing bounded issue-to-PR and repair paths. The native iPhone app now also depends on repo-owned validation and upload docs staying truthful here.
