@@ -43,8 +43,10 @@ Current shipped shell surfaces include:
 
 These are the current implementation boundaries Codex should use as the starting point:
 
-- `BeMoreAgentShellApp.swift` still boots `AppState(engine: MLCBridgeEngine())`.
-- `project.yml` still has `dependencies: []`.
+- `apps/bemore-ios-native/BeMoreAgentShell/BeMoreAgentApp.swift` still boots `AppState(engine: MLCBridgeEngine())`.
+- `apps/bemore-ios-native/BeMoreAgentShell/RuntimeServices.swift` already owns model paths, downloads, runtime configuration, and the current stub fallback behavior.
+- `apps/bemore-ios-native/project.yml` still has `dependencies: []`.
+- `apps/bemore-ios-native/LOCAL_RUNTIME_BLOCKERS.md` captures the current hard blockers for honest on-device inference.
 - `apps/bemore-ios-native/LOCAL_RUNTIME_IMPLEMENTATION_PLAN.md` is the repo-native implementation brief for replacing the stub safely.
 
 Practical meaning:
@@ -68,7 +70,7 @@ xcodebuild -project BeMoreAgent.xcodeproj \
 
 ## Release path
 
-- `CFBundleVersion` is currently `40`.
+- `CFBundleVersion` is currently `41`.
 - `IPHONEOS_DEPLOYMENT_TARGET` is currently `26.0`.
 - The current repo-owned iOS validate/TestFlight lane is `.github/workflows/bemore-ios-ci-testflight.yml`.
 - The separate `.github/workflows/bemoreagent-platform-ios-validate.yml` workflow is for `apps/bemoreagent-platform-ios/**`, not the current `apps/bemore-ios-native` source of truth.
@@ -77,7 +79,7 @@ xcodebuild -project BeMoreAgent.xcodeproj \
 
 ## Honest limits
 
-- `BeMoreAgentShellApp.swift` still boots `AppState(engine: MLCBridgeEngine())`.
+- `apps/bemore-ios-native/BeMoreAgentShell/BeMoreAgentApp.swift` still boots `AppState(engine: MLCBridgeEngine())`.
 - `project.yml` still has `dependencies: []`.
 - When the local runtime backend is not actually linked and working, the app still uses the stub local-runtime path and cannot claim real on-device inference.
 - Arbitrary codex-style shell/process execution is not available on-device in this build. The current iOS sandbox is a receipt-backed controlled surface rather than a hardened general-purpose process host.
