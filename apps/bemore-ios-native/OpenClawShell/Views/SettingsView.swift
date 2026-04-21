@@ -4,6 +4,7 @@ struct SettingsView: View {
     @EnvironmentObject private var appState: AppState
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
+    @StateObject private var linkedRelayStore = BeMoreLinkedRelayStore()
     @State private var editingProvider: ProviderKind?
     @State private var showingTabManager = false
 
@@ -47,6 +48,31 @@ struct SettingsView: View {
                     settingsRow(title: "Hermes-capable now", value: "\(appState.availableCapabilityCount)")
                     settingsRow(title: "Needs linked account", value: "\(appState.linkedAccountCapabilityCount)")
                     settingsRow(title: "Needs linked runtime", value: "\(appState.linkedRuntimeCapabilityCount)")
+                    settingsRow(title: "Runtime relay", value: linkedRelayStore.runtimeRelaySummary)
+
+                    if linkedRelayStore.providers.isEmpty {
+                        Text("No linked-provider status loaded yet. Open the Prismtek account surface or refresh after the site relay is configured.")
+                            .font(.caption)
+                            .foregroundColor(BMOTheme.textSecondary)
+                            .listRowBackground(BMOTheme.backgroundCard)
+                    } else {
+                        ForEach(linkedRelayStore.providers) { provider in
+                            HStack {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(provider.label)
+                                        .foregroundColor(BMOTheme.textPrimary)
+                                    Text(provider.linked ? (provider.accountLabel ?? "Linked") : (provider.configured ? "Ready to link" : "Not configured"))
+                                        .font(.caption)
+                                        .foregroundColor(BMOTheme.textSecondary)
+                                }
+                                Spacer()
+                                Text(provider.linked ? "Linked" : provider.configured ? "Available" : "Unavailable")
+                                    .font(.caption)
+                                    .foregroundColor(provider.linked ? BMOTheme.success : provider.configured ? BMOTheme.accent : BMOTheme.warning)
+                            }
+                            .listRowBackground(BMOTheme.backgroundCard)
+                        }
+                    }
 
                     Button("Open Prismtek Account") {
                         guard let url = BeMoreWebFeatureRoute.myAccount.resolvedURL(stackConfig: appState.stackConfig) else { return }
@@ -68,7 +94,7 @@ struct SettingsView: View {
                     .foregroundColor(BMOTheme.accent)
                     .listRowBackground(BMOTheme.backgroundCard)
 
-                    Text("GitHub private-repo access and ChatGPT/OpenAI account linking are modeled as linked-account capabilities. The app now routes you to the shared account surface instead of pretending they are native, but the real provider OAuth callback/exchange layer still needs the matching website/backend implementation.")
+                    Text("GitHub private-repo access and ChatGPT/OpenAI account linking now route through concrete site relay endpoints when the deployment is configured. They are still not claimed as native iPhone capabilities.")
                         .font(.caption)
                         .foregroundColor(BMOTheme.textSecondary)
                         .listRowBackground(BMOTheme.backgroundCard)
@@ -108,6 +134,9 @@ struct SettingsView: View {
                     Button("Done") { dismiss() }
                         .foregroundColor(BMOTheme.accent)
                 }
+            }
+            .task(id: appState.stackConfig.gatewayURL) {
+                await linkedRelayStore.refresh(baseURL: appState.stackConfig.gatewayURL)
             }
             .sheet(item: $editingProvider) { provider in
                 ProviderEditorSheet(provider: provider)
