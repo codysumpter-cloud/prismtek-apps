@@ -43,6 +43,7 @@ struct EditorTabView: View {
                 VStack(alignment: .leading, spacing: BMOTheme.spacingMD) {
                     heroCard
                     projectBriefCard
+                    nativeCanvasCard
                     buddyAssistCard
                     if let lastReceipt {
                         ActionReceiptCard(receipt: lastReceipt)
@@ -125,6 +126,11 @@ struct EditorTabView: View {
             }
         }
         .bmoCard()
+    }
+
+    private var nativeCanvasCard: some View {
+        PixelStudioNativeCanvasView()
+            .bmoCard()
     }
 
     private var buddyAssistCard: some View {
