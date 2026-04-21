@@ -2,7 +2,7 @@ name: BeMore iOS CI & TestFlight
 
 on:
   push:
-    branches: [main]
+    branches: [main, master]
     paths:
       - 'apps/bemore-ios-native/**'
       - 'packages/core/**'
@@ -10,7 +10,7 @@ on:
       - 'packages/app-factory/**'
       - '.github/workflows/bemore-ios-ci-testflight.yml'
   pull_request:
-    branches: [main]
+    branches: [main, master]
     paths:
       - 'apps/bemore-ios-native/**'
       - 'packages/core/**'
@@ -28,7 +28,7 @@ permissions:
 
 jobs:
   validate:
-    runs-on: macos-26
+    runs-on: [self-hosted, prismtek-apps]
     defaults:
       run:
         working-directory: apps/bemore-ios-native
@@ -136,7 +136,7 @@ jobs:
   testflight:
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     needs: validate
-    runs-on: macos-26
+    runs-on: [self-hosted, prismtek-apps]
     defaults:
       run:
         working-directory: apps/bemore-ios-native

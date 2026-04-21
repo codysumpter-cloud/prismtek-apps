@@ -8,6 +8,7 @@ on:
   push:
     branches:
       - main
+      - master
     paths:
       - 'apps/bemoreagent-platform-ios/**'
       - '.github/workflows/bemoreagent-platform-ios-validate.yml'
@@ -15,7 +16,7 @@ on:
 jobs:
   build-ios:
     name: Generate and build BeMoreAgent Platform
-    runs-on: macos-latest
+    runs-on: [self-hosted, prismtek-apps]
     defaults:
       run:
         working-directory: apps/bemoreagent-platform-ios
