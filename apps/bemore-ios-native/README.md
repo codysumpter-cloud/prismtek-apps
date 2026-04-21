@@ -36,7 +36,7 @@ The app now separates **executable skills** from **built-in tools**:
 - User-taught chat-to-skill is now real:
   1. user says “teach yourself how to …”
   2. Buddy drafts a reusable skill package in workspace state
-  3. user reviews and approves with `approve skill <id>`
+  3. user reviews, refines, validates, and approves it
   4. the skill installs and becomes runnable from Skills
 - Skill runs for manifest-backed workflows now persist run logs under `skills/<id>/runs/` for visible refinement history.
 
@@ -59,6 +59,8 @@ main `BeMore-stack` repo. Installing or personalizing a Buddy persists:
 - `.bemore/buddy.md`
 - `.bemore/buddies.md`
 
+The active runtime identity is **BeMore workspace** under `.bemore`. Legacy `.openclaw` paths may still be migrated for continuity, but they are not the active platform model.
+
 Bundle identity continuity matters for this state. See [`BUILD_14_CONTINUITY_NOTE.md`](./BUILD_14_CONTINUITY_NOTE.md) for why build 14 could look like a fresh install after the bundle identifier briefly changed.
 
 ## Runtime posture
@@ -76,7 +78,7 @@ Today the honest split is:
 
 ```bash
 brew install xcodegen
-cd apps/openclaw-shell-ios
+cd apps/bemore-ios-native
 xcodegen generate
 xcodebuild -project BeMoreAgent.xcodeproj \
   -scheme BeMoreAgent \

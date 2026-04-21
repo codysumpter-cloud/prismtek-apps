@@ -5,6 +5,7 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var editingProvider: ProviderKind?
     @State private var showingTabManager = false
+    @State private var linkedFeatureRoute: BeMoreWebFeatureRoute?
 
     var body: some View {
         NavigationStack {
@@ -39,6 +40,36 @@ struct SettingsView: View {
                     Text("Choose the live local route or direct cloud model route in Models. Settings is for maintenance and configuration.")
                         .font(.caption)
                         .foregroundColor(appState.usesStubRuntime ? BMOTheme.warning : BMOTheme.textSecondary)
+                        .listRowBackground(BMOTheme.backgroundCard)
+                }
+
+                Section("Linked Accounts & Runtime") {
+                    settingsRow(title: "Hermes-capable now", value: "\(appState.availableCapabilityCount)")
+                    settingsRow(title: "Needs linked account", value: "\(appState.linkedAccountCapabilityCount)")
+                    settingsRow(title: "Needs linked runtime", value: "\(appState.linkedRuntimeCapabilityCount)")
+
+                    Button("Open Prismtek Account") {
+                        linkedFeatureRoute = .myAccount
+                    }
+                    .foregroundColor(BMOTheme.accent)
+                    .listRowBackground(BMOTheme.backgroundCard)
+
+                    Button("Open Builder / Mission / Profiles") {
+                        appState.route(to: .editor)
+                        dismiss()
+                    }
+                    .foregroundColor(BMOTheme.accent)
+                    .listRowBackground(BMOTheme.backgroundCard)
+
+                    Button("Inspect linked runtime") {
+                        Task { await appState.refreshMacRuntimeSnapshot() }
+                    }
+                    .foregroundColor(BMOTheme.accent)
+                    .listRowBackground(BMOTheme.backgroundCard)
+
+                    Text("GitHub private-repo access and ChatGPT/OpenAI account linking are modeled as linked-account capabilities. The app now routes you to the shared account surface instead of pretending they are native, but the real provider OAuth callback/exchange layer still needs the matching website/backend implementation.")
+                        .font(.caption)
+                        .foregroundColor(BMOTheme.textSecondary)
                         .listRowBackground(BMOTheme.backgroundCard)
                 }
 
@@ -84,6 +115,22 @@ struct SettingsView: View {
             .sheet(isPresented: $showingTabManager) {
                 TabManagementSheet()
                     .environmentObject(appState)
+            }
+            .sheet(item: $linkedFeatureRoute) { route in
+                NavigationStack {
+                    if let url = route.resolvedURL(stackConfig: appState.stackConfig) {
+                        BeMoreWebShellView(url: url)
+                            .navigationTitle(route.title)
+                            .navigationBarTitleDisplayMode(.inline)
+                            .toolbar {
+                                ToolbarItem(placement: .cancellationAction) {
+                                    Button("Close") { linkedFeatureRoute = nil }
+                                }
+                            }
+                    } else {
+                        ContentUnavailableView("Surface unavailable", systemImage: route.systemImage)
+                    }
+                }
             }
             .alert("Provider error", isPresented: Binding(get: {
                 appState.providerStore.lastError != nil

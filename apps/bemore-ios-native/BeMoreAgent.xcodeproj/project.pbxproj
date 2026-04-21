@@ -1,0 +1,830 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		090BE3A1695C9AEC2E2DD255 /* buddy-progression.v1.json in Resources */ = {isa = PBXBuildFile; fileRef = BD17D7D53ADAF0D40A383722 /* buddy-progression.v1.json */; };
+		098CB90DF3CD89E199FF047C /* buddy-template-package.schema.json in Resources */ = {isa = PBXBuildFile; fileRef = 5C1952F6010869ACB10C99B3 /* buddy-template-package.schema.json */; };
+		0ED5785D66BB6ADB19A10786 /* OpenClawShellApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6101B849070415987A46290 /* OpenClawShellApp.swift */; };
+		AA1000000000000000000001 /* BeMoreChatDispatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000011 /* BeMoreChatDispatch.swift */; };
+		AA1000000000000000000006 /* BeMoreCapabilityMirror.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000016 /* BeMoreCapabilityMirror.swift */; };
+		AA1000000000000000000002 /* PixelStudioModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000012 /* PixelStudioModels.swift */; };
+		AA1000000000000000000003 /* BeMoreWebShellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000013 /* BeMoreWebShellView.swift */; };
+		AA1000000000000000000004 /* BeMoreChatDispatchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000014 /* BeMoreChatDispatchTests.swift */; };
+		AA1000000000000000000005 /* BeMoreCapabilityMirrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000015 /* BeMoreCapabilityMirrorTests.swift */; };
+		192A26C7CE80E9D98C1C67FA /* AppStateRuntimeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0DDCE1DC11078DEA6F36E17 /* AppStateRuntimeTests.swift */; };
+		20C547F2DDDAB88F2D136858 /* buddy-runtime-events.v1.json in Resources */ = {isa = PBXBuildFile; fileRef = 1867D40BFD44975FF003193D /* buddy-runtime-events.v1.json */; };
+		213EFD47CF19E4A43652991A /* POKEMON_CHAMPIONS_TEAM_BUILDER_BACKEND.md in Resources */ = {isa = PBXBuildFile; fileRef = 56C9D01E6702454E5A632092 /* POKEMON_CHAMPIONS_TEAM_BUILDER_BACKEND.md */; };
+		2BDEBBC8A5DCA46DF7958596 /* MISSION_CONTROL.md in Resources */ = {isa = PBXBuildFile; fileRef = CA03360497852E1FD1F016B4 /* MISSION_CONTROL.md */; };
+		2E109FF34F3B10182994F909 /* ADMIN_TESTFLIGHT_RUNBOOK.md in Resources */ = {isa = PBXBuildFile; fileRef = C9193DCB81C237372C21E8C1 /* ADMIN_TESTFLIGHT_RUNBOOK.md */; };
+		2FDCCD02D89CBE56F9658F4C /* AppModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522C6B817E31FAE3E4B672CA /* AppModels.swift */; };
+		342816AF42752EB3A18B6E13 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C7F5A0720B7A2CFC9244B9 /* ChatView.swift */; };
+		3704D760C1BD1D1AF5556B7B /* BuddyContracts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14E05725D9B6335B842C404F /* BuddyContracts.swift */; };
+		38B23E4A0D7008FA241D1C9B /* StackBuilderModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 498EC02DCC866CDA252CE078 /* StackBuilderModels.swift */; };
+		3B986957714DE5B2A80E4769 /* BuddyShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3437DADDEBFC2C88BCA300 /* BuddyShortcuts.swift */; };
+		42A70C2F6918B1D1BDBD6817 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD6850B0F88BBC65A02AD48 /* Theme.swift */; };
+		46521CE929943B1E8AB90079 /* buddy-instance.example.v1.json in Resources */ = {isa = PBXBuildFile; fileRef = 0BA2FD9236E1A83B995D198A /* buddy-instance.example.v1.json */; };
+		502A2A59F82C62BE95149D6A /* MissionControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 442371696043C6312FACDBF1 /* MissionControlView.swift */; };
+		58C881FBF6F4920BD8107661 /* AppPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 690D7307CB8C49A730F84D3E /* AppPreferences.swift */; };
+		59517EE36DFF3692131EFF61 /* editor.html in Resources */ = {isa = PBXBuildFile; fileRef = 04E320BE2F0F0F0590D5E01F /* editor.html */; };
+		5EBE4BDE0D2EE2D7FA38098E /* buddy-state-machine.example.v1.json in Resources */ = {isa = PBXBuildFile; fileRef = 82E07B7D593A44BA3E7E5ED3 /* buddy-state-machine.example.v1.json */; };
+		60AA6F335FCA7CF8E70C4E9A /* buddy-instance.schema.json in Resources */ = {isa = PBXBuildFile; fileRef = 598D20BC63E43FC33C07D9A4 /* buddy-instance.schema.json */; };
+		60AB6EDABA92B6C717B9ADBE /* ModelsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D36A8AD0B07018577060E618 /* ModelsView.swift */; };
+		60D4ADEA01E043C403298649 /* BuddyVisualView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7A397CDF71DD2B30C6E9DE /* BuddyVisualView.swift */; };
+		698D1CFE6AADCBD5666A3EF0 /* buddy-creation-options.v1.json in Resources */ = {isa = PBXBuildFile; fileRef = 57102699EC73E52121C44DC0 /* buddy-creation-options.v1.json */; };
+		6A9B3B506487AFD559721805 /* ChatTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DF5AB5C184F947542992168 /* ChatTabView.swift */; };
+		6BA5D54A7F35E8560212F2AA /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 368A0503071C35FB3D2E3F4A /* ContentView.swift */; };
+		6BD5E86AC89D1BD3BFCC00F4 /* buddy-system.schema.json in Resources */ = {isa = PBXBuildFile; fileRef = AF69525042C89C51425C3CB7 /* buddy-system.schema.json */; };
+		6FA0DB927D712A506983DB3A /* StackBuilderStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83AA9977969397C5BC6BA8EF /* StackBuilderStore.swift */; };
+		71CE62A248E8988BB56BE339 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A08CC671E8130A6854AA3CED /* SettingsView.swift */; };
+		760843867B52A1BF04A11DE9 /* BuddyInstanceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C244EAD08A33508FEF53F5 /* BuddyInstanceStore.swift */; };
+		79D11610164EB9B335BE0169 /* EditorWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B55141D9E24E13036E8FBE29 /* EditorWebView.swift */; };
+		7E4BDABDD7CE8CD6CBFE3231 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5F7CFF97715CDB9E5D08751C /* Assets.xcassets */; };
+		8349729EA5F76D04C21DCDA1 /* GitHubService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2F6CBC01DE71D756C9FC3E9 /* GitHubService.swift */; };
+		84613D13EC752A26B5FC8E50 /* FilesTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58578A391DE031462E0F2DCF /* FilesTabView.swift */; };
+		84D684EC486C31453E487A5E /* buddy-creation-options.schema.json in Resources */ = {isa = PBXBuildFile; fileRef = 94BF70F024EF7B69003FC3E5 /* buddy-creation-options.schema.json */; };
+		85637F440829BA6420876E96 /* BuddyContractLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3586865CBC438F8DAC8708 /* BuddyContractLoader.swift */; };
+		8A9871D3740F8835E1DD5B55 /* RepoSurfaceDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E856D1E21135162BBA8EF0 /* RepoSurfaceDetailView.swift */; };
+		8B04FAFA71CFF9059E8A780D /* buddy-template-package.example.v1.json in Resources */ = {isa = PBXBuildFile; fileRef = E1C774733F701B26FCDC8051 /* buddy-template-package.example.v1.json */; };
+		8B5571539242B01CCE52CF51 /* council-starter-pack.v1.json in Resources */ = {isa = PBXBuildFile; fileRef = 58B7B4C7ADA21855CA94F5F7 /* council-starter-pack.v1.json */; };
+		8DE94B6D5A3635F29C357274 /* PricingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 980DB3F725A1759473C050CF /* PricingView.swift */; };
+		9426511CB286077AE299B599 /* MacPairingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F69B0229CC8642E2BAE272FE /* MacPairingView.swift */; };
+		9BFA5BF296B1FCAC239A4103 /* BuddyMessageComposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C69684C509F7A7102C9FA44 /* BuddyMessageComposer.swift */; };
+		A179272D48BF05FC55683006 /* ArtifactsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1036F427909F906F1B7AA91E /* ArtifactsView.swift */; };
+		A2CF3AFD63375E5391838444 /* BuddyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1D4AA3E57A38A4611202F96 /* BuddyView.swift */; };
+		A3D2E19A2B6934A472500CCA /* SkillsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B667319583500F64C94237D /* SkillsView.swift */; };
+		A3E52EBC01F1EB439D4F166B /* EditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 167B81DE3594A9F96DAFA178 /* EditorView.swift */; };
+		A5E3D01677A91B6D9D6BE4DD /* BuddyEventEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1085A9ADFD52FEDA3981688 /* BuddyEventEngine.swift */; };
+		A9A0585B91BE5C1F79B305E6 /* buddy-state-machine.schema.json in Resources */ = {isa = PBXBuildFile; fileRef = 84AD9EC93D2DC69BEFB868EB /* buddy-state-machine.schema.json */; };
+		B22B418C12AEFE1C5E1A2B9B /* RuntimeServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBBAC22BAD12F4773397730 /* RuntimeServices.swift */; };
+		B42A986D41DA4CE33861C456 /* ModelsTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74D6A8567E6637924F03EAFA /* ModelsTabView.swift */; };
+		C19C915031092733D1F313D8 /* COUNCIL_STARTER_PACK.md in Resources */ = {isa = PBXBuildFile; fileRef = 3B3BC5AD97299F26F43A1EEA /* COUNCIL_STARTER_PACK.md */; };
+		C7A861D0EFFC480A5F10DF61 /* FilesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CD19A6542CD6F4632D632A0 /* FilesView.swift */; };
+		C92E5E41FCBF0FC576B3FCA6 /* BuddyAppleIntegrationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEC44B207DE56D5FC72E89DD /* BuddyAppleIntegrationService.swift */; };
+		CA950D9D17837C0F2253996B /* buddy-runtime-events.example.v1.json in Resources */ = {isa = PBXBuildFile; fileRef = E667067B41F3F7FF74D64633 /* buddy-runtime-events.example.v1.json */; };
+		CB103CA6A885844368D6C106 /* BuddyPixelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDB00B6ECA93DD3679EF9CBB /* BuddyPixelView.swift */; };
+		CDE65D222296244196FADF1D /* HomeTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7368FCB15407807C1843DB8 /* HomeTabView.swift */; };
+		D1B16595BE58A0C364378F6F /* buddy-runtime-events.schema.json in Resources */ = {isa = PBXBuildFile; fileRef = CA68FB723DB750FB794DF9BE /* buddy-runtime-events.schema.json */; };
+		D37238E4B311EAE040E9AC49 /* WebBrowserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9A1EEBB8FC87D03ABAD30D /* WebBrowserService.swift */; };
+		D38C7B89A4FAB169D237E611 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B06005B6D807ABF034982CB9 /* HomeView.swift */; };
+		D5A36E685E397803707316F0 /* BuddyAsciiView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 512CFA48CBDC61F47D623701 /* BuddyAsciiView.swift */; };
+		DB308C2CCB246BF743107911 /* BUDDY_SYSTEM.md in Resources */ = {isa = PBXBuildFile; fileRef = 3399D4D90431330DA7BD8B38 /* BUDDY_SYSTEM.md */; };
+		E05F035FF78A279ADB627DB8 /* OpenClawWorkspaceRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04AF49ACC7F53A85DF2E8664 /* OpenClawWorkspaceRuntime.swift */; };
+		E08618F03F168D0DB6FCE9C6 /* OnboardingFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7612E774553FFF49143F1019 /* OnboardingFlow.swift */; };
+		E54E68A707D6EA671E774183 /* AppState+OnboardingReset.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9971B734ACB8C9AF8B4F8E5 /* AppState+OnboardingReset.swift */; };
+		E7C6847C076D99E773A9EDB9 /* buddy-state-machine.v1.json in Resources */ = {isa = PBXBuildFile; fileRef = 7BFF81B7A01681377DDA718C /* buddy-state-machine.v1.json */; };
+		E809EE8994645CB369E2EEC5 /* BuddyRuntimeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BE6F04DA95AB2E407C63C98 /* BuddyRuntimeTests.swift */; };
+		F92910277F860B2A5BD45CA2 /* BuddyMarkdownRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77813BD07857103E7F9F27EC /* BuddyMarkdownRenderer.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A387D53D1F5B4F72FB087EB6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 45BBB0D016542C9F6209A3AB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 993454E45436E5322D80D5FF;
+			remoteInfo = BeMoreAgent;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		02C7F5A0720B7A2CFC9244B9 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
+		04AF49ACC7F53A85DF2E8664 /* OpenClawWorkspaceRuntime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenClawWorkspaceRuntime.swift; sourceTree = "<group>"; };
+		04E320BE2F0F0F0590D5E01F /* editor.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = editor.html; sourceTree = "<group>"; };
+		0BA2FD9236E1A83B995D198A /* buddy-instance.example.v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "buddy-instance.example.v1.json"; sourceTree = "<group>"; };
+		1036F427909F906F1B7AA91E /* ArtifactsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtifactsView.swift; sourceTree = "<group>"; };
+		14E05725D9B6335B842C404F /* BuddyContracts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyContracts.swift; sourceTree = "<group>"; };
+		167B81DE3594A9F96DAFA178 /* EditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorView.swift; sourceTree = "<group>"; };
+		1867D40BFD44975FF003193D /* buddy-runtime-events.v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "buddy-runtime-events.v1.json"; sourceTree = "<group>"; };
+		1CD19A6542CD6F4632D632A0 /* FilesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesView.swift; sourceTree = "<group>"; };
+		3399D4D90431330DA7BD8B38 /* BUDDY_SYSTEM.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = BUDDY_SYSTEM.md; sourceTree = "<group>"; };
+		368A0503071C35FB3D2E3F4A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		3B3BC5AD97299F26F43A1EEA /* COUNCIL_STARTER_PACK.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = COUNCIL_STARTER_PACK.md; sourceTree = "<group>"; };
+		442371696043C6312FACDBF1 /* MissionControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissionControlView.swift; sourceTree = "<group>"; };
+		498EC02DCC866CDA252CE078 /* StackBuilderModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackBuilderModels.swift; sourceTree = "<group>"; };
+		4C3586865CBC438F8DAC8708 /* BuddyContractLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyContractLoader.swift; sourceTree = "<group>"; };
+		4DF5AB5C184F947542992168 /* ChatTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTabView.swift; sourceTree = "<group>"; };
+		512CFA48CBDC61F47D623701 /* BuddyAsciiView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyAsciiView.swift; sourceTree = "<group>"; };
+		522C6B817E31FAE3E4B672CA /* AppModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModels.swift; sourceTree = "<group>"; };
+		56C9D01E6702454E5A632092 /* POKEMON_CHAMPIONS_TEAM_BUILDER_BACKEND.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = POKEMON_CHAMPIONS_TEAM_BUILDER_BACKEND.md; sourceTree = "<group>"; };
+		57102699EC73E52121C44DC0 /* buddy-creation-options.v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "buddy-creation-options.v1.json"; sourceTree = "<group>"; };
+		58578A391DE031462E0F2DCF /* FilesTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesTabView.swift; sourceTree = "<group>"; };
+		58B7B4C7ADA21855CA94F5F7 /* council-starter-pack.v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "council-starter-pack.v1.json"; sourceTree = "<group>"; };
+		598D20BC63E43FC33C07D9A4 /* buddy-instance.schema.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "buddy-instance.schema.json"; sourceTree = "<group>"; };
+		5BE6F04DA95AB2E407C63C98 /* BuddyRuntimeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyRuntimeTests.swift; sourceTree = "<group>"; };
+		5C1952F6010869ACB10C99B3 /* buddy-template-package.schema.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "buddy-template-package.schema.json"; sourceTree = "<group>"; };
+		5C3437DADDEBFC2C88BCA300 /* BuddyShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyShortcuts.swift; sourceTree = "<group>"; };
+		5F7CFF97715CDB9E5D08751C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		690D7307CB8C49A730F84D3E /* AppPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPreferences.swift; sourceTree = "<group>"; };
+		6C69684C509F7A7102C9FA44 /* BuddyMessageComposer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyMessageComposer.swift; sourceTree = "<group>"; };
+		74D6A8567E6637924F03EAFA /* ModelsTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelsTabView.swift; sourceTree = "<group>"; };
+		7612E774553FFF49143F1019 /* OnboardingFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingFlow.swift; sourceTree = "<group>"; };
+		77813BD07857103E7F9F27EC /* BuddyMarkdownRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyMarkdownRenderer.swift; sourceTree = "<group>"; };
+		7BD6850B0F88BBC65A02AD48 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		7BFF81B7A01681377DDA718C /* buddy-state-machine.v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "buddy-state-machine.v1.json"; sourceTree = "<group>"; };
+		82E07B7D593A44BA3E7E5ED3 /* buddy-state-machine.example.v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "buddy-state-machine.example.v1.json"; sourceTree = "<group>"; };
+		83AA9977969397C5BC6BA8EF /* StackBuilderStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackBuilderStore.swift; sourceTree = "<group>"; };
+		84AD9EC93D2DC69BEFB868EB /* buddy-state-machine.schema.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "buddy-state-machine.schema.json"; sourceTree = "<group>"; };
+		94BF70F024EF7B69003FC3E5 /* buddy-creation-options.schema.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "buddy-creation-options.schema.json"; sourceTree = "<group>"; };
+		980DB3F725A1759473C050CF /* PricingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PricingView.swift; sourceTree = "<group>"; };
+		9B667319583500F64C94237D /* SkillsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkillsView.swift; sourceTree = "<group>"; };
+		9D7A397CDF71DD2B30C6E9DE /* BuddyVisualView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyVisualView.swift; sourceTree = "<group>"; };
+		9E9A1EEBB8FC87D03ABAD30D /* WebBrowserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebBrowserService.swift; sourceTree = "<group>"; };
+		A08CC671E8130A6854AA3CED /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		A0DDCE1DC11078DEA6F36E17 /* AppStateRuntimeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStateRuntimeTests.swift; sourceTree = "<group>"; };
+		AA1000000000000000000011 /* BeMoreChatDispatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeMoreChatDispatch.swift; sourceTree = "<group>"; };
+		AA1000000000000000000012 /* PixelStudioModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelStudioModels.swift; sourceTree = "<group>"; };
+		AA1000000000000000000013 /* BeMoreWebShellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeMoreWebShellView.swift; sourceTree = "<group>"; };
+		AA1000000000000000000014 /* BeMoreChatDispatchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeMoreChatDispatchTests.swift; sourceTree = "<group>"; };
+		AA1000000000000000000015 /* BeMoreCapabilityMirrorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeMoreCapabilityMirrorTests.swift; sourceTree = "<group>"; };
+		AA1000000000000000000016 /* BeMoreCapabilityMirror.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Capabilities/BeMoreCapabilityMirror.swift; sourceTree = "<group>"; };
+		A2F6CBC01DE71D756C9FC3E9 /* GitHubService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubService.swift; sourceTree = "<group>"; };
+		A6BB7B608FD402914D5E419A /* BeMoreAgent.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BeMoreAgent.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A9971B734ACB8C9AF8B4F8E5 /* AppState+OnboardingReset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppState+OnboardingReset.swift"; sourceTree = "<group>"; };
+		AF69525042C89C51425C3CB7 /* buddy-system.schema.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "buddy-system.schema.json"; sourceTree = "<group>"; };
+		B06005B6D807ABF034982CB9 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		B08FCD5C9FEE10B8818E60D6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		B55141D9E24E13036E8FBE29 /* EditorWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorWebView.swift; sourceTree = "<group>"; };
+		B7368FCB15407807C1843DB8 /* HomeTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTabView.swift; sourceTree = "<group>"; };
+		BD17D7D53ADAF0D40A383722 /* buddy-progression.v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "buddy-progression.v1.json"; sourceTree = "<group>"; };
+		C1085A9ADFD52FEDA3981688 /* BuddyEventEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyEventEngine.swift; sourceTree = "<group>"; };
+		C2619477DC09F87DEF80B84E /* BeMoreAgentTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = BeMoreAgentTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C9193DCB81C237372C21E8C1 /* ADMIN_TESTFLIGHT_RUNBOOK.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ADMIN_TESTFLIGHT_RUNBOOK.md; sourceTree = "<group>"; };
+		C9C244EAD08A33508FEF53F5 /* BuddyInstanceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyInstanceStore.swift; sourceTree = "<group>"; };
+		CA03360497852E1FD1F016B4 /* MISSION_CONTROL.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = MISSION_CONTROL.md; sourceTree = "<group>"; };
+		CA68FB723DB750FB794DF9BE /* buddy-runtime-events.schema.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "buddy-runtime-events.schema.json"; sourceTree = "<group>"; };
+		CDB00B6ECA93DD3679EF9CBB /* BuddyPixelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyPixelView.swift; sourceTree = "<group>"; };
+		D36A8AD0B07018577060E618 /* ModelsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelsView.swift; sourceTree = "<group>"; };
+		E1C774733F701B26FCDC8051 /* buddy-template-package.example.v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "buddy-template-package.example.v1.json"; sourceTree = "<group>"; };
+		E1D4AA3E57A38A4611202F96 /* BuddyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyView.swift; sourceTree = "<group>"; };
+		E6101B849070415987A46290 /* OpenClawShellApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenClawShellApp.swift; sourceTree = "<group>"; };
+		E667067B41F3F7FF74D64633 /* buddy-runtime-events.example.v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "buddy-runtime-events.example.v1.json"; sourceTree = "<group>"; };
+		EEC44B207DE56D5FC72E89DD /* BuddyAppleIntegrationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyAppleIntegrationService.swift; sourceTree = "<group>"; };
+		EFBBAC22BAD12F4773397730 /* RuntimeServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeServices.swift; sourceTree = "<group>"; };
+		F5E856D1E21135162BBA8EF0 /* RepoSurfaceDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepoSurfaceDetailView.swift; sourceTree = "<group>"; };
+		F69B0229CC8642E2BAE272FE /* MacPairingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacPairingView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		13C8E5A7E5CBDE23DC866ABA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A6BB7B608FD402914D5E419A /* BeMoreAgent.app */,
+				C2619477DC09F87DEF80B84E /* BeMoreAgentTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		19F55A9B970B6C6DEE7B9E58 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				1036F427909F906F1B7AA91E /* ArtifactsView.swift */,
+				AA1000000000000000000013 /* BeMoreWebShellView.swift */,
+				512CFA48CBDC61F47D623701 /* BuddyAsciiView.swift */,
+				CDB00B6ECA93DD3679EF9CBB /* BuddyPixelView.swift */,
+				E1D4AA3E57A38A4611202F96 /* BuddyView.swift */,
+				9D7A397CDF71DD2B30C6E9DE /* BuddyVisualView.swift */,
+				02C7F5A0720B7A2CFC9244B9 /* ChatView.swift */,
+				B55141D9E24E13036E8FBE29 /* EditorWebView.swift */,
+				1CD19A6542CD6F4632D632A0 /* FilesView.swift */,
+				B06005B6D807ABF034982CB9 /* HomeView.swift */,
+				F69B0229CC8642E2BAE272FE /* MacPairingView.swift */,
+				442371696043C6312FACDBF1 /* MissionControlView.swift */,
+				D36A8AD0B07018577060E618 /* ModelsView.swift */,
+				980DB3F725A1759473C050CF /* PricingView.swift */,
+				F5E856D1E21135162BBA8EF0 /* RepoSurfaceDetailView.swift */,
+				A08CC671E8130A6854AA3CED /* SettingsView.swift */,
+				9B667319583500F64C94237D /* SkillsView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		3AB752161A90059126249D3B /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				B7368FCB15407807C1843DB8 /* HomeTabView.swift */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+		404D7CD44F978DD525D696DD /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				D1193200E6AC8965B9A3B282 /* Chat */,
+				ACD5E868D9135B32E1769926 /* Editor */,
+				BB213A54FB31B307D84D5DD0 /* Files */,
+				3AB752161A90059126249D3B /* Home */,
+				B57150A2038968C529EBA5A8 /* Models */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		40C8E86410AD74C52C8F8726 /* OpenClawShell */ = {
+			isa = PBXGroup;
+			children = (
+				522C6B817E31FAE3E4B672CA /* AppModels.swift */,
+				690D7307CB8C49A730F84D3E /* AppPreferences.swift */,
+				A9971B734ACB8C9AF8B4F8E5 /* AppState+OnboardingReset.swift */,
+				5F7CFF97715CDB9E5D08751C /* Assets.xcassets */,
+				AA1000000000000000000011 /* BeMoreChatDispatch.swift */,
+				AA1000000000000000000016 /* BeMoreCapabilityMirror.swift */,
+				EEC44B207DE56D5FC72E89DD /* BuddyAppleIntegrationService.swift */,
+				4C3586865CBC438F8DAC8708 /* BuddyContractLoader.swift */,
+				14E05725D9B6335B842C404F /* BuddyContracts.swift */,
+				C1085A9ADFD52FEDA3981688 /* BuddyEventEngine.swift */,
+				C9C244EAD08A33508FEF53F5 /* BuddyInstanceStore.swift */,
+				77813BD07857103E7F9F27EC /* BuddyMarkdownRenderer.swift */,
+				6C69684C509F7A7102C9FA44 /* BuddyMessageComposer.swift */,
+				5C3437DADDEBFC2C88BCA300 /* BuddyShortcuts.swift */,
+				368A0503071C35FB3D2E3F4A /* ContentView.swift */,
+				A2F6CBC01DE71D756C9FC3E9 /* GitHubService.swift */,
+				B08FCD5C9FEE10B8818E60D6 /* Info.plist */,
+				7612E774553FFF49143F1019 /* OnboardingFlow.swift */,
+				E6101B849070415987A46290 /* OpenClawShellApp.swift */,
+				04AF49ACC7F53A85DF2E8664 /* OpenClawWorkspaceRuntime.swift */,
+				EFBBAC22BAD12F4773397730 /* RuntimeServices.swift */,
+				7BD6850B0F88BBC65A02AD48 /* Theme.swift */,
+				9E9A1EEBB8FC87D03ABAD30D /* WebBrowserService.swift */,
+				B39E9F700C9DAB31D6D5904B /* Assets */,
+				404D7CD44F978DD525D696DD /* Features */,
+				6B352C8F7430C746D8634574 /* Models */,
+				49D591889A9BD260BC9C03F7 /* RepoResources */,
+				A844B73477470C0EB4FFEEEB /* Stores */,
+				19F55A9B970B6C6DEE7B9E58 /* Views */,
+			);
+			path = OpenClawShell;
+			sourceTree = "<group>";
+		};
+		49D591889A9BD260BC9C03F7 /* RepoResources */ = {
+			isa = PBXGroup;
+			children = (
+				5AF07B45C311B7087D2C293C /* config */,
+				EBED2A6E4C29DD0AC1C78F39 /* docs */,
+				D64B7C1FEE2C2565B57DB98A /* examples */,
+				F5B2C3875135C28ADB98A429 /* schemas */,
+			);
+			path = RepoResources;
+			sourceTree = "<group>";
+		};
+		5AF07B45C311B7087D2C293C /* config */ = {
+			isa = PBXGroup;
+			children = (
+				77BEEEB6B26B2A213A6084D9 /* buddy */,
+			);
+			path = config;
+			sourceTree = "<group>";
+		};
+		644A1062CBEA9EF1CA511EE5 = {
+			isa = PBXGroup;
+			children = (
+				40C8E86410AD74C52C8F8726 /* OpenClawShell */,
+				D83DE4C33AC1C2CA654276FC /* OpenClawShellTests */,
+				13C8E5A7E5CBDE23DC866ABA /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		6B352C8F7430C746D8634574 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				498EC02DCC866CDA252CE078 /* StackBuilderModels.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		77BEEEB6B26B2A213A6084D9 /* buddy */ = {
+			isa = PBXGroup;
+			children = (
+				57102699EC73E52121C44DC0 /* buddy-creation-options.v1.json */,
+				BD17D7D53ADAF0D40A383722 /* buddy-progression.v1.json */,
+				1867D40BFD44975FF003193D /* buddy-runtime-events.v1.json */,
+				7BFF81B7A01681377DDA718C /* buddy-state-machine.v1.json */,
+				58B7B4C7ADA21855CA94F5F7 /* council-starter-pack.v1.json */,
+			);
+			path = buddy;
+			sourceTree = "<group>";
+		};
+		A844B73477470C0EB4FFEEEB /* Stores */ = {
+			isa = PBXGroup;
+			children = (
+				83AA9977969397C5BC6BA8EF /* StackBuilderStore.swift */,
+			);
+			path = Stores;
+			sourceTree = "<group>";
+		};
+		ACD5E868D9135B32E1769926 /* Editor */ = {
+			isa = PBXGroup;
+			children = (
+				167B81DE3594A9F96DAFA178 /* EditorView.swift */,
+				AA1000000000000000000012 /* PixelStudioModels.swift */,
+			);
+			path = Editor;
+			sourceTree = "<group>";
+		};
+		B39E9F700C9DAB31D6D5904B /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				04E320BE2F0F0F0590D5E01F /* editor.html */,
+			);
+			path = Assets;
+			sourceTree = "<group>";
+		};
+		B57150A2038968C529EBA5A8 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				74D6A8567E6637924F03EAFA /* ModelsTabView.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		BB213A54FB31B307D84D5DD0 /* Files */ = {
+			isa = PBXGroup;
+			children = (
+				58578A391DE031462E0F2DCF /* FilesTabView.swift */,
+			);
+			path = Files;
+			sourceTree = "<group>";
+		};
+		D1193200E6AC8965B9A3B282 /* Chat */ = {
+			isa = PBXGroup;
+			children = (
+				4DF5AB5C184F947542992168 /* ChatTabView.swift */,
+			);
+			path = Chat;
+			sourceTree = "<group>";
+		};
+		D64B7C1FEE2C2565B57DB98A /* examples */ = {
+			isa = PBXGroup;
+			children = (
+				E86DAD0EEF6BC0117803B50A /* buddy */,
+			);
+			path = examples;
+			sourceTree = "<group>";
+		};
+		D83DE4C33AC1C2CA654276FC /* OpenClawShellTests */ = {
+			isa = PBXGroup;
+			children = (
+				A0DDCE1DC11078DEA6F36E17 /* AppStateRuntimeTests.swift */,
+				AA1000000000000000000015 /* BeMoreCapabilityMirrorTests.swift */,
+				AA1000000000000000000014 /* BeMoreChatDispatchTests.swift */,
+				5BE6F04DA95AB2E407C63C98 /* BuddyRuntimeTests.swift */,
+			);
+			path = OpenClawShellTests;
+			sourceTree = "<group>";
+		};
+		E86DAD0EEF6BC0117803B50A /* buddy */ = {
+			isa = PBXGroup;
+			children = (
+				0BA2FD9236E1A83B995D198A /* buddy-instance.example.v1.json */,
+				E667067B41F3F7FF74D64633 /* buddy-runtime-events.example.v1.json */,
+				82E07B7D593A44BA3E7E5ED3 /* buddy-state-machine.example.v1.json */,
+				E1C774733F701B26FCDC8051 /* buddy-template-package.example.v1.json */,
+			);
+			path = buddy;
+			sourceTree = "<group>";
+		};
+		EBED2A6E4C29DD0AC1C78F39 /* docs */ = {
+			isa = PBXGroup;
+			children = (
+				C9193DCB81C237372C21E8C1 /* ADMIN_TESTFLIGHT_RUNBOOK.md */,
+				3399D4D90431330DA7BD8B38 /* BUDDY_SYSTEM.md */,
+				3B3BC5AD97299F26F43A1EEA /* COUNCIL_STARTER_PACK.md */,
+				CA03360497852E1FD1F016B4 /* MISSION_CONTROL.md */,
+				56C9D01E6702454E5A632092 /* POKEMON_CHAMPIONS_TEAM_BUILDER_BACKEND.md */,
+			);
+			path = docs;
+			sourceTree = "<group>";
+		};
+		F5B2C3875135C28ADB98A429 /* schemas */ = {
+			isa = PBXGroup;
+			children = (
+				94BF70F024EF7B69003FC3E5 /* buddy-creation-options.schema.json */,
+				598D20BC63E43FC33C07D9A4 /* buddy-instance.schema.json */,
+				CA68FB723DB750FB794DF9BE /* buddy-runtime-events.schema.json */,
+				84AD9EC93D2DC69BEFB868EB /* buddy-state-machine.schema.json */,
+				AF69525042C89C51425C3CB7 /* buddy-system.schema.json */,
+				5C1952F6010869ACB10C99B3 /* buddy-template-package.schema.json */,
+			);
+			path = schemas;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		993454E45436E5322D80D5FF /* BeMoreAgent */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F73DE249EBD8EEFB81DE7FCA /* Build configuration list for PBXNativeTarget "BeMoreAgent" */;
+			buildPhases = (
+				0EB8D4A964FB33841F50725B /* Sources */,
+				BFC962CFF824BF7F234CEDDB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BeMoreAgent;
+			packageProductDependencies = (
+			);
+			productName = BeMoreAgent;
+			productReference = A6BB7B608FD402914D5E419A /* BeMoreAgent.app */;
+			productType = "com.apple.product-type.application";
+		};
+		9CC61451448879F908CAE7B7 /* BeMoreAgentTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1AD4919E8188D164C8BD4B6C /* Build configuration list for PBXNativeTarget "BeMoreAgentTests" */;
+			buildPhases = (
+				BF71687D7EA753661B270C5A /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EB68BB5B958753345A693C06 /* PBXTargetDependency */,
+			);
+			name = BeMoreAgentTests;
+			packageProductDependencies = (
+			);
+			productName = BeMoreAgentTests;
+			productReference = C2619477DC09F87DEF80B84E /* BeMoreAgentTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		45BBB0D016542C9F6209A3AB /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					993454E45436E5322D80D5FF = {
+						DevelopmentTeam = DY9FHPRZA9;
+						ProvisioningStyle = Automatic;
+					};
+					9CC61451448879F908CAE7B7 = {
+						DevelopmentTeam = DY9FHPRZA9;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = F0FF4E3E2D3304DAC88AD812 /* Build configuration list for PBXProject "BeMoreAgent" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 644A1062CBEA9EF1CA511EE5;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 13C8E5A7E5CBDE23DC866ABA /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				993454E45436E5322D80D5FF /* BeMoreAgent */,
+				9CC61451448879F908CAE7B7 /* BeMoreAgentTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		BFC962CFF824BF7F234CEDDB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2E109FF34F3B10182994F909 /* ADMIN_TESTFLIGHT_RUNBOOK.md in Resources */,
+				7E4BDABDD7CE8CD6CBFE3231 /* Assets.xcassets in Resources */,
+				DB308C2CCB246BF743107911 /* BUDDY_SYSTEM.md in Resources */,
+				C19C915031092733D1F313D8 /* COUNCIL_STARTER_PACK.md in Resources */,
+				2BDEBBC8A5DCA46DF7958596 /* MISSION_CONTROL.md in Resources */,
+				213EFD47CF19E4A43652991A /* POKEMON_CHAMPIONS_TEAM_BUILDER_BACKEND.md in Resources */,
+				84D684EC486C31453E487A5E /* buddy-creation-options.schema.json in Resources */,
+				698D1CFE6AADCBD5666A3EF0 /* buddy-creation-options.v1.json in Resources */,
+				46521CE929943B1E8AB90079 /* buddy-instance.example.v1.json in Resources */,
+				60AA6F335FCA7CF8E70C4E9A /* buddy-instance.schema.json in Resources */,
+				090BE3A1695C9AEC2E2DD255 /* buddy-progression.v1.json in Resources */,
+				CA950D9D17837C0F2253996B /* buddy-runtime-events.example.v1.json in Resources */,
+				D1B16595BE58A0C364378F6F /* buddy-runtime-events.schema.json in Resources */,
+				20C547F2DDDAB88F2D136858 /* buddy-runtime-events.v1.json in Resources */,
+				5EBE4BDE0D2EE2D7FA38098E /* buddy-state-machine.example.v1.json in Resources */,
+				A9A0585B91BE5C1F79B305E6 /* buddy-state-machine.schema.json in Resources */,
+				E7C6847C076D99E773A9EDB9 /* buddy-state-machine.v1.json in Resources */,
+				6BD5E86AC89D1BD3BFCC00F4 /* buddy-system.schema.json in Resources */,
+				8B04FAFA71CFF9059E8A780D /* buddy-template-package.example.v1.json in Resources */,
+				098CB90DF3CD89E199FF047C /* buddy-template-package.schema.json in Resources */,
+				8B5571539242B01CCE52CF51 /* council-starter-pack.v1.json in Resources */,
+				59517EE36DFF3692131EFF61 /* editor.html in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0EB8D4A964FB33841F50725B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2FDCCD02D89CBE56F9658F4C /* AppModels.swift in Sources */,
+				58C881FBF6F4920BD8107661 /* AppPreferences.swift in Sources */,
+				E54E68A707D6EA671E774183 /* AppState+OnboardingReset.swift in Sources */,
+				A179272D48BF05FC55683006 /* ArtifactsView.swift in Sources */,
+				AA1000000000000000000001 /* BeMoreChatDispatch.swift in Sources */,
+				AA1000000000000000000006 /* BeMoreCapabilityMirror.swift in Sources */,
+				AA1000000000000000000003 /* BeMoreWebShellView.swift in Sources */,
+				C92E5E41FCBF0FC576B3FCA6 /* BuddyAppleIntegrationService.swift in Sources */,
+				D5A36E685E397803707316F0 /* BuddyAsciiView.swift in Sources */,
+				85637F440829BA6420876E96 /* BuddyContractLoader.swift in Sources */,
+				3704D760C1BD1D1AF5556B7B /* BuddyContracts.swift in Sources */,
+				A5E3D01677A91B6D9D6BE4DD /* BuddyEventEngine.swift in Sources */,
+				760843867B52A1BF04A11DE9 /* BuddyInstanceStore.swift in Sources */,
+				F92910277F860B2A5BD45CA2 /* BuddyMarkdownRenderer.swift in Sources */,
+				9BFA5BF296B1FCAC239A4103 /* BuddyMessageComposer.swift in Sources */,
+				CB103CA6A885844368D6C106 /* BuddyPixelView.swift in Sources */,
+				3B986957714DE5B2A80E4769 /* BuddyShortcuts.swift in Sources */,
+				A2CF3AFD63375E5391838444 /* BuddyView.swift in Sources */,
+				60D4ADEA01E043C403298649 /* BuddyVisualView.swift in Sources */,
+				6A9B3B506487AFD559721805 /* ChatTabView.swift in Sources */,
+				342816AF42752EB3A18B6E13 /* ChatView.swift in Sources */,
+				6BA5D54A7F35E8560212F2AA /* ContentView.swift in Sources */,
+				A3E52EBC01F1EB439D4F166B /* EditorView.swift in Sources */,
+				79D11610164EB9B335BE0169 /* EditorWebView.swift in Sources */,
+				AA1000000000000000000002 /* PixelStudioModels.swift in Sources */,
+				84613D13EC752A26B5FC8E50 /* FilesTabView.swift in Sources */,
+				C7A861D0EFFC480A5F10DF61 /* FilesView.swift in Sources */,
+				8349729EA5F76D04C21DCDA1 /* GitHubService.swift in Sources */,
+				CDE65D222296244196FADF1D /* HomeTabView.swift in Sources */,
+				D38C7B89A4FAB169D237E611 /* HomeView.swift in Sources */,
+				9426511CB286077AE299B599 /* MacPairingView.swift in Sources */,
+				502A2A59F82C62BE95149D6A /* MissionControlView.swift in Sources */,
+				B42A986D41DA4CE33861C456 /* ModelsTabView.swift in Sources */,
+				60AB6EDABA92B6C717B9ADBE /* ModelsView.swift in Sources */,
+				E08618F03F168D0DB6FCE9C6 /* OnboardingFlow.swift in Sources */,
+				0ED5785D66BB6ADB19A10786 /* OpenClawShellApp.swift in Sources */,
+				E05F035FF78A279ADB627DB8 /* OpenClawWorkspaceRuntime.swift in Sources */,
+				8DE94B6D5A3635F29C357274 /* PricingView.swift in Sources */,
+				8A9871D3740F8835E1DD5B55 /* RepoSurfaceDetailView.swift in Sources */,
+				B22B418C12AEFE1C5E1A2B9B /* RuntimeServices.swift in Sources */,
+				71CE62A248E8988BB56BE339 /* SettingsView.swift in Sources */,
+				A3D2E19A2B6934A472500CCA /* SkillsView.swift in Sources */,
+				38B23E4A0D7008FA241D1C9B /* StackBuilderModels.swift in Sources */,
+				6FA0DB927D712A506983DB3A /* StackBuilderStore.swift in Sources */,
+				42A70C2F6918B1D1BDBD6817 /* Theme.swift in Sources */,
+				D37238E4B311EAE040E9AC49 /* WebBrowserService.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BF71687D7EA753661B270C5A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA1000000000000000000005 /* BeMoreCapabilityMirrorTests.swift in Sources */,
+				AA1000000000000000000004 /* BeMoreChatDispatchTests.swift in Sources */,
+				192A26C7CE80E9D98C1C67FA /* AppStateRuntimeTests.swift in Sources */,
+				E809EE8994645CB369E2EEC5 /* BuddyRuntimeTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		EB68BB5B958753345A693C06 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 993454E45436E5322D80D5FF /* BeMoreAgent */;
+			targetProxy = A387D53D1F5B4F72FB087EB6 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		4C09C74F233E8AAEE017ED5D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = DY9FHPRZA9;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = BeMoreAgentTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BeMoreAgent.app/BeMoreAgent";
+			};
+			name = Release;
+		};
+		9321E975C0E02060173C282B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = DY9FHPRZA9;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = BeMoreAgentTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BeMoreAgent.app/BeMoreAgent";
+			};
+			name = Debug;
+		};
+		AB8617AC80E84AC3BB6AECAC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+		DBB0009374C9BA533EE0B12D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = DY9FHPRZA9;
+				INFOPLIST_FILE = OpenClawShell/Info.plist;
+				INFOPLIST_KEY_CFBundleIdentifier = BeMoreAgent;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = BeMoreAgent;
+				PRODUCT_NAME = BeMoreAgent;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		E6371BD10B8123BD69A893D9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = DY9FHPRZA9;
+				INFOPLIST_FILE = OpenClawShell/Info.plist;
+				INFOPLIST_KEY_CFBundleIdentifier = BeMoreAgent;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = BeMoreAgent;
+				PRODUCT_NAME = BeMoreAgent;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		F0040521141EFB4D3173D141 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1AD4919E8188D164C8BD4B6C /* Build configuration list for PBXNativeTarget "BeMoreAgentTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9321E975C0E02060173C282B /* Debug */,
+				4C09C74F233E8AAEE017ED5D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F0FF4E3E2D3304DAC88AD812 /* Build configuration list for PBXProject "BeMoreAgent" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F0040521141EFB4D3173D141 /* Debug */,
+				AB8617AC80E84AC3BB6AECAC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F73DE249EBD8EEFB81DE7FCA /* Build configuration list for PBXNativeTarget "BeMoreAgent" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DBB0009374C9BA533EE0B12D /* Debug */,
+				E6371BD10B8123BD69A893D9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 45BBB0D016542C9F6209A3AB /* Project object */;
+}

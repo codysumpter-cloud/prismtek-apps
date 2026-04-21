@@ -38,7 +38,7 @@ enum AppTab: String, Codable, CaseIterable, Hashable, Identifiable {
     var title: String {
         switch self {
         case .missionControl: return "Home"
-        case .editor: return "Editor"
+        case .editor: return "Studio"
         case .buddy: return "Buddy"
         case .files: return "Workspace"
         case .skills: return "Skills"
@@ -54,7 +54,7 @@ enum AppTab: String, Codable, CaseIterable, Hashable, Identifiable {
     var systemImage: String {
         switch self {
         case .missionControl: return "heart.text.square.fill"
-        case .editor: return "doc.text.fill"
+        case .editor: return "paintpalette.fill"
         case .buddy: return "person.crop.circle.badge.checkmark"
         case .files: return "folder.fill"
         case .skills: return "sparkles.rectangle.stack.fill"
@@ -68,11 +68,11 @@ enum AppTab: String, Codable, CaseIterable, Hashable, Identifiable {
     }
 
     var allowsHiding: Bool {
-        self != .missionControl && !isInternalDraft
+        self != .missionControl
     }
 
     var isInternalDraft: Bool {
-        self == .editor
+        false
     }
 }
 
@@ -84,8 +84,8 @@ struct ShellPreferences: Codable, Hashable {
     var selectedTab: AppTab
 
     static let `default` = ShellPreferences(
-        orderedTabs: [.missionControl, .buddy, .chat, .skills, .models, .artifacts, .files, .settings, .pairing, .pricing, .editor],
-        hiddenTabs: [.pairing, .pricing, .editor],
+        orderedTabs: [.missionControl, .buddy, .chat, .editor, .skills, .models, .artifacts, .files, .settings, .pairing, .pricing],
+        hiddenTabs: [.pairing, .pricing],
         selectedTab: .missionControl
     )
 
@@ -105,8 +105,7 @@ struct ShellPreferences: Codable, Hashable {
         }
 
         var hidden = hiddenTabs.filter { ($0.allowsHiding || $0.isInternalDraft) && AppTab.allCases.contains($0) }
-        hidden.formUnion(AppTab.allCases.filter(\.isInternalDraft))
-        hidden.subtract([.buddy, .chat, .skills, .models, .artifacts, .files, .settings])
+        hidden.subtract([.buddy, .chat, .editor, .skills, .models, .artifacts, .files, .settings])
         if order.filter({ !hidden.contains($0) }).isEmpty {
             hidden.removeAll()
         }
