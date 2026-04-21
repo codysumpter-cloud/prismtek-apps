@@ -36,8 +36,19 @@ xcodebuild -project BeMoreMac.xcodeproj -scheme BeMoreMac -configuration Release
 
 TestFlight upload is owned by `.github/workflows/bemore-macos-testflight.yml` and requires App Store Connect API secrets in this repo: `APPSTORE_CONNECT_API_KEY`, `APPSTORE_CONNECT_KEY_ID`, and `APPSTORE_CONNECT_ISSUER_ID`. Xcode 26 requires the issuer ID whenever `-authenticationKeyPath` is used.
 
-## iOS Build 18
+## iOS Build 40
 
-The working BeMoreAgent iOS Build 18 source and release validation path still live in `BeMore-stack` under `apps/bemore-ios-native`.
+The working BeMoreAgent iOS source and release validation path now live in `prismtek-apps` under `apps/bemore-ios-native`.
 
-Build 18 is kept there until the real native project is re-homed into `apps/bemore-ios` and a TestFlight upload is proven from this repo. The current product direction is still BeMore-first: the iOS app can run standalone, and the Build 18 pairing path can inspect BeMore Mac runtime state when the Mac endpoint is intentionally exposed.
+The current repo-owned iOS release lane is:
+- `.github/workflows/bemoreagent-platform-ios-validate.yml`
+- `.github/workflows/bemore-ios-ci-testflight.yml`
+
+The current source build number is `40` in `apps/bemore-ios-native/BeMoreAgentShell/Info.plist`.
+
+That means `prismtek-apps` is now the canonical product repo for the native iPhone app source, validation flow, and TestFlight upload path. `bmo-stack` still matters for policy, runtime contracts, and deeper operator logic, but it is no longer the place to describe the working iOS project as if it lives only there.
+
+Current practical rule:
+- update the native iPhone app source, XcodeGen inputs, Info.plist, and iOS release docs here
+- keep execution/policy/runtime-identity details in `bmo-stack`
+- only claim a TestFlight submission after the current runner, signing assets, and App Store Connect path have actually validated that upload
