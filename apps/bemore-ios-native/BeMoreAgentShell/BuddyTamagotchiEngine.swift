@@ -128,7 +128,7 @@ enum BuddyTamagotchiEngine {
         passiveState.totalInteractions += 1
         
  // Update proficiencies
- instance.proficiencies.train(skill: skillFocus)
+ instance.proficiencies.increment(category: skillFocus, by: 1, cap: 100)
         
         return .success("Trained \(instance.displayName) in \(skillFocus). Skills improving!", mood: "working")
     }
