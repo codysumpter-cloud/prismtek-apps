@@ -235,7 +235,7 @@ struct EditorTabView: View {
             }
             .frame(maxWidth: .infinity)
         }
-        .buttonStyle(BMOButtonStyle(action == .finish))
+        .buttonStyle(BMOButtonStyle(isPrimary: action == .finish))
     }
 
     private func binding(_ keyPath: WritableKeyPath<PixelStudioProject, String>) -> Binding<String> {
