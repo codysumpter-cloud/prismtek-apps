@@ -37,7 +37,8 @@ enum BeMoreChatCommandParser {
     }
 
     static func teachRequest(from prompt: String) -> String? {
-        let lowered = prompt.lowercased()
+        let trimmedPrompt = prompt.trimmingCharacters(in: .whitespacesAndNewlines)
+        let lowered = trimmedPrompt.lowercased()
         let prefixes = [
             "teach yourself how to",
             "teach yourself to",
@@ -45,9 +46,8 @@ enum BeMoreChatCommandParser {
             "make a reusable skill for",
             "build a skill to"
         ]
-        for prefix in prefixes {
-            guard let range = lowered.range(of: prefix) else { continue }
-            let request = String(prompt[range.upperBound...]).trimmingCharacters(in: .whitespacesAndNewlines)
+        for prefix in prefixes where lowered.hasPrefix(prefix) {
+            let request = String(trimmedPrompt.dropFirst(prefix.count)).trimmingCharacters(in: .whitespacesAndNewlines)
             if !request.isEmpty { return request }
         }
         return nil
@@ -178,6 +178,10 @@ enum BeMoreResponseGuard {
 
         text = cleanedLines.joined(separator: "\n")
         text = collapseBlankLines(in: text)
+
+        if text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return "Buddy is ready. I can help with planning, follow-through, practical Buddy tasks, and reusable skill workflows right now."
+        }
 
         if looksLikeMeta(text) {
             return "Buddy is ready. I can help with planning, follow-through, practical Buddy tasks, and reusable skill workflows right now."
@@ -564,20 +568,23 @@ extension AppState {
         }
 
         chatStore.errorMessage = nil
+        let previousAssistantMessageID = chatStore.messages.last(where: { $0.role == .assistant })?.id
         await send(prompt: cleaned)
-        scrubLastAssistantReply()
+        scrubAssistantReply(after: previousAssistantMessageID)
         softenChatErrorIfNeeded()
     }
 
-    private func scrubLastAssistantReply() {
+    private func scrubAssistantReply(after previousAssistantMessageID: UUID?) {
         guard let index = chatStore.messages.indices.reversed().first(where: { chatStore.messages[$0].role == .assistant }) else {
             return
         }
-        var message = chatStore.messages[index]
+        if chatStore.messages[index].id == previousAssistantMessageID {
+            return
+        }
+        let message = chatStore.messages[index]
         let cleaned = BeMoreResponseGuard.userVisibleAnswer(from: message.content)
         guard cleaned != message.content else { return }
-        message.content = cleaned
-        chatStore.messages[index] = message
+        chatStore.messages[index] = ChatMessage(id: message.id, role: message.role, content: cleaned, createdAt: message.createdAt)
         chatStore.persist()
     }
 

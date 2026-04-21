@@ -144,7 +144,14 @@ struct ChatTabView: View {
     private var canSend: Bool {
         let trimmedPrompt = prompt.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !appState.chatStore.isGenerating, !trimmedPrompt.isEmpty else { return false }
-        if BuddyIntroCopy.response(for: trimmedPrompt, buddyName: appState.buddyStore.activeBuddy?.displayName ?? "Buddy") != nil {
+        if BuddyIntroCopy.response(
+            for: trimmedPrompt,
+            buddyName: appState.buddyStore.activeBuddy?.displayName ?? "Buddy",
+            session: .init(
+                runtimeConnected: appState.selectedProviderAccount != nil || appState.canUseSelectedLocalModel,
+                macPairingActive: appState.macRuntimeSnapshot != nil
+            )
+        ) != nil {
             return true
         }
         return appState.usesStubRuntime || appState.selectedInstalledModel != nil || appState.selectedProviderAccount != nil

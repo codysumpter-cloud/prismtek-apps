@@ -7,8 +7,8 @@ enum GitHubError: Error {
     case decodingError
 }
 
-actor GitHubService {
-    static let shared = GitHubService()
+public class GitHubService {
+    public static let shared = GitHubService()
     private init() {}
 
     private let baseUrl = "https://api.github.com"

@@ -91,8 +91,10 @@ final class PixelStudioStore: ObservableObject {
     }
 
     func load() {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
         guard let data = try? Data(contentsOf: Paths.pixelStudioProjectFile),
-              let decoded = try? JSONDecoder().decode(PixelStudioProject.self, from: data) else {
+              let decoded = try? decoder.decode(PixelStudioProject.self, from: data) else {
             project = .default
             return
         }
@@ -198,8 +200,9 @@ extension AppState {
 
         let slug = project.safeSlug
         let timestamp = Self.pixelArtifactTimestamp.string(from: .now)
+        let uniqueSuffix = UUID().uuidString.prefix(8)
         let briefPath = "pixel-studio/\(slug)/project-brief.json"
-        let artifactPath = "pixel-studio/\(slug)/buddy-\(action.artifactLabel)-\(timestamp).md"
+        let artifactPath = "pixel-studio/\(slug)/buddy-\(action.artifactLabel)-\(timestamp)-\(uniqueSuffix).md"
 
         let brief: [String: Any] = [
             "title": project.title,

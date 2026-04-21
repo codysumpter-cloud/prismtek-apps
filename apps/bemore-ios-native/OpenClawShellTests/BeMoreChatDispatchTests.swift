@@ -42,6 +42,18 @@ final class BeMoreChatDispatchTests: XCTestCase {
         XCTAssertFalse(cleaned.localizedCaseInsensitiveContains("internal plan"))
     }
 
+    func testResponseGuardFallsBackWhenOnlyAnalysisMarkupRemains() {
+        let raw = """
+        <analysis>
+        hidden reasoning only
+        </analysis>
+        """
+
+        let cleaned = BeMoreResponseGuard.userVisibleAnswer(from: raw)
+        XCTAssertFalse(cleaned.isEmpty)
+        XCTAssertTrue(cleaned.localizedCaseInsensitiveContains("Buddy is ready"))
+    }
+
     func testCommandParserRecognizesTeachReviewRefineValidateApproveAndPixelHelp() {
         XCTAssertEqual(BeMoreChatCommandParser.parse("teach yourself how to triage my bug inbox"), .teach("triage my bug inbox"))
         XCTAssertEqual(BeMoreChatCommandParser.parse("review skill user-taught-demo"), .review("user-taught-demo"))
@@ -56,6 +68,10 @@ final class BeMoreChatDispatchTests: XCTestCase {
         }
         XCTAssertEqual(id, "user-taught-demo")
         XCTAssertEqual(instruction, "add an approval prompt")
+    }
+
+    func testCommandParserDoesNotTreatEmbeddedTeachPhraseAsCommand() {
+        XCTAssertNil(BeMoreChatCommandParser.parse("Can you explain how to teach yourself how to triage my bug inbox?"))
     }
 
     func testValidateAndApproveChatSkillDraftProducesManifestAndValidationArtifacts() throws {
