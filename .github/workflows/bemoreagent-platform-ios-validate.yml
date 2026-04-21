@@ -7,7 +7,7 @@ on:
       - '.github/workflows/bemoreagent-platform-ios-validate.yml'
   push:
     branches:
-      - master
+      - main
     paths:
       - 'apps/bemoreagent-platform-ios/**'
       - '.github/workflows/bemoreagent-platform-ios-validate.yml'

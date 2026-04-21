@@ -4,7 +4,7 @@ on:
   pull_request:
   push:
     branches:
-      - master
+      - main
   workflow_dispatch:
 
 concurrency:
@@ -50,8 +50,8 @@ jobs:
 
       - name: Show app version and build
         run: |
-          VERSION=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' OpenClawShell/Info.plist)
-          BUILD=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' OpenClawShell/Info.plist)
+          VERSION=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' BeMoreAgentShell/Info.plist)
+          BUILD=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' BeMoreAgentShell/Info.plist)
           echo "Building BeMoreAgent $VERSION ($BUILD)"
 
       - name: Generate project
@@ -70,8 +70,8 @@ jobs:
       - name: Publish validation summary
         if: always()
         run: |
-          VERSION=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' OpenClawShell/Info.plist)
-          BUILD=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' OpenClawShell/Info.plist)
+          VERSION=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' BeMoreAgentShell/Info.plist)
+          BUILD=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' BeMoreAgentShell/Info.plist)
           {
             echo '## BeMoreAgent iOS validation'
             echo ''

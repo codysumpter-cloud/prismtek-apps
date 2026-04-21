@@ -109,7 +109,7 @@ jobs:
               print(f'Bundle identifier drifted: expected {expected}, got {actual}', file=sys.stderr)
               sys.exit(1)
 
-          info = pathlib.Path('OpenClawShell/Info.plist').read_text()
+          info = pathlib.Path('BeMoreAgentShell/Info.plist').read_text()
           if '$(PRODUCT_BUNDLE_IDENTIFIER)' not in info:
               print('Info.plist must inherit PRODUCT_BUNDLE_IDENTIFIER', file=sys.stderr)
               sys.exit(1)
@@ -119,8 +119,8 @@ jobs:
 
       - name: Show app version and build
         run: |
-          VERSION=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' OpenClawShell/Info.plist)
-          BUILD=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' OpenClawShell/Info.plist)
+          VERSION=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' BeMoreAgentShell/Info.plist)
+          BUILD=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' BeMoreAgentShell/Info.plist)
           echo "Validating BeMoreAgent $VERSION ($BUILD)"
 
       - name: Compile unsigned iOS build
@@ -247,8 +247,8 @@ jobs:
 
       - name: Show app version and build
         run: |
-          VERSION=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' OpenClawShell/Info.plist)
-          BUILD=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' OpenClawShell/Info.plist)
+          VERSION=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' BeMoreAgentShell/Info.plist)
+          BUILD=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' BeMoreAgentShell/Info.plist)
           echo "Preparing BeMoreAgent $VERSION ($BUILD) for TestFlight"
 
       - name: Generate Xcode project
@@ -289,8 +289,8 @@ jobs:
       - name: Publish TestFlight summary
         if: success()
         run: |
-          SOURCE_VERSION=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' OpenClawShell/Info.plist)
-          SOURCE_BUILD=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' OpenClawShell/Info.plist)
+          SOURCE_VERSION=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' BeMoreAgentShell/Info.plist)
+          SOURCE_BUILD=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' BeMoreAgentShell/Info.plist)
           ARCHIVE_PLIST="$RUNNER_TEMP/BeMoreAgent.xcarchive/Products/Applications/BeMoreAgent.app/Info.plist"
           ARCHIVE_VERSION=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$ARCHIVE_PLIST")
           ARCHIVE_BUILD=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$ARCHIVE_PLIST")
