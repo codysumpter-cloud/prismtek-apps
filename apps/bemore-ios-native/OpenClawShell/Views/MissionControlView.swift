@@ -84,7 +84,7 @@ struct MissionControlView: View {
             Text("Start with what works here")
                 .font(.headline)
                 .foregroundColor(BMOTheme.textPrimary)
-            Text("Care for Buddy, train them, grow a roster, spar, and trade packages on iPhone. Runtime setup stays secondary until you explicitly want more power.")
+            Text("Care for Buddy, train them, grow a roster, spar, trade packages, and open Studio/Admin surfaces on iPhone. Runtime setup stays secondary until you explicitly want more power.")
                 .font(.subheadline)
                 .foregroundColor(BMOTheme.textSecondary)
 
@@ -108,6 +108,18 @@ struct MissionControlView: View {
 
                 Button("Collect") {
                     appState.route(to: .buddy)
+                }
+                .buttonStyle(BMOButtonStyle(isPrimary: false))
+            }
+
+            HStack(spacing: 8) {
+                Button("Open Studio") {
+                    appState.route(to: .editor)
+                }
+                .buttonStyle(BMOButtonStyle(isPrimary: false))
+
+                Button("Admin & Profiles") {
+                    appState.route(to: .editor)
                 }
                 .buttonStyle(BMOButtonStyle(isPrimary: false))
             }
@@ -147,7 +159,7 @@ struct MissionControlView: View {
             }
 
             if status.recentChanges.isEmpty {
-                Text("No recent operator actions. Buddy care, training, battles, and trade packages work entirely without them.")
+                Text("No recent operator actions. Buddy care, training, battles, Studio work, and trade packages work entirely without them.")
                     .font(.caption)
                     .foregroundColor(BMOTheme.textTertiary)
             } else {
