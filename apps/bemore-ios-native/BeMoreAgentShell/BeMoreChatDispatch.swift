@@ -539,7 +539,7 @@ extension AppState {
         case .review(let id):
             let receipt = workspaceRuntime.reviewChatSkillDraft(id: id)
             chatStore.messages.append(ChatMessage(role: .user, content: cleaned))
-            let assistant = receipt.status == BeMoreReceipt.Status.failed
+            let assistant = receipt.status == BeMoreActionStatus.failed
                 ? "Could not review skill: \(receipt.error ?? receipt.summary)"
                 : "Reviewed \(receipt.output["name"] ?? id). Purpose: \(receipt.output["purpose"] ?? "not available"). Refine it if needed, then validate before approval."
             chatStore.messages.append(ChatMessage(role: .assistant, content: assistant))
@@ -550,7 +550,7 @@ extension AppState {
         case .refine(let id, let instruction):
             let receipt = workspaceRuntime.refineChatSkillDraft(id: id, instruction: instruction)
             chatStore.messages.append(ChatMessage(role: .user, content: cleaned))
-            let assistant = receipt.status == BeMoreReceipt.Status.failed
+            let assistant = receipt.status == BeMoreActionStatus.failed
                 ? "Could not refine skill: \(receipt.error ?? receipt.summary)"
                 : "Updated \(id) with your correction/example. Review it again or validate it when the draft looks right."
             chatStore.messages.append(ChatMessage(role: .assistant, content: assistant))
@@ -561,7 +561,7 @@ extension AppState {
         case .validate(let id):
             let receipt = workspaceRuntime.validateChatSkillDraft(id: id)
             chatStore.messages.append(ChatMessage(role: .user, content: cleaned))
-            let assistant = receipt.status == BeMoreReceipt.Status.failed
+            let assistant = receipt.status == BeMoreActionStatus.failed
                 ? "Validation failed for \(id): \(receipt.error ?? receipt.summary)"
                 : "Validation passed for \(id). It is ready to approve, install, and equip."
             chatStore.messages.append(ChatMessage(role: .assistant, content: assistant))
@@ -606,7 +606,7 @@ extension AppState {
         preferences: self.userPreferencesStore.preferences,
         routeSummary: self.activeRouteModeLabel
     )
-    let assistant = receipt.status == BeMoreReceipt.Status.failed
+    let assistant = receipt.status == BeMoreActionStatus.failed
  ? "Could not build your Pokemon team: \(receipt.error ?? receipt.summary)"
  : "Built your Pokemon team! \(receipt.summary) You can view it in the workspace."
  chatStore.messages.append(ChatMessage(role: .assistant, content: assistant))
