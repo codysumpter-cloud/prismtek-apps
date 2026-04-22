@@ -841,11 +841,10 @@ struct BuddyView: View {
                             using: appState
                         )
                         isShowingPersonalizationSheet = false
-                    }
-                }
             }
         }
     }
+
 
     private var appearanceStudioSheet: some View {
         NavigationStack {
