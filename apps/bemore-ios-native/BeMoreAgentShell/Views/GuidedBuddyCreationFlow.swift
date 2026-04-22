@@ -48,6 +48,9 @@ struct GuidedBuddyCreationFlow: View {
         guard var preview = appState.buddyStore.activeBuddy else { return nil }
         preview.displayName = draft.displayName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? preview.displayName : draft.displayName
         preview.identity.palette = draft.paletteID
+        if let template = selectedTemplate {
+            preview.identity.archetype = CouncilBuddyIdentityCatalog.identity(for: template).archetype
+        }
         var visual = preview.visual ?? BuddyVisualState(
             asciiVariantId: nil,
             pixelVariantId: nil,
@@ -56,10 +59,19 @@ struct GuidedBuddyCreationFlow: View {
             evolutionCosmetics: []
         )
         visual.asciiVariantId = draft.asciiVariantID
-        visual.pixelVariantId = draft.renderStyle == .pixel ? "creator-\(draft.expressionTone)" : nil
+        visual.pixelVariantId = draft.renderStyle == .pixel ? pixelRequestKey : nil
         visual.currentAnimationState = draft.expressionTone == "focused" ? "working" : (draft.expressionTone == "curious" ? "thinking" : "happy")
         preview.visual = visual
         return preview
+    }
+
+    private var pixelRequestKey: String {
+        let name = draft.displayName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? (selectedTemplate?.name ?? "Buddy") : draft.displayName
+        let archetype = selectedTemplate.map { CouncilBuddyIdentityCatalog.identity(for: $0).archetype } ?? "console_pet"
+        let raw = [name, archetype, draft.paletteID, draft.expressionTone, draft.accentLabel]
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() }
+            .joined(separator: "|")
+        return "pixellab:\(raw.replacingOccurrences(of: " ", with: "-"))"
     }
 
     var body: some View {
@@ -464,7 +476,7 @@ struct GuidedBuddyCreationFlow: View {
             archetype: CouncilBuddyIdentityCatalog.identity(for: template).archetype,
             palette: draft.paletteID,
             asciiVariantID: draft.asciiVariantID,
-            pixelVariantID: draft.renderStyle == .pixel ? "creator-\(draft.expressionTone)" : nil,
+            pixelVariantID: draft.renderStyle == .pixel ? pixelRequestKey : nil,
             expressionTone: draft.expressionTone,
             accentLabel: draft.accentLabel,
             setActive: true,
