@@ -210,6 +210,7 @@ jobs:
           CERT_PATH="$RUNNER_TEMP/bemoreagent-distribution.p12"
           PROFILE_DIR="$HOME/Library/MobileDevice/Provisioning Profiles"
           PROFILE_PATH="$PROFILE_DIR/BeMoreAgent-AppStore.mobileprovision"
+          PROFILE_PLIST_PATH="$RUNNER_TEMP/BeMoreAgent-AppStore.plist"
 
           printf '%s' "$IOS_DISTRIBUTION_CERTIFICATE_P12_BASE64" | base64 --decode > "$CERT_PATH"
           mkdir -p "$PROFILE_DIR"
@@ -227,9 +228,10 @@ jobs:
           security unlock-keychain -p "$SIGNING_KEYCHAIN_PASSWORD" "$SIGNING_KEYCHAIN"
 
           security find-identity -v -p codesigning "$SIGNING_KEYCHAIN"
-          PROFILE_NAME="$(security cms -D -i "$PROFILE_PATH" | plutil -extract Name raw -o -)"
-          PROFILE_BUNDLE="$(security cms -D -i "$PROFILE_PATH" | plutil -extract Entitlements.application-identifier raw -o -)"
-          PROFILE_GET_TASK_ALLOW="$(security cms -D -i "$PROFILE_PATH" | plutil -extract Entitlements.get-task-allow raw -o -)"
+          security cms -D -i "$PROFILE_PATH" > "$PROFILE_PLIST_PATH"
+          PROFILE_NAME="$(plutil -extract Name raw -o - "$PROFILE_PLIST_PATH")"
+          PROFILE_BUNDLE="$(plutil -extract Entitlements.application-identifier raw -o - "$PROFILE_PLIST_PATH")"
+          PROFILE_GET_TASK_ALLOW="$(plutil -extract Entitlements.get-task-allow raw -o - "$PROFILE_PLIST_PATH")"
           echo "Imported profile: $PROFILE_NAME"
           echo "Profile application identifier: $PROFILE_BUNDLE"
           if [ "$PROFILE_BUNDLE" != "DY9FHPRZA9.BeMoreAgent" ]; then
