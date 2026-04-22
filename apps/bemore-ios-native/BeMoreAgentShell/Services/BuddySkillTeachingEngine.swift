@@ -257,7 +257,7 @@ struct TeachingAnalysis {
 
 import SwiftUI
 
-extension BeMoreChatDispatch {
+extension BeMoreChatCommandParser {
  /// Check if a message is a teaching attempt and handle it
  func handlePotentialTeaching(
  _ message: String,
