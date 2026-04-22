@@ -70,7 +70,7 @@ xcodebuild -project BeMoreAgent.xcodeproj \
 
 ## Release path
 
-- `CFBundleVersion` is currently `41`.
+- `CFBundleVersion` is currently `42` because App Store Connect already had uploaded build `41`.
 - `IPHONEOS_DEPLOYMENT_TARGET` is currently `26.0`.
 - The current repo-owned iOS validate/TestFlight lane is `.github/workflows/bemore-ios-ci-testflight.yml`.
 - The separate `.github/workflows/bemoreagent-platform-ios-validate.yml` workflow is for `apps/bemoreagent-platform-ios/**`, not the current `apps/bemore-ios-native` source of truth.

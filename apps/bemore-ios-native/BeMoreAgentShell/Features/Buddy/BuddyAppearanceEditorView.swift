@@ -57,13 +57,13 @@ struct BuddyAppearanceEditorView<Preview: View>: View {
 
     var body: some View {
         Form {
-            Section("Preview") {
+            Section("Live Preview") {
                 preview
             }
 
-            Section("Look") {
+            Section("Save Look") {
                 TextField("Look name", text: $draft.profileName)
-                TextField("Accent label", text: $draft.accentLabel)
+                TextField("Feature", text: $draft.accentLabel)
                 Picker("Expression tone", selection: $draft.expressionTone) {
                     ForEach(expressionToneOptions, id: \.id) { option in
                         Text(option.label).tag(option.id)
@@ -76,7 +76,7 @@ struct BuddyAppearanceEditorView<Preview: View>: View {
                 }
             }
 
-            Section("Body") {
+            Section("Colors and Shape") {
                 Picker("Archetype", selection: $draft.archetype) {
                     ForEach(availableArchetypes, id: \.id) { archetype in
                         Text(archetype.label).tag(archetype.id)
@@ -91,24 +91,24 @@ struct BuddyAppearanceEditorView<Preview: View>: View {
             }
 
             if draft.renderStyle == .ascii {
-                Section("ASCII") {
+                Section("Style") {
                     Picker("ASCII style", selection: $draft.asciiVariantID) {
                         ForEach(asciiVariantOptions, id: \.id) { option in
                             Text(option.label).tag(option.id)
                         }
                     }
-                    Text("ASCII mode keeps Buddy lightweight, legible, and always available inside the native app.")
+                    Text("ASCII keeps Buddy readable and fast everywhere in the app.")
                         .font(.caption)
                         .foregroundColor(BMOTheme.textSecondary)
                 }
             } else {
-                Section("Pixel") {
+                Section("Pixel Look") {
                     TextField("Pixel variant ID", text: $draft.pixelVariantID)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
                     Text(pixelLabLinked
                          ? "PixelLab is linked, so this look can track a richer pixel identity alongside the native Buddy shell."
-                         : "You can keep using native pixel Buddy mode now, and link PixelLab when you want richer synced art workflows.")
+                         : "Native pixel mode works now; PixelLab is still optional for deeper art workflows.")
                         .font(.caption)
                         .foregroundColor(BMOTheme.textSecondary)
                 }
@@ -124,7 +124,7 @@ struct BuddyAppearanceEditorView<Preview: View>: View {
                     }
                     .foregroundColor(BMOTheme.accent)
                 }
-                Text("Pixel looks can work without PixelLab, but linking it gives the Buddy a clearer path to richer synced pixel identity later.")
+                Text("PixelLab stays optional. The beginner flow should still work without it.")
                     .font(.caption)
                     .foregroundColor(BMOTheme.textSecondary)
             }

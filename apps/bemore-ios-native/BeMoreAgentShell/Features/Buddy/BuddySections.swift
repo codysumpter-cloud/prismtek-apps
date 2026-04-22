@@ -124,15 +124,16 @@ struct BuddyAppearanceSectionView: View {
     let isPixelLabLinked: Bool
     let onEquip: (String) -> Void
     let onDesignNewLook: () -> Void
+    let onCustomizeMore: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: BMOTheme.spacingMD) {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Appearance Studio")
+                    Text("Create Buddy")
                         .font(.headline)
                         .foregroundColor(BMOTheme.textPrimary)
-                    Text("Buddy can now save named ASCII looks or switch into native pixel mode. PixelLab can layer on top when linked, but it no longer blocks pixel-style Buddy identity in the app.")
+                    Text("Start with a fast game-like creator: pick a starter, choose richer colors, remix the look, then save. Advanced Studio edits still exist, but they no longer have to be the front door.")
                         .font(.subheadline)
                         .foregroundColor(BMOTheme.textSecondary)
                 }
@@ -187,8 +188,11 @@ struct BuddyAppearanceSectionView: View {
                 }
             }
 
-            Button("Design New Look", action: onDesignNewLook)
+            Button("Remix Buddy", action: onDesignNewLook)
                 .buttonStyle(BMOButtonStyle())
+
+            Button("Customize More", action: onCustomizeMore)
+                .buttonStyle(BMOButtonStyle(isPrimary: false))
         }
         .bmoCard()
     }

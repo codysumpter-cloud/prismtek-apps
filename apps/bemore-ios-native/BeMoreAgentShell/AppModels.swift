@@ -95,6 +95,7 @@ struct InstalledModel: Identifiable, Codable, Hashable {
     let addedAt: Date
     let modelID: String
     let modelLib: String
+    let checksumSHA256: String?
 
     init(
         id: UUID = UUID(),
@@ -104,7 +105,8 @@ struct InstalledModel: Identifiable, Codable, Hashable {
         fileSizeBytes: Int64,
         addedAt: Date = .now,
         modelID: String = "",
-        modelLib: String = ""
+        modelLib: String = "",
+        checksumSHA256: String? = nil
     ) {
         self.id = id
         self.displayName = displayName
@@ -114,6 +116,7 @@ struct InstalledModel: Identifiable, Codable, Hashable {
         self.addedAt = addedAt
         self.modelID = modelID
         self.modelLib = modelLib
+        self.checksumSHA256 = checksumSHA256
     }
 }
 
@@ -122,6 +125,7 @@ struct InstalledModelDescriptor: Codable, Hashable {
     var displayName: String
     var modelID: String
     var modelLib: String
+    var checksumSHA256: String?
 }
 
 enum ProviderKind: String, Codable, CaseIterable, Identifiable {
