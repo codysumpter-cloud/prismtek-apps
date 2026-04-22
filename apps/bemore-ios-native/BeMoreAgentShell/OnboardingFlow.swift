@@ -209,11 +209,7 @@ struct OnboardingFlow: View {
                 VStack(alignment: .leading, spacing: 12) {
                     onboardingTitle("Choose your Buddy's first look", subtitle: "This is part of onboarding now. Start with ASCII or pixel mode, then keep evolving the Buddy later.")
                     Group {
-                        if appearanceDraft.renderStyle == .pixel {
-                            BuddyPixelView(template: selectedTemplate, mood: .happy, compact: true)
-                        } else {
-                            BuddyAsciiView(template: selectedTemplate, mood: .happy, compact: true)
-                        }
+                        BuddyVisualView(template: selectedTemplate, previewSpec: appearancePreviewSpec, mood: .happy, compact: true)
                     }
                     Text("Render style: \(appearanceDraft.renderStyle.title) • Palette: \(paletteLabel(for: appearanceDraft.palette))")
                         .font(.caption)
@@ -346,13 +342,8 @@ struct OnboardingFlow: View {
             VStack(spacing: BMOTheme.spacingLG) {
                 Spacer().frame(height: BMOTheme.spacingXL)
 
-                if appearanceDraft.renderStyle == .pixel {
-                    BuddyPixelView(template: selectedTemplate, mood: .levelUp)
-                        .padding(.horizontal, BMOTheme.spacingXL)
-                } else {
-                    BuddyAsciiView(mood: .levelUp)
-                        .padding(.horizontal, BMOTheme.spacingXL)
-                }
+                BuddyVisualView(template: selectedTemplate, previewSpec: appearancePreviewSpec, mood: .levelUp)
+                    .padding(.horizontal, BMOTheme.spacingXL)
 
                 Text("\(buddyName) is ready")
                     .font(.system(size: 28, weight: .bold))
@@ -674,8 +665,13 @@ struct OnboardingFlow: View {
             expressionTone: config.onboardingAppearanceExpressionTone ?? "friendly",
             accentLabel: config.onboardingAppearanceAccentLabel ?? "pocket glow",
             renderStyle: config.onboardingAppearanceRenderStyle ?? .ascii,
-            pixelVariantID: config.onboardingAppearancePixelVariantID ?? "pixellab-classic"
+            pixelVariantID: config.onboardingAppearancePixelVariantID ?? "",
+            pixelAssetPath: PixelLabPreviewService.record(for: config.onboardingAppearancePixelVariantID ?? "")?.localAssetPath
         )
+    }
+
+    private var appearancePreviewSpec: BuddyAppearancePreviewSpec {
+        appearanceDraft.previewSpec(buddyName: fallback(buddyName, defaultValue: selectedTemplate?.name ?? "Buddy"))
     }
 
     private func trimmed(_ value: String) -> String {

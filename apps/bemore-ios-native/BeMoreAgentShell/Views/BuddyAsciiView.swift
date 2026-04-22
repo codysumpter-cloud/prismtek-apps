@@ -13,6 +13,7 @@ enum BuddyAnimationMood {
 struct BuddyAsciiView: View {
     var buddy: BuddyInstance?
     var template: CouncilStarterBuddyTemplate?
+    var previewSpec: BuddyAppearancePreviewSpec?
     let mood: BuddyAnimationMood
     var compact = false
     @State private var tick = 0
@@ -31,7 +32,11 @@ struct BuddyAsciiView: View {
                     tick += 1
                 }
             }
-            .accessibilityLabel("\(buddy?.displayName ?? "Buddy") \(label)")
+            .accessibilityLabel("\(displayName) \(archetypeID) \(label)")
+    }
+
+    private var displayName: String {
+        previewSpec?.buddyName ?? buddy?.displayName ?? template?.name ?? "Buddy"
     }
 
     private var label: String {
@@ -47,12 +52,21 @@ struct BuddyAsciiView: View {
     }
 
     private var frame: String {
-        let frames = framesForMood
+        let frames = BuddyASCIIArtLibrary.frames(
+            archetypeID: archetypeID,
+            mood: mood,
+            expressionTone: expressionTone,
+            asciiVariantID: asciiVariantID
+        )
         return frames[tick % frames.count]
     }
 
     private var paletteAccent: Color {
-        BuddyPaletteDisplay.color(for: buddy?.identity.palette ?? templatePaletteID)
+        BuddyPaletteDisplay.color(for: paletteID)
+    }
+
+    private var paletteID: String {
+        previewSpec?.paletteID ?? buddy?.identity.palette ?? templatePaletteID
     }
 
     private var templatePaletteID: String {
@@ -60,150 +74,372 @@ struct BuddyAsciiView: View {
     }
 
     private var asciiVariantID: String {
-        buddy?.visual?.asciiVariantId ?? "starter_a"
+        previewSpec?.asciiVariantID ?? buddy?.visual?.asciiVariantId ?? "starter_a"
     }
 
     private var archetypeID: String {
-        buddy?.identity.archetype ?? "console_pet"
+        previewSpec?.archetypeID ?? buddy?.identity.archetype ?? template.map { CouncilBuddyIdentityCatalog.identity(for: $0).archetype } ?? "console_pet"
     }
 
-    private var framesForMood: [String] {
-        if let template {
-            let state = moodKey
-            if state == "idle", template.ascii.idleFrames.isEmpty == false {
-                return style(template.ascii.idleFrames)
-            }
-            if let expression = template.ascii.expressions[state] {
-                return style([expression, template.ascii.baseSilhouette])
-            }
-            return style(activeTemplateFallbackFrames(for: template.ascii.baseSilhouette))
-        }
-        switch mood {
-        case .idle:
-            return style([
-                Self.make(["    /\\", "  < o  o >", "  /|  v |\\", " /_|____|_\\", "   /_  _\\"]),
-                Self.make(["    /\\", "  < o  o >", "  /|  v |\\", " /_|____|_\\", "   \\_  _/"])
-            ])
-        case .happy:
-            return style([
-                Self.make(["  \\ /\\ /", "  < ^  ^ >", "  /|  * |\\", " /_|____|_\\", "    /  \\"]),
-                Self.make([" *  /\\  *", "  < ^  o >", "  /|  * |\\", " /_|____|_\\", "    \\  /"])
-            ])
-        case .thinking:
-            return style([
-                Self.make(["    /\\   ?", "  < o  o >", "  /|  ? |\\", " /_|____|_\\", "    /  \\"]),
-                Self.make(["    /\\  ..", "  < o  O >", "  /|  ? |\\", " /_|____|_\\", "    \\  /"])
-            ])
-        case .working:
-            return style([
-                Self.make(["    /\\  #", "  < >  < >", "  /| [ ]|\\", " /_|____|_\\", "   /_  _\\"]),
-                Self.make(["    /\\  ##", "  < >  < >", "  /| [*]|\\", " /_|____|_\\", "   \\_  _/"])
-            ])
-        case .sleepy:
-            return style([
-                Self.make(["    /\\   z", "  < -  - >", "  /|  . |\\", " /_|____|_\\", "    /__\\"]),
-                Self.make(["    /\\  zz", "  < -  - >", "  /|  . |\\", " /_|____|_\\", "   _/  \\_"])
-            ])
-        case .levelUp:
-            return style([
-                Self.make([" ** /\\ **", "  < ^  ^ >", "  /|{*}|\\", " /_|____|_\\", "    /  \\"]),
-                Self.make(["*** /\\ ***", "  < ^  o >", "  /|{*}|\\", " /_|____|_\\", "    \\  /"])
-            ])
-        case .needsAttention:
-            return style([
-                Self.make([" !  /\\  !", "  < o  o >", "  /|  ! |\\", " /_|____|_\\", "    /  \\"]),
-                Self.make([" !! /\\ !!", "  < O  o >", "  /|  ! |\\", " /_|____|_\\", "    \\  /"])
-            ])
-        }
+    private var expressionTone: String {
+        previewSpec?.expressionTone ?? buddyExpressionTone ?? "friendly"
     }
 
-    private func activeTemplateFallbackFrames(for silhouette: String) -> [String] {
-        switch mood {
-        case .idle:
-            return [silhouette]
-        case .happy:
-            return [Self.wrap(silhouette, top: "\\   /", bottom: "  YES"), Self.wrap(silhouette, top: " \\ / ", bottom: "  <3 ")]
-        case .thinking:
-            return [Self.wrap(silhouette, top: "  ? ", bottom: "  ..."), Self.wrap(silhouette, top: " ?  ", bottom: "  hmm")]
-        case .working:
-            return [Self.wrap(silhouette, top: "  ##", bottom: "[work]"), Self.wrap(silhouette, top: " ###", bottom: "[build]")]
-        case .sleepy:
-            return [Self.wrap(silhouette, top: "   z", bottom: " rest"), Self.wrap(silhouette, top: "  zz", bottom: " slow")]
-        case .levelUp:
-            return [Self.wrap(silhouette, top: "** **", bottom: "LEVEL"), Self.wrap(silhouette, top: "*****", bottom: " UP! ")]
-        case .needsAttention:
-            return [Self.wrap(silhouette, top: " ! !", bottom: "check"), Self.wrap(silhouette, top: "!! !!", bottom: " care")]
+    private var buddyExpressionTone: String? {
+        let state = previewSpec?.animationState ?? buddy?.visual?.currentAnimationState ?? buddy?.state.mood
+        switch state?.lowercased() {
+        case "thinking":
+            return "curious"
+        case "working":
+            return "focused"
+        default:
+            return "friendly"
         }
     }
+}
 
-    private var moodKey: String {
-        switch mood {
-        case .idle: return buddy?.visual?.currentAnimationState ?? buddy?.state.mood ?? "idle"
-        case .happy: return "happy"
-        case .thinking: return "thinking"
-        case .working: return "working"
-        case .sleepy: return "sleepy"
-        case .levelUp: return "levelUp"
-        case .needsAttention: return "needsAttention"
-        }
+private enum BuddyASCIIArtLibrary {
+    static func frames(
+        archetypeID: String,
+        mood: BuddyAnimationMood,
+        expressionTone: String,
+        asciiVariantID: String
+    ) -> [String] {
+        let template = templates[archetypeID] ?? templates["console_pet"]!
+        let selected = mood == .idle ? template.idle : (template.moods[mood] ?? template.idle)
+        let eyes = eyePair(for: mood, expressionTone: expressionTone)
+        let mouth = mouth(for: mood, expressionTone: expressionTone)
+        return selected.map { applyVariant(rendered: render($0, eyes: eyes, mouth: mouth), asciiVariantID: asciiVariantID) }
     }
 
-    private static func make(_ lines: [String]) -> String {
+    private static func render(_ frame: String, eyes: (String, String), mouth: String) -> String {
+        frame
+            .replacingOccurrences(of: "{L}", with: eyes.0)
+            .replacingOccurrences(of: "{R}", with: eyes.1)
+            .replacingOccurrences(of: "{M}", with: mouth)
+    }
+
+    private static func art(_ lines: [String]) -> String {
         lines.joined(separator: "\n")
     }
 
-    private static func wrap(_ silhouette: String, top: String, bottom: String) -> String {
-        "\(top)\n\(silhouette.trimmingCharacters(in: .newlines))\n\(bottom)"
-    }
-
-    private func style(_ frames: [String]) -> [String] {
-        frames.map { frame in
-            let variantFrame: String
-            switch asciiVariantID {
-            case "starter_b":
-                variantFrame = frame
-                    .replacingOccurrences(of: "<", with: "(")
-                    .replacingOccurrences(of: ">", with: ")")
-                    .replacingOccurrences(of: "/\\", with: "/\\+")
-            case "starter_c":
-                variantFrame = frame
-                    .replacingOccurrences(of: "<", with: "[")
-                    .replacingOccurrences(of: ">", with: "]")
-                    .replacingOccurrences(of: "/\\", with: "/\\#")
-            default:
-                variantFrame = frame
-            }
-            return decorateForArchetype(variantFrame)
-        }
-    }
-
-    private func decorateForArchetype(_ frame: String) -> String {
-        switch archetypeID {
-        case "spirit":
-            return Self.wrap(frame, top: "  ~~~", bottom: " ~ drift")
-        case "companion_orb":
-            return Self.wrap(frame, top: " ( o )", bottom: "  orbit")
-        case "slime":
-            return Self.wrap(frame, top: "  ___", bottom: " ~squish")
-        case "robot":
-            return Self.wrap(frame, top: " [::]", bottom: "  //\\\\")
-        case "tiny_monster":
-            return Self.wrap(frame, top: "  ^^", bottom: "  claws")
-        case "pixel_pet":
-            return Self.wrap(frame, top: " 8-bit", bottom: "  pet! ")
-        case "cat_like":
-            return Self.wrap(frame, top: " /_/\\ ", bottom: "  purr")
-        case "fox_like":
-            return Self.wrap(frame, top: " /\\\\_/\\\\", bottom: "  sly ")
-        case "dino":
-            return Self.wrap(frame, top: "  rawr", bottom: "  stomp")
-        case "plant_creature":
-            return Self.wrap(frame, top: "  \"\"", bottom: "  leaf")
-        case "mini_wizard":
-            return Self.wrap(frame, top: "  /\\*", bottom: "  spell")
+    private static func applyVariant(rendered: String, asciiVariantID: String) -> String {
+        switch asciiVariantID {
+        case "starter_b":
+            return rendered
+                .replacingOccurrences(of: "{", with: "(")
+                .replacingOccurrences(of: "}", with: ")")
+        case "starter_c":
+            return rendered
+                .replacingOccurrences(of: "/", with: "!")
+                .replacingOccurrences(of: "\\", with: "!")
         default:
-            return frame
+            return rendered
         }
+    }
+
+    private static func eyePair(for mood: BuddyAnimationMood, expressionTone: String) -> (String, String) {
+        switch mood {
+        case .sleepy:
+            return ("-", "-")
+        case .thinking:
+            return ("o", "O")
+        case .working:
+            return ("^", "^")
+        case .needsAttention:
+            return ("O", "o")
+        case .levelUp:
+            return ("*", "*")
+        case .happy:
+            return expressionTone == "focused" ? ("^", "^") : ("^", "o")
+        case .idle:
+            switch expressionTone {
+            case "curious": return ("o", "O")
+            case "focused": return ("^", "^")
+            default: return ("o", "o")
+            }
+        }
+    }
+
+    private static func mouth(for mood: BuddyAnimationMood, expressionTone: String) -> String {
+        switch mood {
+        case .thinking: return "?"
+        case .working: return "="
+        case .sleepy: return "_"
+        case .levelUp: return "*"
+        case .needsAttention: return "!"
+        case .happy: return "u"
+        case .idle:
+            switch expressionTone {
+            case "focused": return "="
+            case "curious": return "?"
+            default: return "u"
+            }
+        }
+    }
+
+    private struct Template {
+        var idle: [String]
+        var moods: [BuddyAnimationMood: [String]]
+    }
+
+    private static let templates: [String: Template] = [
+        "console_pet": .init(
+            idle: [
+                """
+                  __
+                 /{L}{R}\\
+                |  {M} |
+                |_____| 
+                 /   \\
+                """,
+                """
+                  __
+                 /{L}{R}\\
+                |  {M} |
+                |_____| 
+                 \\   /
+                """
+            ],
+            moods: [:]
+        ),
+        "dino": .init(
+            idle: [
+                """
+                   __
+                 _/{L}{R}\\_
+                /|_{M}_/ >
+                 /_   \\
+                /_/\\_/ 
+                """,
+                """
+                   __
+                 _/{L}{R}\\_
+                /|_{M}_/ >>
+                 /_  /  
+                /_/\\_\\ 
+                """,
+                """
+                   __
+                 _/{L}{R}\\_
+                /|_{M}_/ >
+                 /_  _\\
+                /_/\\/  
+                """
+            ],
+            moods: [
+                .sleepy: [
+                    art([
+                        "   __ z",
+                        " _/{L}{R}\\\\_",
+                        "/|_{M}_/ >",
+                        " /_   \\\\",
+                        "/_/\\\\_/"
+                    ])
+                ]
+            ]
+        ),
+        "pixel_pet": .init(
+            idle: [
+                """
+                 .----.
+                |{L}..{R}|
+                |  {M} |
+                |'----'|
+                 /_==_\\
+                """,
+                """
+                 .----.
+                |{L}..{R}|
+                |  {M} |
+                |'----'|
+                 \\_==_/
+                """
+            ],
+            moods: [:]
+        ),
+        "cat_like": .init(
+            idle: [
+                """
+                 /\\_/\\\\
+                ({L} {R} )
+                /  {M}  \\
+                \\_v_v_/
+                  / \\
+                """,
+                """
+                 /\\_/\\\\
+                ({L} {R} )
+                /  {M}  \\
+                \\_v_v_/
+                  \\ /
+                """
+            ],
+            moods: [:]
+        ),
+        "fox_like": .init(
+            idle: [
+                """
+                 /\\_/\\\\
+                / {L} {R}  \\
+                (   {M}   )
+                \\_vv__/>
+                  /  ~\\
+                """,
+                """
+                 /\\_/\\\\
+                / {L} {R}  \\
+                (   {M}   )
+                \\_vv__>>
+                  / ~~\\
+                """
+            ],
+            moods: [:]
+        ),
+        "robot": .init(
+            idle: [
+                """
+                  [#]
+                 /{L}{R}\\
+                |[{M}]|
+                |[_ _]|
+                 /| |\\
+                """,
+                """
+                  [#]
+                 /{L}{R}\\
+                |[{M}]|
+                |[_ _]|
+                 \\| |/
+                """
+            ],
+            moods: [:]
+        ),
+        "slime": .init(
+            idle: [
+                """
+                 
+                 .----.
+                / {L}{R} {M} \\
+                /______\\
+                \\____/
+                """,
+                """
+                 
+                  .--.
+                _/ {L}{R} {M}\\_
+                /_______\\
+                \\_____/
+                """
+            ],
+            moods: [:]
+        ),
+        "plant_creature": .init(
+            idle: [
+                """
+                  \\/
+                 /{L}{R}\\
+                (  {M} )
+                 \\__/ 
+                 _||_ 
+                """,
+                """
+                  /\\
+                 /{L}{R}\\
+                (  {M} )
+                 \\__/ 
+                 _||_ 
+                """
+            ],
+            moods: [:]
+        ),
+        "mini_wizard": .init(
+            idle: [
+                """
+                  /\\*
+                 /{L}{R}\\\\
+                |  {M} |
+                | /__\\|
+                 / || 
+                """,
+                """
+                  /\\*
+                 /{L}{R}\\\\
+                |  {M} |
+                | /__\\|
+                 /_|| 
+                """
+            ],
+            moods: [:]
+        ),
+        "spirit": .init(
+            idle: [
+                """
+                  .--.
+                 ({L}{R}{M})
+                  /~~\\
+                 /_~~_\\
+                  ~  ~
+                """,
+                """
+                   .--.
+                 ({L}{R}{M})
+                  \\~~/
+                 /_~~_\\
+                  ~~ ~
+                """
+            ],
+            moods: [:]
+        ),
+        "companion_orb": .init(
+            idle: [
+                """
+                  .--.
+                -( {L}{R} )-
+                  '--'
+                  /{M}\\
+                   /\\
+                """,
+                """
+                  .--.
+                ~ ( {L}{R} ) ~
+                  '--'
+                  /{M}\\
+                   \\/
+                """
+            ],
+            moods: [:]
+        ),
+        "tiny_monster": .init(
+            idle: [
+                """
+                  /^^\\
+                 ({L}{R}{M})
+                 /|__|\\
+                  /  \\
+                 ^    ^
+                """,
+                """
+                  /^^\\
+                 ({L}{R}{M})
+                 /|__|\\
+                  \\  /
+                 ^    ^
+                """
+            ],
+            moods: [:]
+        )
+    ]
+}
+
+enum BuddyAsciiRenderer {
+    static func frames(archetypeID: String, mood: BuddyAnimationMood, expressionTone: String, asciiVariantID: String) -> [String] {
+        BuddyASCIIArtLibrary.frames(
+            archetypeID: archetypeID,
+            mood: mood,
+            expressionTone: expressionTone,
+            asciiVariantID: asciiVariantID
+        )
     }
 }
 

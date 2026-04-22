@@ -1034,7 +1034,8 @@ struct BuddyView: View {
             expressionTone: activeProfile?.expressionTone ?? "friendly",
             accentLabel: activeProfile?.accentLabel ?? "pocket glow",
             renderStyle: (activeProfile?.pixelVariantId ?? buddy.visual?.pixelVariantId) == nil ? .ascii : .pixel,
-            pixelVariantID: activeProfile?.pixelVariantId ?? buddy.visual?.pixelVariantId ?? derivedPixelVariantID(for: buddy, activeProfile: activeProfile)
+            pixelVariantID: activeProfile?.pixelVariantId ?? buddy.visual?.pixelVariantId ?? derivedPixelVariantID(for: buddy, activeProfile: activeProfile),
+            pixelAssetPath: activeProfile?.pixelAssetPath ?? buddy.visual?.pixelAssetPath ?? PixelLabPreviewService.record(for: activeProfile?.pixelVariantId ?? buddy.visual?.pixelVariantId ?? "")?.localAssetPath
         )
     }
 
@@ -1045,12 +1046,14 @@ struct BuddyView: View {
         var visual = preview.visual ?? BuddyVisualState(
             asciiVariantId: nil,
             pixelVariantId: nil,
+            pixelAssetPath: nil,
             activeAppearanceProfileId: nil,
             currentAnimationState: nil,
             evolutionCosmetics: []
         )
         visual.asciiVariantId = draft.asciiVariantID
         visual.pixelVariantId = draft.renderStyle == .pixel ? draft.pixelVariantID : nil
+        visual.pixelAssetPath = draft.renderStyle == .pixel ? (draft.pixelAssetPath ?? PixelLabPreviewService.record(for: draft.pixelVariantID)?.localAssetPath) : nil
         visual.currentAnimationState = previewAnimationState(for: draft.expressionTone)
         preview.visual = visual
         return preview
@@ -1088,15 +1091,13 @@ struct BuddyView: View {
     }
 
     private func derivedPixelVariantID(for buddy: BuddyInstance, activeProfile: BuddyAppearanceProfile?) -> String {
-        let cleanedName = buddy.displayName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Buddy" : buddy.displayName
-        let archetype = activeProfile?.archetype ?? buddy.identity.archetype
-        let palette = activeProfile?.palette ?? buddy.identity.palette
-        let expressionTone = activeProfile?.expressionTone ?? "friendly"
-        let accentLabel = activeProfile?.accentLabel ?? "pocket glow"
-        let raw = [cleanedName, archetype, palette, expressionTone, accentLabel]
-            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() }
-            .joined(separator: "|")
-        return "pixellab:\(raw.replacingOccurrences(of: " ", with: "-"))"
+        BuddyAppearanceRenderContract.pixelRequestKey(
+            buddyName: buddy.displayName,
+            archetypeID: activeProfile?.archetype ?? buddy.identity.archetype,
+            paletteID: activeProfile?.palette ?? buddy.identity.palette,
+            expressionTone: activeProfile?.expressionTone ?? "friendly",
+            accentLabel: activeProfile?.accentLabel ?? "pocket glow"
+        )
     }
 
     private var tradeHistoryRows: [BuddyTradeRecord] {

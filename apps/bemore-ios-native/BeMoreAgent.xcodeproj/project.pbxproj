@@ -21,16 +21,20 @@
 		143E627CD370A25348F1EE39 /* BeMoreCapabilityMirror.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2740FE950F2636D09E098F60 /* BeMoreCapabilityMirror.swift */; };
 		15CA2612F5AF8F3A4F69C1E0 /* buddy-runtime-events.schema.json in Resources */ = {isa = PBXBuildFile; fileRef = 88DD0F807A59AAAF582AE30F /* buddy-runtime-events.schema.json */; };
 		16B10AB4B3797A3604750520 /* PixelStudioStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B01D9C27C2C675DC0E7C06D8 /* PixelStudioStoreTests.swift */; };
+		1E5F45264D22C6D446F001B2 /* SecureTokenStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CCC65FDC8154E104D440E54 /* SecureTokenStore.swift */; };
 		23CD030FD3A9AEF27CE63E43 /* buddy-runtime-events.v1.json in Resources */ = {isa = PBXBuildFile; fileRef = C2D2861D54E92B8C145B6B77 /* buddy-runtime-events.v1.json */; };
 		2464451FB6121B2014117546 /* AppStateRuntimeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98417662936110DAC0CA5200 /* AppStateRuntimeTests.swift */; };
 		252CC362EE9927FFEDBB2AE2 /* buddy-template-package.schema.json in Resources */ = {isa = PBXBuildFile; fileRef = 59C1C24DAF709E2C9DD49403 /* buddy-template-package.schema.json */; };
 		271688E0D409AFEE6CE5B8C0 /* AppleIntegrationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 241DCB22C78DF36C3C2A609D /* AppleIntegrationSettingsView.swift */; };
+		27434BBC2711CD9D98031C3E /* PixelLabService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBB5B5DD20342640D3B87BF6 /* PixelLabService.swift */; };
 		2B532B75996A8306DEBBDB63 /* BuddySections.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266CBF759BB2F221B11B533C /* BuddySections.swift */; };
 		324059BDEBAB61A0B8DB7C63 /* council-starter-pack.v1.json in Resources */ = {isa = PBXBuildFile; fileRef = 13654ED54356C5AFACBA4436 /* council-starter-pack.v1.json */; };
 		33099B3104DA8E4B77CB5CCF /* FilesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC311ADC2F4DF61A9BB8763D /* FilesView.swift */; };
 		3DF5F42B1B208483D3C8805C /* EditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 010CC4B6ABE96245F0C14F3D /* EditorView.swift */; };
 		3E6ED40041B1B04F01B66641 /* OperatorCommandResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD219EDC5B3C4E1FB7D7C08 /* OperatorCommandResponder.swift */; };
 		4044F16C457AD98E1350DDB3 /* BeMoreAgentApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BFDAC5F149148E014BDB615 /* BeMoreAgentApp.swift */; };
+		4129BB9428D541CCD63EB78A /* BuddyAppearanceRenderContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E692A9D117A38A5645DAFD7 /* BuddyAppearanceRenderContract.swift */; };
+		43AC8A6A049C6A3CDA312C4E /* OAuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE944AF33698D3A632BFB76D /* OAuthService.swift */; };
 		4855967C3F46D35084EC248A /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B560F8452BEB8745BAA93E4 /* SettingsView.swift */; };
 		50365E3A78BD5C7DB71DD54A /* BuddyContractLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3943552B1F8D026724D81C /* BuddyContractLoader.swift */; };
 		523A3B52D28C70E9E6476CFB /* BeMoreChatDispatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EF7694C83936C35C3E8A3EF /* BeMoreChatDispatch.swift */; };
@@ -39,6 +43,7 @@
 		5CEC725C0477EFC1903BC9AE /* BuddyMarkdownRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A447024248BCA007AF107849 /* BuddyMarkdownRenderer.swift */; };
 		5EF24DF578605E311326E970 /* LinkedAccountStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69B4324900E1758762458D3A /* LinkedAccountStore.swift */; };
 		5F23F3B5B7020FEA4AD355A5 /* StackBuilderModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D5353450039AC96C8EF3A1 /* StackBuilderModels.swift */; };
+		623F59071628C43E2FCEB788 /* LilBuddySectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F37FCF5FE526E8B25C26F47 /* LilBuddySectionView.swift */; };
 		63E1AB83DF78D6D15F6DCBF4 /* buddy-instance.schema.json in Resources */ = {isa = PBXBuildFile; fileRef = 4078CB06E5C5071B1AEB5ECA /* buddy-instance.schema.json */; };
 		647B852D7F0297D70A75E6C1 /* PixelStudioNativeEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24DA04FF0EDA1DA4CE5A509F /* PixelStudioNativeEditor.swift */; };
 		6684DE31954D8313EBB13921 /* AppModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E9E960D904E8D231D97375 /* AppModels.swift */; };
@@ -50,17 +55,20 @@
 		6BC350868381F16E8199CD6E /* BuddyContracts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C863A19F647331F16AC4221 /* BuddyContracts.swift */; };
 		6C4ADB58761FA8CEA89CF1A4 /* BuddyVisualView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4420ABF1EC389009DF514137 /* BuddyVisualView.swift */; };
 		6E28F92E146D9B4118987240 /* PixelStudioModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78F5C09E05947011EA3A70D5 /* PixelStudioModels.swift */; };
+		72B565B5B517A36C92414602 /* PixelLabClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9213BD120DF68CD89F7247B /* PixelLabClient.swift */; };
 		75CCEEDDDA846FF59E32043B /* StackBuilderStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27EBD49028638577C29B153C /* StackBuilderStore.swift */; };
 		7B51EDD38386F3FC74D17039 /* EditorWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F01D580A6BCE76B31FACF2CD /* EditorWebView.swift */; };
 		7CB33117CE8893033B54B317 /* OperatorCommandConfirmationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40956950CCDC7E8636D9EBC5 /* OperatorCommandConfirmationView.swift */; };
 		7D4C15F6FAEB07492896E9D1 /* BeMoreWorkspaceRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B67EEA7677A1F29F9D50745 /* BeMoreWorkspaceRuntime.swift */; };
 		830F08B0EAACB13939F40450 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADAB20243704E27AED92EC71 /* Theme.swift */; };
 		83A11B17893B64B97F6CF38D /* BuddyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00CEE20BF19C035E7E26D34F /* BuddyView.swift */; };
+		893D0F814C947758BFF3543E /* PixelLabGenerationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53FD2FA27ACB562300BCA241 /* PixelLabGenerationView.swift */; };
 		8C14C88CEDFDDA7836EB7278 /* LinkedAccountSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E09F7433CAA6B04AFDD00813 /* LinkedAccountSettingsView.swift */; };
 		90814EB8783C8EFEB8A94F18 /* AppPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 213B2BC4AA157D082554BE9E /* AppPreferences.swift */; };
 		91CF6BDC5C6CE18758B13E59 /* ChatTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 292FAE87768026E100C6F5EA /* ChatTabView.swift */; };
 		93C6FB195AC3C07900FFCFB7 /* BuddyAsciiView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7DEEA27091AFDDCB925FA78 /* BuddyAsciiView.swift */; };
 		9AA239FBAEDB1C18C1766BFE /* COUNCIL_STARTER_PACK.md in Resources */ = {isa = PBXBuildFile; fileRef = 822FB2E18B1BE2E3808ED24D /* COUNCIL_STARTER_PACK.md */; };
+		9AC532AC40530CEF868ADA20 /* PixelLabPreviewService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A67DEFF2EF57A9A9B706EBE /* PixelLabPreviewService.swift */; };
 		9AC99C0CFBFF142BDCFFD27A /* GuidedBuddyCreationFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058E4CB56F50B75F37555D8F /* GuidedBuddyCreationFlow.swift */; };
 		9C679DA7F060BB7501644605 /* LocalBrainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0EEB2D08F322E48ADCEDBF2 /* LocalBrainService.swift */; };
 		9D76FB6A7ADCB8C3FFA2DE0E /* buddy-creation-options.v1.json in Resources */ = {isa = PBXBuildFile; fileRef = AA3AB9FB537CB39DA10B349E /* buddy-creation-options.v1.json */; };
@@ -79,6 +87,7 @@
 		C1CB00EFA9BF98894C2B44CE /* CommandDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6619E1F114560EFC253C982C /* CommandDispatcher.swift */; };
 		C47339F6A54FB6C4EF874EA8 /* buddy-runtime-events.example.v1.json in Resources */ = {isa = PBXBuildFile; fileRef = 029070812FECDD019EABFE5A /* buddy-runtime-events.example.v1.json */; };
 		C639D25D5E2D872067C674F8 /* buddy-state-machine.example.v1.json in Resources */ = {isa = PBXBuildFile; fileRef = BB9AD60B925BF53E43850922 /* buddy-state-machine.example.v1.json */; };
+		C72429AEB4ED545CC3DB16A7 /* BuddySkillTeachingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843C99CABEAEA5722510A83F /* BuddySkillTeachingEngine.swift */; };
 		CDD4A87BC4D4ECAF20C7874C /* buddy-system.schema.json in Resources */ = {isa = PBXBuildFile; fileRef = B2492C1A1171EA87D2825F3E /* buddy-system.schema.json */; };
 		D1935ADE83AEE473694B728A /* buddy-instance.example.v1.json in Resources */ = {isa = PBXBuildFile; fileRef = D60B82C7FF773ED132019CC2 /* buddy-instance.example.v1.json */; };
 		D48843F80B42A547C25F461F /* buddy-template-package.example.v1.json in Resources */ = {isa = PBXBuildFile; fileRef = 0FC3EACCF71DCBF07A8F12D4 /* buddy-template-package.example.v1.json */; };
@@ -87,6 +96,7 @@
 		D7DC9D1211CEA93782CADFB7 /* RepoSurfaceDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE48FD3645ED608321400BB5 /* RepoSurfaceDetailView.swift */; };
 		DB0C61D1FF1A5A2BBF064815 /* buddy-state-machine.v1.json in Resources */ = {isa = PBXBuildFile; fileRef = FBB5ABF97DA954529C307CDC /* buddy-state-machine.v1.json */; };
 		DC499597B6A14E3FC52DFCE8 /* BuddyRuntimeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01918E461FB736E2F15B0BDE /* BuddyRuntimeTests.swift */; };
+		DDFD688F1E1BA8F983AAF41F /* OAuthLinkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49C9FC53BC058A9E9CB00203 /* OAuthLinkView.swift */; };
 		E54F1243A9FFAD2F2276B0AB /* BuddyTamagotchiCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 299D5A36BCAA6907BD14162F /* BuddyTamagotchiCard.swift */; };
 		ECE2B1BCF7ADF9361EA26F0F /* editor.html in Resources */ = {isa = PBXBuildFile; fileRef = 6C9C7A24250B6F3AD08E4B06 /* editor.html */; };
 		EF8F39A3E6226FFA1FD3E9A4 /* buddy-state-machine.schema.json in Resources */ = {isa = PBXBuildFile; fileRef = 099AAA90D2E01C056832F61E /* buddy-state-machine.schema.json */; };
@@ -127,6 +137,7 @@
 		13654ED54356C5AFACBA4436 /* council-starter-pack.v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "council-starter-pack.v1.json"; sourceTree = "<group>"; };
 		18C5249364BCCA5C507E4FC0 /* HomeTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTabView.swift; sourceTree = "<group>"; };
 		1BFDAC5F149148E014BDB615 /* BeMoreAgentApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeMoreAgentApp.swift; sourceTree = "<group>"; };
+		1F37FCF5FE526E8B25C26F47 /* LilBuddySectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LilBuddySectionView.swift; sourceTree = "<group>"; };
 		213B2BC4AA157D082554BE9E /* AppPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPreferences.swift; sourceTree = "<group>"; };
 		23C4570FA8C18E2EEAA49550 /* BuddyMessageComposer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyMessageComposer.swift; sourceTree = "<group>"; };
 		241DCB22C78DF36C3C2A609D /* AppleIntegrationSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleIntegrationSettingsView.swift; sourceTree = "<group>"; };
@@ -146,6 +157,8 @@
 		40956950CCDC7E8636D9EBC5 /* OperatorCommandConfirmationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperatorCommandConfirmationView.swift; sourceTree = "<group>"; };
 		4420ABF1EC389009DF514137 /* BuddyVisualView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyVisualView.swift; sourceTree = "<group>"; };
 		47AF4C067CC5BC68C3943469 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		49C9FC53BC058A9E9CB00203 /* OAuthLinkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuthLinkView.swift; sourceTree = "<group>"; };
+		53FD2FA27ACB562300BCA241 /* PixelLabGenerationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelLabGenerationView.swift; sourceTree = "<group>"; };
 		553746FA3677CEC0FC995772 /* TextShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextShareSheet.swift; sourceTree = "<group>"; };
 		563F4A15EF8152B7B1B52D97 /* RuntimeServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeServices.swift; sourceTree = "<group>"; };
 		58CCA954347E996AFD1F34B7 /* BuddyTamagotchiEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyTamagotchiEngine.swift; sourceTree = "<group>"; };
@@ -161,14 +174,18 @@
 		765B1C073CA1E977EA63F10D /* BeMoreLinkedRelayStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeMoreLinkedRelayStore.swift; sourceTree = "<group>"; };
 		78F5C09E05947011EA3A70D5 /* PixelStudioModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelStudioModels.swift; sourceTree = "<group>"; };
 		79189FEB9698AFBB082E5C11 /* BuddyPixelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyPixelView.swift; sourceTree = "<group>"; };
+		7A67DEFF2EF57A9A9B706EBE /* PixelLabPreviewService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelLabPreviewService.swift; sourceTree = "<group>"; };
 		7AB7971C3FE6806475C00946 /* BuddyAppleIntegrationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyAppleIntegrationService.swift; sourceTree = "<group>"; };
 		7B89E4C1DF487947E28A0B4A /* OnboardingFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingFlow.swift; sourceTree = "<group>"; };
+		7E692A9D117A38A5645DAFD7 /* BuddyAppearanceRenderContract.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyAppearanceRenderContract.swift; sourceTree = "<group>"; };
 		80511E10BA1B0BA0D5EF20CD /* PricingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PricingView.swift; sourceTree = "<group>"; };
 		822FB2E18B1BE2E3808ED24D /* COUNCIL_STARTER_PACK.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = COUNCIL_STARTER_PACK.md; sourceTree = "<group>"; };
 		83555EA80BA2C883DB264719 /* BUDDY_SYSTEM.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = BUDDY_SYSTEM.md; sourceTree = "<group>"; };
+		843C99CABEAEA5722510A83F /* BuddySkillTeachingEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddySkillTeachingEngine.swift; sourceTree = "<group>"; };
 		86CE3DC84C73AC6475FB9620 /* ModelsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelsView.swift; sourceTree = "<group>"; };
 		88DD0F807A59AAAF582AE30F /* buddy-runtime-events.schema.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "buddy-runtime-events.schema.json"; sourceTree = "<group>"; };
 		894CDF4390BBDA228CC7FBD3 /* FilesTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesTabView.swift; sourceTree = "<group>"; };
+		8CCC65FDC8154E104D440E54 /* SecureTokenStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureTokenStore.swift; sourceTree = "<group>"; };
 		9458486E5D6B81CF7FE5CF26 /* buddy-creation-options.schema.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "buddy-creation-options.schema.json"; sourceTree = "<group>"; };
 		98417662936110DAC0CA5200 /* AppStateRuntimeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStateRuntimeTests.swift; sourceTree = "<group>"; };
 		9B560F8452BEB8745BAA93E4 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -194,9 +211,11 @@
 		D0EEB2D08F322E48ADCEDBF2 /* LocalBrainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalBrainService.swift; sourceTree = "<group>"; };
 		D60B82C7FF773ED132019CC2 /* buddy-instance.example.v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "buddy-instance.example.v1.json"; sourceTree = "<group>"; };
 		D6B40F8A738278BBEE256BDA /* AppState+OnboardingReset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppState+OnboardingReset.swift"; sourceTree = "<group>"; };
+		D9213BD120DF68CD89F7247B /* PixelLabClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelLabClient.swift; sourceTree = "<group>"; };
 		DA8F9B0D5D4BE9C0C2EC9076 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		DBD219EDC5B3C4E1FB7D7C08 /* OperatorCommandResponder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperatorCommandResponder.swift; sourceTree = "<group>"; };
 		DC311ADC2F4DF61A9BB8763D /* FilesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesView.swift; sourceTree = "<group>"; };
+		DE944AF33698D3A632BFB76D /* OAuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuthService.swift; sourceTree = "<group>"; };
 		DF2B131780B1BE1F7253BC07 /* MISSION_CONTROL.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = MISSION_CONTROL.md; sourceTree = "<group>"; };
 		E09F7433CAA6B04AFDD00813 /* LinkedAccountSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedAccountSettingsView.swift; sourceTree = "<group>"; };
 		E7FECFDBD3D3AEC5E878025B /* GitHubService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubService.swift; sourceTree = "<group>"; };
@@ -205,6 +224,7 @@
 		F01D580A6BCE76B31FACF2CD /* EditorWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorWebView.swift; sourceTree = "<group>"; };
 		F2A163B808646C6C437B7833 /* PixelStudioNativeCanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelStudioNativeCanvasView.swift; sourceTree = "<group>"; };
 		FBB5ABF97DA954529C307CDC /* buddy-state-machine.v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "buddy-state-machine.v1.json"; sourceTree = "<group>"; };
+		FBB5B5DD20342640D3B87BF6 /* PixelLabService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelLabService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -311,7 +331,10 @@
 			isa = PBXGroup;
 			children = (
 				0AC636706BA49E43373FA2EC /* BuddyAppearanceEditorView.swift */,
+				7E692A9D117A38A5645DAFD7 /* BuddyAppearanceRenderContract.swift */,
 				266CBF759BB2F221B11B533C /* BuddySections.swift */,
+				1F37FCF5FE526E8B25C26F47 /* LilBuddySectionView.swift */,
+				53FD2FA27ACB562300BCA241 /* PixelLabGenerationView.swift */,
 			);
 			path = Buddy;
 			sourceTree = "<group>";
@@ -343,6 +366,7 @@
 				374355A842B897D2CBA658E1 /* MacPairingView.swift */,
 				CC34E7472D628E4C878C7D4B /* MissionControlView.swift */,
 				86CE3DC84C73AC6475FB9620 /* ModelsView.swift */,
+				49C9FC53BC058A9E9CB00203 /* OAuthLinkView.swift */,
 				40956950CCDC7E8636D9EBC5 /* OperatorCommandConfirmationView.swift */,
 				DBD219EDC5B3C4E1FB7D7C08 /* OperatorCommandResponder.swift */,
 				80511E10BA1B0BA0D5EF20CD /* PricingView.swift */,
@@ -468,9 +492,15 @@
 		FA4EA554D80AF0A12AB3534F /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				843C99CABEAEA5722510A83F /* BuddySkillTeachingEngine.swift */,
 				6619E1F114560EFC253C982C /* CommandDispatcher.swift */,
 				69B4324900E1758762458D3A /* LinkedAccountStore.swift */,
 				B17D61BFC19DB9DFDDC8D84A /* OAuthLinkService.swift */,
+				DE944AF33698D3A632BFB76D /* OAuthService.swift */,
+				D9213BD120DF68CD89F7247B /* PixelLabClient.swift */,
+				7A67DEFF2EF57A9A9B706EBE /* PixelLabPreviewService.swift */,
+				FBB5B5DD20342640D3B87BF6 /* PixelLabService.swift */,
+				8CCC65FDC8154E104D440E54 /* SecureTokenStore.swift */,
 				AD2186A7594046C2762658AB /* WorkspaceCommand.swift */,
 			);
 			path = Services;
@@ -626,6 +656,7 @@
 				0D0CAABB2A9B819C5AFD0056 /* BeMoreLinkedRelayStore.swift in Sources */,
 				7D4C15F6FAEB07492896E9D1 /* BeMoreWorkspaceRuntime.swift in Sources */,
 				A73ED1108EC89C9B4580958C /* BuddyAppearanceEditorView.swift in Sources */,
+				4129BB9428D541CCD63EB78A /* BuddyAppearanceRenderContract.swift in Sources */,
 				D4F021ABEBFC91C457C251A9 /* BuddyAppleIntegrationService.swift in Sources */,
 				93C6FB195AC3C07900FFCFB7 /* BuddyAsciiView.swift in Sources */,
 				50365E3A78BD5C7DB71DD54A /* BuddyContractLoader.swift in Sources */,
@@ -638,6 +669,7 @@
 				6A87E02CC7A3602254406DB9 /* BuddyPixelView.swift in Sources */,
 				2B532B75996A8306DEBBDB63 /* BuddySections.swift in Sources */,
 				BAF75EAB0C211D2B9B0CDF5E /* BuddyShortcuts.swift in Sources */,
+				C72429AEB4ED545CC3DB16A7 /* BuddySkillTeachingEngine.swift in Sources */,
 				E54F1243A9FFAD2F2276B0AB /* BuddyTamagotchiCard.swift in Sources */,
 				6ACB0554402C13F64655C34D /* BuddyTamagotchiEngine.swift in Sources */,
 				83A11B17893B64B97F6CF38D /* BuddyView.swift in Sources */,
@@ -654,6 +686,7 @@
 				9AC99C0CFBFF142BDCFFD27A /* GuidedBuddyCreationFlow.swift in Sources */,
 				A2B833399061B09486FEB56D /* HomeTabView.swift in Sources */,
 				AE4D1A93396B133A57CFDC79 /* HomeView.swift in Sources */,
+				623F59071628C43E2FCEB788 /* LilBuddySectionView.swift in Sources */,
 				8C14C88CEDFDDA7836EB7278 /* LinkedAccountSettingsView.swift in Sources */,
 				5EF24DF578605E311326E970 /* LinkedAccountStore.swift in Sources */,
 				9C679DA7F060BB7501644605 /* LocalBrainService.swift in Sources */,
@@ -662,15 +695,22 @@
 				C05B124C2FD782605FF3DB84 /* ModelsTabView.swift in Sources */,
 				D666BEEE38D2479A7B2919ED /* ModelsView.swift in Sources */,
 				FE9337F8299C2883890D1087 /* OAuthLinkService.swift in Sources */,
+				DDFD688F1E1BA8F983AAF41F /* OAuthLinkView.swift in Sources */,
+				43AC8A6A049C6A3CDA312C4E /* OAuthService.swift in Sources */,
 				132AA71CEB44E6806B13FA31 /* OnboardingFlow.swift in Sources */,
 				7CB33117CE8893033B54B317 /* OperatorCommandConfirmationView.swift in Sources */,
 				3E6ED40041B1B04F01B66641 /* OperatorCommandResponder.swift in Sources */,
+				72B565B5B517A36C92414602 /* PixelLabClient.swift in Sources */,
+				893D0F814C947758BFF3543E /* PixelLabGenerationView.swift in Sources */,
+				9AC532AC40530CEF868ADA20 /* PixelLabPreviewService.swift in Sources */,
+				27434BBC2711CD9D98031C3E /* PixelLabService.swift in Sources */,
 				6E28F92E146D9B4118987240 /* PixelStudioModels.swift in Sources */,
 				0D3B8230B5D99762D5B97A87 /* PixelStudioNativeCanvasView.swift in Sources */,
 				647B852D7F0297D70A75E6C1 /* PixelStudioNativeEditor.swift in Sources */,
 				F869E1F0C2B2B542A9673800 /* PricingView.swift in Sources */,
 				D7DC9D1211CEA93782CADFB7 /* RepoSurfaceDetailView.swift in Sources */,
 				0AE4B7EF34A1275D3EB24F44 /* RuntimeServices.swift in Sources */,
+				1E5F45264D22C6D446F001B2 /* SecureTokenStore.swift in Sources */,
 				4855967C3F46D35084EC248A /* SettingsView.swift in Sources */,
 				5F23F3B5B7020FEA4AD355A5 /* StackBuilderModels.swift in Sources */,
 				75CCEEDDDA846FF59E32043B /* StackBuilderStore.swift in Sources */,

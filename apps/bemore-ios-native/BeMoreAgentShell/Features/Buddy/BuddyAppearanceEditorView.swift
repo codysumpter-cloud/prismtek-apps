@@ -23,6 +23,21 @@ struct BuddyAppearanceEditorDraft: Hashable {
     var accentLabel: String = "pocket glow"
     var renderStyle: BuddyAppearanceRenderStyle = .ascii
     var pixelVariantID: String = ""
+    var pixelAssetPath: String? = nil
+
+    func previewSpec(buddyName: String) -> BuddyAppearancePreviewSpec {
+        BuddyAppearanceRenderContract.makePreviewSpec(
+            buddyName: buddyName,
+            archetypeID: archetype,
+            paletteID: palette,
+            asciiVariantID: asciiVariantID,
+            expressionTone: expressionTone,
+            accentLabel: accentLabel,
+            renderStyle: renderStyle,
+            pixelRequestKey: pixelVariantID.isEmpty ? nil : pixelVariantID,
+            pixelAssetPath: pixelAssetPath
+        )
+    }
 }
 
 struct BuddyAppearanceEditorView<Preview: View>: View {
@@ -147,11 +162,13 @@ struct BuddyAppearanceEditorView<Preview: View>: View {
     }
 
     private var derivedPixelVariantID: String {
-        let cleanedName = buddyDisplayName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Buddy" : buddyDisplayName
-        let raw = [cleanedName, draft.archetype, draft.palette, draft.expressionTone, draft.accentLabel]
-            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() }
-            .joined(separator: "|")
-        return "pixellab:\(raw.replacingOccurrences(of: " ", with: "-"))"
+        BuddyAppearanceRenderContract.pixelRequestKey(
+            buddyName: buddyDisplayName,
+            archetypeID: draft.archetype,
+            paletteID: draft.palette,
+            expressionTone: draft.expressionTone,
+            accentLabel: draft.accentLabel
+        )
     }
 
     private func syncPixelVariantIDIfNeeded() {
@@ -159,6 +176,7 @@ struct BuddyAppearanceEditorView<Preview: View>: View {
             draft.pixelVariantID = derivedPixelVariantID
         } else if draft.pixelVariantID.hasPrefix("pixellab:") {
             draft.pixelVariantID = ""
+            draft.pixelAssetPath = nil
         }
     }
 }

@@ -78,8 +78,17 @@ final class LinkedAccountStore: ObservableObject {
             persist()
             return
         }
+        for record in decoded where record.accessToken?.isEmpty == false {
+            SecureTokenStore.writeToken(record.accessToken, for: record.provider.rawValue)
+        }
         records = LinkedAccountProvider.allCases.map { provider in
-            decoded.first(where: { $0.provider == provider }) ?? .empty(provider)
+            var record = decoded.first(where: { $0.provider == provider }) ?? .empty(provider)
+            record.accessToken = SecureTokenStore.readToken(for: provider.rawValue)
+            if record.accessToken?.isEmpty != false, record.status == .linked {
+                record.status = .pending
+                record.lastError = "Linked token was removed from secure storage and must be re-entered."
+            }
+            return record
         }
     }
 
@@ -96,9 +105,11 @@ final class LinkedAccountStore: ObservableObject {
     }
 
     func completeLink(_ provider: LinkedAccountProvider, accountHandle: String?, accessToken: String?, connectionMode: String) {
+        let cleanedToken = accessToken?.trimmingCharacters(in: .whitespacesAndNewlines).nilIfBlank
+        SecureTokenStore.writeToken(cleanedToken, for: provider.rawValue)
         update(provider) {
             $0.accountHandle = accountHandle?.trimmingCharacters(in: .whitespacesAndNewlines).nilIfBlank
-            $0.accessToken = accessToken?.trimmingCharacters(in: .whitespacesAndNewlines).nilIfBlank
+            $0.accessToken = cleanedToken
             $0.connectionMode = connectionMode
             $0.linkedAt = .now
             $0.lastError = nil
@@ -107,6 +118,7 @@ final class LinkedAccountStore: ObservableObject {
     }
 
     func unlink(_ provider: LinkedAccountProvider) {
+        SecureTokenStore.deleteToken(for: provider.rawValue)
         update(provider) {
             $0 = .empty(provider)
         }
@@ -127,7 +139,12 @@ final class LinkedAccountStore: ObservableObject {
         do {
             let encoder = JSONEncoder()
             encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-            let data = try encoder.encode(records)
+            let sanitized = records.map { record -> LinkedAccountRecord in
+                var copy = record
+                copy.accessToken = nil
+                return copy
+            }
+            let data = try encoder.encode(sanitized)
             try data.write(to: Paths.linkedAccountsFile, options: [.atomic])
         } catch {}
     }

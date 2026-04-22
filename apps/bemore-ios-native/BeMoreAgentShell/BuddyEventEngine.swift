@@ -115,6 +115,7 @@ struct BuddyEventEngine {
         var visual = instance.visual ?? BuddyVisualState(
             asciiVariantId: nil,
             pixelVariantId: nil,
+            pixelAssetPath: nil,
             activeAppearanceProfileId: nil,
             currentAnimationState: nil,
             evolutionCosmetics: []
@@ -289,6 +290,7 @@ struct BuddyEventEngine {
             palette: palette,
             asciiVariantId: asciiVariantID,
             pixelVariantId: pixelVariantID?.trimmingCharacters(in: .whitespacesAndNewlines).nilIfBlank,
+            pixelAssetPath: pixelVariantID.flatMap { PixelLabPreviewService.record(for: $0)?.localAssetPath },
             expressionTone: expressionTone,
             accentLabel: accentLabel.trimmingCharacters(in: .whitespacesAndNewlines).nilIfBlank ?? "signature accent",
             source: "hermes_ascii",
@@ -775,6 +777,7 @@ struct BuddyEventEngine {
         var visual = instance.visual ?? BuddyVisualState(
             asciiVariantId: nil,
             pixelVariantId: nil,
+            pixelAssetPath: nil,
             activeAppearanceProfileId: nil,
             currentAnimationState: nil,
             evolutionCosmetics: []
@@ -1037,6 +1040,7 @@ struct BuddyEventEngine {
             visual: BuddyVisualState(
                 asciiVariantId: appearance.asciiVariantId,
                 pixelVariantId: nil,
+                pixelAssetPath: nil,
                 activeAppearanceProfileId: appearance.id,
                 currentAnimationState: "happy",
                 evolutionCosmetics: []
@@ -1205,6 +1209,7 @@ struct BuddyEventEngine {
             palette: CouncilBuddyIdentityCatalog.identity(for: template).palette,
             asciiVariantId: "\(template.id)_ascii_v1",
             pixelVariantId: nil,
+            pixelAssetPath: nil,
             expressionTone: "friendly",
             accentLabel: template.ascii.accents.first ?? "starter glow",
             source: "hermes_ascii",
@@ -1243,6 +1248,7 @@ struct BuddyEventEngine {
             palette: updated.identity.palette,
             asciiVariantId: updated.visual?.asciiVariantId ?? template.map { "\($0.id)_ascii_v1" } ?? "starter_a",
             pixelVariantId: updated.visual?.pixelVariantId,
+            pixelAssetPath: updated.visual?.pixelAssetPath ?? updated.visual?.pixelVariantId.flatMap { PixelLabPreviewService.record(for: $0)?.localAssetPath },
             expressionTone: expressionTone,
             accentLabel: accentLabel,
             source: "hermes_ascii",
@@ -1271,12 +1277,14 @@ struct BuddyEventEngine {
         var visual = updated.visual ?? BuddyVisualState(
             asciiVariantId: nil,
             pixelVariantId: nil,
+            pixelAssetPath: nil,
             activeAppearanceProfileId: nil,
             currentAnimationState: nil,
             evolutionCosmetics: []
         )
         visual.asciiVariantId = profile.asciiVariantId
         visual.pixelVariantId = profile.pixelVariantId
+        visual.pixelAssetPath = profile.pixelAssetPath
         visual.activeAppearanceProfileId = profile.id
         updated.visual = visual
         updated.appearanceProfiles = ensuredAppearanceProfiles(for: updated, template: template, now: profile.updatedAt)

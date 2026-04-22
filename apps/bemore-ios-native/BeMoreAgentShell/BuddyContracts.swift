@@ -601,6 +601,7 @@ struct BuddyMemoryBindings: Codable, Hashable {
 struct BuddyVisualState: Codable, Hashable {
     var asciiVariantId: String?
     var pixelVariantId: String?
+    var pixelAssetPath: String?
     var activeAppearanceProfileId: String?
     var currentAnimationState: String?
     var evolutionCosmetics: [String]
@@ -613,6 +614,7 @@ struct BuddyAppearanceProfile: Identifiable, Codable, Hashable {
     var palette: String
     var asciiVariantId: String
     var pixelVariantId: String?
+    var pixelAssetPath: String?
     var expressionTone: String
     var accentLabel: String
     var source: String

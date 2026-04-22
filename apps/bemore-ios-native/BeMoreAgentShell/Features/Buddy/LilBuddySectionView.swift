@@ -56,7 +56,7 @@ private struct LilBuddyLibraryState: Codable, Hashable {
     var receipts: [LilBuddyReceipt] = []
 }
 
-private actor LilBuddyStore {
+actor LilBuddyStore {
     static let shared = LilBuddyStore()
 
     private let encoder: JSONEncoder = {
