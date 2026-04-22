@@ -1,109 +1,130 @@
 import SwiftUI
 
 struct BuddyPixelView: View {
+    @EnvironmentObject private var appState: AppState
+
     var buddy: BuddyInstance?
     var template: CouncilStarterBuddyTemplate?
     let mood: BuddyAnimationMood
     var compact = false
-    
-    @State private var animationOffset: CGFloat = 0
-    @State private var glowOpacity: Double = 0.5
-    
+
+    @State private var pixelRecord: PixelLabPreviewRecord?
+
     var body: some View {
-        ZStack {
-            // Background Glow
-            Circle()
-                .fill(paletteAccent.opacity(0.3))
-                .frame(width: compact ? 60 : 100, height: compact ? 60 : 100)
-                .blur(radius: 20)
-                .opacity(glowOpacity)
-            
-            // Main Buddy Visual
-            VStack(spacing: 0) {
-                Image(systemName: symbolForMood)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: compact ? 30 : 50, height: compact ? 30 : 50)
-                    .foregroundColor(paletteAccent)
-                    .shadow(color: paletteAccent.opacity(0.5), radius: 5, x: 0, y: 2)
-                    .offset(y: animationOffset)
-                
-                if !compact {
-                    Text(moodLabel)
-                        .font(.caption2.bold().monospaced())
-                        .foregroundColor(paletteAccent.opacity(0.8))
-                        .padding(.top, 4)
+        VStack(spacing: compact ? 10 : 14) {
+            if let previewURL = pixelRecord?.previewURL,
+               let url = URL(string: previewURL) {
+                AsyncImage(url: url) { phase in
+                    switch phase {
+                    case .empty:
+                        ProgressView()
+                            .frame(maxWidth: .infinity)
+                            .padding(compact ? 12 : 20)
+                            .background(BMOTheme.backgroundSecondary)
+                            .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusSmall, style: .continuous))
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .interpolation(.none)
+                            .scaledToFit()
+                            .frame(maxWidth: compact ? 120 : 180, maxHeight: compact ? 120 : 180)
+                            .padding(compact ? 8 : 16)
+                            .frame(maxWidth: .infinity)
+                            .background(BMOTheme.backgroundSecondary)
+                            .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusSmall, style: .continuous))
+                    case .failure:
+                        fallbackCard(title: "Pixel preview unavailable", body: pixelRecord?.errorMessage ?? "No preview image was returned.")
+                    @unknown default:
+                        fallbackCard(title: "Pixel preview unavailable", body: "Unknown preview state.")
+                    }
+                }
+            } else {
+                switch pixelRecord?.status {
+                case .queued:
+                    ProgressView()
+                        .frame(maxWidth: .infinity)
+                        .padding(compact ? 12 : 20)
+                        .background(BMOTheme.backgroundSecondary)
+                        .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusSmall, style: .continuous))
+                case .failed:
+                    fallbackCard(title: "PixelLab generation failed", body: pixelRecord?.errorMessage ?? "This pixel look failed to generate.")
+                default:
+                    fallbackCard(title: "No PixelLab render", body: pendingExplanation)
                 }
             }
+
+            if let pixelRecord {
+                Text(statusLabel(for: pixelRecord))
+                    .font(.caption)
+                    .foregroundColor(BMOTheme.textSecondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
         }
-        .frame(maxWidth: .infinity, alignment: .center)
-        .padding(compact ? 12 : 24)
+        .task(id: refreshKey) {
+            await loadOrSyncPreview()
+        }
+    }
+
+    private var refreshKey: String {
+        let tokenState = appState.linkedAccountStore.record(for: .pixelLab).isLinked ? "linked" : "unlinked"
+        return "\(buddy?.visual?.pixelVariantId ?? "none")|\(tokenState)"
+    }
+
+    private var pendingExplanation: String {
+        if appState.linkedAccountStore.record(for: .pixelLab).isLinked {
+            return "This Buddy look has a pixel render key but no real PixelLab preview yet."
+        }
+        return "Link PixelLab to generate a real pixel Buddy instead of a placeholder icon."
+    }
+
+    private func loadOrSyncPreview() async {
+        guard let requestKey = buddy?.visual?.pixelVariantId, requestKey.hasPrefix("pixellab:"), !requestKey.isEmpty else {
+            await MainActor.run { pixelRecord = nil }
+            return
+        }
+        if let existing = PixelLabPreviewService.record(for: requestKey) {
+            await MainActor.run { pixelRecord = existing }
+            if existing.status == .ready { return }
+        }
+        guard let token = appState.linkedAccountStore.record(for: .pixelLab).accessToken?.trimmingCharacters(in: .whitespacesAndNewlines), !token.isEmpty else {
+            return
+        }
+        let record = await PixelLabPreviewService.sync(
+            requestKey: requestKey,
+            buddyName: buddy?.displayName ?? template?.name ?? "Buddy",
+            archetypeID: buddy?.identity.archetype ?? template.map { CouncilBuddyIdentityCatalog.identity(for: $0).archetype } ?? "console_pet",
+            paletteID: buddy?.identity.palette ?? templatePaletteID,
+            expressionTone: buddy?.visual?.currentAnimationState ?? buddy?.state.mood ?? "happy",
+            accentLabel: buddy?.visual?.evolutionCosmetics.first ?? "pocket glow",
+            accessToken: token
+        )
+        await MainActor.run { pixelRecord = record }
+    }
+
+    private func statusLabel(for record: PixelLabPreviewRecord) -> String {
+        switch record.status {
+        case .queued: return "PixelLab job queued."
+        case .ready: return "Real PixelLab preview loaded."
+        case .failed: return record.errorMessage ?? "PixelLab generation failed."
+        }
+    }
+
+    private func fallbackCard(title: String, body: String) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.subheadline.weight(.semibold))
+                .foregroundColor(BMOTheme.textPrimary)
+            Text(body)
+                .font(.caption)
+                .foregroundColor(BMOTheme.textSecondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(compact ? 12 : 20)
         .background(BMOTheme.backgroundSecondary)
         .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusSmall, style: .continuous))
-        .onAppear {
-            startAnimations()
-        }
     }
-    
-    private var symbolForMood: String {
-        switch mood {
-        case .idle: return "face.smiling"
-        case .happy: return "sparkles"
-        case .thinking: return "brain"
-        case .working: return "hammer.fill"
-        case .sleepy: return "moon.stars.fill"
-        case .levelUp: return "crown.fill"
-        case .needsAttention: return "exclamationmark.triangle.fill"
-        }
-    }
-    
-    private var moodLabel: String {
-        switch mood {
-        case .idle: return "IDLE"
-        case .happy: return "HAPPY"
-        case .thinking: return "THINKING"
-        case .working: return "WORKING"
-        case .sleepy: return "SLEEPY"
-        case .levelUp: return "LEVEL UP"
-        case .needsAttention: return "ATTENTION"
-        }
-    }
-    
-    private var paletteAccent: Color {
-        BuddyPaletteDisplay.color(for: buddy?.identity.palette ?? templatePaletteID)
-    }
-    
+
     private var templatePaletteID: String {
         template.map { CouncilBuddyIdentityCatalog.identity(for: $0).palette } ?? "mint_cream"
-    }
-    
-    private func startAnimations() {
-        // Floating animation
-        withAnimation(.easeInOut(duration: 2).repeatForever(autoreverses: true)) {
-            animationOffset = -5
-        }
-        
-        // Pulsing glow
-        withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true)) {
-            glowOpacity = 0.8
-        }
-    }
-}
-
-// Reuse the Palette Display from BuddyAsciiView to keep it consistent
-private enum BuddyPaletteDisplay {
-    static func color(for paletteID: String) -> Color {
-        switch paletteID {
-        case "sky_navy": return Color(red: 0.49, green: 0.78, blue: 0.99)
-        case "peach_brown": return Color(red: 1.0, green: 0.78, blue: 0.65)
-        case "purple_gold": return Color(red: 0.78, green: 0.64, blue: 1.0)
-        case "black_neon": return Color(red: 0.22, green: 1.0, blue: 0.53)
-        case "rose_white": return Color(red: 0.95, green: 0.55, blue: 0.69)
-        case "forest_moss": return Color(red: 0.55, green: 0.68, blue: 0.35)
-        case "aqua_teal": return Color(red: 0.45, green: 0.95, blue: 0.91)
-        case "red_charcoal": return Color(red: 0.82, green: 0.29, blue: 0.36)
-        case "yellow_cocoa": return Color(red: 0.96, green: 0.83, blue: 0.37)
-        default: return Color(red: 0.56, green: 0.85, blue: 0.78)
-        }
     }
 }
