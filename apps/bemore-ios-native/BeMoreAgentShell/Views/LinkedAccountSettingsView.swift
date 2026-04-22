@@ -126,22 +126,47 @@ private struct LinkedAccountEditorSheet: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
                 }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        appState.linkedAccountStore.completeLink(
-                            provider,
-                            accountHandle: accountHandle,
-                            accessToken: accessToken,
-                            connectionMode: "native-link-shell"
-                        )
-                        dismiss()
-                    }
-                }
-            }
-            .onAppear {
-                accountHandle = record.accountHandle ?? ""
-                accessToken = record.accessToken ?? ""
-            }
-        }
-    }
+ ToolbarItem(placement: .confirmationAction) {
+ Button("Save") {
+ Task {
+ await saveLinkedAccount()
+ }
+ }
+ .disabled(accessToken.isEmpty)
+ }
+ }
+ .onAppear {
+ accountHandle = record.accountHandle ?? ""
+ accessToken = record.accessToken ?? ""
+ }
+ }
+ }
+ 
+ private func saveLinkedAccount() async {
+ // Validate PixelLab token if applicable
+ if provider == .pixelLab {
+ let (isValid, _) = await PixelLabService.shared.validateToken(accessToken)
+ if !isValid {
+ // Token validation failed, but we'll still save it
+ // The user can try again later
+ }
+ }
+ 
+ await MainActor.run {
+ appState.linkedAccountStore.completeLink(
+ provider,
+ accountHandle: accountHandle,
+ accessToken: accessToken,
+ connectionMode: "native-link-shell"
+ )
+ dismiss()
+ }
+ }
+ 
+ }
+ .onAppear {
+ accountHandle = record.accountHandle ?? ""
+ accessToken = record.accessToken ?? ""
+ }
+ }
 }

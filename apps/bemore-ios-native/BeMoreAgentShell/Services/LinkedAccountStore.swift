@@ -31,7 +31,7 @@ enum LinkedAccountProvider: String, Codable, CaseIterable, Identifiable {
         switch self {
         case .github: return "Paste a GitHub access token or PAT if you want private repo access from the app today."
         case .chatgpt: return "Paste an OpenAI-compatible access token if you want the linked route usable before full OAuth lands."
-        case .pixelLab: return "Paste a PixelLab token or session-derived API token if available."
+        case .pixelLab: return "Paste your PixelLab API token from https://api.pixellab.ai/"
         }
     }
 
