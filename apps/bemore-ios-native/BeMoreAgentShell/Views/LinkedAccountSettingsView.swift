@@ -14,7 +14,7 @@ struct LinkedAccountsSectionView: View {
 
             Text("GitHub private repos can use a linked token immediately. ChatGPT/OpenAI and PixelLab keep native link state here too. Provider browser hops now open the most relevant account/token page instead of a generic homepage. Full zero-auth callback completion still depends on matching provider/backend setup.")
                 .font(.caption)
-                .foregroundColor(BMOTheme.textSecondary)
+                .foregroundColor(BMOHeme.textSecondary)
                 .listRowBackground(BMOTheme.backgroundCard)
         }
         .sheet(item: $editingProvider) { provider in
@@ -126,36 +126,38 @@ private struct LinkedAccountEditorSheet: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
                 }
- ToolbarItem(placement: .confirmationAction) {
- Button("Save") {
- Task {
- await saveLinkedAccount()
- }
- }
- .disabled(accessToken.isEmpty)
- }
-}
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        Task {
+                            await saveLinkedAccount()
+                        }
+                    }
+                    .disabled(accessToken.isEmpty)
+                }
+            }
+            .onAppear {
+                accountHandle = record.accountHandle ?? ""
+                accessToken = record.accessToken ?? ""
+            }
+        }
+    }
 
- 
- private func saveLinkedAccount() async {
- // Validate PixelLab token if applicable
- if provider == .pixelLab {
- let (isValid, _) = await PixelLabService.shared.validateToken(accessToken)
- if !isValid {
- // Token validation failed, but we'll still save it
- // The user can try again later
- }
- }
- 
- await MainActor.run {
- appState.linkedAccountStore.completeLink(
- provider,
- accountHandle: accountHandle,
- accessToken: accessToken,
- connectionMode: "native-link-shell"
- )
- dismiss()
- }
- }
- 
+    private func saveLinkedAccount() async {
+        if provider == .pixelLab {
+            let (isValid, _) = await PixelLabService.shared.validateToken(accessToken)
+            if !isValid {
+                // Token validation failed, but we'll still save it
+            }
+        }
+
+        await MainActor.run {
+            appState.linkedAccountStore.completeLink(
+                provider,
+                accountHandle: accountHandle,
+                accessToken: accessToken,
+                connectionMode: "native-link-shell"
+            )
+            dismiss()
+        }
+    }
 }
