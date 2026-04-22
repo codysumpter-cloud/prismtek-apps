@@ -116,21 +116,19 @@ class BuddySkillTeachingEngine {
  }
 
  /// Creates a "trained skill" from completed teaching
- func completeTeaching(_ draft: SkillTeachingDraft) -> BuddySkillState {
- return BuddySkillState(
- id: draft.id,
- name: draft.triggerPhrase,
- summary: "User-taught skill: \(draft.triggerPhrase)",
- category: "User Taught",
- isEquipped: true,
- mastery: 1,
- xp: 10,
- maxXp: 100,
- learnedAt: .now,
- uses: 0,
- lastUsed: nil
- )
- }
+    func completeTeaching(_ draft: SkillTeachingDraft) -> BuddySkillState {
+        return BuddySkillState(
+            id: draft.id,
+            name: draft.triggerPhrase,
+            summary: "User-taught skill: \(draft.triggerPhrase)",
+            category: "User Taught",
+            isUnlocked: true,
+            isEquipped: true,
+            mastery: 1,
+            unlockedAt: .now,
+            lastTrainedAt: nil
+        )
+    }
 
  // MARK: - Persistence
 
@@ -259,24 +257,26 @@ import SwiftUI
 
 extension BeMoreChatCommandParser {
  /// Check if a message is a teaching attempt and handle it
- func handlePotentialTeaching(
- _ message: String,
- buddy: BuddyInstance,
- completion: @escaping (SkillTeachingDraft?) -> Void
- ) {
- let analysis = BuddySkillTeachingEngine.shared.analyzeTeachingIntent(message)
-
- guard analysis.isTeachingIntent else {
- completion(nil)
- return
- }
-
- let draft = BuddySkillTeachingEngine.shared.createSkillDraft(
- from: analysis,
- originalMessage: message
- )
-
- BuddySkillTeachingEngine.shared.saveDraft(draft)
- completion(draft)
- }
+    func handlePotentialTeaching(
+        _ message: String,
+        buddy: BuddyInstance,
+        completion: @escaping (SkillTeachingDraft?) -> Void
+    ) {
+        Task { @MainActor in
+            let analysis = BuddySkillTeachingEngine.shared.analyzeTeachingIntent(message)
+            
+            guard analysis.isTeachingIntent else {
+                completion(nil)
+                return
+            }
+            
+            let draft = BuddySkillTeachingEngine.shared.createSkillDraft(
+                from: analysis,
+                originalMessage: message
+            )
+            
+            BuddySkillTeachingEngine.shared.saveDraft(draft)
+            completion(draft)
+        }
+    }
 }

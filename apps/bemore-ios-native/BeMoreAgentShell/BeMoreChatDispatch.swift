@@ -602,9 +602,9 @@ extension AppState {
     let receipt = workspaceRuntime.runSkill(
         id: BuiltInSkillRegistry.pokemonTeamBuilderID,
         input: ["request": request, "format": "balanced", "strategy": request.isEmpty ? "competitive" : "user-prompted"],
-        config: appConfig,
-        preferences: userPreferences,
-        routeSummary: routeSummary
+        config: self.stackConfig,
+        preferences: self.userPreferences,
+        routeSummary: self.routeSummary
     )
  let assistant = receipt.status == .failed
  ? "Could not build your Pokemon team: \(receipt.error ?? receipt.summary)"
