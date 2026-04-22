@@ -1189,4 +1189,3 @@ struct BuddyView: View {
         isShowingNoteShareSheet = true
         appleActionStatus = "Opened the native share sheet so you can save Buddy's note draft into Notes or another iPhone app."
     }
-}
