@@ -846,8 +846,7 @@ struct BuddyView: View {
             }
         }
     }
-}
-}
+
 
 
     private var appearanceStudioSheet: some View {
