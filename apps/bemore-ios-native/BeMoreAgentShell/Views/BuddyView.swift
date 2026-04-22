@@ -189,37 +189,13 @@ struct BuddyView: View {
                 }
             }
 
-            Divider().overlay(BMOTheme.divider)
+ Divider().overlay(BMOTheme.divider)
 
-            if skills.isEmpty {
-                Text("No learned skills are visible yet.")
-                    .font(.subheadline)
-                    .foregroundColor(BMOTheme.textSecondary)
-            } else {
-                ForEach(skills) { skill in
-                    HStack(alignment: .top) {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(skill.name)
-                                .font(.subheadline.weight(.semibold))
-                                .foregroundColor(BMOTheme.textPrimary)
-                            Text(skill.summary)
-                                .font(.caption)
-                                .foregroundColor(BMOTheme.textSecondary)
-                            Text("Mastery \(skill.mastery)/5")
-                                .font(.caption2)
-                                .foregroundColor(BMOTheme.textTertiary)
-                        }
-                        Spacer()
-                        StatusBadge(label: skill.isEquipped ? "Equipped" : "Unlocked", color: skill.isEquipped ? BMOTheme.success : BMOTheme.accent)
-                    }
-                    .padding(BMOTheme.spacingMD)
-                    .background(BMOTheme.backgroundSecondary)
-                    .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusSmall, style: .continuous))
-                }
-            }
-        }
-        .bmoCard()
-    }
+ // Skills are now built-in - only show if user explicitly asks or via special flows
+ EmptyView()
+ }
+ }
+}
 
     private func appearanceStudioCard(for buddy: BuddyInstance) -> some View {
         let template = store.contracts?.templateForInstance(buddy)
