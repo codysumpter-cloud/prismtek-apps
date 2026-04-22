@@ -599,10 +599,13 @@ extension AppState {
 
  case .pokemonTeamBuilder(let request):
  chatStore.messages.append(ChatMessage(role: .user, content: cleaned))
- let receipt = workspaceRuntime.run(
- id: BuiltInSkillRegistry.pokemonTeamBuilderID,
- input: ["request": request, "format": "balanced", "strategy": request.isEmpty ? "competitive" : "user-prompted"]
- )
+    let receipt = workspaceRuntime.runSkill(
+        id: BuiltInSkillRegistry.pokemonTeamBuilderID,
+        input: ["request": request, "format": "balanced", "strategy": request.isEmpty ? "competitive" : "user-prompted"],
+        config: appConfig,
+        preferences: userPreferences,
+        routeSummary: routeSummary
+    )
  let assistant = receipt.status == .failed
  ? "Could not build your Pokemon team: \(receipt.error ?? receipt.summary)"
  : "Built your Pokemon team! \(receipt.summary) You can view it in the workspace."
