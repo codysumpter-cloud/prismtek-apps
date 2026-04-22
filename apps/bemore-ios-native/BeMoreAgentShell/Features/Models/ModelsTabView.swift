@@ -23,6 +23,60 @@ struct ModelsTabView: View {
                 Section("Runtime") {
                     LabeledContent("Backend", value: appState.backendDisplayName)
                     LabeledContent("Status", value: appState.runtimeStatus)
+                    if let localBrainService = appState.localBrainService {
+                        LabeledContent("Lifecycle", value: localBrainService.lifecycleState.operatorLabel)
+                        if let failure = localBrainService.lastFailureKind?.rawValue {
+                            LabeledContent("Last failure", value: failure)
+                        }
+                        if let currentModelSummary = localBrainService.currentModelSummary {
+                            LabeledContent("Selected model", value: currentModelSummary)
+                        }
+                    }
+                }
+
+                if let localBrainService = appState.localBrainService {
+                    Section("Local probe") {
+                        Text("Run a tiny on-device prompt to verify model load, generation, and visible output without sending anything to a cloud route.")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                        Button("Run `Reply with OK.` probe") {
+                            Task { await appState.runLocalModelProbe() }
+                        }
+                        .buttonStyle(.borderedProminent)
+
+                        if let localProbeOutput = appState.localProbeOutput {
+                            Text(localProbeOutput)
+                                .font(.footnote.monospaced())
+                        }
+                    }
+
+                    Section("Runtime diagnostics") {
+                        if let lastUserVisibleError = localBrainService.lastUserVisibleError {
+                            Text(lastUserVisibleError)
+                                .font(.footnote)
+                                .foregroundStyle(.red)
+                        }
+
+                        if localBrainService.events.isEmpty {
+                            Text("No runtime events recorded yet.")
+                                .foregroundStyle(.secondary)
+                        } else {
+                            ForEach(localBrainService.events.prefix(12)) { event in
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(event.kind.rawValue.replacingOccurrences(of: "_", with: " ").capitalized)
+                                        .font(.caption.weight(.semibold))
+                                    Text(event.message)
+                                        .font(.footnote)
+                                    if event.metadata.isEmpty == false {
+                                        Text(event.metadata.map { "\($0.key)=\($0.value)" }.sorted().joined(separator: " • "))
+                                            .font(.caption2)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                }
+                                .padding(.vertical, 2)
+                            }
+                        }
+                    }
                 }
 
                 Section("Prepared model import") {
@@ -142,6 +196,12 @@ struct ModelsTabView: View {
                                 Text("modelLib: \(model.modelLib)")
                                     .font(.caption2)
                                     .foregroundStyle(.secondary)
+                            }
+                            if let checksum = model.checksumSHA256, checksum.isEmpty == false {
+                                Text("sha256: \(checksum)")
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                                    .lineLimit(1)
                             }
 
                             HStack {

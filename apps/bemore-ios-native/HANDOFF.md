@@ -16,7 +16,7 @@ Use this guide when handing the native app to someone with a Mac and Apple Devel
 - onboarding completion persists locally
 - the app has native Home, Chat, Files, and Models surfaces
 - the current runtime is still a stub until the real on-device runtime bridge is wired in
-- the current repo build number is 41 in `BeMoreAgentShell/Info.plist`
+- the current repo build number is 42 in `BeMoreAgentShell/Info.plist` after App Store Connect rejected a duplicate upload of 41
 - the app currently boots `AppState(engine: MLCBridgeEngine())` from `BeMoreAgentShell/BeMoreAgentApp.swift`
 - the current runtime/model/download boundary lives in `BeMoreAgentShell/RuntimeServices.swift`
 

@@ -33,6 +33,7 @@ struct BuddyView: View {
     @State private var messageDraft = ""
     @State private var isShowingPersonalizationSheet = false
     @State private var isShowingAppearanceStudioSheet = false
+    @State private var isShowingCreateBuddySheet = false
     @State private var appearanceDraft = BuddyAppearanceEditorDraft()
     @State private var battleArenaName = "Pocket Garden Ring"
     @State private var selectedBattleModifier: BuddyBattleArenaModifier = .balanced
@@ -95,6 +96,10 @@ struct BuddyView: View {
         }
         .sheet(isPresented: $isShowingAppearanceStudioSheet) {
             appearanceStudioSheet
+        }
+        .sheet(isPresented: $isShowingCreateBuddySheet) {
+            GuidedBuddyCreationFlow()
+                .environmentObject(appState)
         }
         .sheet(isPresented: $isShowingMessageComposer) {
             BuddyMessageComposer(body: messageDraft)
@@ -237,6 +242,9 @@ struct BuddyView: View {
             isPixelLabLinked: appState.linkedAccountStore.record(for: .pixelLab).isLinked,
             onEquip: { profileID in store.activateAppearanceProfile(profileID, using: appState) },
             onDesignNewLook: {
+                isShowingCreateBuddySheet = true
+            },
+            onCustomizeMore: {
                 appearanceDraft = appearanceDraft(for: buddy)
                 isShowingAppearanceStudioSheet = true
             }
@@ -770,6 +778,10 @@ struct BuddyView: View {
             Text("Install a starter Buddy to begin with a companion you can name, teach, train, and rely on for everyday follow-through.")
                 .font(.subheadline)
                 .foregroundColor(BMOTheme.textSecondary)
+            Button("Create Buddy") {
+                isShowingCreateBuddySheet = true
+            }
+            .buttonStyle(BMOButtonStyle())
         }
         .bmoCard()
     }

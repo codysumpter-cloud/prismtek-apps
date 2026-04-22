@@ -212,7 +212,7 @@ If the repo already has a better organizational pattern, follow that instead of 
 
 ## Current workflow / release facts you should not fight
 
-- current build number on `main` is `41`
+- current build number on `main` is `42` because App Store Connect already had build `41`
 - main iOS workflow lane is `.github/workflows/bemore-ios-ci-testflight.yml`
 - `bemoreagent-platform-ios-validate.yml` is **not** the main `apps/bemore-ios-native` lane
 
@@ -243,7 +243,7 @@ Required evidence:
 Required evidence:
 
 - current build lane remains green after runtime/native-power changes
-- build 41 is treated as the current source-of-truth build unless App Store Connect requires a newer one
+- build 42 is treated as the current source-of-truth build because App Store Connect rejected a duplicate upload of build 41
 - do not claim TestFlight success without a successful upload run
 
 ## Definition of done

@@ -8,7 +8,7 @@ This file records the exact blockers for honest on-device runtime completion on 
 - `apps/bemore-ios-native/project.yml` still has `dependencies: []`.
 - `apps/bemore-ios-native/BeMoreAgentShell/RuntimeServices.swift` only runs real local generation behind `#if canImport(MLCSwift)`.
 - When `MLCSwift` is unavailable, the app falls back to the stub response path and explicitly says the result is simulated.
-- build `41` is the current source build in `apps/bemore-ios-native/BeMoreAgentShell/Info.plist`.
+- build `42` is the current source build in `apps/bemore-ios-native/BeMoreAgentShell/Info.plist` because App Store Connect already had build `41`.
 
 ## Exact blockers
 

@@ -5,6 +5,10 @@ import SwiftUI
 import MLCSwift
 #endif
 
+#if canImport(CryptoKit)
+import CryptoKit
+#endif
+
 // MARK: - Paths
 
 enum Paths {
@@ -62,6 +66,7 @@ enum Paths {
 
     static var modelCatalogFile: URL { stateDirectory.appendingPathComponent("remote-models.json") }
     static var installedModelMetadataFile: URL { stateDirectory.appendingPathComponent("installed-model-metadata.json") }
+    static var runtimeDiagnosticsFile: URL { stateDirectory.appendingPathComponent("runtime-diagnostics.json") }
     static var chatStateFile: URL { stateDirectory.appendingPathComponent("chat.json") }
     static var providersFile: URL { stateDirectory.appendingPathComponent("providers.json") }
     static var runtimeSelectionFile: URL { stateDirectory.appendingPathComponent("runtime-selection.json") }
@@ -223,6 +228,7 @@ enum ModelMetadataInference {
 
 // MARK: - LLM Engine protocol
 
+@MainActor
 protocol LocalLLMEngine {
     var backendDisplayName: String { get }
     var isRuntimeReady: Bool { get }
@@ -233,12 +239,28 @@ protocol LocalLLMEngine {
     func bootstrap() async throws
     func configureRuntime(_ config: EngineRuntimeConfig?) async throws
     func generate(prompt: String, fileContexts: [WorkspaceFile], chatHistory: [ChatMessage], activeStack: CompiledStack?) async throws -> String
+    func cancelGeneration() async
+    func unloadRuntime() async throws
+}
+
+extension LocalLLMEngine {
+    func cancelGeneration() async {}
+
+    func unloadRuntime() async throws {
+        try await configureRuntime(nil)
+    }
 }
 
 // MARK: - MLC / Stub engine
 
+enum LocalEngineHookEvent {
+    case firstToken
+    case streamFinished(outputLength: Int)
+}
+
 final class MLCBridgeEngine: LocalLLMEngine {
     private var runtimeConfig: EngineRuntimeConfig?
+    var eventHook: (@Sendable (LocalEngineHookEvent) -> Void)?
 
     var backendDisplayName: String {
         #if canImport(MLCSwift)
@@ -296,16 +318,23 @@ final class MLCBridgeEngine: LocalLLMEngine {
 
         let engine = MLCEngine.shared
         var output = ""
+        var sawFirstToken = false
         let stream = await engine.chat.completions.create(
             messages: [ChatCompletionMessage(role: .user, content: finalPrompt)]
         )
 
         for await response in stream {
+            try Task.checkCancellation()
             if let text = response.choices.first?.delta.content?.asText() {
+                if sawFirstToken == false, text.isEmpty == false {
+                    sawFirstToken = true
+                    eventHook?(.firstToken)
+                }
                 output += text
             }
         }
 
+        eventHook?(.streamFinished(outputLength: output.count))
         return output.trimmingCharacters(in: .whitespacesAndNewlines)
         #else
         let filenames = fileContexts.map(\.filename).joined(separator: ", ")
@@ -370,6 +399,16 @@ final class ModelCatalogStore: ObservableObject {
     private let fileManager = FileManager.default
     private var installedMetadata: [String: InstalledModelDescriptor] = [:]
 
+    static func sha256Hex(for fileURL: URL) -> String? {
+        #if canImport(CryptoKit)
+        guard let data = try? Data(contentsOf: fileURL) else { return nil }
+        let digest = SHA256.hash(data: data)
+        return digest.map { String(format: "%02x", $0) }.joined()
+        #else
+        return nil
+        #endif
+    }
+
     func load() {
         guard let data = try? Data(contentsOf: Paths.modelCatalogFile) else {
             remoteModels = []
@@ -431,7 +470,8 @@ final class ModelCatalogStore: ObservableObject {
                 localURL: url,
                 fileSizeBytes: Int64(values.fileSize ?? 0),
                 modelID: metadata?.modelID.isEmpty == false ? metadata!.modelID : ModelMetadataInference.modelID(from: fallbackFilename),
-                modelLib: metadata?.modelLib.isEmpty == false ? metadata!.modelLib : ModelMetadataInference.modelLib(from: fallbackFilename)
+                modelLib: metadata?.modelLib.isEmpty == false ? metadata!.modelLib : ModelMetadataInference.modelLib(from: fallbackFilename),
+                checksumSHA256: metadata?.checksumSHA256
             )
         }
         .sorted { $0.addedAt > $1.addedAt }
@@ -461,7 +501,8 @@ final class ModelCatalogStore: ObservableObject {
                         filename: destination.lastPathComponent,
                         displayName: model.displayName,
                         modelID: model.modelID.isEmpty ? ModelMetadataInference.modelID(from: destination.lastPathComponent) : model.modelID,
-                        modelLib: model.modelLib.isEmpty ? ModelMetadataInference.modelLib(from: destination.lastPathComponent) : model.modelLib
+                        modelLib: model.modelLib.isEmpty ? ModelMetadataInference.modelLib(from: destination.lastPathComponent) : model.modelLib,
+                        checksumSHA256: Self.sha256Hex(for: destination)
                     )
                     self.persistInstalledMetadata()
                     self.activeDownload = nil
@@ -490,7 +531,8 @@ final class ModelCatalogStore: ObservableObject {
             filename: destination.lastPathComponent,
             displayName: displayName.isEmpty ? ModelMetadataInference.displayName(from: destination.lastPathComponent) : displayName,
             modelID: modelID.isEmpty ? ModelMetadataInference.modelID(from: destination.lastPathComponent) : modelID,
-            modelLib: modelLib.isEmpty ? ModelMetadataInference.modelLib(from: destination.lastPathComponent) : modelLib
+            modelLib: modelLib.isEmpty ? ModelMetadataInference.modelLib(from: destination.lastPathComponent) : modelLib,
+            checksumSHA256: Self.sha256Hex(for: destination)
         )
         persistInstalledMetadata()
         refreshInstalledModels()
@@ -511,7 +553,8 @@ final class ModelCatalogStore: ObservableObject {
                     filename: destination.lastPathComponent,
                     displayName: ModelMetadataInference.displayName(from: destination.lastPathComponent),
                     modelID: ModelMetadataInference.modelID(from: destination.lastPathComponent),
-                    modelLib: ModelMetadataInference.modelLib(from: destination.lastPathComponent)
+                    modelLib: ModelMetadataInference.modelLib(from: destination.lastPathComponent),
+                    checksumSHA256: Self.sha256Hex(for: destination)
                 )
             } catch {
                 errorMessage = error.localizedDescription
@@ -1357,10 +1400,12 @@ final class AppState: ObservableObject {
     @Published var macRuntimeSnapshot: MacRuntimeSnapshot?
     @Published var macRuntimeStatus = "Mac not inspected"
     @Published var chatReturnTab: AppTab?
+    @Published var localProbeOutput: String?
 
     // MARK: Initializer – now placed after property declarations
     init(engine: LocalLLMEngine) {
         self.engine = engine
+        self.localBrainService = engine as? LocalBrainService
     }
 
     var orderedVisibleTabs: [AppTab] {
@@ -1550,6 +1595,7 @@ final class AppState: ObservableObject {
     }
     
     private let engine: LocalLLMEngine
+    let localBrainService: LocalBrainService?
     private let cloudExecutionService = CloudExecutionService()
 
 
@@ -1828,6 +1874,28 @@ final class AppState: ObservableObject {
         }
     }
 
+    func runLocalModelProbe() async {
+        guard selectedProviderAccount == nil else {
+            localProbeOutput = "Switch off the cloud route before running the local probe."
+            return
+        }
+
+        guard canUseSelectedLocalModel else {
+            localProbeOutput = "Select a runnable local model first."
+            return
+        }
+
+        do {
+            runtimeStatus = "Running local probe..."
+            let reply = try await engine.generate(prompt: "Reply with OK.", fileContexts: [], chatHistory: [], activeStack: nil)
+            localProbeOutput = reply
+            refreshRuntimeSummary()
+        } catch {
+            localProbeOutput = error.localizedDescription
+            runtimeStatus = "Local probe failed"
+        }
+    }
+
     // MARK: - BeMore Mac pairing
 
     func refreshMacRuntimeSnapshot() async {
@@ -2049,6 +2117,8 @@ final class AppState: ObservableObject {
         } else if let model = selectedInstalledModel {
             if usesStubRuntime {
                 runtimeStatus = "Local model selected, runtime unavailable"
+            } else if let localBrainService {
+                runtimeStatus = "On-device: \(model.modelID.isEmpty ? model.localFilename : model.modelID) • \(localBrainService.lifecycleState.operatorLabel)"
             } else {
                 runtimeStatus = model.modelID.isEmpty ? "On-device: \(model.localFilename)" : "On-device: \(model.modelID)"
             }
@@ -2143,7 +2213,7 @@ final class AppState: ObservableObject {
         try await engine.configureRuntime(
             EngineRuntimeConfig(modelURL: installed.localURL, modelID: installed.modelID, modelLib: installed.modelLib)
         )
-        runtimeStatus = installed.modelID.isEmpty ? "On-device: \(installed.localFilename)" : "On-device: \(installed.modelID)"
+        refreshRuntimeSummary()
     }
     private func configureConversationForCurrentStack(forceReplace: Bool = false) {
         if let activeStack {
