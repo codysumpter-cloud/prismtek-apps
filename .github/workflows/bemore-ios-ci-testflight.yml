@@ -203,12 +203,12 @@ jobs:
           fi
           echo "CI signing assets are present for team DY9FHPRZA9 and bundle id BeMoreAgent."
 
- - name: Import CI signing assets
- run: |
- umask 077
- SIGNING_KEYCHAIN="$RUNNER_TEMP/bemoreagent-signing.keychain-db"
- SIGNING_KEYCHAIN_PASSWORD="$(openssl rand -base64 32)"
- CERT_PATH="$RUNNER_TEMP/bemoreagent-distribution.p12"
+- name: Import CI signing assets
+  run: |
+    umask 077
+    SIGNING_KEYCHAIN="$RUNNER_TEMP/bemoreagent-signing.keychain-db"
+    SIGNING_KEYCHAIN_PASSWORD="***"
+    CERT_PATH="$RUNNER_TEMP/bemoreagent-distribution.p12"
           PROFILE_DIR="$HOME/Library/MobileDevice/Provisioning Profiles"
           PROFILE_PATH="$PROFILE_DIR/BeMoreAgent-AppStore.mobileprovision"
 
