@@ -50,9 +50,7 @@ struct PixelLabGenerationView: View {
                         }
                         
                         NavigationLink("Go to Settings") {
-                            LinkedAccountSettingsView(
-                                linkedAccountStore: linkedAccountStore
-                            )
+                            LinkedAccountsSectionView()
                         }
                     }
                 }
