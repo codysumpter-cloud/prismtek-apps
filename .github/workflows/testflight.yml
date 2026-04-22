@@ -128,9 +128,9 @@ jobs:
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$SIGNING_KEYCHAIN_PASSWORD" "$SIGNING_KEYCHAIN"
 
           security find-identity -v -p codesigning "$SIGNING_KEYCHAIN"
-          PROFILE_NAME="$(security cms -D -i "$PROFILE_PATH" | plutil -extract Name raw -o - -)"
-          PROFILE_BUNDLE="$(security cms -D -i "$PROFILE_PATH" | plutil -extract Entitlements.application-identifier raw -o - -)"
-          PROFILE_GET_TASK_ALLOW="$(security cms -D -i "$PROFILE_PATH" | plutil -extract Entitlements.get-task-allow raw -o - -)"
+          PROFILE_NAME="$(security cms -D -i "$PROFILE_PATH" | plutil -extract Name raw -o -)"
+          PROFILE_BUNDLE="$(security cms -D -i "$PROFILE_PATH" | plutil -extract Entitlements.application-identifier raw -o -)"
+          PROFILE_GET_TASK_ALLOW="$(security cms -D -i "$PROFILE_PATH" | plutil -extract Entitlements.get-task-allow raw -o -)"
           echo "Imported profile: $PROFILE_NAME"
           echo "Profile application identifier: $PROFILE_BUNDLE"
           if [ "$PROFILE_BUNDLE" != "DY9FHPRZA9.BeMoreAgent" ]; then

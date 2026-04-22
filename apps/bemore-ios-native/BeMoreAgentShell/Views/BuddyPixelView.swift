@@ -1,10 +1,12 @@
 import SwiftUI
+import UIKit
 
 struct BuddyPixelView: View {
     @EnvironmentObject private var appState: AppState
 
     var buddy: BuddyInstance?
     var template: CouncilStarterBuddyTemplate?
+    var previewSpec: BuddyAppearancePreviewSpec?
     let mood: BuddyAnimationMood
     var compact = false
 
@@ -12,46 +14,7 @@ struct BuddyPixelView: View {
 
     var body: some View {
         VStack(spacing: compact ? 10 : 14) {
-            if let previewURL = pixelRecord?.previewURL,
-               let url = URL(string: previewURL) {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .empty:
-                        ProgressView()
-                            .frame(maxWidth: .infinity)
-                            .padding(compact ? 12 : 20)
-                            .background(BMOTheme.backgroundSecondary)
-                            .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusSmall, style: .continuous))
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .interpolation(.none)
-                            .scaledToFit()
-                            .frame(maxWidth: compact ? 120 : 180, maxHeight: compact ? 120 : 180)
-                            .padding(compact ? 8 : 16)
-                            .frame(maxWidth: .infinity)
-                            .background(BMOTheme.backgroundSecondary)
-                            .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusSmall, style: .continuous))
-                    case .failure:
-                        fallbackCard(title: "Pixel preview unavailable", body: pixelRecord?.errorMessage ?? "No preview image was returned.")
-                    @unknown default:
-                        fallbackCard(title: "Pixel preview unavailable", body: "Unknown preview state.")
-                    }
-                }
-            } else {
-                switch pixelRecord?.status {
-                case .queued:
-                    ProgressView()
-                        .frame(maxWidth: .infinity)
-                        .padding(compact ? 12 : 20)
-                        .background(BMOTheme.backgroundSecondary)
-                        .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusSmall, style: .continuous))
-                case .failed:
-                    fallbackCard(title: "PixelLab generation failed", body: pixelRecord?.errorMessage ?? "This pixel look failed to generate.")
-                default:
-                    fallbackCard(title: "No PixelLab render", body: pendingExplanation)
-                }
-            }
+            previewBody
 
             if let pixelRecord {
                 Text(statusLabel(for: pixelRecord))
@@ -67,7 +30,7 @@ struct BuddyPixelView: View {
 
     private var refreshKey: String {
         let tokenState = appState.linkedAccountStore.record(for: .pixelLab).isLinked ? "linked" : "unlinked"
-        return "\(buddy?.visual?.pixelVariantId ?? "none")|\(tokenState)"
+        return "\(requestKey ?? "none")|\(tokenState)"
     }
 
     private var pendingExplanation: String {
@@ -78,7 +41,7 @@ struct BuddyPixelView: View {
     }
 
     private func loadOrSyncPreview() async {
-        guard let requestKey = buddy?.visual?.pixelVariantId, requestKey.hasPrefix("pixellab:"), !requestKey.isEmpty else {
+        guard let requestKey, requestKey.hasPrefix("pixellab:"), !requestKey.isEmpty else {
             await MainActor.run { pixelRecord = nil }
             return
         }
@@ -89,15 +52,7 @@ struct BuddyPixelView: View {
         guard let token = appState.linkedAccountStore.record(for: .pixelLab).accessToken?.trimmingCharacters(in: .whitespacesAndNewlines), !token.isEmpty else {
             return
         }
-        let record = await PixelLabPreviewService.sync(
-            requestKey: requestKey,
-            buddyName: buddy?.displayName ?? template?.name ?? "Buddy",
-            archetypeID: buddy?.identity.archetype ?? template.map { CouncilBuddyIdentityCatalog.identity(for: $0).archetype } ?? "console_pet",
-            paletteID: buddy?.identity.palette ?? templatePaletteID,
-            expressionTone: buddy?.visual?.currentAnimationState ?? buddy?.state.mood ?? "happy",
-            accentLabel: buddy?.visual?.evolutionCosmetics.first ?? "pocket glow",
-            accessToken: token
-        )
+        let record = await PixelLabPreviewService.sync(spec: spec, accessToken: token)
         await MainActor.run { pixelRecord = record }
     }
 
@@ -126,5 +81,81 @@ struct BuddyPixelView: View {
 
     private var templatePaletteID: String {
         template.map { CouncilBuddyIdentityCatalog.identity(for: $0).palette } ?? "mint_cream"
+    }
+
+    private var requestKey: String? {
+        previewSpec?.pixelRequestKey ?? buddy?.visual?.pixelVariantId
+    }
+
+    private var spec: BuddyAppearancePreviewSpec {
+        if let previewSpec {
+            return previewSpec
+        }
+        return BuddyAppearanceRenderContract.makePreviewSpec(
+            buddyName: buddy?.displayName ?? template?.name ?? "Buddy",
+            archetypeID: buddy?.identity.archetype ?? template.map { CouncilBuddyIdentityCatalog.identity(for: $0).archetype } ?? "console_pet",
+            paletteID: buddy?.identity.palette ?? templatePaletteID,
+            asciiVariantID: buddy?.visual?.asciiVariantId ?? "starter_a",
+            expressionTone: buddyExpressionTone,
+            accentLabel: buddy?.visual?.evolutionCosmetics.first ?? "pocket glow",
+            renderStyle: .pixel,
+            pixelRequestKey: buddy?.visual?.pixelVariantId,
+            pixelAssetPath: buddy?.visual?.pixelAssetPath
+        )
+    }
+
+    private var buddyExpressionTone: String {
+        switch (buddy?.visual?.currentAnimationState ?? buddy?.state.mood)?.lowercased() {
+        case "thinking": return "curious"
+        case "working": return "focused"
+        default: return "friendly"
+        }
+    }
+
+    @ViewBuilder
+    private var previewBody: some View {
+        if let localPath = pixelRecord?.localAssetPath ?? previewSpec?.pixelAssetPath ?? buddy?.visual?.pixelAssetPath,
+           FileManager.default.fileExists(atPath: localPath),
+           let image = UIImage(contentsOfFile: localPath) {
+            imageCard(image)
+        } else if pixelRecord?.status == .queued {
+            ProgressView()
+                .frame(maxWidth: .infinity)
+                .padding(compact ? 12 : 20)
+                .background(BMOTheme.backgroundSecondary)
+                .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusSmall, style: .continuous))
+        } else if supportsASCIIFallback {
+            VStack(alignment: .leading, spacing: 8) {
+                if pixelRecord?.errorMessage != nil {
+                    Text(pixelRecord?.errorMessage ?? "Pixel preview unavailable.")
+                        .font(.caption)
+                        .foregroundColor(BMOTheme.textSecondary)
+                }
+                BuddyAsciiView(buddy: buddy, template: template, previewSpec: spec, mood: mood, compact: compact)
+            }
+        } else {
+            fallbackCard(title: "Pixel preview unavailable", body: pixelRecord?.errorMessage ?? pendingExplanation)
+        }
+    }
+
+    private func imageCard(_ image: UIImage) -> some View {
+        Image(uiImage: image)
+            .resizable()
+            .interpolation(.none)
+            .scaledToFit()
+            .frame(maxWidth: compact ? 120 : 180, maxHeight: compact ? 120 : 180)
+            .padding(compact ? 8 : 16)
+            .frame(maxWidth: .infinity)
+            .background(BMOTheme.backgroundSecondary)
+            .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusSmall, style: .continuous))
+    }
+
+    private var supportsASCIIFallback: Bool {
+        let supported = [
+            "dino", "pixel_pet", "cat_like", "fox_like", "robot",
+            "slime", "plant_creature", "mini_wizard", "spirit",
+            "companion_orb", "tiny_monster", "console_pet"
+        ]
+        return supported.contains(spec.archetypeID)
     }
 }

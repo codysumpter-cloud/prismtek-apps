@@ -54,24 +54,27 @@ struct GuidedBuddyCreationFlow: View {
         var visual = preview.visual ?? BuddyVisualState(
             asciiVariantId: nil,
             pixelVariantId: nil,
+            pixelAssetPath: nil,
             activeAppearanceProfileId: nil,
             currentAnimationState: nil,
             evolutionCosmetics: []
         )
         visual.asciiVariantId = draft.asciiVariantID
         visual.pixelVariantId = draft.renderStyle == .pixel ? pixelRequestKey : nil
+        visual.pixelAssetPath = draft.renderStyle == .pixel ? PixelLabPreviewService.record(for: pixelRequestKey)?.localAssetPath : nil
         visual.currentAnimationState = draft.expressionTone == "focused" ? "working" : (draft.expressionTone == "curious" ? "thinking" : "happy")
         preview.visual = visual
         return preview
     }
 
     private var pixelRequestKey: String {
-        let name = draft.displayName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? (selectedTemplate?.name ?? "Buddy") : draft.displayName
-        let archetype = selectedTemplate.map { CouncilBuddyIdentityCatalog.identity(for: $0).archetype } ?? "console_pet"
-        let raw = [name, archetype, draft.paletteID, draft.expressionTone, draft.accentLabel]
-            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() }
-            .joined(separator: "|")
-        return "pixellab:\(raw.replacingOccurrences(of: " ", with: "-"))"
+        BuddyAppearanceRenderContract.pixelRequestKey(
+            buddyName: draft.displayName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? (selectedTemplate?.name ?? "Buddy") : draft.displayName,
+            archetypeID: selectedTemplate.map { CouncilBuddyIdentityCatalog.identity(for: $0).archetype } ?? "console_pet",
+            paletteID: draft.paletteID,
+            expressionTone: draft.expressionTone,
+            accentLabel: draft.accentLabel
+        )
     }
 
     var body: some View {

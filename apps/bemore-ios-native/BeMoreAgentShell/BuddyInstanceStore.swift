@@ -164,6 +164,7 @@ struct BuddyInstanceStore {
             visual: BuddyVisualState(
                 asciiVariantId: nil,
                 pixelVariantId: nil,
+                pixelAssetPath: nil,
                 activeAppearanceProfileId: nil,
                 currentAnimationState: "neutral",
                 evolutionCosmetics: []
@@ -255,6 +256,8 @@ final class BuddyProfileStore: ObservableObject {
                     archetype: updated.identity.archetype,
                     palette: updated.identity.palette,
                     asciiVariantId: updated.visual?.asciiVariantId ?? contracts.creationOptions.defaults.asciiVariant,
+                    pixelVariantId: updated.visual?.pixelVariantId,
+                    pixelAssetPath: updated.visual?.pixelAssetPath,
                     expressionTone: "friendly",
                     accentLabel: updated.visual?.evolutionCosmetics.first ?? "starter glow",
                     source: "hermes_ascii",
@@ -266,6 +269,7 @@ final class BuddyProfileStore: ObservableObject {
                     updated.visual = BuddyVisualState(
                         asciiVariantId: defaultProfile.asciiVariantId,
                         pixelVariantId: nil,
+                        pixelAssetPath: nil,
                         activeAppearanceProfileId: defaultProfile.id,
                         currentAnimationState: updated.state.mood,
                         evolutionCosmetics: []
@@ -809,6 +813,7 @@ final class BuddyProfileStore: ObservableObject {
             visual: snapshot.visual ?? BuddyVisualState(
                 asciiVariantId: nil,
                 pixelVariantId: nil,
+                pixelAssetPath: nil,
                 activeAppearanceProfileId: nil,
                 currentAnimationState: "happy",
                 evolutionCosmetics: []
