@@ -193,6 +193,9 @@ struct BuddyAppearanceSectionView: View {
 
             Button("Customize More", action: onCustomizeMore)
                 .buttonStyle(BMOButtonStyle(isPrimary: false))
+
+            Divider().overlay(BMOTheme.divider)
+            LilBuddySectionView(buddy: buddy)
         }
         .bmoCard()
     }

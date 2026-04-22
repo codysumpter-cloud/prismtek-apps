@@ -1,4 +1,4 @@
-import SwiftUI // FIX
+import SwiftUI
 
 struct LinkedAccountsSectionView: View {
     @EnvironmentObject private var appState: AppState
