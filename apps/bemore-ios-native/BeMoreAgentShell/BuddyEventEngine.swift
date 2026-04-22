@@ -118,7 +118,8 @@ struct BuddyEventEngine {
             pixelAssetPath: nil,
             activeAppearanceProfileId: nil,
             currentAnimationState: nil,
-            evolutionCosmetics: []
+            evolutionCosmetics: [],
+            appearance: BuddyAppearanceRenderContract.defaultCustomization(for: instance.identity.archetype)
         )
         if let asciiVariantID = asciiVariantID?.trimmingCharacters(in: .whitespacesAndNewlines).nilIfBlank {
             visual.asciiVariantId = asciiVariantID
@@ -268,6 +269,7 @@ struct BuddyEventEngine {
         pixelVariantID: String?,
         expressionTone: String,
         accentLabel: String,
+        customization: BuddyAppearanceCustomization,
         setActive: Bool,
         currentState: BuddyLibraryState,
         currentEvents: BuddyRuntimeEventLog,
@@ -283,6 +285,7 @@ struct BuddyEventEngine {
         }
 
         let template = contracts.templateForInstance(instance)
+        let normalizedCustomization = BuddyAppearanceRenderContract.normalizedCustomization(customization, archetypeID: archetype)
         let profile = BuddyAppearanceProfile(
             id: "appearance_\(UUID().uuidString.lowercased())",
             name: cleanedName,
@@ -293,6 +296,7 @@ struct BuddyEventEngine {
             pixelAssetPath: pixelVariantID.flatMap { PixelLabPreviewService.record(for: $0)?.localAssetPath },
             expressionTone: expressionTone,
             accentLabel: accentLabel.trimmingCharacters(in: .whitespacesAndNewlines).nilIfBlank ?? "signature accent",
+            customization: normalizedCustomization,
             source: "hermes_ascii",
             createdAt: now,
             updatedAt: now
@@ -334,7 +338,10 @@ struct BuddyEventEngine {
                     "asciiVariantId": asciiVariantID,
                     "pixelVariantId": profile.pixelVariantId ?? "",
                     "expressionTone": expressionTone,
-                    "accentLabel": profile.accentLabel
+                    "accentLabel": profile.accentLabel,
+                    "subtype": normalizedCustomization.subtype,
+                    "bodyStyle": normalizedCustomization.bodyStyle,
+                    "accessory": normalizedCustomization.accessory
                 ],
                 effects: BuddyRuntimeEventEffects(
                     xpDelta: nil,
@@ -780,7 +787,8 @@ struct BuddyEventEngine {
             pixelAssetPath: nil,
             activeAppearanceProfileId: nil,
             currentAnimationState: nil,
-            evolutionCosmetics: []
+            evolutionCosmetics: [],
+            appearance: BuddyAppearanceRenderContract.defaultCustomization(for: instance.identity.archetype)
         )
         if victory {
             let cosmetic = opponent.rewardCosmetic
@@ -1043,7 +1051,8 @@ struct BuddyEventEngine {
                 pixelAssetPath: nil,
                 activeAppearanceProfileId: appearance.id,
                 currentAnimationState: "happy",
-                evolutionCosmetics: []
+                evolutionCosmetics: [],
+                appearance: appearance.customization
             ),
             appearanceProfiles: [appearance],
             trainingHistory: [],
@@ -1202,16 +1211,18 @@ struct BuddyEventEngine {
     }
 
     private func defaultAppearanceProfile(for template: CouncilStarterBuddyTemplate, now: Date) -> BuddyAppearanceProfile {
-        BuddyAppearanceProfile(
+        let archetype = CouncilBuddyIdentityCatalog.identity(for: template).archetype
+        return BuddyAppearanceProfile(
             id: "appearance_\(template.id)_starter",
             name: "Hermes Starter",
-            archetype: CouncilBuddyIdentityCatalog.identity(for: template).archetype,
+            archetype: archetype,
             palette: CouncilBuddyIdentityCatalog.identity(for: template).palette,
             asciiVariantId: "\(template.id)_ascii_v1",
             pixelVariantId: nil,
             pixelAssetPath: nil,
             expressionTone: "friendly",
             accentLabel: template.ascii.accents.first ?? "starter glow",
+            customization: BuddyAppearanceRenderContract.defaultCustomization(for: archetype),
             source: "hermes_ascii",
             createdAt: now,
             updatedAt: now
@@ -1236,11 +1247,16 @@ struct BuddyEventEngine {
         preferredName: String,
         expressionTone: String,
         accentLabel: String,
+        customization: BuddyAppearanceCustomization? = nil,
         now: Date
     ) -> BuddyInstance {
         var updated = instance
         var profiles = ensuredAppearanceProfiles(for: updated, template: template, now: now)
         let activeProfileID = updated.visual?.activeAppearanceProfileId ?? profiles.first?.id
+        let normalizedCustomization = BuddyAppearanceRenderContract.normalizedCustomization(
+            customization ?? updated.visual?.appearance ?? profiles.first(where: { $0.id == activeProfileID })?.customization ?? .default,
+            archetypeID: updated.identity.archetype
+        )
         let nextProfile = BuddyAppearanceProfile(
             id: activeProfileID ?? "appearance_\(UUID().uuidString.lowercased())",
             name: preferredName,
@@ -1251,6 +1267,7 @@ struct BuddyEventEngine {
             pixelAssetPath: updated.visual?.pixelAssetPath ?? updated.visual?.pixelVariantId.flatMap { PixelLabPreviewService.record(for: $0)?.localAssetPath },
             expressionTone: expressionTone,
             accentLabel: accentLabel,
+            customization: normalizedCustomization,
             source: "hermes_ascii",
             createdAt: profiles.first(where: { $0.id == activeProfileID })?.createdAt ?? now,
             updatedAt: now
@@ -1280,12 +1297,14 @@ struct BuddyEventEngine {
             pixelAssetPath: nil,
             activeAppearanceProfileId: nil,
             currentAnimationState: nil,
-            evolutionCosmetics: []
+            evolutionCosmetics: [],
+            appearance: BuddyAppearanceRenderContract.defaultCustomization(for: updated.identity.archetype)
         )
         visual.asciiVariantId = profile.asciiVariantId
         visual.pixelVariantId = profile.pixelVariantId
         visual.pixelAssetPath = profile.pixelAssetPath
         visual.activeAppearanceProfileId = profile.id
+        visual.appearance = profile.customization
         updated.visual = visual
         updated.appearanceProfiles = ensuredAppearanceProfiles(for: updated, template: template, now: profile.updatedAt)
         return updated
@@ -1306,9 +1325,11 @@ struct BuddyEventEngine {
         var visual = updated.visual ?? BuddyVisualState(
             asciiVariantId: nil,
             pixelVariantId: nil,
+            pixelAssetPath: nil,
             activeAppearanceProfileId: nil,
             currentAnimationState: nil,
-            evolutionCosmetics: []
+            evolutionCosmetics: [],
+            appearance: template.map { BuddyAppearanceRenderContract.defaultCustomization(for: CouncilBuddyIdentityCatalog.identity(for: $0).archetype) } ?? .default
         )
         visual.currentAnimationState = animationState(for: updated)
         updated.visual = visual

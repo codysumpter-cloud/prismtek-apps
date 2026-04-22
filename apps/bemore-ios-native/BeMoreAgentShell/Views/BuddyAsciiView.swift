@@ -20,7 +20,7 @@ struct BuddyAsciiView: View {
 
     var body: some View {
         Text(frame)
-            .font(.system(size: compact ? 12 : 19, weight: .bold, design: .monospaced))
+            .font(.system(size: compact ? 11 : 18, weight: .bold, design: .monospaced))
             .foregroundColor(paletteAccent)
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(compact ? 12 : 18)
@@ -32,7 +32,7 @@ struct BuddyAsciiView: View {
                     tick += 1
                 }
             }
-            .accessibilityLabel("\(displayName) \(archetypeID) \(label)")
+            .accessibilityLabel("\(displayName) \(archetypeID) \(subtypeID) \(label)")
     }
 
     private var displayName: String {
@@ -51,14 +51,30 @@ struct BuddyAsciiView: View {
         }
     }
 
+    private var archetypeID: String {
+        previewSpec?.archetypeID ?? buddy?.identity.archetype ?? template.map { CouncilBuddyIdentityCatalog.identity(for: $0).archetype } ?? "console_pet"
+    }
+
+    private var subtypeID: String {
+        previewSpec?.customization.subtype ?? buddy?.visual?.appearance.subtype ?? BuddyAppearanceRenderContract.defaultCustomization(for: archetypeID).subtype
+    }
+
+    private var customization: BuddyAppearanceCustomization {
+        BuddyAppearanceRenderContract.normalizedCustomization(
+            previewSpec?.customization ?? buddy?.visual?.appearance ?? BuddyAppearanceRenderContract.defaultCustomization(for: archetypeID),
+            archetypeID: archetypeID
+        )
+    }
+
     private var frame: String {
         let frames = BuddyASCIIArtLibrary.frames(
             archetypeID: archetypeID,
             mood: mood,
             expressionTone: expressionTone,
-            asciiVariantID: asciiVariantID
+            asciiVariantID: asciiVariantID,
+            customization: customization
         )
-        return frames[tick % frames.count]
+        return frames[tick % max(1, frames.count)]
     }
 
     private var paletteAccent: Color {
@@ -66,19 +82,11 @@ struct BuddyAsciiView: View {
     }
 
     private var paletteID: String {
-        previewSpec?.paletteID ?? buddy?.identity.palette ?? templatePaletteID
-    }
-
-    private var templatePaletteID: String {
-        template.map { CouncilBuddyIdentityCatalog.identity(for: $0).palette } ?? "mint_cream"
+        previewSpec?.paletteID ?? buddy?.identity.palette ?? template.map { CouncilBuddyIdentityCatalog.identity(for: $0).palette } ?? "mint_cream"
     }
 
     private var asciiVariantID: String {
         previewSpec?.asciiVariantID ?? buddy?.visual?.asciiVariantId ?? "starter_a"
-    }
-
-    private var archetypeID: String {
-        previewSpec?.archetypeID ?? buddy?.identity.archetype ?? template.map { CouncilBuddyIdentityCatalog.identity(for: $0).archetype } ?? "console_pet"
     }
 
     private var expressionTone: String {
@@ -99,333 +107,468 @@ struct BuddyAsciiView: View {
 }
 
 private enum BuddyASCIIArtLibrary {
+    private struct Template {
+        var idle: [String]
+        var moods: [BuddyAnimationMood: [String]]
+    }
+
     static func frames(
         archetypeID: String,
         mood: BuddyAnimationMood,
         expressionTone: String,
-        asciiVariantID: String
+        asciiVariantID: String,
+        customization: BuddyAppearanceCustomization
     ) -> [String] {
-        let template = templates[archetypeID] ?? templates["console_pet"]!
+        let normalized = BuddyAppearanceRenderContract.normalizedCustomization(customization, archetypeID: archetypeID)
+        let key = templateKey(archetypeID: archetypeID, subtype: normalized.subtype)
+        let template = templates[key] ?? templates[archetypeID] ?? templates["console_pet"]!
         let selected = mood == .idle ? template.idle : (template.moods[mood] ?? template.idle)
-        let eyes = eyePair(for: mood, expressionTone: expressionTone)
-        let mouth = mouth(for: mood, expressionTone: expressionTone)
-        return selected.map { applyVariant(rendered: render($0, eyes: eyes, mouth: mouth), asciiVariantID: asciiVariantID) }
+        let eyes = eyePair(for: mood, expressionTone: expressionTone, vibe: normalized.personalityVibe)
+        let mouth = mouth(for: mood, expressionTone: expressionTone, vibe: normalized.personalityVibe)
+        return selected.map {
+            applyVariant(
+                rendered: render($0, eyes: eyes, mouth: mouth, accent: accentGlyph(normalized.accentDetail)),
+                asciiVariantID: asciiVariantID
+            )
+        }
     }
 
-    private static func render(_ frame: String, eyes: (String, String), mouth: String) -> String {
+    private static func templateKey(archetypeID: String, subtype: String) -> String {
+        let key = "\(archetypeID):\(subtype)"
+        return templates[key] == nil ? archetypeID : key
+    }
+
+    private static func render(_ frame: String, eyes: (String, String), mouth: String, accent: String) -> String {
         frame
             .replacingOccurrences(of: "{L}", with: eyes.0)
             .replacingOccurrences(of: "{R}", with: eyes.1)
             .replacingOccurrences(of: "{M}", with: mouth)
+            .replacingOccurrences(of: "{A}", with: accent)
+    }
+
+    private static func accentGlyph(_ accent: String) -> String {
+        switch accent {
+        case "heart_cheeks": return "v"
+        case "plate_ridges": return "^"
+        case "club_tail": return "o"
+        case "soft_whiskers": return "~"
+        case "tail_fluff": return "*"
+        case "rune_sparks": return "+"
+        default: return "~"
+        }
+    }
+
+    private static func applyVariant(rendered: String, asciiVariantID: String) -> String {
+        switch asciiVariantID {
+        case "starter_b":
+            return rendered.replacingOccurrences(of: "~", with: "*")
+        case "starter_c":
+            return rendered.replacingOccurrences(of: ".", with: "·")
+        default:
+            return rendered
+        }
     }
 
     private static func art(_ lines: [String]) -> String {
         lines.joined(separator: "\n")
     }
 
-    private static func applyVariant(rendered: String, asciiVariantID: String) -> String {
-        switch asciiVariantID {
-        case "starter_b":
-            return rendered
-                .replacingOccurrences(of: "{", with: "(")
-                .replacingOccurrences(of: "}", with: ")")
-        case "starter_c":
-            return rendered
-                .replacingOccurrences(of: "/", with: "!")
-                .replacingOccurrences(of: "\\", with: "!")
-        default:
-            return rendered
-        }
-    }
-
-    private static func eyePair(for mood: BuddyAnimationMood, expressionTone: String) -> (String, String) {
+    private static func eyePair(for mood: BuddyAnimationMood, expressionTone: String, vibe: String) -> (String, String) {
         switch mood {
-        case .sleepy:
-            return ("-", "-")
-        case .thinking:
-            return ("o", "O")
-        case .working:
-            return ("^", "^")
-        case .needsAttention:
-            return ("O", "o")
-        case .levelUp:
-            return ("*", "*")
+        case .sleepy: return ("-", "-")
+        case .thinking: return ("o", "O")
+        case .working: return ("^", "^")
+        case .needsAttention: return ("O", "o")
+        case .levelUp: return ("*", "*")
         case .happy:
-            return expressionTone == "focused" ? ("^", "^") : ("^", "o")
+            return vibe == "fierce" ? (">", "<") : ("^", "^")
         case .idle:
-            switch expressionTone {
-            case "curious": return ("o", "O")
-            case "focused": return ("^", "^")
+            switch (expressionTone, vibe) {
+            case ("focused", _): return ("^", "^")
+            case ("curious", _): return ("o", "O")
+            case (_, "sleepy"): return ("-", "o")
+            case (_, "fierce"): return (">", "<")
             default: return ("o", "o")
             }
         }
     }
 
-    private static func mouth(for mood: BuddyAnimationMood, expressionTone: String) -> String {
+    private static func mouth(for mood: BuddyAnimationMood, expressionTone: String, vibe: String) -> String {
         switch mood {
         case .thinking: return "?"
         case .working: return "="
         case .sleepy: return "_"
-        case .levelUp: return "*"
+        case .levelUp: return "w"
         case .needsAttention: return "!"
-        case .happy: return "u"
+        case .happy: return vibe == "fierce" ? "n" : "u"
         case .idle:
-            switch expressionTone {
-            case "focused": return "="
-            case "curious": return "?"
+            switch (expressionTone, vibe) {
+            case ("focused", _): return "="
+            case ("curious", _): return "?"
+            case (_, "fierce"): return "n"
             default: return "u"
             }
         }
     }
 
-    private struct Template {
-        var idle: [String]
-        var moods: [BuddyAnimationMood: [String]]
-    }
-
     private static let templates: [String: Template] = [
         "console_pet": .init(
             idle: [
-                """
-                  __
-                 /{L}{R}\\
-                |  {M} |
-                |_____| 
-                 /   \\
-                """,
-                """
-                  __
-                 /{L}{R}\\
-                |  {M} |
-                |_____| 
-                 \\   /
-                """
+                art([
+                    "  .----.",
+                    " / {L}{R}  \\\\",
+                    "|   {M}   |",
+                    "| .----. |",
+                    " \\\\_{A}__/"
+                ]),
+                art([
+                    "  .----.",
+                    " / {L}{R}  \\\\",
+                    "|   {M}   |",
+                    "| .----. |",
+                    " /__{A}_\\\\"
+                ])
+            ],
+            moods: [:]
+        ),
+        "dino:trex": .init(
+            idle: [
+                art([
+                    "      __",
+                    "  ___/{L}{R}\\\\__",
+                    " /  _ {M}  _\\\\>",
+                    "/__/\\\\_  _/ ",
+                    "   /_/ \\\\_\\\\{A}"
+                ]),
+                art([
+                    "      __",
+                    "  ___/{L}{R}\\\\__",
+                    " /  _ {M}  _\\\\>>",
+                    "/__/\\\\_  / ",
+                    "   /_/ \\\\_\\\\{A}"
+                ]),
+                art([
+                    "      __",
+                    "  ___/{L}{R}\\\\__",
+                    " /  _ {M}  _\\\\>",
+                    "/__/\\\\_ _/ ",
+                    "   /_/  \\\\_\\\\{A}"
+                ])
+            ],
+            moods: [:]
+        ),
+        "dino:raptor": .init(
+            idle: [
+                art([
+                    "     __",
+                    "  __/{L}{R}\\\\_",
+                    " /  _ {M} _\\\\__",
+                    "/__/\\\\  __/  \\\\",
+                    "    /_/   \\\\_{A}"
+                ]),
+                art([
+                    "     __",
+                    "  __/{L}{R}\\\\_",
+                    " /  _ {M} _\\\\__",
+                    "/__/\\\\  _/  /",
+                    "    /_/   \\\\_{A}"
+                ]),
+                art([
+                    "     __",
+                    "  __/{L}{R}\\\\_",
+                    " /  _ {M} _\\\\__",
+                    "/__/\\\\   _\\\u{20} /",
+                    "    /_/   \\\\_{A}"
+                ])
+            ],
+            moods: [:]
+        ),
+        "dino:triceratops": .init(
+            idle: [
+                art([
+                    "    __^__",
+                    " __/{L}{R}{M}\\\\_",
+                    "/_  ____  _\\\\",
+                    "  /_/  \\\\_\\\\>",
+                    "  /_/  \\\\_\\\\{A}"
+                ]),
+                art([
+                    "    __^__",
+                    " __/{L}{R}{M}\\\\_",
+                    "/_  ____  _\\\\",
+                    "  /_/  \\\\_\\\\>>",
+                    "  /_/  \\\\_\\\\{A}"
+                ])
+            ],
+            moods: [:]
+        ),
+        "dino:stegosaurus": .init(
+            idle: [
+                art([
+                    "   ^ ^ ^",
+                    " __/{L}{R}\\\\___",
+                    "/_  {M}  __\\\\>",
+                    "  /_/\\\\_/  \\\\",
+                    " /_/  \\\\_\\\\{A}"
+                ]),
+                art([
+                    "   ^ ^ ^",
+                    " __/{L}{R}\\\\___",
+                    "/_  {M}  __\\\\>>",
+                    "  /_/\\\\_/  \\\\",
+                    " /_/  \\\\_\\\\{A}"
+                ])
+            ],
+            moods: [:]
+        ),
+        "dino:longneck": .init(
+            idle: [
+                art([
+                    "      __",
+                    "  ___/ {L}{R}",
+                    " /  _  {M}\\\\__",
+                    "/__/ \\\\____  \\\\",
+                    "   /_/    \\\\_\\\\{A}"
+                ]),
+                art([
+                    "      __",
+                    "  ___/ {L}{R}",
+                    " /  _  {M}\\\\__",
+                    "/__/ \\\\___   \\\\",
+                    "   /_/   \\\\_\\\\{A}"
+                ])
+            ],
+            moods: [:]
+        ),
+        "dino:ankylosaurus": .init(
+            idle: [
+                art([
+                    "   __^^__",
+                    " _/{L}{R}{M}__\\\\",
+                    "/_  ____  _\\\\",
+                    "  /_/  \\\\_\\\\o",
+                    " /_/    \\\\_\\\\"
+                ]),
+                art([
+                    "   __^^__",
+                    " _/{L}{R}{M}__\\\\",
+                    "/_  ____  _\\\\",
+                    "  /_/  \\\\_\\\\O",
+                    " /_/    \\\\_\\\\"
+                ])
+            ],
+            moods: [:]
+        ),
+        "dino:pterodactyl": .init(
+            idle: [
+                art([
+                    "  __/\\\\__/\\\\__",
+                    " <_ {L}{R}{M}  _>",
+                    "   /_/\\\\_\\\\",
+                    "    /  \\\\{A}"
+                ]),
+                art([
+                    " __/\\\\____/\\\\__",
+                    "<_  {L}{R}{M}   _>",
+                    "  /_/\\\\__\\\\",
+                    "   /  \\\\{A}"
+                ])
             ],
             moods: [:]
         ),
         "dino": .init(
             idle: [
-                """
-                   __
-                 _/{L}{R}\\_
-                /|_{M}_/ >
-                 /_   \\
-                /_/\\_/ 
-                """,
-                """
-                   __
-                 _/{L}{R}\\_
-                /|_{M}_/ >>
-                 /_  /  
-                /_/\\_\\ 
-                """,
-                """
-                   __
-                 _/{L}{R}\\_
-                /|_{M}_/ >
-                 /_  _\\
-                /_/\\/  
-                """
+                art([
+                    "      __",
+                    "  ___/{L}{R}\\\\__",
+                    " /  _ {M}  _\\\\>",
+                    "/__/\\\\_  _/ ",
+                    "   /_/ \\\\_\\\\{A}"
+                ])
             ],
-            moods: [
-                .sleepy: [
-                    art([
-                        "   __ z",
-                        " _/{L}{R}\\\\_",
-                        "/|_{M}_/ >",
-                        " /_   \\\\",
-                        "/_/\\\\_/"
-                    ])
-                ]
-            ]
+            moods: [:]
         ),
         "pixel_pet": .init(
             idle: [
-                """
-                 .----.
-                |{L}..{R}|
-                |  {M} |
-                |'----'|
-                 /_==_\\
-                """,
-                """
-                 .----.
-                |{L}..{R}|
-                |  {M} |
-                |'----'|
-                 \\_==_/
-                """
+                art([
+                    "  .-==-.",
+                    " / {L}{R}  \\\\",
+                    "|  {M}   |",
+                    "| [__]  |",
+                    " \\\\_{A}_/"
+                ]),
+                art([
+                    "  .-==-.",
+                    " / {L}{R}  \\\\",
+                    "|  {M}   |",
+                    "| [__]  |",
+                    " /_{A}_\\\\"
+                ])
             ],
             moods: [:]
         ),
         "cat_like": .init(
             idle: [
-                """
-                 /\\_/\\\\
-                ({L} {R} )
-                /  {M}  \\
-                \\_v_v_/
-                  / \\
-                """,
-                """
-                 /\\_/\\\\
-                ({L} {R} )
-                /  {M}  \\
-                \\_v_v_/
-                  \\ /
-                """
+                art([
+                    " /\\\\_/\\\\",
+                    "({L} {R} )",
+                    "/  {M}  \\\\",
+                    "\\\\__^__/",
+                    "  / {A}\\\\"
+                ]),
+                art([
+                    " /\\\\_/\\\\",
+                    "({L} {R} )",
+                    "/  {M}  \\\\",
+                    "\\\\__^__/",
+                    "  \\\\ {A}/"
+                ])
             ],
             moods: [:]
         ),
         "fox_like": .init(
             idle: [
-                """
-                 /\\_/\\\\
-                / {L} {R}  \\
-                (   {M}   )
-                \\_vv__/>
-                  /  ~\\
-                """,
-                """
-                 /\\_/\\\\
-                / {L} {R}  \\
-                (   {M}   )
-                \\_vv__>>
-                  / ~~\\
-                """
+                art([
+                    " /\\\\_/\\\\",
+                    "/ {L} {R}  \\\\",
+                    "\\\\  {M}  _/",
+                    " /_^^_\\\\",
+                    "   \\\\{A}\\\\~~"
+                ]),
+                art([
+                    " /\\\\_/\\\\",
+                    "/ {L} {R}  \\\\",
+                    "\\\\  {M}  _/",
+                    " /_^^_\\\\",
+                    "   \\\\~~\\\\{A}"
+                ])
             ],
             moods: [:]
         ),
         "robot": .init(
             idle: [
-                """
-                  [#]
-                 /{L}{R}\\
-                |[{M}]|
-                |[_ _]|
-                 /| |\\
-                """,
-                """
-                  [#]
-                 /{L}{R}\\
-                |[{M}]|
-                |[_ _]|
-                 \\| |/
-                """
+                art([
+                    "   .-+-.",
+                    "  / {L}{R} \\\\",
+                    " | [{M}] |",
+                    " |[_{A}_]|",
+                    "  /| |\\\\"
+                ]),
+                art([
+                    "   .-+-.",
+                    "  / {L}{R} \\\\",
+                    " | [{M}] |",
+                    " |[_{A}_]|",
+                    "  \\\\| |/"
+                ])
             ],
             moods: [:]
         ),
         "slime": .init(
             idle: [
-                """
-                 
-                 .----.
-                / {L}{R} {M} \\
-                /______\\
-                \\____/
-                """,
-                """
-                 
-                  .--.
-                _/ {L}{R} {M}\\_
-                /_______\\
-                \\_____/
-                """
+                art([
+                    "   ____",
+                    " / {L}{R}  \\\\",
+                    "|   {M}   |",
+                    " \\\\__{A}__/",
+                    "   /  \\\\"
+                ]),
+                art([
+                    "   ____",
+                    " / {L}{R}  \\\\",
+                    "|   {M}   |",
+                    " \\\\__{A}__/",
+                    "   \\\\__/ "
+                ])
             ],
             moods: [:]
         ),
         "plant_creature": .init(
             idle: [
-                """
-                  \\/
-                 /{L}{R}\\
-                (  {M} )
-                 \\__/ 
-                 _||_ 
-                """,
-                """
-                  /\\
-                 /{L}{R}\\
-                (  {M} )
-                 \\__/ 
-                 _||_ 
-                """
+                art([
+                    "   _/\\\\_",
+                    "  / {L}{R}\\\\",
+                    " |  {M}  |",
+                    " /_/{A}\\\\_\\\\",
+                    "   /  \\\\"
+                ]),
+                art([
+                    "   _/\\\\_",
+                    "  / {L}{R}\\\\",
+                    " |  {M}  |",
+                    " /_/{A}\\\\_\\\\",
+                    "   \\\\  /"
+                ])
             ],
             moods: [:]
         ),
         "mini_wizard": .init(
             idle: [
-                """
-                  /\\*
-                 /{L}{R}\\\\
-                |  {M} |
-                | /__\\|
-                 / || 
-                """,
-                """
-                  /\\*
-                 /{L}{R}\\\\
-                |  {M} |
-                | /__\\|
-                 /_|| 
-                """
+                art([
+                    "    /\\\\",
+                    "   /{A}\\\\",
+                    "  /_{L}{R}_\\\\",
+                    "   | {M} |",
+                    "   /_/_\\\\"
+                ]),
+                art([
+                    "    /\\\\",
+                    "   /{A}\\\\",
+                    "  /_{L}{R}_\\\\",
+                    "   | {M} |",
+                    "   \\\\_\\\\/"
+                ])
             ],
             moods: [:]
         ),
         "spirit": .init(
             idle: [
-                """
-                  .--.
-                 ({L}{R}{M})
-                  /~~\\
-                 /_~~_\\
-                  ~  ~
-                """,
-                """
-                   .--.
-                 ({L}{R}{M})
-                  \\~~/
-                 /_~~_\\
-                  ~~ ~
-                """
+                art([
+                    "   .--.",
+                    "  ({L}{R}{M})",
+                    "   \\\\{A}//",
+                    "    \\\\//"
+                ]),
+                art([
+                    "   .--.",
+                    "  ({L}{R}{M})",
+                    "   //{A}\\\\",
+                    "    //\\\\"
+                ])
             ],
             moods: [:]
         ),
         "companion_orb": .init(
             idle: [
-                """
-                  .--.
-                -( {L}{R} )-
-                  '--'
-                  /{M}\\
-                   /\\
-                """,
-                """
-                  .--.
-                ~ ( {L}{R} ) ~
-                  '--'
-                  /{M}\\
-                   \\/
-                """
+                art([
+                    "   .-.-.",
+                    "  ({L}{R}{M})",
+                    "   / {A} \\\\",
+                    "   '-.-'"
+                ]),
+                art([
+                    "   .-.-.",
+                    "  ({L}{R}{M})",
+                    "   \\\\ {A} /",
+                    "   '-.-'"
+                ])
             ],
             moods: [:]
         ),
         "tiny_monster": .init(
             idle: [
-                """
-                  /^^\\
-                 ({L}{R}{M})
-                 /|__|\\
-                  /  \\
-                 ^    ^
-                """,
-                """
-                  /^^\\
-                 ({L}{R}{M})
-                 /|__|\\
-                  \\  /
-                 ^    ^
-                """
+                art([
+                    "   /\\\\_/\\\\",
+                    "  ({L}{R}{M})",
+                    " /_/^^\\\\_\\\\",
+                    "   / {A}\\\\"
+                ]),
+                art([
+                    "   /\\\\_/\\\\",
+                    "  ({L}{R}{M})",
+                    " /_/^^\\\\_\\\\",
+                    "   \\\\ {A}/"
+                ])
             ],
             moods: [:]
         )
@@ -433,29 +576,46 @@ private enum BuddyASCIIArtLibrary {
 }
 
 enum BuddyAsciiRenderer {
-    static func frames(archetypeID: String, mood: BuddyAnimationMood, expressionTone: String, asciiVariantID: String) -> [String] {
+    static func frames(
+        archetypeID: String,
+        mood: BuddyAnimationMood,
+        expressionTone: String,
+        asciiVariantID: String,
+        customization: BuddyAppearanceCustomization? = nil
+    ) -> [String] {
         BuddyASCIIArtLibrary.frames(
             archetypeID: archetypeID,
             mood: mood,
             expressionTone: expressionTone,
-            asciiVariantID: asciiVariantID
+            asciiVariantID: asciiVariantID,
+            customization: customization ?? BuddyAppearanceRenderContract.defaultCustomization(for: archetypeID)
         )
     }
 }
 
-private enum BuddyPaletteDisplay {
+enum BuddyPaletteDisplay {
     static func color(for paletteID: String) -> Color {
         switch paletteID {
-        case "sky_navy": return Color(red: 0.49, green: 0.78, blue: 0.99)
-        case "peach_brown": return Color(red: 1.0, green: 0.78, blue: 0.65)
-        case "purple_gold": return Color(red: 0.78, green: 0.64, blue: 1.0)
-        case "black_neon": return Color(red: 0.22, green: 1.0, blue: 0.53)
-        case "rose_white": return Color(red: 0.95, green: 0.55, blue: 0.69)
-        case "forest_moss": return Color(red: 0.55, green: 0.68, blue: 0.35)
-        case "aqua_teal": return Color(red: 0.45, green: 0.95, blue: 0.91)
-        case "red_charcoal": return Color(red: 0.82, green: 0.29, blue: 0.36)
-        case "yellow_cocoa": return Color(red: 0.96, green: 0.83, blue: 0.37)
-        default: return Color(red: 0.56, green: 0.85, blue: 0.78)
+        case "rose_white":
+            return Color(hex: "#B8336A")
+        case "sky_navy":
+            return Color(hex: "#1D3557")
+        case "aqua_teal":
+            return Color(hex: "#008080")
+        case "forest_moss":
+            return Color(hex: "#2F6B3D")
+        case "peach_brown":
+            return Color(hex: "#B5654A")
+        case "yellow_cocoa":
+            return Color(hex: "#B08900")
+        case "purple_gold":
+            return Color(hex: "#8D6BFF")
+        case "black_neon":
+            return Color(hex: "#39FF88")
+        case "red_charcoal":
+            return Color(hex: "#D1495B")
+        default:
+            return Color(hex: "#2B7A78")
         }
     }
 }

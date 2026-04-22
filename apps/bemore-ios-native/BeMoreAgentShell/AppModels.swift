@@ -431,6 +431,14 @@ struct StackConfig: Codable {
     var onboardingAppearanceASCIIVariantID: String?
     var onboardingAppearanceExpressionTone: String?
     var onboardingAppearanceAccentLabel: String?
+    var onboardingAppearanceSubtype: String?
+    var onboardingAppearanceBodyStyle: String?
+    var onboardingAppearanceAccessory: String?
+    var onboardingAppearanceAccentDetail: String?
+    var onboardingAppearancePose: String?
+    var onboardingAppearancePersonalityVibe: String?
+    var onboardingAppearanceAnimationFlavor: String?
+    var onboardingAppearancePromptModifiers: String?
     var onboardingAppearanceRenderStyle: BuddyAppearanceRenderStyle?
     var onboardingAppearancePixelVariantID: String?
     var autonomyLevel: Int // 1-5
@@ -461,6 +469,14 @@ struct StackConfig: Codable {
         onboardingAppearanceASCIIVariantID: nil,
         onboardingAppearanceExpressionTone: nil,
         onboardingAppearanceAccentLabel: nil,
+        onboardingAppearanceSubtype: nil,
+        onboardingAppearanceBodyStyle: nil,
+        onboardingAppearanceAccessory: nil,
+        onboardingAppearanceAccentDetail: nil,
+        onboardingAppearancePose: nil,
+        onboardingAppearancePersonalityVibe: nil,
+        onboardingAppearanceAnimationFlavor: nil,
+        onboardingAppearancePromptModifiers: nil,
         onboardingAppearanceRenderStyle: nil,
         onboardingAppearancePixelVariantID: nil,
         autonomyLevel: 3,

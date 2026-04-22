@@ -179,7 +179,8 @@ struct PixelLabClient {
             asciiVariantID: "starter_a",
             expressionTone: "friendly",
             accentLabel: "preview",
-            renderStyle: .pixel
+            renderStyle: .pixel,
+            customization: BuddyAppearanceRenderContract.defaultCustomization(for: "pixel_pet")
         )
 
         do {

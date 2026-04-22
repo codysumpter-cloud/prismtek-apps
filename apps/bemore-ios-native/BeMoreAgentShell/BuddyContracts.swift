@@ -598,6 +598,28 @@ struct BuddyMemoryBindings: Codable, Hashable {
     var lastStateSyncAt: Date?
 }
 
+struct BuddyAppearanceCustomization: Codable, Hashable {
+    var subtype: String
+    var bodyStyle: String
+    var accessory: String
+    var accentDetail: String
+    var pose: String
+    var personalityVibe: String
+    var animationFlavor: String
+    var promptModifiers: String
+
+    static let `default` = BuddyAppearanceCustomization(
+        subtype: "classic",
+        bodyStyle: "compact",
+        accessory: "none",
+        accentDetail: "signature glow",
+        pose: "idle",
+        personalityVibe: "friendly",
+        animationFlavor: "gentle bob",
+        promptModifiers: ""
+    )
+}
+
 struct BuddyVisualState: Codable, Hashable {
     var asciiVariantId: String?
     var pixelVariantId: String?
@@ -605,6 +627,7 @@ struct BuddyVisualState: Codable, Hashable {
     var activeAppearanceProfileId: String?
     var currentAnimationState: String?
     var evolutionCosmetics: [String]
+    var appearance: BuddyAppearanceCustomization = .default
 }
 
 struct BuddyAppearanceProfile: Identifiable, Codable, Hashable {
@@ -617,6 +640,7 @@ struct BuddyAppearanceProfile: Identifiable, Codable, Hashable {
     var pixelAssetPath: String?
     var expressionTone: String
     var accentLabel: String
+    var customization: BuddyAppearanceCustomization = .default
     var source: String
     var createdAt: Date
     var updatedAt: Date

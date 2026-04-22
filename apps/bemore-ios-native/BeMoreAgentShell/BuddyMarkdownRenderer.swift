@@ -240,7 +240,7 @@ enum BuddyMarkdownRenderer {
         }
         return profiles.map { profile in
             let activeMarker = profile.id == instance.visual?.activeAppearanceProfileId ? "active" : "saved"
-            return "\(profile.name): \(profile.archetype), \(profile.palette), ASCII \(profile.asciiVariantId), tone \(profile.expressionTone) (\(activeMarker))."
+            return "\(profile.name): \(profile.archetype), subtype \(profile.customization.subtype), \(profile.palette), ASCII \(profile.asciiVariantId), tone \(profile.expressionTone), body \(profile.customization.bodyStyle) (\(activeMarker))."
         }
     }
 

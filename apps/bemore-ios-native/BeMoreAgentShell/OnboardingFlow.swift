@@ -423,6 +423,14 @@ struct OnboardingFlow: View {
         config.onboardingAppearanceASCIIVariantID = appearanceDraft.asciiVariantID
         config.onboardingAppearanceExpressionTone = appearanceDraft.expressionTone
         config.onboardingAppearanceAccentLabel = appearanceDraft.accentLabel
+        config.onboardingAppearanceSubtype = appearanceDraft.customization.subtype
+        config.onboardingAppearanceBodyStyle = appearanceDraft.customization.bodyStyle
+        config.onboardingAppearanceAccessory = appearanceDraft.customization.accessory
+        config.onboardingAppearanceAccentDetail = appearanceDraft.customization.accentDetail
+        config.onboardingAppearancePose = appearanceDraft.customization.pose
+        config.onboardingAppearancePersonalityVibe = appearanceDraft.customization.personalityVibe
+        config.onboardingAppearanceAnimationFlavor = appearanceDraft.customization.animationFlavor
+        config.onboardingAppearancePromptModifiers = appearanceDraft.customization.promptModifiers
         config.onboardingAppearanceRenderStyle = appearanceDraft.renderStyle
         config.onboardingAppearancePixelVariantID = appearanceDraft.renderStyle == .pixel ? appearanceDraft.pixelVariantID : nil
         config.optimizationMode = selectedPowerMode.optimizationMode
@@ -438,6 +446,7 @@ struct OnboardingFlow: View {
             pixelVariantID: appearanceDraft.renderStyle == .pixel ? appearanceDraft.pixelVariantID : nil,
             expressionTone: appearanceDraft.expressionTone,
             accentLabel: appearanceDraft.accentLabel,
+            customization: appearanceDraft.customization,
             setActive: true,
             using: appState
         )
@@ -664,6 +673,19 @@ struct OnboardingFlow: View {
             asciiVariantID: defaultASCII,
             expressionTone: config.onboardingAppearanceExpressionTone ?? "friendly",
             accentLabel: config.onboardingAppearanceAccentLabel ?? "pocket glow",
+            customization: BuddyAppearanceRenderContract.normalizedCustomization(
+                BuddyAppearanceCustomization(
+                    subtype: config.onboardingAppearanceSubtype ?? "",
+                    bodyStyle: config.onboardingAppearanceBodyStyle ?? "",
+                    accessory: config.onboardingAppearanceAccessory ?? "",
+                    accentDetail: config.onboardingAppearanceAccentDetail ?? "",
+                    pose: config.onboardingAppearancePose ?? "",
+                    personalityVibe: config.onboardingAppearancePersonalityVibe ?? "",
+                    animationFlavor: config.onboardingAppearanceAnimationFlavor ?? "",
+                    promptModifiers: config.onboardingAppearancePromptModifiers ?? ""
+                ),
+                archetypeID: defaultArchetype
+            ),
             renderStyle: config.onboardingAppearanceRenderStyle ?? .ascii,
             pixelVariantID: config.onboardingAppearancePixelVariantID ?? "",
             pixelAssetPath: PixelLabPreviewService.record(for: config.onboardingAppearancePixelVariantID ?? "")?.localAssetPath
