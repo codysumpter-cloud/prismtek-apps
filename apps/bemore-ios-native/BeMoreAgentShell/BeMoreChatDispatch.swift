@@ -1,14 +1,15 @@
 import Foundation
 
 enum BeMoreChatCommandParser {
-    enum LocalCommand: Equatable {
-        case teach(String)
-        case review(String)
-        case refine(id: String, instruction: String)
-        case validate(String)
-        case approve(String)
-        case pixelAssist(PixelBuddyAction, String)
-    }
+ enum LocalCommand: Equatable {
+ case teach(String)
+ case review(String)
+ case refine(id: String, instruction: String)
+ case validate(String)
+ case approve(String)
+ case pixelAssist(PixelBuddyAction, String)
+ case pokemonTeamBuilder(String) // Natural chat trigger
+ }
 
     static func parse(_ prompt: String) -> LocalCommand? {
         if let request = teachRequest(from: prompt) {
@@ -26,11 +27,44 @@ enum BeMoreChatCommandParser {
         if let id = commandID(prefixes: ["approve skill "], from: prompt) {
             return .approve(id)
         }
-        if let pixel = pixelCommand(from: prompt) {
-            return pixel
-        }
-        return nil
-    }
+ if let pokemon = pokemonCommand(from: prompt) {
+ return pokemon
+ }
+ if let pixel = pixelCommand(from: prompt) {
+ return pixel
+ }
+ return nil
+ }
+
+ private static func pokemonCommand(from prompt: String) -> LocalCommand? {
+ let lowered = prompt.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+ let pokemonPrefixes = [
+ "build me a pokemon team",
+ "create a pokemon team",
+ "make a pokemon team",
+ "draft a pokemon team",
+ "pokemon team builder",
+ "build a competitive pokemon team",
+ "help me build a pokemon team",
+ "run pokemon team builder"
+ ]
+
+ for prefix in pokemonPrefixes where lowered.contains(prefix) {
+ let request = String(prompt.dropFirst(prefix.count)).trimmingCharacters(in: .whitespacesAndNewlines)
+ return .pokemonTeamBuilder(request)
+ }
+
+ // Check for Pokemon name mentions with team context
+ let hasPokemonNames = ["charizard", "blastoise", "venusaur", "pikachu", "mewtwo", "dragonite",
+ "gyarados", "snorlax", "lapras", "arcanine", "alakazam", "machamp"]
+ .contains { lowered.contains($0) }
+
+ if hasPokemonNames && (lowered.contains("team") || lowered.contains("group")) {
+ return .pokemonTeamBuilder(prompt)
+ }
+
+ return nil
+ }
 
     static func isLocalCommand(_ prompt: String) -> Bool {
         parse(prompt) != nil
@@ -553,19 +587,35 @@ extension AppState {
             chatStore.persist()
             return
 
-        case .pixelAssist(let action, let request):
-            chatStore.messages.append(ChatMessage(role: .user, content: cleaned))
-            let receipt = runPixelStudioBuddyAction(action, request: request.isEmpty ? nil : request)
-            let assistant = receipt.status == .failed
-                ? "Could not prepare the Buddy \(action.title.lowercased()): \(receipt.error ?? receipt.summary)"
-                : "Prepared a Buddy \(action.title.lowercased()) for \(receipt.output["project"] ?? "your project"). Open Studio or Results to use it."
-            chatStore.messages.append(ChatMessage(role: .assistant, content: assistant))
-            chatStore.persist()
-            return
+ case .pixelAssist(let action, let request):
+ chatStore.messages.append(ChatMessage(role: .user, content: cleaned))
+ let receipt = runPixelStudioBuddyAction(action, request: request.isEmpty ? nil : request)
+ let assistant = receipt.status == .failed
+ ? "Could not prepare the Buddy \(action.title.lowercased()): \(receipt.error ?? receipt.summary)"
+ : "Prepared a Buddy \(action.title.lowercased()) for \(receipt.output["project"] ?? "your project"). Open Studio or Results to use it."
+ chatStore.messages.append(ChatMessage(role: .assistant, content: assistant))
+ chatStore.persist()
+ return
 
-        case .none:
-            break
-        }
+ case .pokemonTeamBuilder(let request):
+ chatStore.messages.append(ChatMessage(role: .user, content: cleaned))
+ let receipt = workspaceRuntime.run(
+ id: BuiltInSkillRegistry.pokemonTeamBuilderID,
+ input: ["request": request, "format": "balanced", "strategy": request.isEmpty ? "competitive" : "user-prompted"]
+ )
+ let assistant = receipt.status == .failed
+ ? "Could not build your Pokemon team: \(receipt.error ?? receipt.summary)"
+ : "Built your Pokemon team! \(receipt.summary) You can view it in the workspace."
+ chatStore.messages.append(ChatMessage(role: .assistant, content: assistant))
+ if let skillId = receipt.output["skillId"] {
+ chatStore.messages.append(ChatMessage(role: .system, content: "Skill: \(skillId) | Artifacts: \(receipt.artifacts.joined(separator: ", "))"))
+ }
+ chatStore.persist()
+ return
+
+ case .none:
+ break
+ }
 
         chatStore.errorMessage = nil
         let previousAssistantMessageID = chatStore.messages.last(where: { $0.role == .assistant })?.id

@@ -1,6 +1,7 @@
 import Foundation
 import AuthenticationServices
 import SwiftUI
+import CryptoKit
 
 // MARK: - OAuth Configuration
 
@@ -87,12 +88,9 @@ struct PKCEParameters {
 
  private static func generateCodeChallenge(verifier: String) -> String {
  guard let data = verifier.data(using: .utf8) else { return "" }
- var digest = [UInt8](repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
- data.withUnsafeBytes {
- CC_SHA256($0.baseAddress, CC_UINT(data.count), &digest)
- }
- let hash = Data(digest)
- return hash.base64EncodedString()
+ let hash = SHA256.hash(data: data)
+ let hashData = Data(hash.compactMap { $0 })
+ return hashData.base64EncodedString()
  .replacingOccurrences(of: "+", with: "-")
  .replacingOccurrences(of: "/", with: "_")
  .replacingOccurrences(of: "=", with: "")
