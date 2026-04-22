@@ -12,7 +12,7 @@ struct LinkedAccountsSectionView: View {
                     .listRowBackground(BMOTheme.backgroundCard)
             }
 
-            Text("GitHub private repos can use a linked token immediately. ChatGPT/OpenAI and PixelLab keep native link state here too. Provider browser hops now open the most relevant account/token page instead of a generic homepage. Full zero-auth callback completion still depends on matching provider/backend setup.")
+            Text("GitHub private repos can use a linked token immediately. ChatGPT/OpenAI and PixelLab keep native link state here too.")
                 .font(.caption)
                 .foregroundColor(BMOTheme.textSecondary)
                 .listRowBackground(BMOTheme.backgroundCard)
@@ -35,9 +35,9 @@ struct LinkedAccountsSectionView: View {
                         .foregroundColor(BMOTheme.textSecondary)
                 }
                 Spacer()
-                Text(statusLabel(for: record))
+                Text(record.isLinked ? "Linked" : (record.status == .pending ? "Pending" : "Not linked"))
                     .font(.caption)
-                    .foregroundColor(statusColor(for: record))
+                    .foregroundColor(record.isLinked ? BMOTheme.success : (record.status == .pending ? BMOTheme.warning : BMOTheme.textSecondary))
             }
 
             HStack {
@@ -57,19 +57,6 @@ struct LinkedAccountsSectionView: View {
         }
     }
 
-    private func statusLabel(for record: LinkedAccountRecord) -> String {
-        if record.isLinked { return "Linked" }
-        switch record.status {
-        case .unlinked: return "Not linked"
-        case .pending: return "Pending"
-        case .linked: return "Linked"
-        }
-    }
-
-    private func statusColor(for record: LinkedAccountRecord) -> Color {
-        record.isLinked ? BMOTheme.success : (record.status == .pending ? BMOTheme.warning : BMOTheme.textSecondary)
-    }
-
     private func browserActionLabel(for provider: LinkedAccountProvider) -> String {
         switch provider {
         case .github:
@@ -85,17 +72,20 @@ struct LinkedAccountsSectionView: View {
 private struct LinkedAccountEditorSheet: View {
     @EnvironmentObject private var appState: AppState
     @Environment(\.dismiss) private var dismiss
+
     let provider: LinkedAccountProvider
+
     @State private var accountHandle = ""
     @State private var accessToken = ""
 
     var body: some View {
         let record = appState.linkedAccountStore.record(for: provider)
+
         NavigationStack {
             Form {
                 Section("Account") {
                     TextField(provider.accountPlaceholder, text: $accountHandle)
-                    SecureField("Access token", text: $accessToken)
+                    SecureField("Token", text: $accessToken)
                     Text(provider.tokenHint)
                         .font(.caption)
                         .foregroundColor(BMOTheme.textSecondary)
@@ -104,11 +94,6 @@ private struct LinkedAccountEditorSheet: View {
                 Section("Status") {
                     Text(record.isLinked ? "Linked locally on this device" : "Not linked yet")
                         .foregroundColor(record.isLinked ? BMOTheme.success : BMOTheme.textSecondary)
-                    Button("Start provider authorization") {
-                        appState.linkedAccountStore.markPending(provider)
-                        dismiss()
-                    }
-                    .foregroundColor(BMOTheme.accent)
                 }
 
                 if record.isLinked {
@@ -126,47 +111,23 @@ private struct LinkedAccountEditorSheet: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
                 }
- ToolbarItem(placement: .confirmationAction) {
- Button("Save") {
- Task {
- await saveLinkedAccount()
- }
- }
- .disabled(accessToken.isEmpty)
- }
- }
- .onAppear {
- accountHandle = record.accountHandle ?? ""
- accessToken = record.accessToken ?? ""
- }
- }
- }
- 
- private func saveLinkedAccount() async {
- // Validate PixelLab token if applicable
- if provider == .pixelLab {
- let (isValid, _) = await PixelLabService.shared.validateToken(accessToken)
- if !isValid {
- // Token validation failed, but we'll still save it
- // The user can try again later
- }
- }
- 
- await MainActor.run {
- appState.linkedAccountStore.completeLink(
- provider,
- accountHandle: accountHandle,
- accessToken: accessToken,
- connectionMode: "native-link-shell"
- )
- dismiss()
- }
- }
- 
- }
- .onAppear {
- accountHandle = record.accountHandle ?? ""
- accessToken = record.accessToken ?? ""
- }
- }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        appState.linkedAccountStore.completeLink(
+                            provider,
+                            accountHandle: accountHandle,
+                            accessToken: accessToken,
+                            connectionMode: "native-link-shell"
+                        )
+                        dismiss()
+                    }
+                    .disabled(accessToken.isEmpty)
+                }
+            }
+            .onAppear {
+                accountHandle = record.accountHandle ?? ""
+                accessToken = record.accessToken ?? ""
+            }
+        }
+    }
 }
