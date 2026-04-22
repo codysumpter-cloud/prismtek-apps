@@ -5,37 +5,6 @@ extension Paths {
     static var pixelStudioProjectFile: URL { stateDirectory.appendingPathComponent("pixel-studio-project.json") }
 }
 
-enum PixelBuddyAction: String, CaseIterable, Codable, Hashable, Identifiable {
-    case finish
-    case improve
-    case animate
-
-    var id: String { rawValue }
-
-    var title: String {
-        switch self {
-        case .finish: return "Finish Pass"
-        case .improve: return "Improve Readability"
-        case .animate: return "Animation Plan"
-        }
-    }
-
-    var systemImage: String {
-        switch self {
-        case .finish: return "wand.and.stars"
-        case .improve: return "eye"
-        case .animate: return "sparkles.tv"
-        }
-    }
-
-    var artifactLabel: String {
-        switch self {
-        case .finish: return "finish-pass"
-        case .improve: return "improve-pass"
-        case .animate: return "animation-plan"
-        }
-    }
-}
 
 struct PixelStudioFrame: Codable, Hashable, Identifiable {
     var id: UUID

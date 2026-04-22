@@ -255,7 +255,41 @@ struct EngineRuntimeConfig: Sendable {
     let modelLib: String
 }
 
+// MARK: - Pixel Studio
+enum PixelBuddyAction: String, CaseIterable, Codable, Hashable, Identifiable {
+    case finish
+    case improve
+    case animate
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .finish: return "Finish Pass"
+        case .improve: return "Improve Readability"
+        case .animate: return "Animation Plan"
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .finish: return "wand.and.stars"
+        case .improve: return "eye"
+        case .animate: return "sparkles.tv"
+        }
+    }
+
+    var artifactLabel: String {
+        switch self {
+        case .finish: return "finish-pass"
+        case .improve: return "improve-pass"
+        case .animate: return "animation-plan"
+        }
+    }
+}
+
 // MARK: - BeMore Mac pairing
+
 
 struct MacRuntimeTask: Codable, Hashable, Identifiable {
     let id: String
