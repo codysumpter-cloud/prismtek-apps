@@ -134,13 +134,8 @@ private struct LinkedAccountEditorSheet: View {
  }
  .disabled(accessToken.isEmpty)
  }
- }
- .onAppear {
- accountHandle = record.accountHandle ?? ""
- accessToken = record.accessToken ?? ""
- }
- }
- }
+}
+
  
  private func saveLinkedAccount() async {
  // Validate PixelLab token if applicable
@@ -163,10 +158,4 @@ private struct LinkedAccountEditorSheet: View {
  }
  }
  
- }
- .onAppear {
- accountHandle = record.accountHandle ?? ""
- accessToken = record.accessToken ?? ""
- }
- }
 }
