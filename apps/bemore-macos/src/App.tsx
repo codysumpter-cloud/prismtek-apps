@@ -300,6 +300,8 @@ function PatchList({patches, onApply, onReject}: {patches: RuntimePatch[]; onApp
   );
 }
 
+const describeError = (error: unknown) => (error instanceof Error ? error.message : String(error));
+
 export default function App() {
   const [active, setActive] = useState<Section>('Home');
   const [snapshot, setSnapshot] = useState<RuntimeSnapshot | null>(null);
@@ -330,7 +332,11 @@ export default function App() {
   const buddy = useBuddyFrame(snapshot, status, active, buddyVitals);
 
   const refresh = async () => {
-    setSnapshot(await runtimeClient.snapshot());
+    try {
+      setSnapshot(await runtimeClient.snapshot());
+    } catch (error) {
+      setStatus(describeError(error));
+    }
   };
 
   useEffect(() => {
@@ -340,49 +346,70 @@ export default function App() {
   }, []);
 
   const selectWorkspace = async () => {
-    const requestedPath = workspacePath || snapshot?.workspaceRoot || '';
-    if (!requestedPath) {
-      setStatus('Choose a workspace path first.');
-      return;
+    try {
+      const requestedPath = workspacePath || snapshot?.workspaceRoot || '';
+      if (!requestedPath) {
+        setStatus('Choose a workspace path first.');
+        return;
+      }
+      const next = await runtimeClient.selectWorkspace(requestedPath);
+      setSnapshot(next);
+      setActive('Home');
+      setStatus(`Buddy opened ${next.workspaceRoot}`);
+    } catch (error) {
+      setStatus(describeError(error));
     }
-    const next = await runtimeClient.selectWorkspace(requestedPath);
-    setSnapshot(next);
-    setActive('Home');
-    setStatus(`Buddy opened ${next.workspaceRoot}`);
   };
 
   const openFile = async (node: RuntimeFileNode) => {
-    if (node.kind !== 'file') return;
-    const file = await runtimeClient.readFile(node.relativePath);
-    setSelectedPath(file.relativePath);
-    setEditorValue(file.content);
-    setActive('Workspace');
-    setStatus(`Buddy opened ${file.relativePath}`);
+    try {
+      if (node.kind !== 'file') return;
+      const file = await runtimeClient.readFile(node.relativePath);
+      setSelectedPath(file.relativePath);
+      setEditorValue(file.content);
+      setActive('Workspace');
+      setStatus(`Buddy opened ${file.relativePath}`);
+    } catch (error) {
+      setStatus(describeError(error));
+    }
   };
 
   const saveFile = async () => {
-    if (!selectedPath) return;
-    const result = await runtimeClient.writeFile({ relativePath: selectedPath, content: editorValue, encoding: 'utf8' });
-    await refresh();
-    setBuddyVitals((current) => ({...current, focus: Math.min(100, current.focus + 3), attention: Math.max(0, current.attention - 8)}));
-    setStatus(result.summary);
+    try {
+      if (!selectedPath) return;
+      const result = await runtimeClient.writeFile({ relativePath: selectedPath, content: editorValue, encoding: 'utf8' });
+      await refresh();
+      setBuddyVitals((current) => ({...current, focus: Math.min(100, current.focus + 3), attention: Math.max(0, current.attention - 8)}));
+      setStatus(result.summary);
+    } catch (error) {
+      setStatus(describeError(error));
+    }
   };
 
   const runCommand = async (nextCommand = command) => {
-    const process = await runtimeClient.runCommand({ command: nextCommand });
-    await refresh();
-    setBuddyVitals((current) => ({...current, energy: Math.max(0, current.energy - 6), focus: Math.min(100, current.focus + 2)}));
-    setActive('Results');
-    setStatus(`Buddy started ${process.command}`);
+    try {
+      const process = await runtimeClient.runCommand({ command: nextCommand });
+      await refresh();
+      setBuddyVitals((current) => ({...current, energy: Math.max(0, current.energy - 6), focus: Math.min(100, current.focus + 2)}));
+      setActive('Results');
+      setStatus(`Buddy started ${process.command}`);
+    } catch (error) {
+      setStatus(describeError(error));
+    }
   };
 
   const createTask = async (title = taskTitle, detail = taskDetail, nextCommand = taskCommand) => {
-    const task = await runtimeClient.createTask({ title, detail, command: nextCommand });
-    await refresh();
-    setBuddyVitals((current) => ({...current, attention: Math.max(0, current.attention - 6), bond: Math.min(100, current.bond + 2)}));
-    setActive('Missions');
-    setStatus(`Created ${task.title}`);
-    return task;
+    try {
+      const task = await runtimeClient.createTask({ title, detail, command: nextCommand });
+      await refresh();
+      setBuddyVitals((current) => ({...current, attention: Math.max(0, current.attention - 6), bond: Math.min(100, current.bond + 2)}));
+      setActive('Missions');
+      setStatus(`Created ${task.title}`);
+      return task;
+    } catch (error) {
+      setStatus(describeError(error));
+      return null;
+    }
   };
 
   const createFocusTask = async () => {
@@ -390,54 +417,82 @@ export default function App() {
   };
 
   const runTask = async (id: string) => {
-    await runtimeClient.runTask(id);
-    await refresh();
-    setBuddyVitals((current) => ({...current, energy: Math.max(0, current.energy - 8), focus: Math.min(100, current.focus + 4)}));
-    setActive('Results');
-    setStatus('Buddy is working. Watch receipts and output.');
+    try {
+      await runtimeClient.runTask(id);
+      await refresh();
+      setBuddyVitals((current) => ({...current, energy: Math.max(0, current.energy - 8), focus: Math.min(100, current.focus + 4)}));
+      setActive('Results');
+      setStatus('Buddy is working. Watch receipts and output.');
+    } catch (error) {
+      setStatus(describeError(error));
+    }
   };
 
   const delegateTask = async (id: string) => {
-    const task = await runtimeClient.delegateTask(id, 'Buddy delegated review', 'Check workspace status as a bounded subtask.', 'git status --short');
-    await refresh();
-    setBuddyVitals((current) => ({...current, care: Math.min(100, current.care + 2), attention: Math.max(0, current.attention - 4)}));
-    setStatus(`Delegated ${task.title}`);
+    try {
+      const task = await runtimeClient.delegateTask(id, 'Buddy delegated review', 'Check workspace status as a bounded subtask.', 'git status --short');
+      await refresh();
+      setBuddyVitals((current) => ({...current, care: Math.min(100, current.care + 2), attention: Math.max(0, current.attention - 4)}));
+      setStatus(`Delegated ${task.title}`);
+    } catch (error) {
+      setStatus(describeError(error));
+    }
   };
 
   const retryTask = async (id: string) => {
-    const task = await runtimeClient.retryTask(id);
-    await refresh();
-    setBuddyVitals((current) => ({...current, attention: Math.min(100, current.attention + 10), focus: Math.min(100, current.focus + 5)}));
-    setStatus(`Created retry ${task.title}`);
+    try {
+      const task = await runtimeClient.retryTask(id);
+      await refresh();
+      setBuddyVitals((current) => ({...current, attention: Math.min(100, current.attention + 10), focus: Math.min(100, current.focus + 5)}));
+      setStatus(`Created retry ${task.title}`);
+    } catch (error) {
+      setStatus(describeError(error));
+    }
   };
 
   const previewPatch = async () => {
-    const operation: RuntimePatchOperation = {path: patchPath, kind: patchBefore ? 'replace' : 'write', before: patchBefore || undefined, after: patchAfter};
-    const patch = await runtimeClient.previewPatch({ title: patchTitle, taskId: patchTaskId || undefined, operations: [operation] });
-    await refresh();
-    setBuddyVitals((current) => ({...current, focus: Math.min(100, current.focus + 4), care: Math.min(100, current.care + 1)}));
-    setActive('Results');
-    setStatus(`Buddy previewed ${patch.title}`);
+    try {
+      const operation: RuntimePatchOperation = {path: patchPath, kind: patchBefore ? 'replace' : 'write', before: patchBefore || undefined, after: patchAfter};
+      const patch = await runtimeClient.previewPatch({ title: patchTitle, taskId: patchTaskId || undefined, operations: [operation] });
+      await refresh();
+      setBuddyVitals((current) => ({...current, focus: Math.min(100, current.focus + 4), care: Math.min(100, current.care + 1)}));
+      setActive('Results');
+      setStatus(`Buddy previewed ${patch.title}`);
+    } catch (error) {
+      setStatus(describeError(error));
+    }
   };
 
   const applyPatch = async (id: string) => {
-    const patch = await runtimeClient.applyPatch(id);
-    await refresh();
-    setBuddyVitals((current) => ({...current, bond: Math.min(100, current.bond + 5), attention: Math.max(0, current.attention - 12)}));
-    setStatus(`${patch.status}: ${patch.title}`);
+    try {
+      const patch = await runtimeClient.applyPatch(id);
+      await refresh();
+      setBuddyVitals((current) => ({...current, bond: Math.min(100, current.bond + 5), attention: Math.max(0, current.attention - 12)}));
+      setStatus(`${patch.status}: ${patch.title}`);
+    } catch (error) {
+      setStatus(describeError(error));
+    }
   };
 
   const rejectPatch = async (id: string) => {
-    const patch = await runtimeClient.rejectPatch(id);
-    await refresh();
-    setStatus(`${patch.status}: ${patch.title}`);
+    try {
+      const patch = await runtimeClient.rejectPatch(id);
+      await refresh();
+      setStatus(`${patch.status}: ${patch.title}`);
+    } catch (error) {
+      setStatus(describeError(error));
+    }
   };
 
   const stopProcess = async (id: string) => {
-    const result = await runtimeClient.stopProcess(id);
-    await refresh();
-    setBuddyVitals((current) => ({...current, energy: Math.min(100, current.energy + 3), attention: Math.max(0, current.attention - 4)}));
-    setStatus(result.summary);
+    try {
+      const result = await runtimeClient.stopProcess(id);
+      await refresh();
+      setBuddyVitals((current) => ({...current, energy: Math.min(100, current.energy + 3), attention: Math.max(0, current.attention - 4)}));
+      setStatus(result.summary);
+    } catch (error) {
+      setStatus(describeError(error));
+    }
   };
 
   const careForBuddy = (action: BuddyCareAction) => {

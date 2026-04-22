@@ -308,7 +308,7 @@ app.get('/api/runtime/status', async (_req, res) => {
   res.json({
     status: 'ready',
     runtime: 'bemore-mac',
-    version: '1.0.0-build.1',
+    version: '1.0.0-build.6',
     workspaceRoot,
     processCount: processes.size,
     taskCount: tasks.size,
