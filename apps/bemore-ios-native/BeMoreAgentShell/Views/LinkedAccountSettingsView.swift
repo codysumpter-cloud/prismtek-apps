@@ -1,4 +1,4 @@
-import SwiftUI // FIX
+import SwiftUI
 
 struct LinkedAccountsSectionView: View {
     @EnvironmentObject private var appState: AppState
@@ -14,7 +14,7 @@ struct LinkedAccountsSectionView: View {
 
             Text("GitHub private repos can use a linked token immediately. ChatGPT/OpenAI and PixelLab keep native link state here too. Provider browser hops now open the most relevant account/token page instead of a generic homepage. Full zero-auth callback completion still depends on matching provider/backend setup.")
                 .font(.caption)
-                .foregroundColor(BMOHeme.textSecondary)
+                .foregroundColor(BMOTheme.textSecondary)
                 .listRowBackground(BMOTheme.backgroundCard)
         }
         .sheet(item: $editingProvider) { provider in
