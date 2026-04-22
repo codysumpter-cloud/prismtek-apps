@@ -22,7 +22,7 @@ struct BuddyAppearanceEditorDraft: Hashable {
     var expressionTone: String = "friendly"
     var accentLabel: String = "pocket glow"
     var renderStyle: BuddyAppearanceRenderStyle = .ascii
-    var pixelVariantID: String = "pixellab-classic"
+    var pixelVariantID: String = ""
 }
 
 struct BuddyAppearanceEditorView<Preview: View>: View {
@@ -103,12 +103,12 @@ struct BuddyAppearanceEditorView<Preview: View>: View {
                 }
             } else {
                 Section("Pixel Look") {
-                    TextField("Pixel variant ID", text: $draft.pixelVariantID)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled()
+                    Text(draft.pixelVariantID.isEmpty ? "Pixel render key will be assigned from the selected Buddy look." : draft.pixelVariantID)
+                        .font(.caption)
+                        .foregroundColor(BMOTheme.textSecondary)
                     Text(pixelLabLinked
-                         ? "PixelLab is linked, so this look can track a richer pixel identity alongside the native Buddy shell."
-                         : "Native pixel mode works now; PixelLab is still optional for deeper art workflows.")
+                         ? "Pixel mode should use a real PixelLab-generated render instead of a fake local placeholder id."
+                         : "Link PixelLab to generate a real pixel Buddy render from this look.")
                         .font(.caption)
                         .foregroundColor(BMOTheme.textSecondary)
                 }
