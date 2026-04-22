@@ -40,9 +40,20 @@ enum LilBuddyStatus: String, Codable, CaseIterable, Hashable, Identifiable {
     }
 }
 
+struct LilBuddyReceipt: Identifiable, Codable, Hashable {
+    var id: String
+    var lilBuddyID: String
+    var parentBuddyInstanceId: String
+    var action: String
+    var summary: String
+    var outcome: String
+    var createdAt: Date
+}
+
 private struct LilBuddyLibraryState: Codable, Hashable {
-    var version: String = "1.0.0"
+    var version: String = "1.1.0"
     var items: [LilBuddy] = []
+    var receipts: [LilBuddyReceipt] = []
 }
 
 private actor LilBuddyStore {
@@ -74,44 +85,102 @@ private actor LilBuddyStore {
             }
     }
 
+    func receipts(for parentBuddyInstanceId: String, lilBuddyID: String) -> [LilBuddyReceipt] {
+        load().receipts
+            .filter { $0.parentBuddyInstanceId == parentBuddyInstanceId && $0.lilBuddyID == lilBuddyID }
+            .sorted { $0.createdAt > $1.createdAt }
+    }
+
     func createLilBuddy(
         parentBuddyInstanceId: String,
         parentBuddyDisplayName: String,
         name: String,
         role: String,
         mission: String
-    ) -> [LilBuddy] {
+    ) -> ([LilBuddy], [LilBuddyReceipt]) {
         var state = load()
         let now = Date()
-        state.items.append(
-            LilBuddy(
-                id: "lil_\(UUID().uuidString.lowercased())",
+        let lilBuddy = LilBuddy(
+            id: "lil_\(UUID().uuidString.lowercased())",
+            parentBuddyInstanceId: parentBuddyInstanceId,
+            parentBuddyDisplayName: parentBuddyDisplayName,
+            name: name,
+            role: role,
+            mission: mission,
+            status: .ready,
+            createdAt: now,
+            updatedAt: now
+        )
+        state.items.append(lilBuddy)
+        state.receipts.insert(
+            LilBuddyReceipt(
+                id: "lil_receipt_\(UUID().uuidString.lowercased())",
+                lilBuddyID: lilBuddy.id,
                 parentBuddyInstanceId: parentBuddyInstanceId,
-                parentBuddyDisplayName: parentBuddyDisplayName,
-                name: name,
-                role: role,
-                mission: mission,
-                status: .ready,
-                createdAt: now,
-                updatedAt: now
-            )
+                action: "spawn",
+                summary: "Spawned Lil’ Buddy \(name)",
+                outcome: "ready",
+                createdAt: now
+            ),
+            at: 0
         )
         persist(state)
-        return lilBuddies(for: parentBuddyInstanceId)
+        return (lilBuddies(for: parentBuddyInstanceId), receipts(for: parentBuddyInstanceId, lilBuddyID: lilBuddy.id))
     }
 
     func updateStatus(
         lilBuddyID: String,
         parentBuddyInstanceId: String,
-        status: LilBuddyStatus
-    ) -> [LilBuddy] {
+        status: LilBuddyStatus,
+        action: String,
+        summary: String
+    ) -> ([LilBuddy], [LilBuddyReceipt]) {
         var state = load()
         if let index = state.items.firstIndex(where: { $0.id == lilBuddyID }) {
             state.items[index].status = status
             state.items[index].updatedAt = Date()
+            state.receipts.insert(
+                LilBuddyReceipt(
+                    id: "lil_receipt_\(UUID().uuidString.lowercased())",
+                    lilBuddyID: lilBuddyID,
+                    parentBuddyInstanceId: parentBuddyInstanceId,
+                    action: action,
+                    summary: summary,
+                    outcome: status.rawValue,
+                    createdAt: Date()
+                ),
+                at: 0
+            )
             persist(state)
         }
-        return lilBuddies(for: parentBuddyInstanceId)
+        return (lilBuddies(for: parentBuddyInstanceId), receipts(for: parentBuddyInstanceId, lilBuddyID: lilBuddyID))
+    }
+
+    func dispatchMission(
+        lilBuddyID: String,
+        parentBuddyInstanceId: String
+    ) -> ([LilBuddy], [LilBuddyReceipt]) {
+        var state = load()
+        guard let index = state.items.firstIndex(where: { $0.id == lilBuddyID }) else {
+            return (lilBuddies(for: parentBuddyInstanceId), receipts(for: parentBuddyInstanceId, lilBuddyID: lilBuddyID))
+        }
+        let lilBuddy = state.items[index]
+        state.items[index].status = .active
+        state.items[index].updatedAt = Date()
+        state.receipts.insert(
+            LilBuddyReceipt(
+                id: "lil_receipt_\(UUID().uuidString.lowercased())",
+                lilBuddyID: lilBuddyID,
+                parentBuddyInstanceId: parentBuddyInstanceId,
+                action: "dispatch",
+                summary: "Dispatched \(lilBuddy.name) on mission: \(lilBuddy.mission)",
+                outcome: "active",
+                createdAt: Date()
+            ),
+            at: 0
+        )
+        persist(state)
+        return (lilBuddies(for: parentBuddyInstanceId), receipts(for: parentBuddyInstanceId, lilBuddyID: lilBuddyID))
     }
 
     func retireLilBuddy(
@@ -119,7 +188,20 @@ private actor LilBuddyStore {
         parentBuddyInstanceId: String
     ) -> [LilBuddy] {
         var state = load()
+        let retiringName = state.items.first(where: { $0.id == lilBuddyID })?.name ?? "Lil’ Buddy"
         state.items.removeAll { $0.id == lilBuddyID }
+        state.receipts.insert(
+            LilBuddyReceipt(
+                id: "lil_receipt_\(UUID().uuidString.lowercased())",
+                lilBuddyID: lilBuddyID,
+                parentBuddyInstanceId: parentBuddyInstanceId,
+                action: "retire",
+                summary: "Retired \(retiringName)",
+                outcome: "retired",
+                createdAt: Date()
+            ),
+            at: 0
+        )
         persist(state)
         return lilBuddies(for: parentBuddyInstanceId)
     }
@@ -150,6 +232,7 @@ struct LilBuddySectionView: View {
     @State private var lilBuddyName = ""
     @State private var lilBuddyRole = "Scout"
     @State private var lilBuddyMission = ""
+    @State private var selectedReceipts: [String: [LilBuddyReceipt]] = [:]
     @State private var statusMessage: String?
 
     var body: some View {
@@ -159,7 +242,7 @@ struct LilBuddySectionView: View {
                     Text("Lil’ Buddies")
                         .font(.headline)
                         .foregroundColor(BMOTheme.textPrimary)
-                    Text("Spawn small sub-agents under \(buddy.displayName) for focused missions like scouting, drafting, checking, or follow-through.")
+                    Text("Spawn small sub-agents under \(buddy.displayName) for focused missions like scouting, drafting, checking, or follow-through. This runtime is local to iPhone and does not require a Mac connection.")
                         .font(.subheadline)
                         .foregroundColor(BMOTheme.textSecondary)
                 }
@@ -208,12 +291,15 @@ struct LilBuddySectionView: View {
                         }
 
                         HStack {
+                            Button("Dispatch") {
+                                dispatch(lilBuddy)
+                            }
+                            .buttonStyle(BMOButtonStyle(isPrimary: lilBuddy.status != .active))
+
                             Menu("Set Status") {
-                                ForEach(LilBuddyStatus.allCases) { status in
-                                    Button(status.title) {
-                                        setStatus(for: lilBuddy, status: status)
-                                    }
-                                }
+                                Button("Ready") { setStatus(for: lilBuddy, status: .ready, action: "reset", summary: "Reset \(lilBuddy.name) for another run.") }
+                                Button("Blocked") { setStatus(for: lilBuddy, status: .blocked, action: "block", summary: "Marked \(lilBuddy.name) as blocked.") }
+                                Button("Done") { setStatus(for: lilBuddy, status: .done, action: "complete", summary: "Marked \(lilBuddy.name) mission complete.") }
                             }
                             .foregroundColor(BMOTheme.accent)
 
@@ -224,6 +310,25 @@ struct LilBuddySectionView: View {
                             }
                             .foregroundColor(BMOTheme.error)
                         }
+
+                        let receipts = selectedReceipts[lilBuddy.id] ?? []
+                        if receipts.isEmpty == false {
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text("Mission receipts")
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundColor(BMOTheme.textTertiary)
+                                ForEach(receipts.prefix(3)) { receipt in
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(receipt.summary)
+                                            .font(.caption)
+                                            .foregroundColor(BMOTheme.textPrimary)
+                                        Text("\(receipt.action.capitalized) • \(receipt.outcome.capitalized) • \(BuddyMarkdownRenderer.iso8601(receipt.createdAt))")
+                                            .font(.caption2)
+                                            .foregroundColor(BMOTheme.textTertiary)
+                                    }
+                                }
+                            }
+                        }
                     }
                     .padding(BMOTheme.spacingMD)
                     .background(BMOTheme.backgroundSecondary)
@@ -231,7 +336,6 @@ struct LilBuddySectionView: View {
                 }
             }
         }
-        .bmoCard()
         .task(id: buddy.instanceId) {
             await reloadLilBuddies()
         }
@@ -244,7 +348,7 @@ struct LilBuddySectionView: View {
         guard !cleanedName.isEmpty, !cleanedMission.isEmpty else { return }
 
         Task {
-            let items = await LilBuddyStore.shared.createLilBuddy(
+            let (items, receipts) = await LilBuddyStore.shared.createLilBuddy(
                 parentBuddyInstanceId: buddy.instanceId,
                 parentBuddyDisplayName: buddy.displayName,
                 name: cleanedName,
@@ -253,6 +357,9 @@ struct LilBuddySectionView: View {
             )
             await MainActor.run {
                 lilBuddies = items
+                if let created = items.first(where: { $0.name == cleanedName }) {
+                    selectedReceipts[created.id] = receipts
+                }
                 lilBuddyName = ""
                 lilBuddyRole = "Scout"
                 lilBuddyMission = ""
@@ -261,16 +368,33 @@ struct LilBuddySectionView: View {
         }
     }
 
-    private func setStatus(for lilBuddy: LilBuddy, status: LilBuddyStatus) {
+    private func dispatch(_ lilBuddy: LilBuddy) {
         Task {
-            let items = await LilBuddyStore.shared.updateStatus(
+            let (items, receipts) = await LilBuddyStore.shared.dispatchMission(
                 lilBuddyID: lilBuddy.id,
-                parentBuddyInstanceId: buddy.instanceId,
-                status: status
+                parentBuddyInstanceId: buddy.instanceId
             )
             await MainActor.run {
                 lilBuddies = items
-                statusMessage = "\(lilBuddy.name) is now \(status.title.lowercased())."
+                selectedReceipts[lilBuddy.id] = receipts
+                statusMessage = "Dispatched \(lilBuddy.name) locally on iPhone."
+            }
+        }
+    }
+
+    private func setStatus(for lilBuddy: LilBuddy, status: LilBuddyStatus, action: String, summary: String) {
+        Task {
+            let (items, receipts) = await LilBuddyStore.shared.updateStatus(
+                lilBuddyID: lilBuddy.id,
+                parentBuddyInstanceId: buddy.instanceId,
+                status: status,
+                action: action,
+                summary: summary
+            )
+            await MainActor.run {
+                lilBuddies = items
+                selectedReceipts[lilBuddy.id] = receipts
+                statusMessage = summary
             }
         }
     }
@@ -283,6 +407,7 @@ struct LilBuddySectionView: View {
             )
             await MainActor.run {
                 lilBuddies = items
+                selectedReceipts[lilBuddy.id] = []
                 statusMessage = "Retired Lil’ Buddy \(lilBuddy.name)."
             }
         }
@@ -290,8 +415,13 @@ struct LilBuddySectionView: View {
 
     private func reloadLilBuddies() async {
         let items = await LilBuddyStore.shared.lilBuddies(for: buddy.instanceId)
+        var receiptMap: [String: [LilBuddyReceipt]] = [:]
+        for item in items {
+            receiptMap[item.id] = await LilBuddyStore.shared.receipts(for: buddy.instanceId, lilBuddyID: item.id)
+        }
         await MainActor.run {
             lilBuddies = items
+            selectedReceipts = receiptMap
         }
     }
 }
