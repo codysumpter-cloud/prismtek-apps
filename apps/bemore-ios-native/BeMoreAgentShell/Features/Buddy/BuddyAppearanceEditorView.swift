@@ -32,6 +32,7 @@ struct BuddyAppearanceEditorView<Preview: View>: View {
     let asciiVariantOptions: [BuddyChoiceOption]
     let expressionToneOptions: [BuddyChoiceOption]
     let pixelLabLinked: Bool
+    let buddyDisplayName: String
     let onPixelLabLink: () -> Void
     let preview: Preview
 
@@ -42,6 +43,7 @@ struct BuddyAppearanceEditorView<Preview: View>: View {
         asciiVariantOptions: [BuddyChoiceOption],
         expressionToneOptions: [BuddyChoiceOption],
         pixelLabLinked: Bool,
+        buddyDisplayName: String = "Buddy",
         onPixelLabLink: @escaping () -> Void,
         @ViewBuilder preview: () -> Preview
     ) {
@@ -51,6 +53,7 @@ struct BuddyAppearanceEditorView<Preview: View>: View {
         self.asciiVariantOptions = asciiVariantOptions
         self.expressionToneOptions = expressionToneOptions
         self.pixelLabLinked = pixelLabLinked
+        self.buddyDisplayName = buddyDisplayName
         self.onPixelLabLink = onPixelLabLink
         self.preview = preview()
     }
@@ -103,11 +106,11 @@ struct BuddyAppearanceEditorView<Preview: View>: View {
                 }
             } else {
                 Section("Pixel Look") {
-                    Text(draft.pixelVariantID.isEmpty ? "Pixel render key will be assigned from the selected Buddy look." : draft.pixelVariantID)
+                    Text(currentPixelVariantLabel)
                         .font(.caption)
                         .foregroundColor(BMOTheme.textSecondary)
                     Text(pixelLabLinked
-                         ? "Pixel mode should use a real PixelLab-generated render instead of a fake local placeholder id."
+                         ? "Pixel mode now uses a deterministic PixelLab render key derived from the current Buddy look."
                          : "Link PixelLab to generate a real pixel Buddy render from this look.")
                         .font(.caption)
                         .foregroundColor(BMOTheme.textSecondary)
@@ -128,6 +131,34 @@ struct BuddyAppearanceEditorView<Preview: View>: View {
                     .font(.caption)
                     .foregroundColor(BMOTheme.textSecondary)
             }
+        }
+        .task(id: pixelKeySignature) {
+            syncPixelVariantIDIfNeeded()
+        }
+    }
+
+    private var pixelKeySignature: String {
+        [draft.renderStyle.rawValue, buddyDisplayName, draft.archetype, draft.palette, draft.expressionTone, draft.accentLabel].joined(separator: "|")
+    }
+
+    private var currentPixelVariantLabel: String {
+        let value = draft.pixelVariantID.isEmpty ? derivedPixelVariantID : draft.pixelVariantID
+        return "Pixel render key: \(value)"
+    }
+
+    private var derivedPixelVariantID: String {
+        let cleanedName = buddyDisplayName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Buddy" : buddyDisplayName
+        let raw = [cleanedName, draft.archetype, draft.palette, draft.expressionTone, draft.accentLabel]
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() }
+            .joined(separator: "|")
+        return "pixellab:\(raw.replacingOccurrences(of: " ", with: "-"))"
+    }
+
+    private func syncPixelVariantIDIfNeeded() {
+        if draft.renderStyle == .pixel {
+            draft.pixelVariantID = derivedPixelVariantID
+        } else if draft.pixelVariantID.hasPrefix("pixellab:") {
+            draft.pixelVariantID = ""
         }
     }
 }

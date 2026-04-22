@@ -752,7 +752,7 @@ struct BuddyView: View {
                 .font(.headline)
                 .foregroundColor(BMOTheme.textPrimary)
             Text("Install a starter Buddy to begin with a companion you can name, teach, train, and rely on for everyday follow-through.")
-                .font(.subheadline)
+            .font(.subheadline)
                 .foregroundColor(BMOTheme.textSecondary)
             Button("Create Buddy") {
                 isShowingCreateBuddySheet = true
@@ -857,6 +857,7 @@ struct BuddyView: View {
                     asciiVariantOptions: asciiVariantOptions,
                     expressionToneOptions: expressionToneOptions,
                     pixelLabLinked: appState.linkedAccountStore.record(for: .pixelLab).isLinked,
+                    buddyDisplayName: buddy.displayName,
                     onPixelLabLink: {
                         appState.linkedAccountStore.markPending(.pixelLab)
                     }
@@ -1032,7 +1033,7 @@ struct BuddyView: View {
             expressionTone: activeProfile?.expressionTone ?? "friendly",
             accentLabel: activeProfile?.accentLabel ?? "pocket glow",
             renderStyle: (activeProfile?.pixelVariantId ?? buddy.visual?.pixelVariantId) == nil ? .ascii : .pixel,
-            pixelVariantID: activeProfile?.pixelVariantId ?? buddy.visual?.pixelVariantId ?? "pixellab-classic"
+            pixelVariantID: activeProfile?.pixelVariantId ?? buddy.visual?.pixelVariantId ?? derivedPixelVariantID(for: buddy, activeProfile: activeProfile)
         )
     }
 
@@ -1083,6 +1084,18 @@ struct BuddyView: View {
         default:
             return "happy"
         }
+    }
+
+    private func derivedPixelVariantID(for buddy: BuddyInstance, activeProfile: BuddyAppearanceProfile?) -> String {
+        let cleanedName = buddy.displayName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Buddy" : buddy.displayName
+        let archetype = activeProfile?.archetype ?? buddy.identity.archetype
+        let palette = activeProfile?.palette ?? buddy.identity.palette
+        let expressionTone = activeProfile?.expressionTone ?? "friendly"
+        let accentLabel = activeProfile?.accentLabel ?? "pocket glow"
+        let raw = [cleanedName, archetype, palette, expressionTone, accentLabel]
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() }
+            .joined(separator: "|")
+        return "pixellab:\(raw.replacingOccurrences(of: " ", with: "-"))"
     }
 
     private var tradeHistoryRows: [BuddyTradeRecord] {
