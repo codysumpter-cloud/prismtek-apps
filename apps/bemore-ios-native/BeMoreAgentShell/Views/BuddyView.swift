@@ -195,7 +195,6 @@ struct BuddyView: View {
  EmptyView()
  }
  }
-}
 
     private func appearanceStudioCard(for buddy: BuddyInstance) -> some View {
         let template = store.contracts?.templateForInstance(buddy)
