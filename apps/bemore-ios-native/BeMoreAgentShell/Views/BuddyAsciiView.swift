@@ -192,9 +192,9 @@ struct BuddyAsciiView: View {
         case "pixel_pet":
             return Self.wrap(frame, top: " 8-bit", bottom: "  pet! ")
         case "cat_like":
-            return Self.wrap(frame, top: " /\_/\\", bottom: "  purr")
+            return Self.wrap(frame, top: " /_/\\ ", bottom: "  purr")
         case "fox_like":
-            return Self.wrap(frame, top: " /\\_/\\", bottom: "  sly ")
+            return Self.wrap(frame, top: " /\\\\_/\\\\", bottom: "  sly ")
         case "dino":
             return Self.wrap(frame, top: "  rawr", bottom: "  stomp")
         case "plant_creature":
