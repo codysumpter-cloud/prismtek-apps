@@ -102,6 +102,13 @@ xcodebuild \
 
 This is the main current repo-owned lane for the native iPhone app in `apps/bemore-ios-native`.
 
+### Legacy fallback workflow
+
+`.github/workflows/testflight.yml` is a manual fallback only via `workflow_dispatch`.
+
+Do not rely on it as the normal shipping path for `apps/bemore-ios-native`, or it can race the main
+TestFlight lane and attempt a duplicate upload for the same build number.
+
 ### Separate platform validation workflow
 
 `.github/workflows/bemoreagent-platform-ios-validate.yml` validates `apps/bemoreagent-platform-ios/**`.
