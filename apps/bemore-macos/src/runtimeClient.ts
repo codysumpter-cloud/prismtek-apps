@@ -25,7 +25,7 @@ export interface BuddyEvent {
 }
 
 class RuntimeClient implements BeMoreRuntimeProtocol {
-  private baseUrl = 'http://localhost:8000';
+  private baseUrl = 'http://127.0.0.1:4319/api';
 
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
@@ -46,31 +46,43 @@ class RuntimeClient implements BeMoreRuntimeProtocol {
   async selectWorkspace(path: string): Promise<RuntimeSnapshot> {
     return this.request<RuntimeSnapshot>('/workspace/select', {
       method: 'POST',
-      body: JSON.stringify({ path }),
+      body: JSON.stringify({ workspacePath: path }),
     });
   }
 
   async listWorkspaceFiles(): Promise<RuntimeFileNode[]> {
-    return this.request<RuntimeFileNode[]>('/files');
+    const snapshot = await this.snapshot();
+    return snapshot.files;
   }
 
   async readFile(relativePath: string): Promise<RuntimeFileContent> {
-    return this.request<RuntimeFileContent>(`/files/read?path=${encodeURIComponent(relativePath)}`);
+    return this.request<RuntimeFileContent>(`/workspace/file?path=${encodeURIComponent(relativePath)}`);
   }
 
   async writeFile(file: RuntimeFileContent): Promise<RuntimeReceipt> {
-    return this.request<RuntimeReceipt>('/files/write', {
-      method: 'POST',
+    const response = await this.request<{receipt: RuntimeReceipt}>('/workspace/file', {
+      method: 'PUT',
       body: JSON.stringify(file),
     });
+    return response.receipt;
   }
 
   async searchFiles(query: string): Promise<RuntimeFileNode[]> {
-    return this.request<RuntimeFileNode[]>(`/files/search?q=${encodeURIComponent(query)}`);
+    const snapshot = await this.snapshot();
+    const term = query.trim().toLowerCase();
+    if (!term) return snapshot.files;
+    const matches = (nodes: RuntimeFileNode[]): RuntimeFileNode[] =>
+      nodes
+        .filter((node) => node.name.toLowerCase().includes(term) || node.relativePath.toLowerCase().includes(term))
+        .map((node) => ({
+          ...node,
+          children: node.children ? matches(node.children) : undefined,
+        }));
+    return matches(snapshot.files);
   }
 
   async runCommand(request: RuntimeCommandRequest): Promise<RuntimeProcess> {
-    return this.request<RuntimeProcess>('/commands/run', {
+    return this.request<RuntimeProcess>('/processes', {
       method: 'POST',
       body: JSON.stringify(request),
     });
@@ -93,13 +105,15 @@ class RuntimeClient implements BeMoreRuntimeProtocol {
   }
 
   async listProcesses(): Promise<RuntimeProcess[]> {
-    return this.request<RuntimeProcess[]>('/processes');
+    const snapshot = await this.snapshot();
+    return snapshot.processes;
   }
 
   async stopProcess(processId: string): Promise<RuntimeReceipt> {
-    return this.request<RuntimeReceipt>(`/processes/stop/${processId}`, {
+    const response = await this.request<{receipt: RuntimeReceipt}>(`/processes/${processId}/stop`, {
       method: 'POST',
     });
+    return response.receipt;
   }
 
   async listTasks(): Promise<RuntimeTask[]> {
@@ -107,7 +121,7 @@ class RuntimeClient implements BeMoreRuntimeProtocol {
   }
 
   async createTask(task: Pick<RuntimeTask, 'title' | 'detail' | 'command'>): Promise<RuntimeTask> {
-    return this.request<RuntimeTask>('/tasks/create', {
+    return this.request<RuntimeTask>('/tasks', {
       method: 'POST',
       body: JSON.stringify(task),
     });
@@ -120,9 +134,9 @@ class RuntimeClient implements BeMoreRuntimeProtocol {
   }
 
   async runSubtask(taskId: string, title: string): Promise<RuntimeTask> {
-    return this.request<RuntimeTask>(`/tasks/subtask/${taskId}`, {
+    return this.request<RuntimeTask>(`/tasks/${taskId}/subtasks`, {
       method: 'POST',
-      body: JSON.stringify({ title }),
+      body: JSON.stringify({ title, detail: '', command: '' }),
     });
   }
 
@@ -133,12 +147,12 @@ class RuntimeClient implements BeMoreRuntimeProtocol {
   }
 
   async listDiffs(): Promise<RuntimeDiff> {
-    return this.request<RuntimeDiff>('/diffs');
+    return this.request<RuntimeDiff>('/diffs/current');
   }
 
   async getDiff(path?: string): Promise<RuntimeDiff> {
-    const query = path ? `?path=${encodeURIComponent(path)}` : '';
-    return this.request<RuntimeDiff>(`/diffs${query}`);
+    void path;
+    return this.request<RuntimeDiff>('/diffs/current');
   }
 
   async listPatches(): Promise<RuntimePatch[]> {
@@ -169,7 +183,7 @@ class RuntimeClient implements BeMoreRuntimeProtocol {
   }
 
   async readArtifact(artifactId: string): Promise<RuntimeFileContent> {
-    return this.request<RuntimeFileContent>(`/artifacts/read/${artifactId}`);
+    return this.request<RuntimeFileContent>(`/artifacts/file?path=${encodeURIComponent(artifactId)}`);
   }
 
   async getReceipts(): Promise<RuntimeReceipt[]> {
@@ -177,72 +191,49 @@ class RuntimeClient implements BeMoreRuntimeProtocol {
   }
 
   async listSkills(): Promise<string[]> {
-    return this.request<string[]>('/skills');
+    return [];
   }
 
   async runSkill(skillId: string, input: unknown): Promise<RuntimeReceipt> {
-    return this.request<RuntimeReceipt>('/skills/run', {
-      method: 'POST',
-      body: JSON.stringify({ skillId, input }),
-    });
+    throw new Error(`Skill execution is not wired in the macOS runtime yet: ${skillId} ${JSON.stringify(input)}`);
   }
 
   async getBuddyState(): Promise<RuntimeBuddyState> {
-    return this.request<RuntimeBuddyState>('/buddy/state');
+    return this.request<RuntimeBuddyState>('/buddy');
   }
 
   async applyBuddyEvent(event: string): Promise<RuntimeBuddyState> {
-    return this.request<RuntimeBuddyState>('/buddy/event', {
-      method: 'POST',
-      body: JSON.stringify({ event }),
-    });
+    throw new Error(`Buddy events are not wired in the macOS runtime yet: ${event}`);
   }
 
   async getPairingState(): Promise<PairingState> {
-    return this.request<PairingState>('/pairing/state');
+    const snapshot = await this.snapshot();
+    return snapshot.pairing;
   }
 
   // --- Supervision Extensions ---
 
   async launchTask(goal: string, context?: string, constraints?: any): Promise<string> {
-    const response = await this.request<{session_id: string}>('/sessions', {
-      method: 'POST',
-      body: JSON.stringify({ goal, context, constraints }),
-    });
-    return response.session_id;
+    throw new Error(`Supervision sessions are not available in the current macOS runtime yet: ${goal} ${context ?? ''} ${JSON.stringify(constraints ?? {})}`);
   }
 
   async submitApproval(sessionId: string, actionId: string, decision: 'approve' | 'reject'): Promise<void> {
-    await this.request<void>(`/sessions/${sessionId}/approvals`, {
-      method: 'POST',
-      body: JSON.stringify({ action_id: actionId, decision }),
-    });
+    throw new Error(`Approvals are not available in the current macOS runtime yet: ${sessionId} ${actionId} ${decision}`);
   }
 
   async getArtifact(artifactId: string): Promise<string> {
-    const response = await this.request<{content: string}>(`/artifacts/${artifactId}`);
+    const response = await this.request<{content: string}>(`/artifacts/file?path=${encodeURIComponent(artifactId)}`);
     return response.content;
   }
 
   streamEvents(sessionId: string, onEvent: (event: BuddyEvent) => void): void {
-    const url = `${this.baseUrl}/sessions/${sessionId}/events`;
-    const eventSource = new EventSource(url);
-    eventSource.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        onEvent(data);
-      } catch (e) {
-        console.error('Error parsing event stream:', e);
-      }
-    };
-    eventSource.onerror = (err) => {
-      console.error('EventSource error:', err);
-      eventSource.close();
-    };
+    void sessionId;
+    void onEvent;
+    throw new Error('Supervision event streaming is not available in the current macOS runtime yet.');
   }
 
   async delegateTask(taskId: string, title: string, detail: string, command: string): Promise<RuntimeTask> {
-    return this.request<RuntimeTask>('/tasks/delegate', {
+    return this.request<RuntimeTask>(`/tasks/${taskId}/subtasks`, {
       method: 'POST',
       body: JSON.stringify({ taskId, title, detail, command }),
     });
