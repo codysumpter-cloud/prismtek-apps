@@ -632,7 +632,7 @@ app.get('/api/admin/stats', authenticateToken, async (req: any, res) => {
 app.get('/api/admin/logs', authenticateToken, async (req, res) => {
   try {
     const snapshot = await db.collection('system_logs').orderBy('time', 'desc').limit(50).get();
-    const logs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const logs = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
     res.json(logs);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch logs' });
@@ -643,7 +643,7 @@ app.get('/api/admin/logs', authenticateToken, async (req, res) => {
 app.get('/api/workspaces', authenticateToken, async (req: any, res) => {
   try {
     const snapshot = await db.collection('workspaces').where('ownerId', '==', req.user.uid).get();
-    const workspaces = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const workspaces = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
     res.json(workspaces);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch workspaces' });
@@ -811,7 +811,7 @@ app.get('/api/buddies/:buddyId/appearance-profiles', authenticateToken, async (r
       .where('ownerId', '==', req.user?.uid)
       .where('buddyId', '==', req.params.buddyId)
       .get();
-    const profiles = snapshot.docs.map((doc) => doc.data());
+    const profiles = snapshot.docs.map((doc: any) => doc.data());
     res.json({ profiles });
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
@@ -850,7 +850,7 @@ app.post('/api/buddies/:buddyId/appearance-profiles/generate', authenticateToken
         .where('buddyId', '==', buddyId)
         .where('isDefault', '==', true)
         .get();
-      await Promise.all(existingDefaults.docs.map((doc) => doc.ref.update({ isDefault: false })));
+      await Promise.all(existingDefaults.docs.map((doc: any) => doc.ref.update({ isDefault: false })));
       generated.profile.isDefault = true;
     }
 
@@ -885,7 +885,7 @@ app.post('/api/buddies/:buddyId/appearance-profiles/:profileId/default', authent
       .get();
 
     await Promise.all(
-      profiles.docs.map((doc) => doc.ref.update({ isDefault: doc.id === profileId, updatedAt: nowIso() })),
+      profiles.docs.map((doc: any) => doc.ref.update({ isDefault: doc.id === profileId, updatedAt: nowIso() })),
     );
 
     const selected = await db.collection(BUDDY_PROFILE_COLLECTION).doc(profileId).get();
