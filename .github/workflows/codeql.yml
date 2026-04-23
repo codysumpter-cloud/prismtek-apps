@@ -23,7 +23,10 @@ jobs:
       - name: Decide whether CodeQL can upload
         id: codeql
         run: |
-          if [ "${{ github.event.repository.private }}" = "true" ] && [ "${{ vars.ENABLE_PRIVATE_CODEQL }}" != "true" ]; then
+          if [ "${{ vars.ENABLE_CODEQL }}" != "true" ]; then
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "CodeQL is skipped because this repository has not explicitly opted into code scanning uploads."
+          elif [ "${{ github.event.repository.private }}" = "true" ] && [ "${{ vars.ENABLE_PRIVATE_CODEQL }}" != "true" ]; then
             echo "enabled=false" >> "$GITHUB_OUTPUT"
             echo "CodeQL upload is skipped because this private repository does not have GitHub Advanced Security enabled."
           else

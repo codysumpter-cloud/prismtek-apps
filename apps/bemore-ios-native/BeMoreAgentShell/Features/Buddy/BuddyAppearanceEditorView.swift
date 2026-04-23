@@ -256,7 +256,7 @@ struct BuddyAppearanceEditorView<Preview: View>: View {
     }
 
     private var previewSummary: String {
-        "\(draft.archetype.replacingOccurrences(of: "_", with: " ").capitalized) • \(draft.customization.subtype.replacingOccurrences(of: "_", with: " ").capitalized) • \(draft.customization.personalityVibe.capitalized)"
+        "\(draft.archetype.replacingOccurrences(of: "_", with: " ").capitalized) • \(draft.customization.subtype.replacingOccurrences(of: "_", with: " ").capitalized) • \(draft.customization.pose.replacingOccurrences(of: "_", with: " ").capitalized) • \(draft.customization.personalityVibe.capitalized)"
     }
 
     private var derivedPixelVariantID: String {
@@ -280,11 +280,9 @@ struct BuddyAppearanceEditorView<Preview: View>: View {
     }
 
     private func resetCustomizationForArchetype() {
-        let defaults = BuddyAppearanceRenderContract.defaultCustomization(for: draft.archetype)
-        if subtypeOptions.contains(where: { $0.id == draft.customization.subtype }) == false {
-            draft.customization = defaults
-            return
-        }
-        draft.customization = BuddyAppearanceRenderContract.normalizedCustomization(draft.customization, archetypeID: draft.archetype)
+        draft.customization = BuddyAppearanceRenderContract.reconciledCustomization(
+            draft.customization,
+            archetypeID: draft.archetype
+        )
     }
 }

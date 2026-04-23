@@ -612,10 +612,10 @@ struct BuddyAppearanceCustomization: Codable, Hashable {
         subtype: "classic",
         bodyStyle: "compact",
         accessory: "none",
-        accentDetail: "signature glow",
+        accentDetail: "signature_glow",
         pose: "idle",
         personalityVibe: "friendly",
-        animationFlavor: "gentle bob",
+        animationFlavor: "gentle_bob",
         promptModifiers: ""
     )
 }

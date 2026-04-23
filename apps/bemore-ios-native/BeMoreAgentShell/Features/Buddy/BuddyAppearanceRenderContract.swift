@@ -35,13 +35,24 @@ struct BuddyAppearancePreviewSpec: Hashable {
 }
 
 enum BuddyAppearanceRenderContract {
+    private static let idSeparatorCharacterSet = CharacterSet.whitespacesAndNewlines.union(.punctuationCharacters.subtracting(CharacterSet(charactersIn: "_")))
+
     static func cleanedName(_ value: String, fallback: String = "Buddy") -> String {
         let cleaned = value.trimmingCharacters(in: .whitespacesAndNewlines)
         return cleaned.isEmpty ? fallback : cleaned
     }
 
+    static func canonicalOptionID(_ value: String) -> String {
+        value
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased()
+            .components(separatedBy: idSeparatorCharacterSet)
+            .filter { $0.isEmpty == false }
+            .joined(separator: "_")
+    }
+
     static func normalizedID(_ value: String, fallback: String) -> String {
-        let cleaned = value.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        let cleaned = canonicalOptionID(value)
         return cleaned.isEmpty ? fallback : cleaned
     }
 
@@ -52,21 +63,21 @@ enum BuddyAppearanceRenderContract {
                 subtype: "trex",
                 bodyStyle: "chunky",
                 accessory: "none",
-                accentDetail: "spike tail",
-                pose: "proud stance",
+                accentDetail: "spike_tail",
+                pose: "proud_stance",
                 personalityVibe: "cute",
-                animationFlavor: "tail swish",
+                animationFlavor: "tail_swish",
                 promptModifiers: "cute retro green sprite buddy"
             )
         case "pixel_pet":
             return .init(
                 subtype: "pet",
                 bodyStyle: "round",
-                accessory: "bell collar",
-                accentDetail: "cheek blush",
-                pose: "idle bounce",
+                accessory: "bell_collar",
+                accentDetail: "signature_glow",
+                pose: "bounce",
                 personalityVibe: "friendly",
-                animationFlavor: "tiny bounce",
+                animationFlavor: "gentle_bob",
                 promptModifiers: "game-ready pet sprite"
             )
         case "cat_like":
@@ -74,98 +85,98 @@ enum BuddyAppearanceRenderContract {
                 subtype: "cat",
                 bodyStyle: "fluffy",
                 accessory: "scarf",
-                accentDetail: "soft whiskers",
-                pose: "curled sit",
+                accentDetail: "soft_whiskers",
+                pose: "idle",
                 personalityVibe: "sleepy",
-                animationFlavor: "tail flick",
+                animationFlavor: "tail_swish",
                 promptModifiers: ""
             )
         case "fox_like":
             return .init(
                 subtype: "fox",
                 bodyStyle: "sleek",
-                accessory: "leaf ribbon",
-                accentDetail: "fluffy tail",
-                pose: "alert stand",
-                personalityVibe: "sly",
-                animationFlavor: "ear twitch",
+                accessory: "scarf",
+                accentDetail: "tail_fluff",
+                pose: "proud_stance",
+                personalityVibe: "playful",
+                animationFlavor: "tail_swish",
                 promptModifiers: ""
             )
         case "robot":
             return .init(
-                subtype: "utility bot",
-                bodyStyle: "compact chassis",
+                subtype: "utility_bot",
+                bodyStyle: "compact_chassis",
                 accessory: "antenna",
-                accentDetail: "screen face",
-                pose: "ready stance",
+                accentDetail: "signature_glow",
+                pose: "proud_stance",
                 personalityVibe: "focused",
-                animationFlavor: "signal blink",
+                animationFlavor: "blink_blink",
                 promptModifiers: ""
             )
         case "slime":
             return .init(
-                subtype: "goo buddy",
-                bodyStyle: "round blob",
-                accessory: "star clip",
-                accentDetail: "sparkle goo",
-                pose: "squish pose",
+                subtype: "goo_buddy",
+                bodyStyle: "round_blob",
+                accessory: "star_clip",
+                accentDetail: "cheek_sparks",
+                pose: "bounce",
                 personalityVibe: "playful",
-                animationFlavor: "wobble",
+                animationFlavor: "gentle_bob",
                 promptModifiers: ""
             )
         case "plant_creature":
             return .init(
                 subtype: "sproutling",
                 bodyStyle: "leafy",
-                accessory: "vine charm",
-                accentDetail: "bloom accent",
-                pose: "gentle sway",
-                personalityVibe: "gentle",
-                animationFlavor: "leaf sway",
+                accessory: "scarf",
+                accentDetail: "leaf_charm",
+                pose: "idle",
+                personalityVibe: "friendly",
+                animationFlavor: "gentle_bob",
                 promptModifiers: ""
             )
         case "mini_wizard":
             return .init(
                 subtype: "apprentice",
                 bodyStyle: "robe",
-                accessory: "tiny staff",
-                accentDetail: "moon trim",
-                pose: "casting pose",
-                personalityVibe: "wise",
-                animationFlavor: "cloak flutter",
+                accessory: "scarf",
+                accentDetail: "signature_glow",
+                pose: "proud_stance",
+                personalityVibe: "focused",
+                animationFlavor: "gentle_bob",
                 promptModifiers: ""
             )
         case "spirit":
             return .init(
                 subtype: "wisp",
                 bodyStyle: "floaty",
-                accessory: "rune halo",
-                accentDetail: "aura trail",
-                pose: "hover",
-                personalityVibe: "calm",
-                animationFlavor: "pulse shimmer",
+                accessory: "none",
+                accentDetail: "signature_glow",
+                pose: "idle",
+                personalityVibe: "friendly",
+                animationFlavor: "gentle_bob",
                 promptModifiers: ""
             )
         case "companion_orb":
             return .init(
                 subtype: "orb",
                 bodyStyle: "round",
-                accessory: "orbit ring",
-                accentDetail: "rune sparks",
-                pose: "hover",
-                personalityVibe: "smart",
-                animationFlavor: "orbit pulse",
+                accessory: "none",
+                accentDetail: "rune_sparks",
+                pose: "idle",
+                personalityVibe: "focused",
+                animationFlavor: "blink_blink",
                 promptModifiers: ""
             )
         case "tiny_monster":
             return .init(
                 subtype: "goblin",
                 bodyStyle: "spiky",
-                accessory: "fang charm",
-                accentDetail: "little horns",
-                pose: "stomp",
-                personalityVibe: "bold",
-                animationFlavor: "bounce stomp",
+                accessory: "star_clip",
+                accentDetail: "signature_glow",
+                pose: "bounce",
+                personalityVibe: "fierce",
+                animationFlavor: "bounce_stomp",
                 promptModifiers: ""
             )
         default:
@@ -190,6 +201,25 @@ enum BuddyAppearanceRenderContract {
         )
     }
 
+    static func reconciledCustomization(
+        _ customization: BuddyAppearanceCustomization,
+        archetypeID: String
+    ) -> BuddyAppearanceCustomization {
+        let normalized = normalizedCustomization(customization, archetypeID: archetypeID)
+        let defaults = defaultCustomization(for: archetypeID)
+
+        return BuddyAppearanceCustomization(
+            subtype: resolvedOptionID(normalized.subtype, options: subtypeOptions(for: archetypeID), fallback: defaults.subtype),
+            bodyStyle: resolvedOptionID(normalized.bodyStyle, options: options(for: \.bodyStyle, archetypeID: archetypeID), fallback: defaults.bodyStyle),
+            accessory: resolvedOptionID(normalized.accessory, options: options(for: \.accessory, archetypeID: archetypeID), fallback: defaults.accessory),
+            accentDetail: resolvedOptionID(normalized.accentDetail, options: options(for: \.accentDetail, archetypeID: archetypeID), fallback: defaults.accentDetail),
+            pose: resolvedOptionID(normalized.pose, options: options(for: \.pose, archetypeID: archetypeID), fallback: defaults.pose),
+            personalityVibe: resolvedOptionID(normalized.personalityVibe, options: options(for: \.personalityVibe, archetypeID: archetypeID), fallback: defaults.personalityVibe),
+            animationFlavor: resolvedOptionID(normalized.animationFlavor, options: options(for: \.animationFlavor, archetypeID: archetypeID), fallback: defaults.animationFlavor),
+            promptModifiers: normalized.promptModifiers
+        )
+    }
+
     static func requestSignature(
         buddyName: String,
         archetypeID: String,
@@ -198,7 +228,7 @@ enum BuddyAppearanceRenderContract {
         accentLabel: String,
         customization: BuddyAppearanceCustomization
     ) -> String {
-        let details = normalizedCustomization(customization, archetypeID: archetypeID)
+        let details = reconciledCustomization(customization, archetypeID: archetypeID)
         return [
             cleanedName(buddyName).lowercased(),
             normalizedID(archetypeID, fallback: "console_pet"),
@@ -260,7 +290,7 @@ enum BuddyAppearanceRenderContract {
         pixelAssetPath: String? = nil
     ) -> BuddyAppearancePreviewSpec {
         let name = cleanedName(buddyName)
-        let details = normalizedCustomization(customization ?? defaultCustomization(for: archetypeID), archetypeID: archetypeID)
+        let details = reconciledCustomization(customization ?? defaultCustomization(for: archetypeID), archetypeID: archetypeID)
         let key = renderStyle == .pixel
             ? (pixelRequestKey ?? self.pixelRequestKey(
                 buddyName: name,
@@ -403,7 +433,7 @@ enum BuddyAppearanceRenderContract {
     }
 
     static func pixelDescription(for spec: BuddyAppearancePreviewSpec) -> String {
-        let details = normalizedCustomization(spec.customization, archetypeID: spec.archetypeID)
+        let details = reconciledCustomization(spec.customization, archetypeID: spec.archetypeID)
         let subtypePrompt: String
         switch (spec.archetypeID, details.subtype) {
         case ("dino", "trex"):
@@ -467,5 +497,17 @@ enum BuddyAppearanceRenderContract {
         ]
         .compactMap { $0 }
         .joined(separator: ", ")
+    }
+
+    private static func resolvedOptionID(
+        _ value: String,
+        options: [BuddyAppearanceOption],
+        fallback: String
+    ) -> String {
+        let normalized = canonicalOptionID(value)
+        if options.contains(where: { canonicalOptionID($0.id) == normalized }) {
+            return normalized
+        }
+        return fallback
     }
 }

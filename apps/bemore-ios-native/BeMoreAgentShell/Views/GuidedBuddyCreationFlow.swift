@@ -3,6 +3,7 @@ import SwiftUI
 private struct BuddyCreatorDraft {
     var templateID: String = ""
     var displayName: String = ""
+    var archetypeID: String = "console_pet"
     var paletteID: String = "mint_cream"
     var asciiVariantID: String = "starter_a"
     var expressionTone: String = "friendly"
@@ -12,6 +13,7 @@ private struct BuddyCreatorDraft {
 
     mutating func reset(using template: CouncilStarterBuddyTemplate?, palettes: [BuddyPaletteOption]) {
         let archetype = template.map { CouncilBuddyIdentityCatalog.identity(for: $0).archetype } ?? "console_pet"
+        archetypeID = archetype
         paletteID = palettes.first?.id ?? "mint_cream"
         asciiVariantID = BuddyCreatorCurations.asciiStyles.first ?? "starter_a"
         expressionTone = "friendly"
@@ -48,7 +50,7 @@ struct GuidedBuddyCreationFlow: View {
     }
 
     private var selectedArchetypeID: String {
-        selectedTemplate.map { CouncilBuddyIdentityCatalog.identity(for: $0).archetype } ?? "console_pet"
+        draft.archetypeID
     }
 
     private var subtypeOptions: [BuddyAppearanceOption] {
@@ -83,9 +85,7 @@ struct GuidedBuddyCreationFlow: View {
         guard var preview = appState.buddyStore.activeBuddy else { return nil }
         preview.displayName = draft.displayName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? preview.displayName : draft.displayName
         preview.identity.palette = draft.paletteID
-        if let template = selectedTemplate {
-            preview.identity.archetype = CouncilBuddyIdentityCatalog.identity(for: template).archetype
-        }
+        preview.identity.archetype = draft.archetypeID
         var visual = preview.visual ?? BuddyVisualState(
             asciiVariantId: nil,
             pixelVariantId: nil,
@@ -99,7 +99,7 @@ struct GuidedBuddyCreationFlow: View {
         visual.pixelVariantId = draft.renderStyle == .pixel ? pixelRequestKey : nil
         visual.pixelAssetPath = draft.renderStyle == .pixel ? PixelLabPreviewService.record(for: pixelRequestKey)?.localAssetPath : nil
         visual.currentAnimationState = draft.expressionTone == "focused" ? "working" : (draft.expressionTone == "curious" ? "thinking" : "happy")
-        visual.appearance = BuddyAppearanceRenderContract.normalizedCustomization(draft.customization, archetypeID: preview.identity.archetype)
+        visual.appearance = BuddyAppearanceRenderContract.reconciledCustomization(draft.customization, archetypeID: preview.identity.archetype)
         preview.visual = visual
         return preview
     }
@@ -107,7 +107,7 @@ struct GuidedBuddyCreationFlow: View {
     private var pixelRequestKey: String {
         BuddyAppearanceRenderContract.pixelRequestKey(
             buddyName: draft.displayName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? (selectedTemplate?.name ?? "Buddy") : draft.displayName,
-            archetypeID: selectedTemplate.map { CouncilBuddyIdentityCatalog.identity(for: $0).archetype } ?? "console_pet",
+            archetypeID: draft.archetypeID,
             paletteID: draft.paletteID,
             expressionTone: draft.expressionTone,
             accentLabel: draft.accentLabel,
@@ -188,16 +188,27 @@ struct GuidedBuddyCreationFlow: View {
                 draft.reset(using: selectedTemplate, palettes: palettes)
                 if let activeBuddy = appState.buddyStore.activeBuddy {
                     draft.displayName = activeBuddy.displayName
+                    draft.archetypeID = activeBuddy.identity.archetype
                     draft.paletteID = activeBuddy.identity.palette
                     draft.asciiVariantID = activeBuddy.visual?.asciiVariantId ?? "starter_a"
-                    draft.customization = BuddyAppearanceRenderContract.normalizedCustomization(
+                    draft.customization = BuddyAppearanceRenderContract.reconciledCustomization(
                         activeBuddy.visual?.appearance ?? BuddyAppearanceRenderContract.defaultCustomization(for: activeBuddy.identity.archetype),
                         archetypeID: activeBuddy.identity.archetype
                     )
                 }
             }
             .onChange(of: draft.templateID) { _ in
-                draft.customization = BuddyAppearanceRenderContract.defaultCustomization(for: selectedArchetypeID)
+                draft.archetypeID = selectedTemplate.map { CouncilBuddyIdentityCatalog.identity(for: $0).archetype } ?? draft.archetypeID
+                draft.customization = BuddyAppearanceRenderContract.reconciledCustomization(
+                    draft.customization,
+                    archetypeID: draft.archetypeID
+                )
+            }
+            .onChange(of: draft.archetypeID) { _ in
+                draft.customization = BuddyAppearanceRenderContract.reconciledCustomization(
+                    draft.customization,
+                    archetypeID: draft.archetypeID
+                )
             }
             .alert("Buddy creator", isPresented: Binding(
                 get: { errorMessage != nil },
@@ -281,7 +292,7 @@ struct GuidedBuddyCreationFlow: View {
             Text("Choose a starter")
                 .font(.headline)
                 .foregroundColor(BMOTheme.textPrimary)
-            Text("Start with a strong default instead of building from scratch.")
+            Text("Start with a strong default, then swap archetype later if you want a different species family.")
                 .font(.subheadline)
                 .foregroundColor(BMOTheme.textSecondary)
 
@@ -304,6 +315,9 @@ struct GuidedBuddyCreationFlow: View {
                             Text(template.name)
                                 .font(.headline)
                                 .foregroundColor(BMOTheme.textPrimary)
+                            Text(archetypeLabel(for: CouncilBuddyIdentityCatalog.identity(for: template).archetype))
+                                .font(.caption.weight(.semibold))
+                                .foregroundColor(BMOTheme.accent)
                             Text(template.onboardingTitle)
                                 .font(.subheadline)
                                 .foregroundColor(BMOTheme.textSecondary)
@@ -417,6 +431,18 @@ struct GuidedBuddyCreationFlow: View {
             }
             .pickerStyle(.segmented)
 
+            Picker("Archetype", selection: $draft.archetypeID) {
+                ForEach(availableArchetypes, id: \.id) { archetype in
+                    Text(archetype.label).tag(archetype.id)
+                }
+            }
+
+            if let selectedSubtype = subtypeOptions.first(where: { $0.id == draft.customization.subtype }) {
+                Text(selectedSubtype.detail)
+                    .font(.caption)
+                    .foregroundColor(BMOTheme.textSecondary)
+            }
+
             if subtypeOptions.isEmpty == false {
                 Picker("Species / Subtype", selection: $draft.customization.subtype) {
                     ForEach(subtypeOptions) { option in
@@ -519,6 +545,7 @@ struct GuidedBuddyCreationFlow: View {
 
             VStack(alignment: .leading, spacing: 8) {
                 summaryRow("Starter", selectedTemplate?.name ?? "None")
+                summaryRow("Archetype", archetypeLabel(for: draft.archetypeID))
                 summaryRow("Colors", palettes.first(where: { $0.id == draft.paletteID })?.label ?? draft.paletteID)
                 summaryRow("Style", draft.renderStyle == .pixel ? "Pixel preview" : "ASCII preview")
                 summaryRow("Subtype", subtypeOptions.first(where: { $0.id == draft.customization.subtype })?.label ?? draft.customization.subtype.capitalized)
@@ -589,7 +616,7 @@ struct GuidedBuddyCreationFlow: View {
         )
         appState.buddyStore.saveAppearanceProfile(
             profileName: "Starter Look",
-            archetype: CouncilBuddyIdentityCatalog.identity(for: template).archetype,
+            archetype: draft.archetypeID,
             palette: draft.paletteID,
             asciiVariantID: draft.asciiVariantID,
             pixelVariantID: draft.renderStyle == .pixel ? pixelRequestKey : nil,
@@ -601,6 +628,14 @@ struct GuidedBuddyCreationFlow: View {
         )
         isSaving = false
         dismiss()
+    }
+
+    private var availableArchetypes: [BuddyArchetypeOption] {
+        appState.buddyStore.contracts?.creationOptions.options.archetypes ?? []
+    }
+
+    private func archetypeLabel(for archetypeID: String) -> String {
+        availableArchetypes.first(where: { $0.id == archetypeID })?.label ?? archetypeID.replacingOccurrences(of: "_", with: " ").capitalized
     }
 
     private func summaryRow(_ label: String, _ value: String) -> some View {

@@ -1058,7 +1058,7 @@ struct BuddyView: View {
         visual.pixelVariantId = draft.renderStyle == .pixel ? draft.pixelVariantID : nil
         visual.pixelAssetPath = draft.renderStyle == .pixel ? (draft.pixelAssetPath ?? PixelLabPreviewService.record(for: draft.pixelVariantID)?.localAssetPath) : nil
         visual.currentAnimationState = previewAnimationState(for: draft.expressionTone)
-        visual.appearance = BuddyAppearanceRenderContract.normalizedCustomization(draft.customization, archetypeID: draft.archetype)
+        visual.appearance = BuddyAppearanceRenderContract.reconciledCustomization(draft.customization, archetypeID: draft.archetype)
         preview.visual = visual
         return preview
     }
