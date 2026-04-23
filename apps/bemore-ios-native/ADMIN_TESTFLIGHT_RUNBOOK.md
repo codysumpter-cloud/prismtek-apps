@@ -6,7 +6,7 @@ This is the single source of truth for producing a BeMoreAgent TestFlight upload
 
 - Current safe runtime baseline: `main` still uses `MLCBridgeEngine()` from `apps/bemore-ios-native/BeMoreAgentShell/BeMoreAgentApp.swift`
 - Do not merge speculative local-runtime branches just to force a build green
-- The current source build number in `apps/bemore-ios-native/BeMoreAgentShell/Info.plist` is `42`
+- The current source build number in `apps/bemore-ios-native/BeMoreAgentShell/Info.plist` is `46`
 
 ## Required repo state
 
@@ -67,8 +67,8 @@ This is an optional Xcode path override. If unset, the workflow defaults to `/Ap
 
 1. Branch from current `main`.
 2. Make the smallest safe iOS change.
-3. Keep `apps/bemore-ios-native/BeMoreAgentShell/Info.plist` `CFBundleVersion` at `42` until App Store Connect forces the next bump.
-4. Build `41` was already present in App Store Connect on 2026-04-21, so the repo moved to `42` after the upload lane failed with: `The bundle version must be higher than the previously uploaded version: '41'.`
+3. Keep `apps/bemore-ios-native/BeMoreAgentShell/Info.plist` `CFBundleVersion` at `46` until App Store Connect forces the next bump.
+4. Build `45` was already present in App Store Connect on 2026-04-23, so the repo moved to `46` after the upload lane failed with: `The bundle version must be higher than the previously uploaded version: '45'.`
 4. Run local verification:
 
 ```bash

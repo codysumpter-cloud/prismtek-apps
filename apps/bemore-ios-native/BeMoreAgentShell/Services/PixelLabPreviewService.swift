@@ -105,9 +105,7 @@ enum PixelLabPreviewService {
 
     private static func saveImageData(_ data: Data, requestKey: String) throws -> URL {
         try FileManager.default.createDirectory(at: Paths.pixelLabPreviewAssetDirectory, withIntermediateDirectories: true)
-        let filename = requestKey
-            .replacingOccurrences(of: "pixellab:", with: "")
-            .replacingOccurrences(of: "|", with: "-")
+        let filename = sanitizedFilename(for: requestKey)
         let url = Paths.pixelLabPreviewAssetDirectory.appendingPathComponent("\(filename).png")
         try data.write(to: url, options: [.atomic])
         return url
@@ -152,5 +150,16 @@ enum PixelLabPreviewService {
         print(
             "[PixelLabPreview] status=\(status) signature=\(spec.requestSignature) archetype=\(spec.archetypeID) palette=\(spec.paletteID) snippet=\(redactedSnippet)"
         )
+    }
+
+    private static func sanitizedFilename(for requestKey: String) -> String {
+        let raw = requestKey.replacingOccurrences(of: "pixellab:", with: "")
+        let scalarView = raw.unicodeScalars.map { scalar -> Character in
+            CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "-_")).contains(scalar) ? Character(scalar) : "-"
+        }
+        let collapsed = String(scalarView)
+            .replacingOccurrences(of: "--", with: "-")
+            .trimmingCharacters(in: CharacterSet(charactersIn: "-"))
+        return collapsed.isEmpty ? "preview" : String(collapsed.prefix(120))
     }
 }

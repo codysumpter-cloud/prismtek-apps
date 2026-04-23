@@ -673,7 +673,7 @@ struct OnboardingFlow: View {
             asciiVariantID: defaultASCII,
             expressionTone: config.onboardingAppearanceExpressionTone ?? "friendly",
             accentLabel: config.onboardingAppearanceAccentLabel ?? "pocket glow",
-            customization: BuddyAppearanceRenderContract.normalizedCustomization(
+            customization: BuddyAppearanceRenderContract.reconciledCustomization(
                 BuddyAppearanceCustomization(
                     subtype: config.onboardingAppearanceSubtype ?? "",
                     bodyStyle: config.onboardingAppearanceBodyStyle ?? "",

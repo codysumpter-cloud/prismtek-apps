@@ -67,6 +67,7 @@
 		90814EB8783C8EFEB8A94F18 /* AppPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 213B2BC4AA157D082554BE9E /* AppPreferences.swift */; };
 		91CF6BDC5C6CE18758B13E59 /* ChatTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 292FAE87768026E100C6F5EA /* ChatTabView.swift */; };
 		93C6FB195AC3C07900FFCFB7 /* BuddyAsciiView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7DEEA27091AFDDCB925FA78 /* BuddyAsciiView.swift */; };
+		9829B9B77D97CCBB41793776 /* BuddyAppearanceStudioTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B34923B84B416E4ACBDEB459 /* BuddyAppearanceStudioTests.swift */; };
 		9AA239FBAEDB1C18C1766BFE /* COUNCIL_STARTER_PACK.md in Resources */ = {isa = PBXBuildFile; fileRef = 822FB2E18B1BE2E3808ED24D /* COUNCIL_STARTER_PACK.md */; };
 		9AC532AC40530CEF868ADA20 /* PixelLabPreviewService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A67DEFF2EF57A9A9B706EBE /* PixelLabPreviewService.swift */; };
 		9AC99C0CFBFF142BDCFFD27A /* GuidedBuddyCreationFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058E4CB56F50B75F37555D8F /* GuidedBuddyCreationFlow.swift */; };
@@ -202,6 +203,7 @@
 		B01D9C27C2C675DC0E7C06D8 /* PixelStudioStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelStudioStoreTests.swift; sourceTree = "<group>"; };
 		B17D61BFC19DB9DFDDC8D84A /* OAuthLinkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuthLinkService.swift; sourceTree = "<group>"; };
 		B2492C1A1171EA87D2825F3E /* buddy-system.schema.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "buddy-system.schema.json"; sourceTree = "<group>"; };
+		B34923B84B416E4ACBDEB459 /* BuddyAppearanceStudioTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyAppearanceStudioTests.swift; sourceTree = "<group>"; };
 		B57B6910006CB9FF4137A24A /* BuddyCreatorCurations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyCreatorCurations.swift; sourceTree = "<group>"; };
 		BB9AD60B925BF53E43850922 /* buddy-state-machine.example.v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "buddy-state-machine.example.v1.json"; sourceTree = "<group>"; };
 		C2619477DC09F87DEF80B84E /* BeMoreAgentTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = BeMoreAgentTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -512,6 +514,7 @@
 				98417662936110DAC0CA5200 /* AppStateRuntimeTests.swift */,
 				AD7B4DF2A69D1F91106A3B05 /* BeMoreCapabilityMirrorTests.swift */,
 				100128F33B7156476550D44E /* BeMoreChatDispatchTests.swift */,
+				B34923B84B416E4ACBDEB459 /* BuddyAppearanceStudioTests.swift */,
 				01918E461FB736E2F15B0BDE /* BuddyRuntimeTests.swift */,
 				3AE3C8999685EA6F0930AE1F /* LinkedAccountFlowTests.swift */,
 				B01D9C27C2C675DC0E7C06D8 /* PixelStudioStoreTests.swift */,
@@ -728,6 +731,7 @@
 				2464451FB6121B2014117546 /* AppStateRuntimeTests.swift in Sources */,
 				9F4F08017919E300A977DB45 /* BeMoreCapabilityMirrorTests.swift in Sources */,
 				AB5F790ED8DBD20ABCFB9237 /* BeMoreChatDispatchTests.swift in Sources */,
+				9829B9B77D97CCBB41793776 /* BuddyAppearanceStudioTests.swift in Sources */,
 				DC499597B6A14E3FC52DFCE8 /* BuddyRuntimeTests.swift in Sources */,
 				0399E2C3FC3CE96A33636492 /* LinkedAccountFlowTests.swift in Sources */,
 				16B10AB4B3797A3604750520 /* PixelStudioStoreTests.swift in Sources */,

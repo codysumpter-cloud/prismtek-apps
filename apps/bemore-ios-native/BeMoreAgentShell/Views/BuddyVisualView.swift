@@ -8,7 +8,11 @@ struct BuddyVisualView: View {
     var compact: Bool = false
 
     var body: some View {
-        let isPixel = previewSpec?.renderStyle == .pixel || buddy?.visual?.pixelVariantId != nil
+        let isPixel = previewSpec?.renderStyle == .pixel
+            || previewSpec?.pixelRequestKey?.isEmpty == false
+            || previewSpec?.pixelAssetPath?.isEmpty == false
+            || buddy?.visual?.pixelVariantId?.isEmpty == false
+            || buddy?.visual?.pixelAssetPath?.isEmpty == false
 
         Group {
             if !isPixel {

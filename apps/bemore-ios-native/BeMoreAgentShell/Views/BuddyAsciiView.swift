@@ -60,7 +60,7 @@ struct BuddyAsciiView: View {
     }
 
     private var customization: BuddyAppearanceCustomization {
-        BuddyAppearanceRenderContract.normalizedCustomization(
+        BuddyAppearanceRenderContract.reconciledCustomization(
             previewSpec?.customization ?? buddy?.visual?.appearance ?? BuddyAppearanceRenderContract.defaultCustomization(for: archetypeID),
             archetypeID: archetypeID
         )
@@ -119,7 +119,7 @@ private enum BuddyASCIIArtLibrary {
         asciiVariantID: String,
         customization: BuddyAppearanceCustomization
     ) -> [String] {
-        let normalized = BuddyAppearanceRenderContract.normalizedCustomization(customization, archetypeID: archetypeID)
+        let normalized = BuddyAppearanceRenderContract.reconciledCustomization(customization, archetypeID: archetypeID)
         let key = templateKey(archetypeID: archetypeID, subtype: normalized.subtype)
         let template = templates[key] ?? templates[archetypeID] ?? templates["console_pet"]!
         let selected = mood == .idle ? template.idle : (template.moods[mood] ?? template.idle)
@@ -127,7 +127,7 @@ private enum BuddyASCIIArtLibrary {
         let mouth = mouth(for: mood, expressionTone: expressionTone, vibe: normalized.personalityVibe)
         return selected.map {
             applyVariant(
-                rendered: render($0, eyes: eyes, mouth: mouth, accent: accentGlyph(normalized.accentDetail)),
+                rendered: render($0, eyes: eyes, mouth: mouth, accent: accentGlyph(normalized.accentDetail, asciiVariantID: asciiVariantID)),
                 asciiVariantID: asciiVariantID
             )
         }
@@ -146,24 +146,32 @@ private enum BuddyASCIIArtLibrary {
             .replacingOccurrences(of: "{A}", with: accent)
     }
 
-    private static func accentGlyph(_ accent: String) -> String {
+    private static func accentGlyph(_ accent: String, asciiVariantID: String) -> String {
+        let baseGlyph: String
         switch accent {
-        case "heart_cheeks": return "v"
-        case "plate_ridges": return "^"
-        case "club_tail": return "o"
-        case "soft_whiskers": return "~"
-        case "tail_fluff": return "*"
-        case "rune_sparks": return "+"
-        default: return "~"
+        case "heart_cheeks": baseGlyph = "v"
+        case "plate_ridges": baseGlyph = "^"
+        case "club_tail": baseGlyph = "o"
+        case "soft_whiskers": baseGlyph = "~"
+        case "tail_fluff": baseGlyph = "*"
+        case "rune_sparks": baseGlyph = "+"
+        case "signature_glow": baseGlyph = "."
+        case "leaf_charm": baseGlyph = "*"
+        default: baseGlyph = "~"
+        }
+
+        switch asciiVariantID {
+        case "starter_b":
+            return baseGlyph == "." ? "*" : baseGlyph
+        case "starter_c":
+            return baseGlyph == "." ? "+" : baseGlyph
+        default:
+            return baseGlyph
         }
     }
 
     private static func applyVariant(rendered: String, asciiVariantID: String) -> String {
         switch asciiVariantID {
-        case "starter_b":
-            return rendered.replacingOccurrences(of: "~", with: "*")
-        case "starter_c":
-            return rendered.replacingOccurrences(of: ".", with: "·")
         default:
             return rendered
         }
@@ -234,25 +242,32 @@ private enum BuddyASCIIArtLibrary {
         "dino:trex": .init(
             idle: [
                 art([
-                    "      __",
-                    "  ___/{L}{R}\\\\__",
-                    " /  _ {M}  _\\\\>",
-                    "/__/\\\\_  _/ ",
-                    "   /_/ \\\\_\\\\{A}"
+                    "       __",
+                    "  _.-'/ {L}{R}\\\\_",
+                    " / _  {M}  _/\\\\>",
+                    "/_/ \\\\__.-' /",
+                    "    /_/  \\\\_\\\\{A}"
                 ]),
                 art([
-                    "      __",
-                    "  ___/{L}{R}\\\\__",
-                    " /  _ {M}  _\\\\>>",
-                    "/__/\\\\_  / ",
-                    "   /_/ \\\\_\\\\{A}"
+                    "       __",
+                    "  _.-'/ {L}{R}\\\\_",
+                    " / _  {M}  _/\\\\>>",
+                    "/_/ \\\\__.-' /",
+                    "    /_/  \\\\_\\\\{A}"
                 ]),
                 art([
-                    "      __",
-                    "  ___/{L}{R}\\\\__",
-                    " /  _ {M}  _\\\\>",
-                    "/__/\\\\_ _/ ",
-                    "   /_/  \\\\_\\\\{A}"
+                    "       __",
+                    "  _.-'/ {L}{R}\\\\_",
+                    " / _  {M}  _/\\\\>",
+                    "/_/ \\\\__._ /",
+                    "    /_/   \\\\_\\\\{A}"
+                ]),
+                art([
+                    "       __",
+                    "  _.-'/ {L}{R}\\\\_",
+                    " / _  {M}  _/\\\\>",
+                    "/_/ \\\\__.-'/",
+                    "   _/_/  \\\\_\\\\{A}"
                 ])
             ],
             moods: [:]
@@ -391,18 +406,18 @@ private enum BuddyASCIIArtLibrary {
         "pixel_pet": .init(
             idle: [
                 art([
-                    "  .-==-.",
-                    " / {L}{R}  \\\\",
-                    "|  {M}   |",
-                    "| [__]  |",
-                    " \\\\_{A}_/"
+                    "   .-==-.",
+                    "  / {L}{R}  \\\\",
+                    " |  {M} {A} |",
+                    " | [__]  |",
+                    "  \\\\_==_/"
                 ]),
                 art([
-                    "  .-==-.",
-                    " / {L}{R}  \\\\",
-                    "|  {M}   |",
-                    "| [__]  |",
-                    " /_{A}_\\\\"
+                    "   .-==-.",
+                    "  / {L}{R}  \\\\",
+                    " |  {M} {A} |",
+                    " | [__]  |",
+                    "  /_==_\\\\"
                 ])
             ],
             moods: [:]

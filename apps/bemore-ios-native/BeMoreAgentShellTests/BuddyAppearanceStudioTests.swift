@@ -41,8 +41,8 @@ final class BuddyAppearanceStudioTests: XCTestCase {
                 promptModifiers: ""
             )
         )
-        XCTAssertEqual(frames.count, 3)
-        XCTAssertTrue(frames.joined(separator: "\n").contains("___/{"))
+        XCTAssertEqual(frames.count, 4)
+        XCTAssertTrue(frames.joined(separator: "\n").contains("_.-'/"))
         XCTAssertTrue(frames.joined(separator: "\n").contains(">"))
         XCTAssertFalse(frames.joined(separator: "\n").localizedCaseInsensitiveContains("rawr"))
     }
@@ -75,7 +75,7 @@ final class BuddyAppearanceStudioTests: XCTestCase {
 
     func testPixelLabRequestIncludesArchetypeSpecificPrompt() async throws {
         MockPixelLabURLProtocol.handler = { request in
-            let body = try XCTUnwrap(request.httpBody)
+            let body = try XCTUnwrap(request.httpBodyData)
             let payload = try JSONDecoder().decode(PixelLabGenerateRequest.self, from: body)
             XCTAssertEqual(payload.width, 48)
             XCTAssertEqual(payload.height, 48)
@@ -96,8 +96,8 @@ final class BuddyAppearanceStudioTests: XCTestCase {
             asciiVariantID: "starter_a",
             expressionTone: "friendly",
             accentLabel: "tail spark",
-            customization: .init(subtype: "trex", bodyStyle: "chunky", accessory: "satchel", accentDetail: "spike_tail", pose: "proud_stance", personalityVibe: "cute", animationFlavor: "tail_swish", promptModifiers: "retro green sprite"),
-            renderStyle: .pixel
+            renderStyle: .pixel,
+            customization: .init(subtype: "trex", bodyStyle: "chunky", accessory: "satchel", accentDetail: "spike_tail", pose: "proud_stance", personalityVibe: "cute", animationFlavor: "tail_swish", promptModifiers: "retro green sprite")
         )
 
         let record = await PixelLabPreviewService.sync(spec: spec, accessToken: "test-token")
@@ -118,8 +118,8 @@ final class BuddyAppearanceStudioTests: XCTestCase {
             asciiVariantID: "starter_a",
             expressionTone: "friendly",
             accentLabel: "mint glow",
-            customization: BuddyAppearanceRenderContract.defaultCustomization(for: "pixel_pet"),
-            renderStyle: .pixel
+            renderStyle: .pixel,
+            customization: BuddyAppearanceRenderContract.defaultCustomization(for: "pixel_pet")
         )
 
         let record = await PixelLabPreviewService.sync(spec: spec, accessToken: "test-token")
@@ -142,8 +142,8 @@ final class BuddyAppearanceStudioTests: XCTestCase {
             asciiVariantID: "starter_a",
             expressionTone: "friendly",
             accentLabel: "mint glow",
-            customization: BuddyAppearanceRenderContract.defaultCustomization(for: "pixel_pet"),
-            renderStyle: .pixel
+            renderStyle: .pixel,
+            customization: BuddyAppearanceRenderContract.defaultCustomization(for: "pixel_pet")
         )
 
         _ = await PixelLabPreviewService.sync(spec: spec, accessToken: "test-token")
@@ -346,4 +346,29 @@ private final class MockPixelLabURLProtocol: URLProtocol {
     }
 
     override func stopLoading() {}
+}
+
+private extension URLRequest {
+    var httpBodyData: Data? {
+        if let httpBody {
+            return httpBody
+        }
+
+        guard let stream = httpBodyStream else { return nil }
+        stream.open()
+        defer { stream.close() }
+
+        var data = Data()
+        let bufferSize = 1024
+        let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: bufferSize)
+        defer { buffer.deallocate() }
+
+        while stream.hasBytesAvailable {
+            let read = stream.read(buffer, maxLength: bufferSize)
+            if read <= 0 { break }
+            data.append(buffer, count: read)
+        }
+
+        return data.isEmpty ? nil : data
+    }
 }

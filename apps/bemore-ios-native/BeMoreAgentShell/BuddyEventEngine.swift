@@ -285,7 +285,7 @@ struct BuddyEventEngine {
         }
 
         let template = contracts.templateForInstance(instance)
-        let normalizedCustomization = BuddyAppearanceRenderContract.normalizedCustomization(customization, archetypeID: archetype)
+        let normalizedCustomization = BuddyAppearanceRenderContract.reconciledCustomization(customization, archetypeID: archetype)
         let profile = BuddyAppearanceProfile(
             id: "appearance_\(UUID().uuidString.lowercased())",
             name: cleanedName,
@@ -1253,7 +1253,7 @@ struct BuddyEventEngine {
         var updated = instance
         var profiles = ensuredAppearanceProfiles(for: updated, template: template, now: now)
         let activeProfileID = updated.visual?.activeAppearanceProfileId ?? profiles.first?.id
-        let normalizedCustomization = BuddyAppearanceRenderContract.normalizedCustomization(
+        let normalizedCustomization = BuddyAppearanceRenderContract.reconciledCustomization(
             customization ?? updated.visual?.appearance ?? profiles.first(where: { $0.id == activeProfileID })?.customization ?? .default,
             archetypeID: updated.identity.archetype
         )
