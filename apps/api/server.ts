@@ -39,14 +39,38 @@ const DEFAULT_BMO_STACK_ROOT = path.resolve(__dirname, '..', '..', '..', 'bmo-st
 const BMO_STACK_ROOT = path.resolve(process.env.BMO_STACK_ROOT || DEFAULT_BMO_STACK_ROOT);
 const BUDDY_PROFILE_COLLECTION = 'buddy_appearance_profiles';
 
-// Initialize Firebase Admin
-admin.initializeApp({
-  credential: admin.credential.cert(process.env.FIREBASE_SERVICE_ACCOUNT as string || {}),
-  databaseURL: `https://${firebaseConfig.projectId}.firebaseio.com`
-});
-
-const db = admin.firestore();
-const auth = admin.auth();
+// Initialize Firebase Admin – optional
+let db: any;
+let auth: any;
+try {
+  if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+    admin.initializeApp({
+      credential: admin.credential.cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)),
+      databaseURL: `https://${firebaseConfig.projectId}.firebaseio.com`
+    });
+    db = admin.firestore();
+    auth = admin.auth();
+  } else {
+    throw new Error('No Firebase credentials');
+  }
+} catch (e) {
+  console.warn('Firebase not configured, using in‑memory mock DB.');
+  const mockData = new Map<string, any>();
+  db = {
+    collection: (name: string) => ({
+      doc: (id: string) => ({
+        async get() { return { exists: mockData.has(`${name}/${id}`), data: () => mockData.get(`${name}/${id}`) }; },
+        async set(data: any) { mockData.set(`${name}/${id}`, data); },
+        async update(data: any) { if (mockData.has(`${name}/${id}`)) Object.assign(mockData.get(`${name}/${id}`), data); }
+      }),
+      async where() { return this; },
+      async get() { return { docs: [] }; }
+    })
+  };
+  auth = {
+    async verifyIdToken(token: string) { return { uid: token }; }
+  };
+}
 
 const appFactory = new AppFactory();
 const sandboxManager = new SandboxManager(process.env.SANDBOX_DOCKER_IMAGE || 'prismtek/sandbox:latest');
@@ -608,7 +632,7 @@ app.get('/api/admin/stats', authenticateToken, async (req: any, res) => {
 app.get('/api/admin/logs', authenticateToken, async (req, res) => {
   try {
     const snapshot = await db.collection('system_logs').orderBy('time', 'desc').limit(50).get();
-    const logs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const logs = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
     res.json(logs);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch logs' });
@@ -619,7 +643,7 @@ app.get('/api/admin/logs', authenticateToken, async (req, res) => {
 app.get('/api/workspaces', authenticateToken, async (req: any, res) => {
   try {
     const snapshot = await db.collection('workspaces').where('ownerId', '==', req.user.uid).get();
-    const workspaces = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const workspaces = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
     res.json(workspaces);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch workspaces' });
@@ -787,7 +811,7 @@ app.get('/api/buddies/:buddyId/appearance-profiles', authenticateToken, async (r
       .where('ownerId', '==', req.user?.uid)
       .where('buddyId', '==', req.params.buddyId)
       .get();
-    const profiles = snapshot.docs.map((doc) => doc.data());
+    const profiles = snapshot.docs.map((doc: any) => doc.data());
     res.json({ profiles });
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
@@ -826,7 +850,7 @@ app.post('/api/buddies/:buddyId/appearance-profiles/generate', authenticateToken
         .where('buddyId', '==', buddyId)
         .where('isDefault', '==', true)
         .get();
-      await Promise.all(existingDefaults.docs.map((doc) => doc.ref.update({ isDefault: false })));
+      await Promise.all(existingDefaults.docs.map((doc: any) => doc.ref.update({ isDefault: false })));
       generated.profile.isDefault = true;
     }
 
@@ -861,7 +885,7 @@ app.post('/api/buddies/:buddyId/appearance-profiles/:profileId/default', authent
       .get();
 
     await Promise.all(
-      profiles.docs.map((doc) => doc.ref.update({ isDefault: doc.id === profileId, updatedAt: nowIso() })),
+      profiles.docs.map((doc: any) => doc.ref.update({ isDefault: doc.id === profileId, updatedAt: nowIso() })),
     );
 
     const selected = await db.collection(BUDDY_PROFILE_COLLECTION).doc(profileId).get();
@@ -968,6 +992,39 @@ app.get('/api/codex/runs/:runId/result', authenticateToken, async (req, res) => 
   }
 });
 
+// Active Buddy Profile endpoint – returns the currently active buddy for the authenticated user (or a safe default).
+app.get('/api/buddy/active', async (req, res) => {
+  try {
+    // Optional Firebase auth – if no token, fall back to a local default.
+    let uid = 'local-dev';
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.split(' ')[1];
+      try {
+        const decoded = await auth.verifyIdToken(token);
+        uid = decoded.uid;
+      } catch (authErr) {
+        console.warn('Auth token verification failed, using dev fallback:', authErr);
+      }
+    }
+
+    const collectionRef = db.collection(BUDDY_PROFILE_COLLECTION);
+    const query = collectionRef.where('uid', '==', uid).orderBy('createdAt', 'desc').limit(1);
+    const snapshot = await query.get();
+    if (snapshot.empty) {
+      // Return a safe static default profile when none is stored.
+      res.json({ displayName: 'Prism', archetype: 'builder_companion', vibe: 'Help me plan the day' });
+    } else {
+      const profile = snapshot.docs[0].data();
+      res.json({ displayName: profile.displayName, archetype: profile.archetype, vibe: profile.vibe });
+    }
+  } catch (err) {
+    console.error('Buddy active endpoint error:', err);
+    res.status(500).json({ error: 'Failed to fetch active buddy' });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`BeMore API running on http://localhost:${PORT}`);
 });
+
