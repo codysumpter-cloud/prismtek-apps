@@ -1,11 +1,6 @@
 name: Build & TestFlight
 
 on:
-  push:
-    branches: [main, master]
-    paths:
-      - 'apps/bemore-ios-native/**'
-      - '.github/workflows/testflight.yml'
   workflow_dispatch:
 
 concurrency:
