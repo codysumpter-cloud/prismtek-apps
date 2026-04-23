@@ -36,7 +36,8 @@ public final class PixelLabService: ObservableObject {
             asciiVariantID: "starter_a",
             expressionTone: "friendly",
             accentLabel: prompt,
-            renderStyle: .pixel
+            renderStyle: .pixel,
+            customization: BuddyAppearanceRenderContract.defaultCustomization(for: style == "retro" ? "pixel_pet" : "console_pet")
         )
 
         do {

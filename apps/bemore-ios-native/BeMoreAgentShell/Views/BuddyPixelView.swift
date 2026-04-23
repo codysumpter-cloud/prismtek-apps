@@ -99,6 +99,7 @@ struct BuddyPixelView: View {
             expressionTone: buddyExpressionTone,
             accentLabel: buddy?.visual?.evolutionCosmetics.first ?? "pocket glow",
             renderStyle: .pixel,
+            customization: buddy?.visual?.appearance ?? BuddyAppearanceRenderContract.defaultCustomization(for: buddy?.identity.archetype ?? template.map { CouncilBuddyIdentityCatalog.identity(for: $0).archetype } ?? "console_pet"),
             pixelRequestKey: buddy?.visual?.pixelVariantId,
             pixelAssetPath: buddy?.visual?.pixelAssetPath
         )

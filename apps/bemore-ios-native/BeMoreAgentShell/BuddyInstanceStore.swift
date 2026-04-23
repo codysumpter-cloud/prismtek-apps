@@ -167,7 +167,8 @@ struct BuddyInstanceStore {
                 pixelAssetPath: nil,
                 activeAppearanceProfileId: nil,
                 currentAnimationState: "neutral",
-                evolutionCosmetics: []
+                evolutionCosmetics: [],
+                appearance: BuddyAppearanceRenderContract.defaultCustomization(for: identity.archetype)
             ),
             appearanceProfiles: [],
             trainingHistory: [],
@@ -260,6 +261,7 @@ final class BuddyProfileStore: ObservableObject {
                     pixelAssetPath: updated.visual?.pixelAssetPath,
                     expressionTone: "friendly",
                     accentLabel: updated.visual?.evolutionCosmetics.first ?? "starter glow",
+                    customization: updated.visual?.appearance ?? BuddyAppearanceRenderContract.defaultCustomization(for: updated.identity.archetype),
                     source: "hermes_ascii",
                     createdAt: updated.provenance.installedAt,
                     updatedAt: updated.memory.lastStateSyncAt ?? updated.provenance.installedAt
@@ -272,7 +274,8 @@ final class BuddyProfileStore: ObservableObject {
                         pixelAssetPath: nil,
                         activeAppearanceProfileId: defaultProfile.id,
                         currentAnimationState: updated.state.mood,
-                        evolutionCosmetics: []
+                        evolutionCosmetics: [],
+                        appearance: defaultProfile.customization
                     )
                 } else {
                     updated.visual?.activeAppearanceProfileId = defaultProfile.id
@@ -348,6 +351,7 @@ final class BuddyProfileStore: ObservableObject {
         pixelVariantID: String?,
         expressionTone: String,
         accentLabel: String,
+        customization: BuddyAppearanceCustomization,
         setActive: Bool,
         using appState: AppState
     ) {
@@ -362,6 +366,7 @@ final class BuddyProfileStore: ObservableObject {
                 pixelVariantID: pixelVariantID,
                 expressionTone: expressionTone,
                 accentLabel: accentLabel,
+                customization: customization,
                 setActive: setActive,
                 currentState: libraryState,
                 currentEvents: eventLog
@@ -816,7 +821,8 @@ final class BuddyProfileStore: ObservableObject {
                 pixelAssetPath: nil,
                 activeAppearanceProfileId: nil,
                 currentAnimationState: "happy",
-                evolutionCosmetics: []
+                evolutionCosmetics: [],
+                appearance: BuddyAppearanceRenderContract.defaultCustomization(for: snapshot.identity.archetype)
             ),
             appearanceProfiles: snapshot.appearanceProfiles ?? [],
             trainingHistory: [],

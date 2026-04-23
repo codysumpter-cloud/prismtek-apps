@@ -244,6 +244,16 @@ final class BuddyRuntimeTests: XCTestCase {
             pixelVariantID: nil,
             expressionTone: "focused",
             accentLabel: "signal ribbon",
+            customization: BuddyAppearanceCustomization(
+                subtype: "wisp",
+                bodyStyle: "floaty",
+                accessory: "rune_halo",
+                accentDetail: "aura_trail",
+                pose: "hover",
+                personalityVibe: "focused",
+                animationFlavor: "pulse_shimmer",
+                promptModifiers: ""
+            ),
             setActive: true,
             currentState: installed.libraryState,
             currentEvents: installed.eventLog,

@@ -7,13 +7,16 @@ private struct BuddyCreatorDraft {
     var asciiVariantID: String = "starter_a"
     var expressionTone: String = "friendly"
     var accentLabel: String = "pocket glow"
+    var customization: BuddyAppearanceCustomization = BuddyAppearanceRenderContract.defaultCustomization(for: "console_pet")
     var renderStyle: BuddyAppearanceRenderStyle = .ascii
 
     mutating func reset(using template: CouncilStarterBuddyTemplate?, palettes: [BuddyPaletteOption]) {
+        let archetype = template.map { CouncilBuddyIdentityCatalog.identity(for: $0).archetype } ?? "console_pet"
         paletteID = palettes.first?.id ?? "mint_cream"
         asciiVariantID = BuddyCreatorCurations.asciiStyles.first ?? "starter_a"
         expressionTone = "friendly"
         accentLabel = "pocket glow"
+        customization = BuddyAppearanceRenderContract.defaultCustomization(for: archetype)
         renderStyle = .ascii
         if displayName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             displayName = template?.name ?? "Buddy"
@@ -44,6 +47,38 @@ struct GuidedBuddyCreationFlow: View {
         templates.first(where: { $0.id == draft.templateID || $0.templateID == draft.templateID }) ?? templates.first
     }
 
+    private var selectedArchetypeID: String {
+        selectedTemplate.map { CouncilBuddyIdentityCatalog.identity(for: $0).archetype } ?? "console_pet"
+    }
+
+    private var subtypeOptions: [BuddyAppearanceOption] {
+        BuddyAppearanceRenderContract.subtypeOptions(for: selectedArchetypeID)
+    }
+
+    private var bodyStyleOptions: [BuddyAppearanceOption] {
+        BuddyAppearanceRenderContract.options(for: \.bodyStyle, archetypeID: selectedArchetypeID)
+    }
+
+    private var accessoryOptions: [BuddyAppearanceOption] {
+        BuddyAppearanceRenderContract.options(for: \.accessory, archetypeID: selectedArchetypeID)
+    }
+
+    private var accentOptions: [BuddyAppearanceOption] {
+        BuddyAppearanceRenderContract.options(for: \.accentDetail, archetypeID: selectedArchetypeID)
+    }
+
+    private var poseOptions: [BuddyAppearanceOption] {
+        BuddyAppearanceRenderContract.options(for: \.pose, archetypeID: selectedArchetypeID)
+    }
+
+    private var vibeOptions: [BuddyAppearanceOption] {
+        BuddyAppearanceRenderContract.options(for: \.personalityVibe, archetypeID: selectedArchetypeID)
+    }
+
+    private var animationOptions: [BuddyAppearanceOption] {
+        BuddyAppearanceRenderContract.options(for: \.animationFlavor, archetypeID: selectedArchetypeID)
+    }
+
     private var previewBuddy: BuddyInstance? {
         guard var preview = appState.buddyStore.activeBuddy else { return nil }
         preview.displayName = draft.displayName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? preview.displayName : draft.displayName
@@ -57,12 +92,14 @@ struct GuidedBuddyCreationFlow: View {
             pixelAssetPath: nil,
             activeAppearanceProfileId: nil,
             currentAnimationState: nil,
-            evolutionCosmetics: []
+            evolutionCosmetics: [],
+            appearance: BuddyAppearanceRenderContract.defaultCustomization(for: preview.identity.archetype)
         )
         visual.asciiVariantId = draft.asciiVariantID
         visual.pixelVariantId = draft.renderStyle == .pixel ? pixelRequestKey : nil
         visual.pixelAssetPath = draft.renderStyle == .pixel ? PixelLabPreviewService.record(for: pixelRequestKey)?.localAssetPath : nil
         visual.currentAnimationState = draft.expressionTone == "focused" ? "working" : (draft.expressionTone == "curious" ? "thinking" : "happy")
+        visual.appearance = BuddyAppearanceRenderContract.normalizedCustomization(draft.customization, archetypeID: preview.identity.archetype)
         preview.visual = visual
         return preview
     }
@@ -73,7 +110,8 @@ struct GuidedBuddyCreationFlow: View {
             archetypeID: selectedTemplate.map { CouncilBuddyIdentityCatalog.identity(for: $0).archetype } ?? "console_pet",
             paletteID: draft.paletteID,
             expressionTone: draft.expressionTone,
-            accentLabel: draft.accentLabel
+            accentLabel: draft.accentLabel,
+            customization: draft.customization
         )
     }
 
@@ -152,7 +190,14 @@ struct GuidedBuddyCreationFlow: View {
                     draft.displayName = activeBuddy.displayName
                     draft.paletteID = activeBuddy.identity.palette
                     draft.asciiVariantID = activeBuddy.visual?.asciiVariantId ?? "starter_a"
+                    draft.customization = BuddyAppearanceRenderContract.normalizedCustomization(
+                        activeBuddy.visual?.appearance ?? BuddyAppearanceRenderContract.defaultCustomization(for: activeBuddy.identity.archetype),
+                        archetypeID: activeBuddy.identity.archetype
+                    )
                 }
+            }
+            .onChange(of: draft.templateID) { _ in
+                draft.customization = BuddyAppearanceRenderContract.defaultCustomization(for: selectedArchetypeID)
             }
             .alert("Buddy creator", isPresented: Binding(
                 get: { errorMessage != nil },
@@ -346,7 +391,7 @@ struct GuidedBuddyCreationFlow: View {
             Text("Shape the vibe")
                 .font(.headline)
                 .foregroundColor(BMOTheme.textPrimary)
-            Text("Keep decisions obvious: look, mood, and one standout detail.")
+            Text("Choose species, posture, and standout details so the preview feels like a real character creator.")
                 .font(.subheadline)
                 .foregroundColor(BMOTheme.textSecondary)
 
@@ -356,12 +401,14 @@ struct GuidedBuddyCreationFlow: View {
             }
             .pickerStyle(.segmented)
 
-            Picker("Style", selection: $draft.asciiVariantID) {
-                Text("Classic").tag("starter_a")
-                Text("Soft").tag("starter_b")
-                Text("Bold").tag("starter_c")
+            if draft.renderStyle == .ascii {
+                Picker("ASCII style", selection: $draft.asciiVariantID) {
+                    Text("Classic").tag("starter_a")
+                    Text("Soft").tag("starter_b")
+                    Text("Bold").tag("starter_c")
+                }
+                .pickerStyle(.segmented)
             }
-            .pickerStyle(.segmented)
 
             Picker("Vibe", selection: $draft.expressionTone) {
                 Text("Friendly").tag("friendly")
@@ -370,19 +417,75 @@ struct GuidedBuddyCreationFlow: View {
             }
             .pickerStyle(.segmented)
 
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Feature")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundColor(BMOTheme.textPrimary)
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 120), spacing: 10)], spacing: 10) {
-                    ForEach(BuddyCreatorCurations.featureOptions, id: \.self) { feature in
-                        Button(feature.capitalized) {
-                            draft.accentLabel = feature
-                        }
-                        .buttonStyle(BMOButtonStyle(isPrimary: draft.accentLabel == feature))
+            if subtypeOptions.isEmpty == false {
+                Picker("Species / Subtype", selection: $draft.customization.subtype) {
+                    ForEach(subtypeOptions) { option in
+                        Text(option.label).tag(option.id)
                     }
                 }
             }
+
+            if bodyStyleOptions.isEmpty == false {
+                Picker("Body style", selection: $draft.customization.bodyStyle) {
+                    ForEach(bodyStyleOptions) { option in
+                        Text(option.label).tag(option.id)
+                    }
+                }
+            }
+
+            if poseOptions.isEmpty == false {
+                Picker("Pose", selection: $draft.customization.pose) {
+                    ForEach(poseOptions) { option in
+                        Text(option.label).tag(option.id)
+                    }
+                }
+            }
+
+            if accessoryOptions.isEmpty == false {
+                Picker("Accessory", selection: $draft.customization.accessory) {
+                    ForEach(accessoryOptions) { option in
+                        Text(option.label).tag(option.id)
+                    }
+                }
+            }
+
+            if accentOptions.isEmpty == false {
+                Picker("Accent", selection: $draft.customization.accentDetail) {
+                    ForEach(accentOptions) { option in
+                        Text(option.label).tag(option.id)
+                    }
+                }
+            }
+
+            if vibeOptions.isEmpty == false {
+                Picker("Personality vibe", selection: $draft.customization.personalityVibe) {
+                    ForEach(vibeOptions) { option in
+                        Text(option.label).tag(option.id)
+                    }
+                }
+            }
+
+            if animationOptions.isEmpty == false {
+                Picker("Animation flavor", selection: $draft.customization.animationFlavor) {
+                    ForEach(animationOptions) { option in
+                        Text(option.label).tag(option.id)
+                    }
+                }
+            }
+
+            TextField("Prompt modifier", text: $draft.customization.promptModifiers, prompt: Text("cute retro green sprite buddy"))
+                .textFieldStyle(.plain)
+                .foregroundColor(BMOTheme.textPrimary)
+                .padding(BMOTheme.spacingMD)
+                .background(BMOTheme.backgroundCard)
+                .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusMedium, style: .continuous))
+
+            TextField("Preview detail", text: $draft.accentLabel, prompt: Text("leaf bandana, heart cheeks, plate ridges"))
+                .textFieldStyle(.plain)
+                .foregroundColor(BMOTheme.textPrimary)
+                .padding(BMOTheme.spacingMD)
+                .background(BMOTheme.backgroundCard)
+                .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusMedium, style: .continuous))
 
             HStack {
                 Button("Remix current") {
@@ -418,7 +521,10 @@ struct GuidedBuddyCreationFlow: View {
                 summaryRow("Starter", selectedTemplate?.name ?? "None")
                 summaryRow("Colors", palettes.first(where: { $0.id == draft.paletteID })?.label ?? draft.paletteID)
                 summaryRow("Style", draft.renderStyle == .pixel ? "Pixel preview" : "ASCII preview")
-                summaryRow("Feature", draft.accentLabel.capitalized)
+                summaryRow("Subtype", subtypeOptions.first(where: { $0.id == draft.customization.subtype })?.label ?? draft.customization.subtype.capitalized)
+                summaryRow("Body", bodyStyleOptions.first(where: { $0.id == draft.customization.bodyStyle })?.label ?? draft.customization.bodyStyle.capitalized)
+                summaryRow("Accessory", accessoryOptions.first(where: { $0.id == draft.customization.accessory })?.label ?? draft.customization.accessory.capitalized)
+                summaryRow("Feature", accentOptions.first(where: { $0.id == draft.customization.accentDetail })?.label ?? draft.accentLabel.capitalized)
                 summaryRow("Vibe", draft.expressionTone.capitalized)
             }
             .bmoCard()
@@ -448,7 +554,14 @@ struct GuidedBuddyCreationFlow: View {
         }
         draft.asciiVariantID = BuddyCreatorCurations.asciiStyles.randomElement() ?? "starter_a"
         draft.expressionTone = ["friendly", "curious", "focused"].randomElement() ?? "friendly"
-        draft.accentLabel = BuddyCreatorCurations.featureOptions.randomElement() ?? "pocket glow"
+        draft.customization.subtype = subtypeOptions.randomElement()?.id ?? draft.customization.subtype
+        draft.customization.bodyStyle = bodyStyleOptions.randomElement()?.id ?? draft.customization.bodyStyle
+        draft.customization.accessory = accessoryOptions.randomElement()?.id ?? draft.customization.accessory
+        draft.customization.accentDetail = accentOptions.randomElement()?.id ?? draft.customization.accentDetail
+        draft.customization.pose = poseOptions.randomElement()?.id ?? draft.customization.pose
+        draft.customization.personalityVibe = vibeOptions.randomElement()?.id ?? draft.customization.personalityVibe
+        draft.customization.animationFlavor = animationOptions.randomElement()?.id ?? draft.customization.animationFlavor
+        draft.accentLabel = accentOptions.first(where: { $0.id == draft.customization.accentDetail })?.label.lowercased() ?? (BuddyCreatorCurations.featureOptions.randomElement() ?? "pocket glow")
         draft.renderStyle = Bool.random() ? .ascii : .pixel
     }
 
@@ -482,6 +595,7 @@ struct GuidedBuddyCreationFlow: View {
             pixelVariantID: draft.renderStyle == .pixel ? pixelRequestKey : nil,
             expressionTone: draft.expressionTone,
             accentLabel: draft.accentLabel,
+            customization: draft.customization,
             setActive: true,
             using: appState
         )

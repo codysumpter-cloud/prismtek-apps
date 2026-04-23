@@ -145,6 +145,7 @@ struct BuddyAppearanceSectionView: View {
 
             VStack(alignment: .leading, spacing: 6) {
                 profileRow(label: "Archetype", value: archetypeLabel)
+                profileRow(label: "Subtype", value: buddy.visual?.appearance.subtype.replacingOccurrences(of: "_", with: " ").capitalized ?? "Starter")
                 profileRow(label: "Palette", value: paletteLabel)
                 profileRow(label: "ASCII style", value: asciiLabel)
                 profileRow(label: "State", value: buddy.visual?.currentAnimationState ?? buddy.state.mood.capitalized)
@@ -163,10 +164,10 @@ struct BuddyAppearanceSectionView: View {
                             Text(profile.name)
                                 .font(.subheadline.weight(.semibold))
                                 .foregroundColor(BMOTheme.textPrimary)
-                            Text("\(profile.archetype) • \(profile.palette) • \(profile.asciiVariantId)")
+                            Text("\(profile.archetype) • \(profile.customization.subtype) • \(profile.palette) • \(profile.asciiVariantId)")
                                 .font(.caption)
                                 .foregroundColor(BMOTheme.textSecondary)
-                            Text("Tone: \(profile.expressionTone.capitalized) • Accent: \(profile.accentLabel)")
+                            Text("Tone: \(profile.expressionTone.capitalized) • Body: \(profile.customization.bodyStyle) • Accent: \(profile.customization.accentDetail)")
                                 .font(.caption)
                                 .foregroundColor(BMOTheme.textTertiary)
                             if let pixelVariantId = profile.pixelVariantId, !pixelVariantId.isEmpty {

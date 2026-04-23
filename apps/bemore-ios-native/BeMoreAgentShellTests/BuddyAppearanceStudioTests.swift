@@ -25,11 +25,46 @@ final class BuddyAppearanceStudioTests: XCTestCase {
     }
 
     func testAsciiDinoUsesDistinctDinoFrames() {
-        let frames = BuddyAsciiRenderer.frames(archetypeID: "dino", mood: .idle, expressionTone: "friendly", asciiVariantID: "starter_a")
+        let frames = BuddyAsciiRenderer.frames(
+            archetypeID: "dino",
+            mood: .idle,
+            expressionTone: "friendly",
+            asciiVariantID: "starter_a",
+            customization: .init(
+                subtype: "trex",
+                bodyStyle: "chunky",
+                accessory: "none",
+                accentDetail: "spike_tail",
+                pose: "proud_stance",
+                personalityVibe: "cute",
+                animationFlavor: "tail_swish",
+                promptModifiers: ""
+            )
+        )
         XCTAssertEqual(frames.count, 3)
-        XCTAssertTrue(frames.joined(separator: "\n").contains("_/{"))
+        XCTAssertTrue(frames.joined(separator: "\n").contains("___/{"))
         XCTAssertTrue(frames.joined(separator: "\n").contains(">"))
         XCTAssertFalse(frames.joined(separator: "\n").localizedCaseInsensitiveContains("rawr"))
+    }
+
+    func testAsciiDinoSubtypeOutputDiffersBySubtype() {
+        let trex = BuddyAsciiRenderer.frames(
+            archetypeID: "dino",
+            mood: .idle,
+            expressionTone: "friendly",
+            asciiVariantID: "starter_a",
+            customization: .init(subtype: "trex", bodyStyle: "chunky", accessory: "none", accentDetail: "spike_tail", pose: "proud_stance", personalityVibe: "cute", animationFlavor: "tail_swish", promptModifiers: "")
+        )
+        let trike = BuddyAsciiRenderer.frames(
+            archetypeID: "dino",
+            mood: .idle,
+            expressionTone: "friendly",
+            asciiVariantID: "starter_a",
+            customization: .init(subtype: "triceratops", bodyStyle: "armored", accessory: "none", accentDetail: "plate_ridges", pose: "idle", personalityVibe: "friendly", animationFlavor: "gentle_bob", promptModifiers: "")
+        )
+
+        XCTAssertNotEqual(trex.first, trike.first)
+        XCTAssertTrue(trike.joined(separator: "\n").contains("^"))
     }
 
     func testAsciiCatUsesCatSpecificSilhouette() {
@@ -45,7 +80,9 @@ final class BuddyAppearanceStudioTests: XCTestCase {
             XCTAssertEqual(payload.width, 48)
             XCTAssertEqual(payload.height, 48)
             XCTAssertTrue(payload.transparentBackground)
-            XCTAssertTrue(payload.description.contains("pixel dinosaur buddy"))
+            XCTAssertTrue(payload.description.contains("T-Rex"))
+            XCTAssertTrue(payload.description.contains("body style chunky"))
+            XCTAssertTrue(payload.description.contains("accessory satchel"))
 
             let response = HTTPURLResponse(url: try XCTUnwrap(request.url), statusCode: 200, httpVersion: nil, headerFields: nil)!
             let data = try JSONSerialization.data(withJSONObject: ["image": Data([0x89, 0x50, 0x4E, 0x47]).base64EncodedString()])
@@ -59,6 +96,7 @@ final class BuddyAppearanceStudioTests: XCTestCase {
             asciiVariantID: "starter_a",
             expressionTone: "friendly",
             accentLabel: "tail spark",
+            customization: .init(subtype: "trex", bodyStyle: "chunky", accessory: "satchel", accentDetail: "spike_tail", pose: "proud_stance", personalityVibe: "cute", animationFlavor: "tail_swish", promptModifiers: "retro green sprite"),
             renderStyle: .pixel
         )
 
@@ -80,6 +118,7 @@ final class BuddyAppearanceStudioTests: XCTestCase {
             asciiVariantID: "starter_a",
             expressionTone: "friendly",
             accentLabel: "mint glow",
+            customization: BuddyAppearanceRenderContract.defaultCustomization(for: "pixel_pet"),
             renderStyle: .pixel
         )
 
@@ -103,6 +142,7 @@ final class BuddyAppearanceStudioTests: XCTestCase {
             asciiVariantID: "starter_a",
             expressionTone: "friendly",
             accentLabel: "mint glow",
+            customization: BuddyAppearanceRenderContract.defaultCustomization(for: "pixel_pet"),
             renderStyle: .pixel
         )
 
@@ -120,6 +160,7 @@ final class BuddyAppearanceStudioTests: XCTestCase {
             asciiVariantID: "starter_a",
             expressionTone: "friendly",
             accentLabel: "mint glow",
+            customization: .init(subtype: "pet", bodyStyle: "round", accessory: "bell_collar", accentDetail: "cheek_sparks", pose: "bounce", personalityVibe: "friendly", animationFlavor: "tiny_bounce", promptModifiers: "retro pet"),
             renderStyle: .pixel,
             pixelVariantID: "",
             pixelAssetPath: nil
@@ -131,10 +172,119 @@ final class BuddyAppearanceStudioTests: XCTestCase {
             archetypeID: "pixel_pet",
             paletteID: "mint_cream",
             expressionTone: "friendly",
-            accentLabel: "mint glow"
+            accentLabel: "mint glow",
+            customization: editorDraft.customization
         )
 
         XCTAssertEqual(editorKey, sharedKey)
+    }
+
+    func testPreviewSpecChangesWhenDinoSubtypeChanges() {
+        let trexDraft = BuddyAppearanceEditorDraft(
+            profileName: "Dino Look",
+            archetype: "dino",
+            palette: "forest_moss",
+            asciiVariantID: "starter_a",
+            expressionTone: "friendly",
+            accentLabel: "leaf scarf",
+            customization: .init(subtype: "trex", bodyStyle: "chunky", accessory: "satchel", accentDetail: "spike_tail", pose: "proud_stance", personalityVibe: "cute", animationFlavor: "tail_swish", promptModifiers: "retro buddy"),
+            renderStyle: .pixel,
+            pixelVariantID: "",
+            pixelAssetPath: nil
+        )
+        let stegoDraft = BuddyAppearanceEditorDraft(
+            profileName: "Dino Look",
+            archetype: "dino",
+            palette: "forest_moss",
+            asciiVariantID: "starter_a",
+            expressionTone: "friendly",
+            accentLabel: "leaf scarf",
+            customization: .init(subtype: "stegosaurus", bodyStyle: "armored", accessory: "satchel", accentDetail: "plate_ridges", pose: "proud_stance", personalityVibe: "cute", animationFlavor: "tail_swish", promptModifiers: "retro buddy"),
+            renderStyle: .pixel,
+            pixelVariantID: "",
+            pixelAssetPath: nil
+        )
+
+        XCTAssertNotEqual(trexDraft.previewSpec(buddyName: "Mossy").pixelRequestKey, stegoDraft.previewSpec(buddyName: "Mossy").pixelRequestKey)
+        XCTAssertNotEqual(trexDraft.previewSpec(buddyName: "Mossy").customization.subtype, stegoDraft.previewSpec(buddyName: "Mossy").customization.subtype)
+    }
+
+    func testDinoSubtypePersistsInAppearanceProfile() throws {
+        let now = Date(timeIntervalSince1970: 1_744_315_000)
+        let contracts = try BuddyContractLoader.loadCanonicalResources()
+        let engine = BuddyEventEngine(contracts: contracts)
+        let installed = try engine.install(templateID: "bmo", currentState: BuddyLibraryState(), currentEvents: BuddyRuntimeEventLog(), now: now)
+        let customization = BuddyAppearanceCustomization(
+            subtype: "stegosaurus",
+            bodyStyle: "armored",
+            accessory: "scarf",
+            accentDetail: "plate_ridges",
+            pose: "proud_stance",
+            personalityVibe: "friendly",
+            animationFlavor: "tail_swish",
+            promptModifiers: "cute retro green buddy"
+        )
+
+        let saved = try engine.saveAppearanceProfile(
+            instanceID: try XCTUnwrap(installed.libraryState.activeBuddy?.instanceId),
+            profileName: "Forest Stego",
+            archetype: "dino",
+            palette: "forest_moss",
+            asciiVariantID: "starter_a",
+            pixelVariantID: nil,
+            expressionTone: "friendly",
+            accentLabel: "leaf scarf",
+            customization: customization,
+            setActive: true,
+            currentState: installed.libraryState,
+            currentEvents: installed.eventLog,
+            now: now.addingTimeInterval(10)
+        )
+
+        let profile = try XCTUnwrap(saved.libraryState.activeBuddy?.appearanceProfiles?.first)
+        XCTAssertEqual(profile.customization.subtype, "stegosaurus")
+        XCTAssertEqual(saved.libraryState.activeBuddy?.visual?.appearance.subtype, "stegosaurus")
+    }
+
+    func testSavedLookPreservesAdvancedCustomizationFields() throws {
+        let now = Date(timeIntervalSince1970: 1_744_315_100)
+        let contracts = try BuddyContractLoader.loadCanonicalResources()
+        let engine = BuddyEventEngine(contracts: contracts)
+        let installed = try engine.install(templateID: "bmo", currentState: BuddyLibraryState(), currentEvents: BuddyRuntimeEventLog(), now: now)
+        let customization = BuddyAppearanceCustomization(
+            subtype: "raptor",
+            bodyStyle: "lean",
+            accessory: "leaf_bandana",
+            accentDetail: "spike_tail",
+            pose: "peek",
+            personalityVibe: "playful",
+            animationFlavor: "blink_blink",
+            promptModifiers: "cute sprite pet"
+        )
+
+        let saved = try engine.saveAppearanceProfile(
+            instanceID: try XCTUnwrap(installed.libraryState.activeBuddy?.instanceId),
+            profileName: "Scout Raptor",
+            archetype: "dino",
+            palette: "forest_moss",
+            asciiVariantID: "starter_b",
+            pixelVariantID: "pixellab:test",
+            expressionTone: "curious",
+            accentLabel: "leaf bandana",
+            customization: customization,
+            setActive: true,
+            currentState: installed.libraryState,
+            currentEvents: installed.eventLog,
+            now: now.addingTimeInterval(20)
+        )
+
+        let profile = try XCTUnwrap(saved.libraryState.activeBuddy?.appearanceProfiles?.first)
+        XCTAssertEqual(profile.customization.bodyStyle, "lean")
+        XCTAssertEqual(profile.customization.accessory, "leaf_bandana")
+        XCTAssertEqual(profile.customization.pose, "peek")
+        XCTAssertEqual(profile.customization.personalityVibe, "playful")
+        XCTAssertEqual(profile.customization.animationFlavor, "blink_blink")
+        XCTAssertEqual(profile.customization.promptModifiers, "cute sprite pet")
     }
 
     func testLilBuddyReceiptsPersistLocally() async {

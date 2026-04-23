@@ -887,6 +887,7 @@ struct BuddyView: View {
                                 pixelVariantID: appearanceDraft.renderStyle == .pixel ? appearanceDraft.pixelVariantID : nil,
                                 expressionTone: appearanceDraft.expressionTone,
                                 accentLabel: appearanceDraft.accentLabel,
+                                customization: appearanceDraft.customization,
                                 setActive: true,
                                 using: appState
                             )
@@ -1033,6 +1034,7 @@ struct BuddyView: View {
             asciiVariantID: activeProfile?.asciiVariantId ?? buddy.visual?.asciiVariantId ?? defaultASCIIVariantID,
             expressionTone: activeProfile?.expressionTone ?? "friendly",
             accentLabel: activeProfile?.accentLabel ?? "pocket glow",
+            customization: activeProfile?.customization ?? buddy.visual?.appearance ?? BuddyAppearanceRenderContract.defaultCustomization(for: activeProfile?.archetype ?? buddy.identity.archetype),
             renderStyle: (activeProfile?.pixelVariantId ?? buddy.visual?.pixelVariantId) == nil ? .ascii : .pixel,
             pixelVariantID: activeProfile?.pixelVariantId ?? buddy.visual?.pixelVariantId ?? derivedPixelVariantID(for: buddy, activeProfile: activeProfile),
             pixelAssetPath: activeProfile?.pixelAssetPath ?? buddy.visual?.pixelAssetPath ?? PixelLabPreviewService.record(for: activeProfile?.pixelVariantId ?? buddy.visual?.pixelVariantId ?? "")?.localAssetPath
@@ -1049,12 +1051,14 @@ struct BuddyView: View {
             pixelAssetPath: nil,
             activeAppearanceProfileId: nil,
             currentAnimationState: nil,
-            evolutionCosmetics: []
+            evolutionCosmetics: [],
+            appearance: BuddyAppearanceRenderContract.defaultCustomization(for: preview.identity.archetype)
         )
         visual.asciiVariantId = draft.asciiVariantID
         visual.pixelVariantId = draft.renderStyle == .pixel ? draft.pixelVariantID : nil
         visual.pixelAssetPath = draft.renderStyle == .pixel ? (draft.pixelAssetPath ?? PixelLabPreviewService.record(for: draft.pixelVariantID)?.localAssetPath) : nil
         visual.currentAnimationState = previewAnimationState(for: draft.expressionTone)
+        visual.appearance = BuddyAppearanceRenderContract.normalizedCustomization(draft.customization, archetypeID: draft.archetype)
         preview.visual = visual
         return preview
     }
@@ -1096,7 +1100,8 @@ struct BuddyView: View {
             archetypeID: activeProfile?.archetype ?? buddy.identity.archetype,
             paletteID: activeProfile?.palette ?? buddy.identity.palette,
             expressionTone: activeProfile?.expressionTone ?? "friendly",
-            accentLabel: activeProfile?.accentLabel ?? "pocket glow"
+            accentLabel: activeProfile?.accentLabel ?? "pocket glow",
+            customization: activeProfile?.customization ?? buddy.visual?.appearance ?? BuddyAppearanceRenderContract.defaultCustomization(for: activeProfile?.archetype ?? buddy.identity.archetype)
         )
     }
 
