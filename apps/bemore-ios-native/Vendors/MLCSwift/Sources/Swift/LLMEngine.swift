@@ -1,6 +1,91 @@
 import Foundation
 import os
 
+final class JSONFFIEngine {
+    private let object: NSObject
+
+    init() {
+        guard let cls = NSClassFromString("JSONFFIEngine") as? NSObject.Type else {
+            fatalError("JSONFFIEngine Objective-C runtime class not found")
+        }
+        self.object = cls.init()
+    }
+
+    private func implementation<T>(for selector: Selector, as type: T.Type) -> T {
+        guard object.responds(to: selector) else {
+            fatalError("JSONFFIEngine does not respond to \(NSStringFromSelector(selector))")
+        }
+        let method = object.method(for: selector)
+        return unsafeBitCast(method, to: type)
+    }
+
+    func initBackgroundEngine(_ streamCallback: @escaping (String?) -> Void) {
+        let selector = NSSelectorFromString("initBackgroundEngine:")
+        typealias Function = @convention(c) (AnyObject, Selector, AnyObject) -> Void
+        let callbackBlock: @convention(block) (NSString?) -> Void = { value in
+            streamCallback(value as String?)
+        }
+        implementation(for: selector, as: Function.self)(
+            object,
+            selector,
+            unsafeBitCast(callbackBlock, to: AnyObject.self)
+        )
+    }
+
+    func reload(_ engineConfigJson: String) {
+        let selector = NSSelectorFromString("reload:")
+        typealias Function = @convention(c) (AnyObject, Selector, NSString) -> Void
+        implementation(for: selector, as: Function.self)(object, selector, engineConfigJson as NSString)
+    }
+
+    func unload() {
+        let selector = NSSelectorFromString("unload")
+        typealias Function = @convention(c) (AnyObject, Selector) -> Void
+        implementation(for: selector, as: Function.self)(object, selector)
+    }
+
+    func reset() {
+        let selector = NSSelectorFromString("reset")
+        typealias Function = @convention(c) (AnyObject, Selector) -> Void
+        implementation(for: selector, as: Function.self)(object, selector)
+    }
+
+    func chatCompletion(_ requestJSON: String, requestID: String) {
+        let selector = NSSelectorFromString("chatCompletion:requestID:")
+        typealias Function = @convention(c) (AnyObject, Selector, NSString, NSString) -> Void
+        implementation(for: selector, as: Function.self)(
+            object,
+            selector,
+            requestJSON as NSString,
+            requestID as NSString
+        )
+    }
+
+    func abort(_ requestID: String) {
+        let selector = NSSelectorFromString("abort:")
+        typealias Function = @convention(c) (AnyObject, Selector, NSString) -> Void
+        implementation(for: selector, as: Function.self)(object, selector, requestID as NSString)
+    }
+
+    func runBackgroundLoop() {
+        let selector = NSSelectorFromString("runBackgroundLoop")
+        typealias Function = @convention(c) (AnyObject, Selector) -> Void
+        implementation(for: selector, as: Function.self)(object, selector)
+    }
+
+    func runBackgroundStreamBackLoop() {
+        let selector = NSSelectorFromString("runBackgroundStreamBackLoop")
+        typealias Function = @convention(c) (AnyObject, Selector) -> Void
+        implementation(for: selector, as: Function.self)(object, selector)
+    }
+
+    func exitBackgroundLoop() {
+        let selector = NSSelectorFromString("exitBackgroundLoop")
+        typealias Function = @convention(c) (AnyObject, Selector) -> Void
+        implementation(for: selector, as: Function.self)(object, selector)
+    }
+}
+
 class BackgroundWorker : Thread {
     private var task: ()->Void;
 
@@ -185,7 +270,9 @@ public class MLCEngine {
         // note: closure do not capture self
         jsonFFIEngine_.initBackgroundEngine {
             [state_](result : String?) -> Void in
-            state_.streamCallback(result: result)
+            Task {
+                await state_.streamCallback(result: result)
+            }
         }
         let backgroundWorker = BackgroundWorker { [jsonFFIEngine_] in
             Thread.setThreadPriority(1)
