@@ -167,7 +167,7 @@ class CommandDispatcher {
                 }
             }
         } catch {
-            print("Failed to write security audit log: \(error)")
+            // Security audit log failure handled silently in production
         }
     }
 }
