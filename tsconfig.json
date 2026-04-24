@@ -19,9 +19,14 @@
     "paths": {
       "@/*": [
         "./*"
+      ],
+      "@prismtek/buddy-core": [
+        "vendor/buddy-core-contracts/src/index.ts"
       ]
     },
     "allowImportingTsExtensions": true,
-    "noEmit": true
+    "noEmit": true,
+    "baseUrl": ".",
+    "ignoreDeprecations": "6.0"
   }
 }

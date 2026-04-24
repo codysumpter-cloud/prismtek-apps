@@ -1,0 +1,9 @@
+{
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "rules": { "type": "array", "items": { "type": "string" } },
+    "constraints": { "type": "object" }
+  },
+  "required": ["id", "rules"]
+}
