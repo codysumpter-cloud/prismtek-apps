@@ -26,7 +26,7 @@ targets:
         PRODUCT_NAME: BeMoreAgent
     dependencies:
       - package: MLCSwift
-        url: ../mlc-llm
+        url: https://github.com/mlc-ai/mlc-llm
         version: main
   BeMoreAgentTests:
     type: bundle.unit-test
