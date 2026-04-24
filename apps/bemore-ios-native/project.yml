@@ -25,8 +25,8 @@ targets:
         CODE_SIGN_STYLE: Automatic
         PRODUCT_NAME: BeMoreAgent
     dependencies:
-      - package: mlc-llm
-        url: https://github.com/mlc-ai/mlc-llm
+      - package: MLCSwift
+        url: ./Vendors/MLCSwift
         version: main
   BeMoreAgentTests:
     type: bundle.unit-test
