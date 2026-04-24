@@ -1,0 +1,10 @@
+{
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "action": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "result": { "type": "object" }
+  },
+  "required": ["id", "action", "timestamp"]
+}

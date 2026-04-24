@@ -1,0 +1,9 @@
+{
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "config": { "type": "object" },
+    "owner": { "type": "string" }
+  },
+  "required": ["id", "config"]
+}

@@ -21,10 +21,12 @@
         "./*"
       ],
       "@prismtek/buddy-core": [
-        "../prismtek-buddy-core/src/index.ts"
+        "vendor/buddy-core/src/index.ts"
       ]
     },
     "allowImportingTsExtensions": true,
-    "noEmit": true
+    "noEmit": true,
+    "baseUrl": ".",
+    "ignoreDeprecations": "6.0"
   }
 }

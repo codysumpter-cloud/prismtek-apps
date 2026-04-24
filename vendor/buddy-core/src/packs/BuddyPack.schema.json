@@ -1,0 +1,9 @@
+{
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "version": { "type": "string" },
+    "capabilities": { "type": "array", "items": { "type": "string" } }
+  },
+  "required": ["id", "version"]
+}

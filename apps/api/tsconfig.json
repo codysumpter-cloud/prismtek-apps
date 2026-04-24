@@ -4,7 +4,7 @@
     "outDir": "dist",
     "noEmit": false,
     "allowImportingTsExtensions": false,
-    "rootDir": "../../../"
+    "rootDir": "../../"
   },
   "include": [
     "server.ts"
