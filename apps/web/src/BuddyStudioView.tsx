@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { BuddyAppearanceProfile, BuddyAppearanceStudioDraft, BuddyPixelFrame } from '@prismtek/core';
+import { GuidedBuddyStudioPanel } from './GuidedBuddyStudioPanel';
 
 const API_ROOT = 'http://localhost:3001';
 const FIELD_CLASS =
@@ -146,6 +147,8 @@ export function BuddyStudioView({ token }: BuddyStudioViewProps) {
 
   return (
     <div className="space-y-8">
+      <GuidedBuddyStudioPanel />
+
       <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
         <section className="rounded-3xl border border-white/10 bg-[#0f0f0f] p-6">
           <div className="mb-6 flex items-start justify-between gap-4">
