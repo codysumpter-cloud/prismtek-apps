@@ -21,7 +21,7 @@
         "./*"
       ],
       "@prismtek/buddy-core": [
-        "vendor/buddy-core/src/index.ts"
+        "vendor/buddy-core-contracts/src/index.ts"
       ]
     },
     "allowImportingTsExtensions": true,

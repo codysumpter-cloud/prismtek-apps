@@ -30,7 +30,7 @@
     "motion": "^12.23.24",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
-    "@prismtek/buddy-core": "file:vendor/buddy-core"
+    "@prismtek/buddy-core": "file:vendor/buddy-core-contracts"
   },
   "devDependencies": {
     "husky": "^9.0.0",
