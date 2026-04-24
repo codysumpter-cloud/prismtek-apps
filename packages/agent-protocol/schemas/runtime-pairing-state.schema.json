@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "runtime-pairing-state.schema.json",
+  "title": "Buddy Runtime Pairing State",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "pairing_state",
+    "selected_transport_mode",
+    "last_transport_reason",
+    "runtime_reachable",
+    "remote_session_available",
+    "last_heartbeat_at"
+  ],
+  "properties": {
+    "pairing_state": {
+      "type": "string",
+      "enum": ["unpaired", "pairing", "paired", "degraded", "limited"]
+    },
+    "selected_transport_mode": {
+      "type": "string",
+      "enum": ["online", "mesh", "reticulum_fallback", "auto"]
+    },
+    "last_transport_reason": {
+      "type": "string",
+      "minLength": 1
+    },
+    "runtime_reachable": {
+      "type": "boolean"
+    },
+    "remote_session_available": {
+      "type": "boolean"
+    },
+    "last_heartbeat_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}
