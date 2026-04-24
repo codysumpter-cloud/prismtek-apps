@@ -1033,4 +1033,3 @@ app.listen(PORT, () => {
 });
 
 import { BuddyProfile, BuddyPolicy, BuddyMemory, BuddyReceipt, BuddyPack, BuddyTemplate } from '@prismtek/buddy-core';
-import { BuddyProfile, BuddyPolicy, BuddyMemory, BuddyReceipt, BuddyPack, BuddyTemplate } from '@prismtek/buddy-core';

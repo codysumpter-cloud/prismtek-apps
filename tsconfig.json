@@ -19,6 +19,9 @@
     "paths": {
       "@/*": [
         "./*"
+      ],
+      "@prismtek/buddy-core": [
+        "../prismtek-buddy-core/src/index.ts"
       ]
     },
     "allowImportingTsExtensions": true,
