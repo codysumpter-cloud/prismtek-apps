@@ -269,3 +269,4 @@ export interface InstalledPackageRecord {
 }
 
 export * from './buddyStudio';
+export * from './guidedBuddyStudio';
