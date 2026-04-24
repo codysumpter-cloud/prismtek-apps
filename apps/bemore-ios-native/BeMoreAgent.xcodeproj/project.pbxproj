@@ -213,6 +213,7 @@
 		B34923B84B416E4ACBDEB459 /* BuddyAppearanceStudioTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyAppearanceStudioTests.swift; sourceTree = "<group>"; };
 		B57B6910006CB9FF4137A24A /* BuddyCreatorCurations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyCreatorCurations.swift; sourceTree = "<group>"; };
 		BB9AD60B925BF53E43850922 /* buddy-state-machine.example.v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "buddy-state-machine.example.v1.json"; sourceTree = "<group>"; };
+		BCC54093E00798E2371EE77C /* Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridging-Header.h"; sourceTree = "<group>"; };
 		C2619477DC09F87DEF80B84E /* BeMoreAgentTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = BeMoreAgentTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C2D2861D54E92B8C145B6B77 /* buddy-runtime-events.v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "buddy-runtime-events.v1.json"; sourceTree = "<group>"; };
 		CC34E7472D628E4C878C7D4B /* MissionControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissionControlView.swift; sourceTree = "<group>"; };
@@ -464,6 +465,7 @@
 				1BFDAC5F149148E014BDB615 /* BeMoreAgentApp.swift */,
 				3EF7694C83936C35C3E8A3EF /* BeMoreChatDispatch.swift */,
 				0B67EEA7677A1F29F9D50745 /* BeMoreWorkspaceRuntime.swift */,
+				BCC54093E00798E2371EE77C /* Bridging-Header.h */,
 				7AB7971C3FE6806475C00946 /* BuddyAppleIntegrationService.swift */,
 				5A3943552B1F8D026724D81C /* BuddyContractLoader.swift */,
 				2C863A19F647331F16AC4221 /* BuddyContracts.swift */,
@@ -904,6 +906,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = BeMoreAgent;
 				PRODUCT_NAME = BeMoreAgent;
 				SDKROOT = iphoneos;
+				SWIFT_BRIDGING_HEADER = "BeMoreAgentShell/Bridging-Header.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -929,6 +932,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = BeMoreAgent;
 				PRODUCT_NAME = BeMoreAgent;
 				SDKROOT = iphoneos;
+				SWIFT_BRIDGING_HEADER = "BeMoreAgentShell/Bridging-Header.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
