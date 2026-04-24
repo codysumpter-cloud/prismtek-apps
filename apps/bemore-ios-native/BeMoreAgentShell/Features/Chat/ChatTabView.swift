@@ -99,7 +99,7 @@ struct ChatTabView: View {
             HStack {
                 Text(appState.runtimeStatus)
                     .font(.caption)
-                    .foregroundStyle(hasLiveChatRoute ? .secondary : .orange)
+                    .foregroundColor(hasLiveChatRoute ? .secondary : .orange)
                 if !appState.chatStore.selectedFileIDs.isEmpty {
                     Text("• \(appState.chatStore.selectedFileIDs.count) file context")
                         .font(.caption)
