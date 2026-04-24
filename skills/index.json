@@ -1,0 +1,399 @@
+{
+  "skills": {
+    "telegram-routing": {
+      "actions": [
+        "status",
+        "fix"
+      ],
+      "triggers": [
+        "telegram",
+        "bind telegram",
+        "routed to worker",
+        "reply broken"
+      ],
+      "default_action": "fix"
+    },
+    "sandbox-debugging": {
+      "actions": [
+        "explain",
+        "recreate",
+        "status"
+      ],
+      "triggers": [
+        "sandbox",
+        "main agent appears sandboxed",
+        "worker behavior",
+        "docker containers missing",
+        "sandbox explain"
+      ],
+      "default_action": "explain"
+    },
+    "ci-failure-diagnosis": {
+      "actions": [
+        "show"
+      ],
+      "triggers": [
+        "ruleset",
+        "required checks",
+        "ci failed",
+        "actionlint",
+        "shellcheck",
+        "shfmt",
+        "unable to resolve action",
+        "process completed with exit code"
+      ],
+      "default_action": "show"
+    },
+    "bootstrap-recovery": {
+      "actions": [
+        "doctor",
+        "configure"
+      ],
+      "triggers": [
+        "env file",
+        ".env missing",
+        "docker not running",
+        "compose failure",
+        "half-configured",
+        "bootstrap"
+      ],
+      "default_action": "doctor"
+    },
+    "context-sync": {
+      "actions": [
+        "apply",
+        "host-to-repo",
+        "repo-to-host"
+      ],
+      "triggers": [
+        "identity drift",
+        "context drift",
+        "workspace files missing",
+        "set-identity"
+      ],
+      "default_action": "apply"
+    },
+    "openclaw-agent-split": {
+      "actions": [
+        "status",
+        "fix-routing",
+        "reapply-identity"
+      ],
+      "triggers": [
+        "main sandbox off",
+        "bmo-tron",
+        "agent split",
+        "routing verification"
+      ],
+      "default_action": "status"
+    },
+    "browser-automation": {
+      "actions": [
+        "show"
+      ],
+      "triggers": [
+        "browser automation",
+        "web ui",
+        "ui automation",
+        "browser worker"
+      ],
+      "default_action": "show"
+    },
+    "skills-access-diagnosis": {
+      "actions": [
+        "show",
+        "run"
+      ],
+      "triggers": [
+        "cannot access skills",
+        "skills missing",
+        "clawhub hangs",
+        "skill install stuck",
+        "openclaw skills check"
+      ],
+      "default_action": "run"
+    },
+    "universal-intake": {
+      "actions": [
+        "run"
+      ],
+      "triggers": [
+        "read this link",
+        "watch this video",
+        "analyze this file",
+        "summarize this url",
+        "extract keyframes",
+        "fetch any link"
+      ],
+      "default_action": "run"
+    },
+    "video-review": {
+      "actions": [
+        "run"
+      ],
+      "triggers": [
+        "review this video",
+        "summarize youtube",
+        "analyze video content",
+        "extract video transcript",
+        "watch and react",
+        "video breakdown"
+      ],
+      "default_action": "run"
+    },
+    "agent-automation": {
+      "actions": [
+        "run"
+      ],
+      "triggers": [
+        "run routine",
+        "agent automation",
+        "schedule agent"
+      ],
+      "default_action": "run"
+    },
+    "mission-control-enhancement": {
+      "actions": [
+        "run"
+      ],
+      "triggers": [
+        "enhance mission control",
+        "mission control panels"
+      ],
+      "default_action": "run"
+    },
+    "claw-code-harness": {
+      "actions": [
+        "install",
+        "manifest",
+        "summary",
+        "commands",
+        "tools"
+      ],
+      "triggers": [
+        "claw-code",
+        "claw code",
+        "harness manifest",
+        "tool inventory",
+        "command inventory"
+      ],
+      "default_action": "summary"
+    },
+    "omx-nim-coding": {
+      "actions": [
+        "doctor",
+        "codex",
+        "claw",
+        "dispatch"
+      ],
+      "triggers": [
+        "omx nim",
+        "nvidia nim",
+        "codex nim",
+        "mission control nim",
+        "free coding model"
+      ],
+      "default_action": "dispatch"
+    },
+    "telegram-coding-dispatch": {
+      "actions": [
+        "doctor",
+        "brief",
+        "dispatch",
+        "status",
+        "result"
+      ],
+      "triggers": [
+        "fix this",
+        "make this work",
+        "build this",
+        "can you code this",
+        "do the coding part",
+        "from telegram",
+        "from my phone",
+        "i do not know how to prompt this",
+        "turn this into a proper prompt"
+      ],
+      "default_action": "dispatch"
+    },
+    "pokemon-champions-team-lab": {
+      "actions": [
+        "audit",
+        "build",
+        "spec"
+      ],
+      "triggers": [
+        "pokemon champions team audit",
+        "champions legality check",
+        "legal check this team",
+        "best-fit champions build",
+        "pokemon champions team lab"
+      ],
+      "default_action": "audit"
+    },
+    "pokemon-champions-builder-architect": {
+      "actions": [
+        "prd",
+        "architecture",
+        "api",
+        "ux",
+        "plan"
+      ],
+      "triggers": [
+        "pokemon champions builder architect",
+        "team builder prd",
+        "deterministic legality engine",
+        "snapshot driven builder",
+        "builder architecture"
+      ],
+      "default_action": "architecture"
+    },
+    "pokemon-champions-builder-generator": {
+      "actions": [
+        "prd",
+        "api-spec",
+        "swiftui-arch",
+        "json-schema-only"
+      ],
+      "triggers": [
+        "write the prd",
+        "make the api spec",
+        "design the swiftui architecture",
+        "json schema only",
+        "pokemon champions generator"
+      ],
+      "default_action": "prd"
+    },
+    "memory-crystallization": {
+      "actions": [
+        "run"
+      ],
+      "triggers": [
+        "memory crystallization",
+        "crystallize memory",
+        "refine memory",
+        "consolidate memory"
+      ],
+      "default_action": "run"
+    },
+    "tool-failure-diagnostic": {
+      "actions": [
+        "run"
+      ],
+      "triggers": [
+        "tool failure",
+        "diagnostic",
+        "error recovery",
+        "failure analysis"
+      ],
+      "default_action": "run"
+    },
+    "local-inference-bridge": {
+      "actions": [
+        "run"
+      ],
+      "triggers": [
+        "local inference",
+        "bridge",
+        "offload",
+        "route to local"
+      ],
+      "default_action": "run"
+    },
+    "hierarchical-memory-index": {
+      "actions": [
+        "run"
+      ],
+      "triggers": [
+        "hierarchical memory",
+        "memory index",
+        "l1 l2 l3",
+        "memory tier"
+      ],
+      "default_action": "run"
+    },
+    "sovereign-state-snapshot": {
+      "actions": [
+        "run"
+      ],
+      "triggers": [
+        "snapshot",
+        "save state",
+        "restore"
+      ],
+      "default_action": "run"
+    },
+    "skillify": {
+      "actions": [
+        "run"
+      ],
+      "triggers": [
+        "skillify"
+      ],
+      "default_action": "run"
+    },
+    "cron-scheduler": {
+      "actions": [
+        "run"
+      ],
+      "triggers": [
+        "cron scheduler"
+      ],
+      "default_action": "run"
+    },
+    "mcp-integration": {
+      "actions": [
+        "run"
+      ],
+      "triggers": [
+        "mcp integration"
+      ],
+      "default_action": "run"
+    },
+    "idea-ingest": {
+      "actions": [
+        "run"
+      ],
+      "triggers": [
+        "idea ingest"
+      ],
+      "default_action": "run"
+    },
+    "media-ingest": {
+      "actions": [
+        "run"
+      ],
+      "triggers": [
+        "media ingest"
+      ],
+      "default_action": "run"
+    },
+    "meeting-ingestion": {
+      "actions": [
+        "run"
+      ],
+      "triggers": [
+        "meeting ingestion"
+      ],
+      "default_action": "run"
+    },
+    "enrich": {
+      "actions": [
+        "run"
+      ],
+      "triggers": [
+        "enrich"
+      ],
+      "default_action": "run"
+    },
+    "daily-task-manager": {
+      "actions": [
+        "run"
+      ],
+      "triggers": [
+        "daily task manager"
+      ],
+      "default_action": "run"
+    }
+  }
+}
