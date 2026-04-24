@@ -7,6 +7,7 @@ configs:
 settings:
   IPHONEOS_DEPLOYMENT_TARGET: 26.0
   SWIFT_VERSION: "5.9"
+
 targets:
   BeMoreAgent:
     type: application
@@ -16,6 +17,8 @@ targets:
         excludes:
           - "**/.DS_Store"
       - path: BeMoreAgentShell/Views/RepoSurfaceDetailView.swift
+      - path: Vendors/MLCSwift/Sources/Swift
+      - path: Vendors/MLCSwift/Sources/ObjC
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: BeMoreAgent
@@ -24,10 +27,10 @@ targets:
         DEVELOPMENT_TEAM: DY9FHPRZA9
         CODE_SIGN_STYLE: Automatic
         PRODUCT_NAME: BeMoreAgent
-    dependencies:
-      - package: MLCSwift
-        url: ./Vendors/MLCSwift
-        version: main
+        HEADER_SEARCH_PATHS:
+          - "../../tvm_home/include"
+          - "../../tvm_home/3rdparty/tvm-ffi/include"
+          - "../../tvm_home/3rdparty/tvm-ffi/3rdparty/dlpack/include"
   BeMoreAgentTests:
     type: bundle.unit-test
     platform: iOS
