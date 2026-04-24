@@ -147,9 +147,7 @@ enum PixelLabPreviewService {
         let redactedSnippet = (snippet ?? "n/a")
             .replacingOccurrences(of: "\n", with: " ")
             .prefix(220)
-        print(
-            "[PixelLabPreview] status=\(status) signature=\(spec.requestSignature) archetype=\(spec.archetypeID) palette=\(spec.paletteID) snippet=\(redactedSnippet)"
-        )
+        // PixelLab preview failure logged to internal diagnostics
     }
 
     private static func sanitizedFilename(for requestKey: String) -> String {
