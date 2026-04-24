@@ -893,6 +893,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = DY9FHPRZA9;
 				HEADER_SEARCH_PATHS = (
+					Vendors/MLCSwift/Sources/ObjC/include,
 					../../tvm_home/include,
 					"../../tvm_home/3rdparty/tvm-ffi/include",
 					"../../tvm_home/3rdparty/tvm-ffi/3rdparty/dlpack/include",
@@ -919,6 +920,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = DY9FHPRZA9;
 				HEADER_SEARCH_PATHS = (
+					Vendors/MLCSwift/Sources/ObjC/include,
 					../../tvm_home/include,
 					"../../tvm_home/3rdparty/tvm-ffi/include",
 					"../../tvm_home/3rdparty/tvm-ffi/3rdparty/dlpack/include",

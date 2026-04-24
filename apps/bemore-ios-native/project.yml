@@ -29,6 +29,7 @@ targets:
         PRODUCT_NAME: BeMoreAgent
         SWIFT_BRIDGING_HEADER: BeMoreAgentShell/Bridging-Header.h
         HEADER_SEARCH_PATHS:
+          - "Vendors/MLCSwift/Sources/ObjC/include"
           - "../../tvm_home/include"
           - "../../tvm_home/3rdparty/tvm-ffi/include"
           - "../../tvm_home/3rdparty/tvm-ffi/3rdparty/dlpack/include"
