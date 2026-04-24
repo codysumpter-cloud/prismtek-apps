@@ -67,11 +67,11 @@ struct ChatTabView: View {
 
     private var composer: some View {
         VStack(spacing: 12) {
-            if appState.usesStubRuntime || appState.selectedInstalledModel == nil {
+            if !hasLiveChatRoute {
                 ContentUnavailableView(
                     "Runtime needs attention",
                     systemImage: appState.usesStubRuntime ? "cpu" : "exclamationmark.triangle",
-                    description: Text(appState.operatorSummary)
+                    description: Text(runtimeUnavailableMessage)
                 )
                 .frame(maxWidth: .infinity)
             }
@@ -99,7 +99,7 @@ struct ChatTabView: View {
             HStack {
                 Text(appState.runtimeStatus)
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(hasLiveChatRoute ? .secondary : .orange)
                 if !appState.chatStore.selectedFileIDs.isEmpty {
                     Text("• \(appState.chatStore.selectedFileIDs.count) file context")
                         .font(.caption)
@@ -138,7 +138,18 @@ struct ChatTabView: View {
     }
 
     private var fallbackPlaceholder: String {
-        appState.usesStubRuntime ? "Ask what Buddy can do, or link chat for more" : "Ask your Buddy"
+        hasLiveChatRoute ? "Ask your Buddy" : "Choose a live model route first"
+    }
+
+    private var runtimeUnavailableMessage: String {
+        if appState.selectedInstalledModel != nil, !appState.canUseSelectedLocalModel {
+            return "A local model is selected, but the on-device inference runtime is not available in this build. Link a cloud provider or install a build with the local runtime package."
+        }
+        return appState.operatorSummary
+    }
+
+    private var hasLiveChatRoute: Bool {
+        appState.selectedProviderAccount != nil || appState.canUseSelectedLocalModel
     }
 
     private var canSend: Bool {
@@ -148,12 +159,12 @@ struct ChatTabView: View {
             for: trimmedPrompt,
             buddyName: appState.buddyStore.activeBuddy?.displayName ?? "Buddy",
             session: .init(
-                runtimeConnected: appState.selectedProviderAccount != nil || appState.canUseSelectedLocalModel,
+                runtimeConnected: hasLiveChatRoute,
                 macPairingActive: appState.macRuntimeSnapshot != nil
             )
         ) != nil {
             return true
         }
-        return appState.usesStubRuntime || appState.selectedInstalledModel != nil || appState.selectedProviderAccount != nil
+        return hasLiveChatRoute
     }
 }
