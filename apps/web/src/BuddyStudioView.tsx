@@ -103,6 +103,11 @@ export function BuddyStudioView({ token }: BuddyStudioViewProps) {
     loadProfiles().catch((requestError) => setError(String(requestError)));
   }, [token, draft.buddyId]);
 
+  const applyGuidedDraft = (nextDraft: BuddyAppearanceStudioDraft) => {
+    setDraft(nextDraft);
+    setStatus('Guided Buddy choices applied. Generate to create a validated preview candidate.');
+  };
+
   const generateProfile = async () => {
     setIsGenerating(true);
     setError(null);
@@ -147,7 +152,7 @@ export function BuddyStudioView({ token }: BuddyStudioViewProps) {
 
   return (
     <div className="space-y-8">
-      <GuidedBuddyStudioPanel />
+      <GuidedBuddyStudioPanel currentDraft={draft} onApplyDraft={applyGuidedDraft} />
 
       <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
         <section className="rounded-3xl border border-white/10 bg-[#0f0f0f] p-6">
