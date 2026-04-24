@@ -24,7 +24,10 @@ targets:
         DEVELOPMENT_TEAM: DY9FHPRZA9
         CODE_SIGN_STYLE: Automatic
         PRODUCT_NAME: BeMoreAgent
-    dependencies: []
+    dependencies:
+      - package: MLCSwift
+        url: ../mlc-llm
+        version: main
   BeMoreAgentTests:
     type: bundle.unit-test
     platform: iOS
