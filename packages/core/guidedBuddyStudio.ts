@@ -1,3 +1,5 @@
+import type { BuddyAppearanceStudioDraft } from './buddyStudio';
+
 export type GuidedBuddySpecies = 'trex';
 export type GuidedBuddyStage = 'egg' | 'baby';
 export type GuidedBuddyRenderMode = 'ascii' | 'pixel' | 'both';
@@ -86,12 +88,46 @@ export const DEFAULT_GUIDED_BUDDY_STUDIO_DRAFT: GuidedBuddyStudioDraft = {
   },
 };
 
+const PALETTE_NAME_BY_GUIDED_ID: Record<GuidedBuddyStudioDraft['paletteId'], BuddyAppearanceStudioDraft['paletteName']> = {
+  'mono-dino-v1': 'mono',
+  'soft-pastel-v1': 'candy',
+  'arcade-bright-v1': 'ember',
+};
+
 function clampScore(value: number): number {
   return Math.max(0, Math.min(1, Number(value.toFixed(3))));
 }
 
 function average(values: number[]): number {
   return clampScore(values.reduce((sum, value) => sum + value, 0) / values.length);
+}
+
+export function mapGuidedBuddyDraftToAppearanceDraft(
+  draft: GuidedBuddyStudioDraft,
+  current?: BuddyAppearanceStudioDraft,
+): BuddyAppearanceStudioDraft {
+  const stageLabel = draft.stage === 'egg' ? 'egg' : 'baby';
+  const personality = draft.personalityTags.length ? draft.personalityTags.join(', ') : 'curious';
+  return {
+    buddyId: current?.buddyId || 'default-buddy',
+    displayName: current?.displayName || (draft.stage === 'egg' ? 'Egg Buddy' : 'Baby T-Rex Buddy'),
+    archetype: 'trex-companion',
+    vibe: personality,
+    paletteName: PALETTE_NAME_BY_GUIDED_ID[draft.paletteId],
+    silhouette: `${stageLabel} blocky chrome-dino chibi with tiny arms`,
+    face: 'simple cute high-readability face',
+    eyes: 'bright minimal eyes',
+    expression: draft.stage === 'egg' ? 'sleepy hopeful hatchling' : 'curious brave baby',
+    accessories: [],
+    animationPersonality: draft.stage === 'egg' ? 'gentle hatch idle blink' : 'playful idle blink hatch',
+    outputMode: draft.renderMode,
+    notes: [
+      `Guided Builder V1 ${draft.species} ${draft.stage}`,
+      `ASCII style pack: ${draft.stylePackIds.ascii || 'none'}`,
+      `Pixel style pack: ${draft.stylePackIds.pixel || 'none'}`,
+      'Generated candidates must be normalized, validated, scored, compiled, and saved only after passing gates.',
+    ].join('\n'),
+  };
 }
 
 export function buildGuidedBuddyStudioPreviewContract(
