@@ -4,6 +4,8 @@ import {
   GUIDED_BUDDY_REPAIR_ACTION_LABELS,
   GUIDED_BUDDY_STUDIO_STEPS,
   buildGuidedBuddyStudioPreviewContract,
+  mapGuidedBuddyDraftToAppearanceDraft,
+  type BuddyAppearanceStudioDraft,
   type GuidedBuddyStage,
   type GuidedBuddyRenderMode,
 } from '@prismtek/core';
@@ -11,10 +13,16 @@ import {
 const FIELD_CLASS =
   'w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white outline-none transition focus:border-emerald-300/40 focus:bg-white/[0.06]';
 
-export function GuidedBuddyStudioPanel() {
+interface GuidedBuddyStudioPanelProps {
+  currentDraft: BuddyAppearanceStudioDraft;
+  onApplyDraft: (draft: BuddyAppearanceStudioDraft) => void;
+}
+
+export function GuidedBuddyStudioPanel({ currentDraft, onApplyDraft }: GuidedBuddyStudioPanelProps) {
   const [draft, setDraft] = useState(DEFAULT_GUIDED_BUDDY_STUDIO_DRAFT);
   const contract = useMemo(() => buildGuidedBuddyStudioPreviewContract(draft), [draft]);
   const scorePercent = Math.round(contract.qualityScore.overall * 100);
+  const mappedDraft = useMemo(() => mapGuidedBuddyDraftToAppearanceDraft(draft, currentDraft), [currentDraft, draft]);
 
   return (
     <section className="rounded-3xl border border-emerald-300/20 bg-emerald-300/[0.04] p-6">
@@ -100,6 +108,21 @@ export function GuidedBuddyStudioPanel() {
               <p className="font-mono text-emerald-100">{draft.stylePackIds.pixel || 'not selected'}</p>
             </div>
           </div>
+
+          <div className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4">
+            <p className="text-xs uppercase tracking-[0.2em] text-white/40">Mapped generation draft</p>
+            <p className="mt-2 text-sm text-white/65">
+              {mappedDraft.archetype} • {mappedDraft.outputMode} • {mappedDraft.paletteName}
+            </p>
+            <p className="mt-1 text-xs text-white/45">{mappedDraft.silhouette}</p>
+            <button
+              className="mt-4 rounded-2xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-black transition hover:bg-emerald-400"
+              onClick={() => onApplyDraft(mappedDraft)}
+              type="button"
+            >
+              Apply guided choices to generator
+            </button>
+          </div>
         </div>
 
         <div className="space-y-4">
@@ -144,7 +167,7 @@ export function GuidedBuddyStudioPanel() {
             <p className="text-xs uppercase tracking-[0.2em] text-white/40">One-tap repairs</p>
             <div className="mt-3 flex flex-wrap gap-2">
               {contract.repairActions.map((action) => (
-                <button key={action} className="rounded-full border border-white/10 px-3 py-1.5 text-xs text-white/65">
+                <button key={action} className="rounded-full border border-white/10 px-3 py-1.5 text-xs text-white/65" type="button">
                   {GUIDED_BUDDY_REPAIR_ACTION_LABELS[action]}
                 </button>
               ))}
