@@ -64,6 +64,8 @@ try {
         async update(data: any) { if (mockData.has(`${name}/${id}`)) Object.assign(mockData.get(`${name}/${id}`), data); }
       }),
       async where() { return this; },
+      async orderBy() { return this; },
+      async limit() { return this; },
       async get() { return { docs: [] }; }
     })
   };
@@ -1008,9 +1010,11 @@ app.get('/api/buddy/active', async (req, res) => {
       }
     }
 
+    console.log('Buddy active: uid=', uid);
     const collectionRef = db.collection(BUDDY_PROFILE_COLLECTION);
     const query = collectionRef.where('uid', '==', uid).orderBy('createdAt', 'desc').limit(1);
     const snapshot = await query.get();
+    console.log('snapshot empty?', snapshot.empty);
     if (snapshot.empty) {
       // Return a safe static default profile when none is stored.
       res.json({ displayName: 'Prism', archetype: 'builder_companion', vibe: 'Help me plan the day' });
@@ -1028,3 +1032,5 @@ app.listen(PORT, () => {
   console.log(`BeMore API running on http://localhost:${PORT}`);
 });
 
+import { BuddyProfile, BuddyPolicy, BuddyMemory, BuddyReceipt, BuddyPack, BuddyTemplate } from '@prismtek/buddy-core';
+import { BuddyProfile, BuddyPolicy, BuddyMemory, BuddyReceipt, BuddyPack, BuddyTemplate } from '@prismtek/buddy-core';
