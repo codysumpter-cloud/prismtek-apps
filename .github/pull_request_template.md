@@ -1,15 +1,24 @@
-## Pull Request Checklist
+## Summary
+- 
 
-- [ ] **Run locally** – Verify changes work on a local checkout.
-- [ ] **Lint** – `npm run lint` passes with no errors.
-- [ ] **Tests** – If applicable, run any test suite (`npm test`).
-- [ ] **Documentation** – Update relevant docs (README, CONTRIBUTING, or any affected module docs).
-- [ ] **Changelog** – Add an entry to `CHANGELOG.md` if this change is user‑visible.
-- [ ] **CI** – Ensure the CI status badge shows **green** after the PR is opened.
+## Scope
+Describe the product surface affected by this PR.
 
-**Description**
+## Verification
+- [ ] Local validation completed
+- [ ] `npm run lint` passes
+- [ ] `npm run build` passes
+- [ ] Required GitHub checks green before merge
+- [ ] iOS/macOS target validated if applicable
 
-- What does this change?
-- Why is it needed?
-- Which part of the repo does it affect?
-- Any migration steps or follow‑up work?
+## Rollback
+Describe how to revert or disable this safely.
+
+## Checklist
+- [ ] No secrets committed
+- [ ] Product copy remains honest about local vs relayed behavior
+- [ ] Docs updated if user-visible behavior changed
+- [ ] No merge until lead branch stays green
+
+## Notes
+Optional: migration notes, screenshots, or follow-up work.
