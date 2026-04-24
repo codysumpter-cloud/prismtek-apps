@@ -30,7 +30,7 @@
     "motion": "^12.23.24",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
-    "@prismtek/buddy-core": "git+ssh://git@github.com:codysumpter-cloud/prismtek-buddy-core.git"
+    "@prismtek/buddy-core": "github:codysumpter-cloud/prismtek-buddy-core#main"
   },
   "devDependencies": {
     "husky": "^9.0.0",
