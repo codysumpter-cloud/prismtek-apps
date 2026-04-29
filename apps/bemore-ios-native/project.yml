@@ -15,6 +15,9 @@ targets:
     sources:
       - path: Vendors/MLCSwift/Sources/Swift
       - path: Vendors/MLCSwift/Sources/ObjC
+    configFiles:
+      Debug: Config/MLCRuntime.xcconfig
+      Release: Config/MLCRuntime.xcconfig
     settings:
       base:
         PRODUCT_MODULE_NAME: MLCSwift
@@ -33,6 +36,9 @@ targets:
         excludes:
           - "**/.DS_Store"
       - path: BeMoreAgentShell/Views/RepoSurfaceDetailView.swift
+    configFiles:
+      Debug: Config/MLCRuntime.xcconfig
+      Release: Config/MLCRuntime.xcconfig
     dependencies:
       - target: MLCSwift
     settings:
