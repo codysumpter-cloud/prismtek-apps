@@ -76,6 +76,7 @@ struct ModelsView: View {
                 Text(appState.modelStore.errorMessage ?? "Unknown error")
             }
             .onAppear {
+                BundledModelCatalog.installBundledRecommendedModelIfAvailable(into: appState.modelStore)
                 Task { await clearUnsupportedLocalSelectionIfNeeded(showAlert: false) }
             }
         }
@@ -112,8 +113,6 @@ struct ModelsView: View {
         .bmoCard()
     }
 
-    // MARK: - Recommended model
-
     private var recommendedModelCard: some View {
         let model = KnownModel.gemma4E2B
 
@@ -147,7 +146,7 @@ struct ModelsView: View {
                     Text("\(model.parameterCount) parameters • \(model.family)")
                         .font(.caption)
                         .foregroundColor(BMOTheme.textSecondary)
-                    Text("Installs the official MLC package from Hugging Face: weights, tokenizer files, and mlc-chat-config.json. This replaces the broken raw GGUF download path.")
+                    Text(BundledModelCatalog.hasBundledRecommendedModel ? "Included in this TestFlight build as a bundled MLC package. No long in-app model download should be required." : "Installs the official MLC package from Hugging Face: weights, tokenizer files, and mlc-chat-config.json. This replaces the broken raw GGUF download path.")
                         .font(.caption)
                         .foregroundColor(BMOTheme.textTertiary)
                         .fixedSize(horizontal: false, vertical: true)
@@ -159,7 +158,7 @@ struct ModelsView: View {
             HStack(spacing: BMOTheme.spacingSM) {
                 infoTag("MLC package")
                 infoTag("Gemma 2 2B IT")
-                infoTag("~1.5 GB")
+                infoTag(BundledModelCatalog.hasBundledRecommendedModel ? "Bundled" : "~1.5 GB")
             }
         }
         .bmoCard()
@@ -243,6 +242,20 @@ struct ModelsView: View {
                 } else {
                     unsupportedInstalledModelNotice(installedModel)
                 }
+            } else if BundledModelCatalog.hasBundledRecommendedModel {
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(BMOTheme.success)
+                        Text("Bundled model included")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .foregroundColor(BMOTheme.success)
+                    }
+                    Text("The bundled package will be registered automatically. Leave Models and come back if it does not appear immediately.")
+                        .font(.caption)
+                        .foregroundColor(BMOTheme.textTertiary)
+                }
             } else {
                 VStack(alignment: .leading, spacing: 10) {
                     Button {
@@ -262,7 +275,7 @@ struct ModelsView: View {
                             .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusSmall, style: .continuous))
                     }
 
-                    Text("This downloads the prepared MLC package folder instead of a raw GGUF file. If this build does not include the native MLC/TVM runtime library, the package will install but live on-device generation will still require the next runtime-linked build.")
+                    Text("This downloads the prepared MLC package folder instead of a raw GGUF file. TestFlight builds should bundle this package; network install is only a fallback.")
                         .font(.caption)
                         .foregroundColor(BMOTheme.textTertiary)
                         .fixedSize(horizontal: false, vertical: true)
@@ -303,8 +316,6 @@ struct ModelsView: View {
         }
     }
 
-    // MARK: - Runtime info
-
     private var runtimeInfoCard: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
@@ -341,7 +352,7 @@ struct ModelsView: View {
                         .font(.caption)
                         .fontWeight(.semibold)
                         .foregroundColor(BMOTheme.warning)
-                    Text("Build 50 can download the prepared MLC model package. Live local token generation still requires the native MLC/TVM runtime library to be linked into the iOS app.")
+                    Text("The model package can be bundled with the app. Live local token generation still requires the native MLC/TVM runtime library to be linked into the iOS app.")
                         .font(.caption)
                         .foregroundColor(BMOTheme.textTertiary)
                 }
@@ -350,8 +361,6 @@ struct ModelsView: View {
         }
         .bmoCard()
     }
-
-    // MARK: - Installed models
 
     private var installedModelsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -517,8 +526,6 @@ struct ModelsView: View {
         .bmoCard()
     }
 
-    // MARK: - Saved sources
-
     private var savedSourcesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
@@ -598,8 +605,6 @@ struct ModelsView: View {
         .bmoCard()
     }
 
-    // MARK: - Helpers
-
     private var installedRecommendedModel: InstalledModel? {
         appState.modelStore.installedModels.first { model in
             model.localFilename == MLCPackageManifest.gemma2_2B_IT_Q4F16_1.localFolderName ||
@@ -677,8 +682,6 @@ struct ModelsView: View {
             .clipShape(Capsule())
     }
 }
-
-// MARK: - Add model source sheet
 
 struct AddModelSourceSheet: View {
     @EnvironmentObject private var appState: AppState
