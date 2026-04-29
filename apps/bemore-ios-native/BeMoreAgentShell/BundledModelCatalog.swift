@@ -1,6 +1,5 @@
 import Foundation
 
-@MainActor
 enum BundledModelCatalog {
     private static let bundleRootName = "BundledModels"
     private static let manifest = MLCPackageManifest.gemma2_2B_IT_Q4F16_1
@@ -14,6 +13,7 @@ enum BundledModelCatalog {
         return isValidPackage(at: url)
     }
 
+    @MainActor
     static func installBundledRecommendedModelIfAvailable(into modelStore: ModelCatalogStore) {
         guard let sourceURL = bundledRecommendedModelURL, isValidPackage(at: sourceURL) else { return }
         let destinationURL = Paths.modelsDirectory.appendingPathComponent(manifest.localFolderName, isDirectory: true)
