@@ -33,13 +33,15 @@
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<false/>
 				<key>NSIncludesSubdomains</key>
+				<true/>
 			</dict>
 		</dict>
 	</dict>
 	<key>NSRemindersUsageDescription</key>
 	<string>BeMore can create Buddy-approved reminder drafts when you ask it to help plan or follow up.</string>
 	<key>UILaunchScreen</key>
-	<dict/>
+	<dict>
+	</dict>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
