@@ -508,31 +508,4 @@ enum ModelDownloadState: Equatable {
         case let (.downloading(a), .downloading(b)): return a == b
         case let (.failed(a), .failed(b)): return a == b
         default: return false
-        }
-    }
-}
-
-struct KnownModel: Identifiable {
-    let id = UUID()
-    let name: String
-    let modelID: String
-    let family: String
-    let parameterCount: String
-    let description: String
-    let downloadSizeGB: Double
-    let requiresDownload: Bool
-    let runtimeBackend: String
-
-    static let gemma4E2B = KnownModel(
-        name: "Gemma 4 E2B-IT",
-        modelID: "gemma4-e2b-it",
-        family: "Gemma",
-        parameterCount: "2B",
-        description: "Curated small GGUF install for the BeMoreAgent shell. Direct downloads should use a public artifact or explain auth requirements clearly.",
-        downloadSizeGB: 1.7,
-        requiresDownload: true,
-        runtimeBackend: "MLC"
-    )
-
-    static let catalog: [KnownModel] = [gemma4E2B]
-}
+    ... (truncated)
