@@ -6,7 +6,7 @@ This is the single source of truth for producing a BeMoreAgent TestFlight upload
 
 - Current safe runtime baseline: `main` still uses `MLCBridgeEngine()` from `apps/bemore-ios-native/BeMoreAgentShell/BeMoreAgentApp.swift`
 - Do not merge speculative local-runtime branches just to force a build green
-- The current source build number in `apps/bemore-ios-native/BeMoreAgentShell/Info.plist` is `46`
+- The current source build number in `apps/bemore-ios-native/BeMoreAgentShell/Info.plist` is `50`
 
 ## Required repo state
 
@@ -67,9 +67,9 @@ This is an optional Xcode path override. If unset, the workflow defaults to `/Ap
 
 1. Branch from current `main`.
 2. Make the smallest safe iOS change.
-3. Keep `apps/bemore-ios-native/BeMoreAgentShell/Info.plist` `CFBundleVersion` at `46` until App Store Connect forces the next bump.
+3. Keep `apps/bemore-ios-native/BeMoreAgentShell/Info.plist` `CFBundleVersion` aligned with the intended App Store Connect upload build. Current intended upload is `50`.
 4. Build `45` was already present in App Store Connect on 2026-04-23, so the repo moved to `46` after the upload lane failed with: `The bundle version must be higher than the previously uploaded version: '45'.`
-4. Run local verification:
+5. Run local verification:
 
 ```bash
 cd apps/bemore-ios-native
@@ -83,12 +83,12 @@ xcodebuild \
   build
 ```
 
-5. Open the PR with a clear summary, verification, and rollback notes.
-6. Wait for the relevant iOS/native checks to pass.
-7. Merge to `main`.
-8. Confirm `.github/workflows/bemore-ios-ci-testflight.yml` starts automatically, or run it manually with `workflow_dispatch` if needed.
-9. Open the workflow run summary and verify the archived/source version and build number match the intended release.
-10. Do not claim success until the upload path actually succeeds.
+6. Open the PR with a clear summary, verification, and rollback notes.
+7. Wait for the relevant iOS/native checks to pass.
+8. Merge to `main`.
+9. Confirm `.github/workflows/bemore-ios-ci-testflight.yml` starts automatically, or run it manually with `workflow_dispatch` if needed.
+10. Open the workflow run summary and verify the archived/source version and build number match the intended release.
+11. Do not claim success until the upload path actually succeeds.
 
 ## Workflow triggers
 
