@@ -1,6 +1,6 @@
 import Foundation
 
-struct MLCPackageManifest: Sendable {
+struct MLCPackageManifest {
     let displayName: String
     let repositoryBaseURL: URL
     let repositoryTreeAPIURL: URL
@@ -103,7 +103,7 @@ final class MLCPackageInstaller: ObservableObject {
                 }
             }
 
-            try verifyPackage(at: tempRoot, manifest: manifest)
+            try verifyPackage(at: tempRoot)
 
             if fileManager.fileExists(atPath: destinationRoot.path) {
                 try fileManager.removeItem(at: destinationRoot)
@@ -136,13 +136,13 @@ final class MLCPackageInstaller: ObservableObject {
     }
 
     private static func isMLCPackageFile(_ path: String) -> Bool {
-        guard path.contains("/") == false else { return false }
+        guard !path.contains("/") else { return false }
         return path == "mlc-chat-config.json" ||
             path == "tensor-cache.json" ||
             path == "tokenizer.json" ||
             path == "tokenizer.model" ||
             path == "tokenizer_config.json" ||
-            path.hasPrefix("params_shard_") && path.hasSuffix(".bin")
+            (path.hasPrefix("params_shard_") && path.hasSuffix(".bin"))
     }
 
     private func downloadFile(from sourceURL: URL, to destinationURL: URL, onProgress: @escaping @Sendable (Double) -> Void) async throws {
@@ -189,7 +189,7 @@ final class MLCPackageInstaller: ObservableObject {
         try fileManager.moveItem(at: tempURL, to: destinationURL)
     }
 
-    private func verifyPackage(at url: URL, manifest: MLCPackageManifest) throws {
+    private func verifyPackage(at url: URL) throws {
         let required = ["mlc-chat-config.json", "tokenizer.json", "tokenizer.model", "tokenizer_config.json", "params_shard_0.bin"]
         for filename in required {
             let path = url.appendingPathComponent(filename).path
