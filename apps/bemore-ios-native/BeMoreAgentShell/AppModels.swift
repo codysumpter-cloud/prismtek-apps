@@ -508,4 +508,31 @@ enum ModelDownloadState: Equatable {
         case let (.downloading(a), .downloading(b)): return a == b
         case let (.failed(a), .failed(b)): return a == b
         default: return false
-    ... (truncated)
+        }
+    }
+}
+
+struct KnownModel: Identifiable {
+    let id = UUID()
+    let name: String
+    let modelID: String
+    let family: String
+    let parameterCount: String
+    let description: String
+    let downloadSizeGB: Double
+    let requiresDownload: Bool
+    let runtimeBackend: String
+
+    static let gemma4E2B = KnownModel(
+        name: "Gemma 2 2B IT MLC",
+        modelID: "gemma-2-2b-it-q4f16_1-MLC",
+        family: "Gemma",
+        parameterCount: "2B",
+        description: "Prepared MLC package install for the BeMoreAgent shell. The installer downloads package files, verifies MLC markers, and only activates live local chat when the native runtime is linked.",
+        downloadSizeGB: 1.5,
+        requiresDownload: true,
+        runtimeBackend: "MLC"
+    )
+
+    static let catalog: [KnownModel] = [gemma4E2B]
+}
