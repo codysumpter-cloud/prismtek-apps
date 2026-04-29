@@ -67,12 +67,13 @@ struct DesktopShellView: View {
                     shellRow(.missionControl, subtitle: "Buddy-first home and next steps")
                     shellRow(.buddy, subtitle: "Your active Buddy, roster, and training")
                     shellRow(.chat, subtitle: "Talk to your Buddy with a safe way back home")
+                    shellRow(.hermes, subtitle: "Hermes WebUI, Desktop, and runtime guidance")
                 }
 
- Section("Work") {
- shellRow(.files, subtitle: "Workspace files and source materials")
- shellRow(.artifacts, subtitle: "Results, receipts, and generated artifacts")
- }
+                Section("Work") {
+                    shellRow(.files, subtitle: "Workspace files and source materials")
+                    shellRow(.artifacts, subtitle: "Results, receipts, and generated artifacts")
+                }
 
                 Section("Control") {
                     shellRow(.settings, subtitle: "Onboarding, routes, tabs, and maintenance")
@@ -119,9 +120,11 @@ private func shellDestination(for tab: AppTab, appState: AppState) -> some View 
         EditorTabView()
     case .models:
         ModelsView()
- case .chat:
- ChatView(store: appState.buddyStore)
- case .artifacts:
+    case .chat:
+        ChatView(store: appState.buddyStore)
+    case .hermes:
+        HermesCommandCenterView()
+    case .artifacts:
         ArtifactsView()
     case .buddy:
         BuddyView(store: appState.buddyStore)
