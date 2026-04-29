@@ -36,6 +36,9 @@ targets:
         excludes:
           - "**/.DS_Store"
       - path: BeMoreAgentShell/Views/RepoSurfaceDetailView.swift
+    resources:
+      - path: BundledModels
+        optional: true
     configFiles:
       Debug: Config/MLCRuntime.xcconfig
       Release: Config/MLCRuntime.xcconfig
