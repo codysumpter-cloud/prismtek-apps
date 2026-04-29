@@ -28,7 +28,7 @@ permissions:
 
 jobs:
   validate:
-    runs-on: [self-hosted, prismtek-apps]
+    runs-on: macos-latest
     defaults:
       run:
         working-directory: apps/bemore-ios-native
@@ -136,7 +136,7 @@ jobs:
   testflight:
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     needs: validate
-    runs-on: [self-hosted, prismtek-apps]
+    runs-on: macos-latest
     defaults:
       run:
         working-directory: apps/bemore-ios-native

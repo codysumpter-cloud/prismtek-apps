@@ -15,7 +15,7 @@ concurrency:
 jobs:
   build-ios:
     name: Generate and build BeMoreAgent
-    runs-on: [self-hosted, prismtek-apps]
+    runs-on: macos-latest
     defaults:
       run:
         working-directory: apps/bemore-ios-native
