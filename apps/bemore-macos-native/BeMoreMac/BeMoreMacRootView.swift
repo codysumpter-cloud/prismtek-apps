@@ -314,6 +314,7 @@ struct BeMoreMacRootView: View {
                 .buttonStyle(.borderedProminent)
             Button("Run Onboarding Again") { state.resetOnboarding() }
                 .buttonStyle(.bordered)
+            HermesMacCommandCenterView()
         }
         .panel()
     }
