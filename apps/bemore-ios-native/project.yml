@@ -12,6 +12,7 @@ targets:
   MLCSwift:
     type: framework.static
     platform: iOS
+    requiresObjCLinking: true
     sources:
       - path: Vendors/MLCSwift/Sources/Swift
       - path: Vendors/MLCSwift/Sources/ObjC
