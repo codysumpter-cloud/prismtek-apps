@@ -1,0 +1,12 @@
+// Default local-runtime linker state.
+//
+// This file is intentionally safe by default so normal CI and TestFlight builds keep
+// compiling even when native MLC/TVM artifacts are not present in the repository.
+//
+// Run scripts/enable-mlc-runtime-link.sh after mlc_llm package produces dist/lib
+// to rewrite this file with BEMORE_MLC_RUNTIME_LINKED=1 and the native linker flags.
+
+BEMORE_MLC_RUNTIME_LINKED = 0
+GCC_PREPROCESSOR_DEFINITIONS = $(inherited) BEMORE_MLC_RUNTIME_LINKED=0
+LIBRARY_SEARCH_PATHS = $(inherited)
+OTHER_LDFLAGS = $(inherited)
