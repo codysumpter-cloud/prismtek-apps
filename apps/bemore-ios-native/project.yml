@@ -5,7 +5,7 @@ configs:
   Debug: debug
   Release: release
 settings:
-  IPHONEOS_DEPLOYMENT_TARGET: 26.0
+  IPHONEOS_DEPLOYMENT_TARGET: 18.0
   SWIFT_VERSION: "5.9"
 
 targets:
