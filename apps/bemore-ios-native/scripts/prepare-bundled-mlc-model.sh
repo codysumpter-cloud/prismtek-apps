@@ -5,9 +5,10 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MODEL_ID="gemma-2-2b-it-q4f16_1-MLC"
 REPO_ID="mlc-ai/gemma-2-2b-it-q4f16_1-MLC"
 DEST_DIR="$ROOT_DIR/BundledModels/$MODEL_ID"
-FILE_LIST="$RUNNER_TEMP/bemoreagent-mlc-model-files.txt"
+TMP_DIR="${RUNNER_TEMP:-${TMPDIR:-/tmp}}"
+FILE_LIST="$TMP_DIR/bemoreagent-mlc-model-files.txt"
 
-mkdir -p "$DEST_DIR"
+mkdir -p "$DEST_DIR" "$TMP_DIR"
 
 python3 - "$REPO_ID" "$FILE_LIST" <<'PY'
 import json
