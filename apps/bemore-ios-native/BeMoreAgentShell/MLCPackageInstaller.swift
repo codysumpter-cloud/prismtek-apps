@@ -3,10 +3,11 @@ import Foundation
 struct MLCPackageManifest: Sendable {
     let displayName: String
     let repositoryBaseURL: URL
+    let repositoryTreeAPIURL: URL
     let localFolderName: String
     let modelID: String
     let modelLib: String
-    let files: [String]
+    let fallbackFiles: [String]
 
     var localURL: URL {
         Paths.modelsDirectory.appendingPathComponent(localFolderName, isDirectory: true)
@@ -15,10 +16,11 @@ struct MLCPackageManifest: Sendable {
     static let gemma2_2B_IT_Q4F16_1 = MLCPackageManifest(
         displayName: "Gemma 2 2B IT MLC",
         repositoryBaseURL: URL(string: "https://huggingface.co/mlc-ai/gemma-2-2b-it-q4f16_1-MLC/resolve/main/")!,
+        repositoryTreeAPIURL: URL(string: "https://huggingface.co/api/models/mlc-ai/gemma-2-2b-it-q4f16_1-MLC/tree/main")!,
         localFolderName: "gemma-2-2b-it-q4f16_1-MLC",
         modelID: "gemma-2-2b-it-q4f16_1-MLC",
         modelLib: "gemma2_q4f16_1",
-        files: [
+        fallbackFiles: [
             "mlc-chat-config.json",
             "tensor-cache.json",
             "tokenizer.json",
@@ -32,6 +34,7 @@ struct MLCPackageManifest: Sendable {
 final class MLCPackageInstaller: ObservableObject {
     enum Phase: Equatable {
         case idle
+        case resolvingManifest
         case downloading(file: String, completed: Int, total: Int, fraction: Double)
         case installed
         case failed(String)
@@ -45,6 +48,8 @@ final class MLCPackageInstaller: ObservableObject {
             switch self {
             case .idle:
                 return "Ready to install"
+            case .resolvingManifest:
+                return "Finding package files"
             case .downloading(let file, let completed, let total, _):
                 return "Downloading \(file) (\(completed + 1)/\(total))"
             case .installed:
@@ -56,6 +61,11 @@ final class MLCPackageInstaller: ObservableObject {
     }
 
     @Published private(set) var phase: Phase = .idle
+
+    private struct HuggingFaceTreeItem: Decodable {
+        let path: String
+        let type: String?
+    }
 
     private let session: URLSession
     private let fileManager: FileManager
@@ -72,6 +82,8 @@ final class MLCPackageInstaller: ObservableObject {
     func install(_ manifest: MLCPackageManifest, into modelStore: ModelCatalogStore, activate: @escaping @MainActor (String) async -> Void) async {
         do {
             try ensureEnoughDiskForGemmaPackage()
+            phase = .resolvingManifest
+            let packageFiles = try await resolvePackageFiles(for: manifest)
 
             let destinationRoot = manifest.localURL
             let tempRoot = Paths.modelsDirectory.appendingPathComponent(".\(manifest.localFolderName)-partial-\(UUID().uuidString)", isDirectory: true)
@@ -80,12 +92,13 @@ final class MLCPackageInstaller: ObservableObject {
             }
             try fileManager.createDirectory(at: tempRoot, withIntermediateDirectories: true)
 
-            for (index, filename) in manifest.files.enumerated() {
+            for (index, filename) in packageFiles.enumerated() {
                 let sourceURL = manifest.repositoryBaseURL.appendingPathComponent(filename)
                 let destinationURL = tempRoot.appendingPathComponent(filename)
+                try fileManager.createDirectory(at: destinationURL.deletingLastPathComponent(), withIntermediateDirectories: true)
                 try await downloadFile(from: sourceURL, to: destinationURL) { [weak self] fraction in
                     Task { @MainActor in
-                        self?.phase = .downloading(file: filename, completed: index, total: manifest.files.count, fraction: fraction)
+                        self?.phase = .downloading(file: filename, completed: index, total: packageFiles.count, fraction: fraction)
                     }
                 }
             }
@@ -104,6 +117,32 @@ final class MLCPackageInstaller: ObservableObject {
         } catch {
             phase = .failed((error as NSError).localizedDescription)
         }
+    }
+
+    private func resolvePackageFiles(for manifest: MLCPackageManifest) async throws -> [String] {
+        let (data, response) = try await session.data(from: manifest.repositoryTreeAPIURL)
+        if let http = response as? HTTPURLResponse, !(200...299).contains(http.statusCode) {
+            return manifest.fallbackFiles
+        }
+
+        let decoded = try JSONDecoder().decode([HuggingFaceTreeItem].self, from: data)
+        let files = decoded
+            .filter { ($0.type ?? "file") == "file" }
+            .map(\.path)
+            .filter(Self.isMLCPackageFile)
+            .sorted()
+
+        return files.isEmpty ? manifest.fallbackFiles : files
+    }
+
+    private static func isMLCPackageFile(_ path: String) -> Bool {
+        guard path.contains("/") == false else { return false }
+        return path == "mlc-chat-config.json" ||
+            path == "tensor-cache.json" ||
+            path == "tokenizer.json" ||
+            path == "tokenizer.model" ||
+            path == "tokenizer_config.json" ||
+            path.hasPrefix("params_shard_") && path.hasSuffix(".bin")
     }
 
     private func downloadFile(from sourceURL: URL, to destinationURL: URL, onProgress: @escaping @Sendable (Double) -> Void) async throws {
