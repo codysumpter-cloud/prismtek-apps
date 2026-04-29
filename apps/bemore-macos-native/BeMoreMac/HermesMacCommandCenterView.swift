@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 struct HermesMacCommandCenterView: View {
@@ -23,7 +24,10 @@ struct HermesMacCommandCenterView: View {
                 .frame(width: 320, alignment: .topLeading)
             }
         }
-        .panel()
+        .padding()
+        .background(Color.white.opacity(0.72))
+        .clipShape(RoundedRectangle(cornerRadius: 18))
+        .shadow(color: .black.opacity(0.06), radius: 18, y: 8)
     }
 
     private var header: some View {
