@@ -56,6 +56,7 @@ struct ModelsView: View {
                 switch result {
                 case .success(let urls):
                     appState.modelStore.importPreparedModelItems(from: urls)
+                    Task { await clearUnsupportedLocalSelectionIfNeeded(showAlert: false) }
                 case .failure(let error):
                     appState.modelStore.errorMessage = error.localizedDescription
                 }
@@ -73,29 +74,39 @@ struct ModelsView: View {
             } message: {
                 Text(appState.modelStore.errorMessage ?? "Unknown error")
             }
+            .onAppear {
+                Task { await clearUnsupportedLocalSelectionIfNeeded(showAlert: false) }
+            }
         }
     }
 
     private var activeRouteCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        let selectedLocalModel = appState.selectedInstalledModel
+        let selectedLocalModelIsUsable = selectedLocalModel.map(isRuntimeCompatible) ?? false
+        let selectedLocalModelIsUnsupported = selectedLocalModel != nil && !selectedLocalModelIsUsable
+
+        return VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text("Active Route")
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .foregroundColor(BMOTheme.textSecondary)
                 Spacer()
-                StatusBadge(label: appState.activeRouteModeLabel, color: appState.selectedProviderAccount != nil ? BMOTheme.success : (appState.selectedInstalledModel != nil ? BMOTheme.accent : BMOTheme.warning))
+                StatusBadge(
+                    label: selectedLocalModelIsUnsupported ? "Needs package" : appState.activeRouteModeLabel,
+                    color: appState.selectedProviderAccount != nil ? BMOTheme.success : (selectedLocalModelIsUsable ? BMOTheme.accent : BMOTheme.warning)
+                )
             }
 
-            Text(appState.activeRouteTitle)
+            Text(selectedLocalModelIsUnsupported ? "Local model package required" : appState.activeRouteTitle)
                 .font(.headline)
                 .foregroundColor(BMOTheme.textPrimary)
-            Text(appState.activeRouteDetail)
+            Text(selectedLocalModelIsUnsupported ? runtimePackageMessage(for: selectedLocalModel!) : appState.activeRouteDetail)
                 .font(.caption)
                 .foregroundColor(BMOTheme.textSecondary)
-            Text(appState.routeHealthSummary)
+            Text(selectedLocalModelIsUnsupported ? "Choose a cloud route or import a prepared MLC/Core ML package before using on-device chat." : appState.routeHealthSummary)
                 .font(.caption)
-                .foregroundColor((appState.selectedProviderAccount != nil || appState.canUseSelectedLocalModel) ? BMOTheme.textTertiary : BMOTheme.warning)
+                .foregroundColor((appState.selectedProviderAccount != nil || selectedLocalModelIsUsable) ? BMOTheme.textTertiary : BMOTheme.warning)
         }
         .bmoCard()
     }
@@ -135,7 +146,7 @@ struct ModelsView: View {
                     Text("\(model.parameterCount) parameters • \(model.family)")
                         .font(.caption)
                         .foregroundColor(BMOTheme.textSecondary)
-                    Text(model.description)
+                    Text("The previous built-in download saved a raw GGUF file. This app's current on-device path needs a prepared MLC/Core ML runtime package, so automatic local install is paused until a compatible package ships.")
                         .font(.caption)
                         .foregroundColor(BMOTheme.textTertiary)
                         .fixedSize(horizontal: false, vertical: true)
@@ -146,9 +157,9 @@ struct ModelsView: View {
             gemmaActionArea
 
             HStack(spacing: BMOTheme.spacingSM) {
-                infoTag("LiteRT-LM")
-                infoTag("~\(String(format: "%.1f", model.downloadSizeGB)) GB")
-                infoTag("On-device")
+                infoTag("Prepared package required")
+                infoTag("GGUF not runnable here")
+                infoTag("Use cloud now")
             }
         }
         .bmoCard()
@@ -158,20 +169,31 @@ struct ModelsView: View {
     private var gemmaActionArea: some View {
         switch appState.gemmaDownloadState {
         case .notInstalled:
-            Button {
-                appState.downloadGemma()
-            } label: {
-                HStack(spacing: 8) {
-                    Image(systemName: "arrow.down.circle.fill")
-                    Text("Install gemma4-e2b-it")
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Automatic local install is disabled for this model in Build 50 because the available download is a raw GGUF artifact, not a prepared iOS runtime package.")
+                    .font(.caption)
+                    .foregroundColor(BMOTheme.warning)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                HStack(spacing: 10) {
+                    Button {
+                        isModelImporterPresented = true
+                    } label: {
+                        Label("Import prepared package", systemImage: "folder")
+                    }
+                    .buttonStyle(BMOButtonStyle(isPrimary: false))
+
+                    Button {
+                        if let provider = appState.providerStore.enabledProviders().first?.provider {
+                            appState.setSelectedProvider(provider)
+                        } else {
+                            appState.modelStore.errorMessage = "Link a cloud provider below for live chat while the prepared on-device Gemma package is being added."
+                        }
+                    } label: {
+                        Label("Use cloud route", systemImage: "cloud.fill")
+                    }
+                    .buttonStyle(BMOButtonStyle(isPrimary: true))
                 }
-                .font(.subheadline)
-                .fontWeight(.semibold)
-                .foregroundColor(BMOTheme.backgroundPrimary)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 14)
-                .background(BMOTheme.accent)
-                .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusSmall, style: .continuous))
             }
 
         case .downloading(let progress):
@@ -179,7 +201,7 @@ struct ModelsView: View {
                 ProgressView(value: progress)
                     .tint(BMOTheme.accent)
                 HStack {
-                    Text("Downloading...")
+                    Text("Downloading legacy artifact...")
                         .font(.caption)
                         .foregroundColor(BMOTheme.textSecondary)
                     Spacer()
@@ -191,25 +213,31 @@ struct ModelsView: View {
             }
 
         case .installed:
-            HStack(spacing: 8) {
-                Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(BMOTheme.success)
-                Text("Installed & Ready")
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .foregroundColor(BMOTheme.success)
-                Spacer()
+            if let model = appState.modelStore.installedModels.first(where: { $0.modelID == "gemma4-e2b-it" }) {
+                if isRuntimeCompatible(model) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(BMOTheme.success)
+                        Text("Installed & Ready")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .foregroundColor(BMOTheme.success)
+                        Spacer()
 
-                if appState.runtimePreferences.selection.selectedInstalledFilename != nil {
-                    StatusBadge(label: "Active", color: BMOTheme.accent)
-                } else {
-                    Button("Activate") {
-                        if let model = appState.modelStore.installedModels.first(where: { $0.modelID == "gemma4-e2b-it" }) {
-                            Task { await appState.setSelectedInstalledModel(filename: model.localFilename) }
+                        if appState.runtimePreferences.selection.selectedInstalledFilename == model.localFilename {
+                            StatusBadge(label: "Active", color: BMOTheme.accent)
+                        } else {
+                            Button("Activate") {
+                                Task { await appState.setSelectedInstalledModel(filename: model.localFilename) }
+                            }
+                            .buttonStyle(BMOButtonStyle(isPrimary: false))
                         }
                     }
-                    .buttonStyle(BMOButtonStyle(isPrimary: false))
+                } else {
+                    unsupportedInstalledModelNotice(model)
                 }
+            } else {
+                unsupportedInstalledGemmaNotice
             }
 
         case .failed(let message):
@@ -217,7 +245,7 @@ struct ModelsView: View {
                 HStack(spacing: 6) {
                     Image(systemName: "xmark.circle.fill")
                         .foregroundColor(BMOTheme.error)
-                    Text("Download failed")
+                    Text("Install unavailable")
                         .font(.subheadline)
                         .foregroundColor(BMOTheme.error)
                 }
@@ -225,11 +253,53 @@ struct ModelsView: View {
                     .font(.caption)
                     .foregroundColor(BMOTheme.textTertiary)
 
-                Button("Retry") {
-                    appState.downloadGemma()
+                Button("Import prepared package") {
+                    isModelImporterPresented = true
                 }
-                .buttonStyle(BMOButtonStyle())
+                .buttonStyle(BMOButtonStyle(isPrimary: false))
             }
+        }
+    }
+
+    private func unsupportedInstalledModelNotice(_ model: InstalledModel) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 6) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .foregroundColor(BMOTheme.warning)
+                Text("Installed file is not runnable")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(BMOTheme.warning)
+            }
+            Text(runtimePackageMessage(for: model))
+                .font(.caption)
+                .foregroundColor(BMOTheme.textTertiary)
+                .fixedSize(horizontal: false, vertical: true)
+            HStack(spacing: 10) {
+                Button("Clear route") {
+                    Task { await appState.setSelectedInstalledModel(filename: nil) }
+                }
+                .buttonStyle(BMOButtonStyle(isPrimary: false))
+
+                Button("Remove file") {
+                    appState.modelStore.deleteInstalledModel(model)
+                    Task { await appState.setSelectedInstalledModel(filename: nil) }
+                }
+                .buttonStyle(BMOButtonStyle(isPrimary: false))
+            }
+        }
+    }
+
+    private var unsupportedInstalledGemmaNotice: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("The previous Gemma install is not a prepared runtime package. Remove the raw file from Installed Models, then use a cloud route or import a prepared MLC/Core ML package.")
+                .font(.caption)
+                .foregroundColor(BMOTheme.warning)
+                .fixedSize(horizontal: false, vertical: true)
+            Button("Clear local route") {
+                Task { await appState.setSelectedInstalledModel(filename: nil) }
+            }
+            .buttonStyle(BMOButtonStyle(isPrimary: false))
         }
     }
 
@@ -267,11 +337,11 @@ struct ModelsView: View {
 
             if appState.usesStubRuntime {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("LiteRT-LM Integration")
+                    Text("Runtime package required")
                         .font(.caption)
                         .fontWeight(.semibold)
                         .foregroundColor(BMOTheme.warning)
-                    Text("The LiteRT-LM Swift SDK is in active development by Google. Model downloads and storage are fully functional now. On-device inference will activate automatically when the SDK is available.")
+                    Text("Model storage works, but live on-device inference requires a prepared iOS runtime package. Raw GGUF files are not executable through the current MLC/MLCSwift path.")
                         .font(.caption)
                         .foregroundColor(BMOTheme.textTertiary)
                 }
@@ -311,6 +381,7 @@ struct ModelsView: View {
 
     private func installedModelRow(_ model: InstalledModel) -> some View {
         let isSelected = appState.runtimePreferences.selection.selectedInstalledFilename == model.localFilename
+        let canUseModel = isRuntimeCompatible(model)
 
         return HStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 3) {
@@ -328,13 +399,30 @@ struct ModelsView: View {
                             .foregroundColor(BMOTheme.textTertiary)
                     }
                 }
+                if !canUseModel {
+                    Text(runtimePackageMessage(for: model))
+                        .font(.caption2)
+                        .foregroundColor(BMOTheme.warning)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
             }
 
             Spacer()
 
-            if isSelected {
+            if isSelected && canUseModel {
                 StatusBadge(label: "Active", color: BMOTheme.accent)
-            } else {
+            } else if isSelected {
+                Button("Clear") {
+                    Task { await appState.setSelectedInstalledModel(filename: nil) }
+                }
+                .font(.caption)
+                .fontWeight(.semibold)
+                .foregroundColor(BMOTheme.warning)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(BMOTheme.warning.opacity(0.12))
+                .clipShape(Capsule())
+            } else if canUseModel {
                 Button("Use") {
                     Task { await appState.setSelectedInstalledModel(filename: model.localFilename) }
                 }
@@ -345,6 +433,8 @@ struct ModelsView: View {
                 .padding(.vertical, 6)
                 .background(BMOTheme.accent.opacity(0.12))
                 .clipShape(Capsule())
+            } else {
+                StatusBadge(label: "Unsupported", color: BMOTheme.warning)
             }
 
             Button {
@@ -463,7 +553,9 @@ struct ModelsView: View {
     }
 
     private func sourceRow(_ model: RemoteModel) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+        let sourceIsRunnable = isRuntimeCompatibleSource(model.sourceURL)
+
+        return VStack(alignment: .leading, spacing: 8) {
             Text(model.displayName)
                 .font(.subheadline)
                 .fontWeight(.medium)
@@ -473,16 +565,27 @@ struct ModelsView: View {
                 .foregroundColor(BMOTheme.textTertiary)
                 .lineLimit(1)
 
+            if !sourceIsRunnable {
+                Text("Saved source is a raw artifact or unknown package type. It can stay saved, but direct download is disabled until the source points at a prepared runtime package.")
+                    .font(.caption2)
+                    .foregroundColor(BMOTheme.warning)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
             HStack(spacing: 10) {
-                Button("Download") {
-                    appState.modelStore.download(model)
+                Button(sourceIsRunnable ? "Download" : "Download disabled") {
+                    if sourceIsRunnable {
+                        appState.modelStore.download(model)
+                    } else {
+                        appState.modelStore.errorMessage = "This source is not a prepared runtime package. Add an MLC/Core ML package source or import the prepared folder from Files."
+                    }
                 }
                 .font(.caption)
                 .fontWeight(.semibold)
-                .foregroundColor(BMOTheme.backgroundPrimary)
+                .foregroundColor(sourceIsRunnable ? BMOTheme.backgroundPrimary : BMOTheme.textTertiary)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 8)
-                .background(BMOTheme.accent)
+                .background(sourceIsRunnable ? BMOTheme.accent : BMOTheme.backgroundSecondary)
                 .clipShape(Capsule())
 
                 Button("Remove") {
@@ -496,6 +599,62 @@ struct ModelsView: View {
     }
 
     // MARK: - Helpers
+
+    private func clearUnsupportedLocalSelectionIfNeeded(showAlert: Bool) async {
+        guard let selected = appState.selectedInstalledModel, !isRuntimeCompatible(selected) else { return }
+        await appState.setSelectedInstalledModel(filename: nil)
+        if let provider = appState.providerStore.enabledProviders().first?.provider {
+            appState.setSelectedProvider(provider)
+        }
+        if showAlert {
+            appState.modelStore.errorMessage = "The selected local file is not a prepared runtime package, so it was cleared. Use a cloud route or import a prepared MLC/Core ML package."
+        }
+    }
+
+    private func isRuntimeCompatible(_ model: InstalledModel) -> Bool {
+        guard !model.modelLib.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            return false
+        }
+
+        let ext = model.localURL.pathExtension.lowercased()
+        if Self.rawLocalArtifactExtensions.contains(ext) {
+            return false
+        }
+
+        if ext == "mlmodelc" {
+            return true
+        }
+
+        var isDirectory: ObjCBool = false
+        let exists = FileManager.default.fileExists(atPath: model.localURL.path, isDirectory: &isDirectory)
+        guard exists else { return false }
+
+        let packageRoot = isDirectory.boolValue ? model.localURL : model.localURL.deletingLastPathComponent()
+        return Self.preparedRuntimeMarkers.contains { marker in
+            FileManager.default.fileExists(atPath: packageRoot.appendingPathComponent(marker).path)
+        }
+    }
+
+    private func isRuntimeCompatibleSource(_ sourceURL: String) -> Bool {
+        guard let url = URL(string: sourceURL) else { return false }
+        let ext = url.pathExtension.lowercased()
+        guard !Self.rawLocalArtifactExtensions.contains(ext) else { return false }
+        return ["mlmodelc"].contains(ext) || sourceURL.localizedCaseInsensitiveContains("mlc-chat-config.json")
+    }
+
+    private func runtimePackageMessage(for model: InstalledModel) -> String {
+        let ext = model.localURL.pathExtension.lowercased()
+        if model.modelLib.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return "Missing modelLib metadata. Import a prepared runtime package with its model library name."
+        }
+        if Self.rawLocalArtifactExtensions.contains(ext) {
+            return "Raw .\(ext) files are stored successfully, but this iOS runtime cannot execute them. Import a prepared MLC/Core ML package or use a cloud route."
+        }
+        return "This file does not include the prepared runtime markers required for on-device activation. Import a folder containing mlc-chat-config.json, tokenizer files, and parameter shards."
+    }
+
+    private static let rawLocalArtifactExtensions: Set<String> = ["gguf", "task", "bin", "zip"]
+    private static let preparedRuntimeMarkers = ["mlc-chat-config.json", "tokenizer.json", "params_shard_0.bin"]
 
     private func infoTag(_ text: String) -> some View {
         Text(text)
