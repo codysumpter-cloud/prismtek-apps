@@ -230,7 +230,7 @@ struct ChatView: View {
                 )
             ) != nil ||
             appState.selectedProviderAccount != nil ||
-            (appState.selectedInstalledModel != nil && !appState.usesStubRuntime)
+            appState.canUseSelectedLocalModel
         )
     }
 
@@ -246,7 +246,10 @@ struct ChatView: View {
             return "\(store.activeBuddy?.displayName ?? "Buddy") via \(account.provider.displayName) • \(account.modelSlug)"
         }
         if let model = appState.selectedInstalledModel {
-            return appState.usesStubRuntime ? "Local model selected, but this build is still using local Buddy workflows." : "\(store.activeBuddy?.displayName ?? "Buddy") on-device • \(model.displayName)"
+            if appState.canUseSelectedLocalModel {
+                return "\(store.activeBuddy?.displayName ?? "Buddy") on-device • \(model.displayName)"
+            }
+            return "Local model needs a prepared runtime package • \(model.displayName)"
         }
         return "Buddy local workflow is ready: teach, review, refine, validate, or approve skills here on iPhone."
     }
@@ -255,15 +258,21 @@ struct ChatView: View {
         if appState.selectedProviderAccount != nil {
             return "link.circle.fill"
         }
-        if appState.selectedInstalledModel != nil && !appState.usesStubRuntime {
+        if appState.canUseSelectedLocalModel {
             return "cpu"
+        }
+        if appState.selectedInstalledModel != nil {
+            return "exclamationmark.triangle.fill"
         }
         return "sparkles"
     }
 
     private var statusColor: Color {
-        if appState.selectedProviderAccount != nil || (appState.selectedInstalledModel != nil && !appState.usesStubRuntime) {
+        if appState.selectedProviderAccount != nil || appState.canUseSelectedLocalModel {
             return BMOTheme.textSecondary
+        }
+        if appState.selectedInstalledModel != nil {
+            return BMOTheme.warning
         }
         return BMOTheme.success
     }

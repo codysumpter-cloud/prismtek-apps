@@ -524,12 +524,12 @@ struct KnownModel: Identifiable {
     let runtimeBackend: String
 
     static let gemma4E2B = KnownModel(
-        name: "Gemma 4 E2B-IT",
-        modelID: "gemma4-e2b-it",
+        name: "Gemma 2 2B IT MLC",
+        modelID: "gemma-2-2b-it-q4f16_1-MLC",
         family: "Gemma",
         parameterCount: "2B",
-        description: "Curated small GGUF install for the BeMoreAgent shell. Direct downloads should use a public artifact or explain auth requirements clearly.",
-        downloadSizeGB: 1.7,
+        description: "Prepared MLC package install for the BeMoreAgent shell. The installer downloads package files, verifies MLC markers, and only activates live local chat when the native runtime is linked.",
+        downloadSizeGB: 1.5,
         requiresDownload: true,
         runtimeBackend: "MLC"
     )
