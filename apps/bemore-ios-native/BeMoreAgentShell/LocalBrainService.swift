@@ -153,7 +153,8 @@ final class LocalBrainService: ObservableObject, LocalLLMEngine {
                 ]
             )
 
-            let fileExists = FileManager.default.fileExists(atPath: config.modelURL.path)
+            var isDirectory: ObjCBool = false
+            let fileExists = FileManager.default.fileExists(atPath: config.modelURL.path, isDirectory: &isDirectory)
             guard fileExists else {
                 throw classifiedError(
                     .missingModelAsset,
@@ -166,6 +167,13 @@ final class LocalBrainService: ObservableObject, LocalLLMEngine {
                 message: "Verified that the selected model file exists.",
                 metadata: ["path": config.modelURL.path]
             )
+
+            guard Self.canAttemptLocalRuntimeLoad(config, isDirectory: isDirectory.boolValue) else {
+                throw classifiedError(
+                    .invalidModelAsset,
+                    message: Self.invalidRuntimePackageMessage(for: config)
+                )
+            }
 
             if let checksum = ModelCatalogStore.sha256Hex(for: config.modelURL) {
                 appendEvent(
@@ -251,6 +259,48 @@ final class LocalBrainService: ObservableObject, LocalLLMEngine {
 
     func unloadRuntime() async throws {
         try await configureRuntime(nil)
+    }
+
+    private static func canAttemptLocalRuntimeLoad(_ config: EngineRuntimeConfig, isDirectory: Bool) -> Bool {
+        guard config.modelLib.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false else {
+            return false
+        }
+
+        let ext = config.modelURL.pathExtension.lowercased()
+        if ["gguf", "task", "bin", "zip"].contains(ext) {
+            return false
+        }
+
+        if ext == "mlmodelc" {
+            return true
+        }
+
+        if isDirectory {
+            return true
+        }
+
+        let parent = config.modelURL.deletingLastPathComponent()
+        let packageMarkers = [
+            "mlc-chat-config.json",
+            "tokenizer.json",
+            "params_shard_0.bin"
+        ]
+        return packageMarkers.contains { marker in
+            FileManager.default.fileExists(atPath: parent.appendingPathComponent(marker).path)
+        }
+    }
+
+    private static func invalidRuntimePackageMessage(for config: EngineRuntimeConfig) -> String {
+        let ext = config.modelURL.pathExtension.lowercased()
+        if config.modelLib.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return "The selected local model is missing its packaged modelLib name. Import a prepared MLC model folder or add the model library name before activating it."
+        }
+
+        if ["gguf", "task", "bin", "zip"].contains(ext) {
+            return "This downloaded model file was saved, but this TestFlight build cannot safely activate raw .\(ext) artifacts with the on-device runtime. Import a prepared MLC model folder, or use a cloud route until raw-file runtime support ships."
+        }
+
+        return "This local model was saved, but it does not look like a prepared runtime package. Import a prepared MLC model folder with a matching modelLib, or use a cloud route."
     }
 
     private func registerMemoryPressureObserverIfNeeded() {
