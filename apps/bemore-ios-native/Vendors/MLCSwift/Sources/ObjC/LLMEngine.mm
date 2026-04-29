@@ -4,9 +4,16 @@
 //
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#include <os/proc.h>
 
 #include "LLMEngine.h"
+
+#ifndef BEMORE_MLC_RUNTIME_LINKED
+#define BEMORE_MLC_RUNTIME_LINKED 0
+#endif
+
+#if BEMORE_MLC_RUNTIME_LINKED
+
+#include <os/proc.h>
 
 #define TVM_USE_LIBBACKTRACE 0
 
@@ -119,3 +126,108 @@ using tvm::ffi::TypedFunction;
 }
 
 @end
+
+#else
+
+static NSString* BEMOREMLCStringFromJSONObject(id object) {
+  if (![NSJSONSerialization isValidJSONObject:object]) {
+    return @"[]";
+  }
+
+  NSError* error = nil;
+  NSData* data = [NSJSONSerialization dataWithJSONObject:object options:0 error:&error];
+  if (data == nil || error != nil) {
+    NSLog(@"MLCSwift fallback failed to encode response JSON: %@", error.localizedDescription);
+    return @"[]";
+  }
+
+  return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] ?: @"[]";
+}
+
+@implementation JSONFFIEngine {
+  void (^streamCallback_)(NSString*);
+}
+
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    NSLog(@"MLCSwift bridge compiled without the native MLC/TVM runtime; using unavailable-runtime fallback.");
+  }
+  return self;
+}
+
+- (void)initBackgroundEngine:(void (^)(NSString*))streamCallback {
+  streamCallback_ = [streamCallback copy];
+}
+
+- (void)reload:(NSString*)engineConfigJson {
+  NSLog(@"MLCSwift reload skipped because BEMORE_MLC_RUNTIME_LINKED is disabled. Config: %@", engineConfigJson);
+}
+
+- (void)unload {
+}
+
+- (void)reset {
+}
+
+- (void)chatCompletion:(NSString*)requestJSON requestID:(NSString*)requestID {
+  if (streamCallback_ == nil) {
+    NSLog(@"MLCSwift fallback received chatCompletion before initBackgroundEngine.");
+    return;
+  }
+
+  NSString* responseID = requestID.length > 0 ? requestID : @"bemore-runtime-unavailable";
+  NSNumber* created = @((NSInteger)[[NSDate date] timeIntervalSince1970]);
+  NSString* message = @"The MLCSwift bridge is present, but this build does not link the native MLC/TVM runtime library. Keep this PR draft until a compatible model runtime is bundled and local token generation is verified.";
+
+  NSDictionary* contentChunk = @{
+    @"id": responseID,
+    @"choices": @[
+      @{
+        @"index": @0,
+        @"delta": @{
+          @"role": @"assistant",
+          @"content": message
+        }
+      }
+    ],
+    @"created": created,
+    @"model": @"mlc-runtime-unavailable",
+    @"system_fingerprint": @"bemore-mlc-runtime-unavailable",
+    @"object": @"chat.completion.chunk"
+  };
+
+  NSDictionary* finalChunk = @{
+    @"id": responseID,
+    @"choices": @[],
+    @"created": created,
+    @"model": @"mlc-runtime-unavailable",
+    @"system_fingerprint": @"bemore-mlc-runtime-unavailable",
+    @"object": @"chat.completion.chunk",
+    @"usage": @{
+      @"prompt_tokens": @0,
+      @"completion_tokens": @0,
+      @"total_tokens": @0,
+      @"extra": [NSNull null]
+    }
+  };
+
+  streamCallback_(BEMOREMLCStringFromJSONObject(@[contentChunk, finalChunk]));
+}
+
+- (void)abort:(NSString*)requestID {
+}
+
+- (void)runBackgroundLoop {
+}
+
+- (void)runBackgroundStreamBackLoop {
+}
+
+- (void)exitBackgroundLoop {
+  streamCallback_ = nil;
+}
+
+@end
+
+#endif
