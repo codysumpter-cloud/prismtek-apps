@@ -21,6 +21,7 @@
 		143E627CD370A25348F1EE39 /* BeMoreCapabilityMirror.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2740FE950F2636D09E098F60 /* BeMoreCapabilityMirror.swift */; };
 		15CA2612F5AF8F3A4F69C1E0 /* buddy-runtime-events.schema.json in Resources */ = {isa = PBXBuildFile; fileRef = 88DD0F807A59AAAF582AE30F /* buddy-runtime-events.schema.json */; };
 		16B10AB4B3797A3604750520 /* PixelStudioStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B01D9C27C2C675DC0E7C06D8 /* PixelStudioStoreTests.swift */; };
+		18D17CE8089C3C323519045E /* LLMEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C8524ADBC14BA06510756A /* LLMEngine.swift */; };
 		1E5F45264D22C6D446F001B2 /* SecureTokenStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CCC65FDC8154E104D440E54 /* SecureTokenStore.swift */; };
 		23CD030FD3A9AEF27CE63E43 /* buddy-runtime-events.v1.json in Resources */ = {isa = PBXBuildFile; fileRef = C2D2861D54E92B8C145B6B77 /* buddy-runtime-events.v1.json */; };
 		2464451FB6121B2014117546 /* AppStateRuntimeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98417662936110DAC0CA5200 /* AppStateRuntimeTests.swift */; };
@@ -28,6 +29,7 @@
 		271688E0D409AFEE6CE5B8C0 /* AppleIntegrationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 241DCB22C78DF36C3C2A609D /* AppleIntegrationSettingsView.swift */; };
 		27434BBC2711CD9D98031C3E /* PixelLabService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBB5B5DD20342640D3B87BF6 /* PixelLabService.swift */; };
 		2B532B75996A8306DEBBDB63 /* BuddySections.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266CBF759BB2F221B11B533C /* BuddySections.swift */; };
+		317E5BB2DB16078582B8A81B /* LLMEngine.mm in Sources */ = {isa = PBXBuildFile; fileRef = 66017696F2610BCCEE944A39 /* LLMEngine.mm */; };
 		324059BDEBAB61A0B8DB7C63 /* council-starter-pack.v1.json in Resources */ = {isa = PBXBuildFile; fileRef = 13654ED54356C5AFACBA4436 /* council-starter-pack.v1.json */; };
 		33099B3104DA8E4B77CB5CCF /* FilesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC311ADC2F4DF61A9BB8763D /* FilesView.swift */; };
 		3DF5F42B1B208483D3C8805C /* EditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 010CC4B6ABE96245F0C14F3D /* EditorView.swift */; };
@@ -46,6 +48,7 @@
 		623F59071628C43E2FCEB788 /* LilBuddySectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F37FCF5FE526E8B25C26F47 /* LilBuddySectionView.swift */; };
 		63E1AB83DF78D6D15F6DCBF4 /* buddy-instance.schema.json in Resources */ = {isa = PBXBuildFile; fileRef = 4078CB06E5C5071B1AEB5ECA /* buddy-instance.schema.json */; };
 		647B852D7F0297D70A75E6C1 /* PixelStudioNativeEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24DA04FF0EDA1DA4CE5A509F /* PixelStudioNativeEditor.swift */; };
+		64B4F38D2C4C6B352D06319E /* OpenAIProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EB5A2856AC0D33934E8F455 /* OpenAIProtocol.swift */; };
 		6684DE31954D8313EBB13921 /* AppModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E9E960D904E8D231D97375 /* AppModels.swift */; };
 		66FC0371CE918F710A319FA1 /* MissionControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC34E7472D628E4C878C7D4B /* MissionControlView.swift */; };
 		67349CD4776A811D3D278F81 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 00370968E9DD0F3114BE03D8 /* Assets.xcassets */; };
@@ -132,6 +135,7 @@
 		0AC636706BA49E43373FA2EC /* BuddyAppearanceEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyAppearanceEditorView.swift; sourceTree = "<group>"; };
 		0B67EEA7677A1F29F9D50745 /* BeMoreWorkspaceRuntime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeMoreWorkspaceRuntime.swift; sourceTree = "<group>"; };
 		0E18B18B2B13AED8320F492E /* POKEMON_CHAMPIONS_TEAM_BUILDER_BACKEND.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = POKEMON_CHAMPIONS_TEAM_BUILDER_BACKEND.md; sourceTree = "<group>"; };
+		0EB5A2856AC0D33934E8F455 /* OpenAIProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIProtocol.swift; sourceTree = "<group>"; };
 		0FC3EACCF71DCBF07A8F12D4 /* buddy-template-package.example.v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "buddy-template-package.example.v1.json"; sourceTree = "<group>"; };
 		100128F33B7156476550D44E /* BeMoreChatDispatchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeMoreChatDispatchTests.swift; sourceTree = "<group>"; };
 		10BC1B347AB879EC6618BD2C /* BuddyShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyShortcuts.swift; sourceTree = "<group>"; };
@@ -140,6 +144,7 @@
 		1BFDAC5F149148E014BDB615 /* BeMoreAgentApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeMoreAgentApp.swift; sourceTree = "<group>"; };
 		1F37FCF5FE526E8B25C26F47 /* LilBuddySectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LilBuddySectionView.swift; sourceTree = "<group>"; };
 		213B2BC4AA157D082554BE9E /* AppPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPreferences.swift; sourceTree = "<group>"; };
+		229101238F21C324D61AA90C /* LLMEngine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LLMEngine.h; sourceTree = "<group>"; };
 		23C4570FA8C18E2EEAA49550 /* BuddyMessageComposer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyMessageComposer.swift; sourceTree = "<group>"; };
 		241DCB22C78DF36C3C2A609D /* AppleIntegrationSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleIntegrationSettingsView.swift; sourceTree = "<group>"; };
 		24DA04FF0EDA1DA4CE5A509F /* PixelStudioNativeEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelStudioNativeEditor.swift; sourceTree = "<group>"; };
@@ -166,6 +171,7 @@
 		59C1C24DAF709E2C9DD49403 /* buddy-template-package.schema.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "buddy-template-package.schema.json"; sourceTree = "<group>"; };
 		5A3943552B1F8D026724D81C /* BuddyContractLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyContractLoader.swift; sourceTree = "<group>"; };
 		5B67337D600FBCC63131B49F /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		66017696F2610BCCEE944A39 /* LLMEngine.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = LLMEngine.mm; sourceTree = "<group>"; };
 		6619E1F114560EFC253C982C /* CommandDispatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandDispatcher.swift; sourceTree = "<group>"; };
 		68D5353450039AC96C8EF3A1 /* StackBuilderModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackBuilderModels.swift; sourceTree = "<group>"; };
 		68E631649D1938DC4471333D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -194,6 +200,7 @@
 		A3D9625FAC37397348F059E3 /* ADMIN_TESTFLIGHT_RUNBOOK.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ADMIN_TESTFLIGHT_RUNBOOK.md; sourceTree = "<group>"; };
 		A447024248BCA007AF107849 /* BuddyMarkdownRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyMarkdownRenderer.swift; sourceTree = "<group>"; };
 		A6BB7B608FD402914D5E419A /* BeMoreAgent.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BeMoreAgent.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A7C8524ADBC14BA06510756A /* LLMEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMEngine.swift; sourceTree = "<group>"; };
 		A7DEEA27091AFDDCB925FA78 /* BuddyAsciiView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyAsciiView.swift; sourceTree = "<group>"; };
 		AA2F1BA65A96A5A4A01F3494 /* BuddyEventEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyEventEngine.swift; sourceTree = "<group>"; };
 		AA3AB9FB537CB39DA10B349E /* buddy-creation-options.v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "buddy-creation-options.v1.json"; sourceTree = "<group>"; };
@@ -206,6 +213,7 @@
 		B34923B84B416E4ACBDEB459 /* BuddyAppearanceStudioTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyAppearanceStudioTests.swift; sourceTree = "<group>"; };
 		B57B6910006CB9FF4137A24A /* BuddyCreatorCurations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyCreatorCurations.swift; sourceTree = "<group>"; };
 		BB9AD60B925BF53E43850922 /* buddy-state-machine.example.v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "buddy-state-machine.example.v1.json"; sourceTree = "<group>"; };
+		BCC54093E00798E2371EE77C /* Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridging-Header.h"; sourceTree = "<group>"; };
 		C2619477DC09F87DEF80B84E /* BeMoreAgentTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = BeMoreAgentTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C2D2861D54E92B8C145B6B77 /* buddy-runtime-events.v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "buddy-runtime-events.v1.json"; sourceTree = "<group>"; };
 		CC34E7472D628E4C878C7D4B /* MissionControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissionControlView.swift; sourceTree = "<group>"; };
@@ -312,6 +320,8 @@
 			children = (
 				C8230BEA7CF80955A86ECFF8 /* BeMoreAgentShell */,
 				FCCD2980B2CA5C78533043FA /* BeMoreAgentShellTests */,
+				E6F00A1B8BD63473672FA326 /* ObjC */,
+				6849F6A9839C268A6F7D4271 /* Swift */,
 				13C8E5A7E5CBDE23DC866ABA /* Products */,
 			);
 			sourceTree = "<group>";
@@ -327,6 +337,16 @@
 				59C1C24DAF709E2C9DD49403 /* buddy-template-package.schema.json */,
 			);
 			path = schemas;
+			sourceTree = "<group>";
+		};
+		6849F6A9839C268A6F7D4271 /* Swift */ = {
+			isa = PBXGroup;
+			children = (
+				A7C8524ADBC14BA06510756A /* LLMEngine.swift */,
+				0EB5A2856AC0D33934E8F455 /* OpenAIProtocol.swift */,
+			);
+			name = Swift;
+			path = Vendors/MLCSwift/Sources/Swift;
 			sourceTree = "<group>";
 		};
 		700F3E0F26718C48793F2054 /* Buddy */ = {
@@ -427,6 +447,14 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
+		C593F920BDF2DA7B2C1685AF /* include */ = {
+			isa = PBXGroup;
+			children = (
+				229101238F21C324D61AA90C /* LLMEngine.h */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
 		C8230BEA7CF80955A86ECFF8 /* BeMoreAgentShell */ = {
 			isa = PBXGroup;
 			children = (
@@ -437,6 +465,7 @@
 				1BFDAC5F149148E014BDB615 /* BeMoreAgentApp.swift */,
 				3EF7694C83936C35C3E8A3EF /* BeMoreChatDispatch.swift */,
 				0B67EEA7677A1F29F9D50745 /* BeMoreWorkspaceRuntime.swift */,
+				BCC54093E00798E2371EE77C /* Bridging-Header.h */,
 				7AB7971C3FE6806475C00946 /* BuddyAppleIntegrationService.swift */,
 				5A3943552B1F8D026724D81C /* BuddyContractLoader.swift */,
 				2C863A19F647331F16AC4221 /* BuddyContracts.swift */,
@@ -489,6 +518,16 @@
 				13654ED54356C5AFACBA4436 /* council-starter-pack.v1.json */,
 			);
 			path = buddy;
+			sourceTree = "<group>";
+		};
+		E6F00A1B8BD63473672FA326 /* ObjC */ = {
+			isa = PBXGroup;
+			children = (
+				66017696F2610BCCEE944A39 /* LLMEngine.mm */,
+				C593F920BDF2DA7B2C1685AF /* include */,
+			);
+			name = ObjC;
+			path = Vendors/MLCSwift/Sources/ObjC;
 			sourceTree = "<group>";
 		};
 		FA4EA554D80AF0A12AB3534F /* Services */ = {
@@ -689,6 +728,8 @@
 				9AC99C0CFBFF142BDCFFD27A /* GuidedBuddyCreationFlow.swift in Sources */,
 				A2B833399061B09486FEB56D /* HomeTabView.swift in Sources */,
 				AE4D1A93396B133A57CFDC79 /* HomeView.swift in Sources */,
+				317E5BB2DB16078582B8A81B /* LLMEngine.mm in Sources */,
+				18D17CE8089C3C323519045E /* LLMEngine.swift in Sources */,
 				623F59071628C43E2FCEB788 /* LilBuddySectionView.swift in Sources */,
 				8C14C88CEDFDDA7836EB7278 /* LinkedAccountSettingsView.swift in Sources */,
 				5EF24DF578605E311326E970 /* LinkedAccountStore.swift in Sources */,
@@ -701,6 +742,7 @@
 				DDFD688F1E1BA8F983AAF41F /* OAuthLinkView.swift in Sources */,
 				43AC8A6A049C6A3CDA312C4E /* OAuthService.swift in Sources */,
 				132AA71CEB44E6806B13FA31 /* OnboardingFlow.swift in Sources */,
+				64B4F38D2C4C6B352D06319E /* OpenAIProtocol.swift in Sources */,
 				7CB33117CE8893033B54B317 /* OperatorCommandConfirmationView.swift in Sources */,
 				3E6ED40041B1B04F01B66641 /* OperatorCommandResponder.swift in Sources */,
 				72B565B5B517A36C92414602 /* PixelLabClient.swift in Sources */,
@@ -850,6 +892,12 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = DY9FHPRZA9;
+				HEADER_SEARCH_PATHS = (
+					Vendors/MLCSwift/Sources/ObjC/include,
+					../../tvm_home/include,
+					"../../tvm_home/3rdparty/tvm-ffi/include",
+					"../../tvm_home/3rdparty/tvm-ffi/3rdparty/dlpack/include",
+				);
 				INFOPLIST_FILE = BeMoreAgentShell/Info.plist;
 				INFOPLIST_KEY_CFBundleIdentifier = BeMoreAgent;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -859,6 +907,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = BeMoreAgent;
 				PRODUCT_NAME = BeMoreAgent;
 				SDKROOT = iphoneos;
+				SWIFT_BRIDGING_HEADER = "BeMoreAgentShell/Bridging-Header.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -870,6 +919,12 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = DY9FHPRZA9;
+				HEADER_SEARCH_PATHS = (
+					Vendors/MLCSwift/Sources/ObjC/include,
+					../../tvm_home/include,
+					"../../tvm_home/3rdparty/tvm-ffi/include",
+					"../../tvm_home/3rdparty/tvm-ffi/3rdparty/dlpack/include",
+				);
 				INFOPLIST_FILE = BeMoreAgentShell/Info.plist;
 				INFOPLIST_KEY_CFBundleIdentifier = BeMoreAgent;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -879,6 +934,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = BeMoreAgent;
 				PRODUCT_NAME = BeMoreAgent;
 				SDKROOT = iphoneos;
+				SWIFT_BRIDGING_HEADER = "BeMoreAgentShell/Bridging-Header.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
