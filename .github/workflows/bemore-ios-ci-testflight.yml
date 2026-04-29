@@ -133,10 +133,7 @@ jobs:
             CODE_SIGNING_REQUIRED=NO \
             build
 
-  testflight:
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
-    needs: validate
-    runs-on: macos-latest
+    runs-on: [self-hosted, prismtek-apps]
     defaults:
       run:
         working-directory: apps/bemore-ios-native
