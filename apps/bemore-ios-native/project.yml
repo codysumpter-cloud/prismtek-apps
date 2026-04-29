@@ -9,6 +9,22 @@ settings:
   SWIFT_VERSION: "5.9"
 
 targets:
+  MLCSwift:
+    type: framework.static
+    platform: iOS
+    sources:
+      - path: Vendors/MLCSwift/Sources/Swift
+      - path: Vendors/MLCSwift/Sources/ObjC
+    settings:
+      base:
+        PRODUCT_MODULE_NAME: MLCSwift
+        GENERATE_INFOPLIST_FILE: YES
+        CLANG_CXX_LANGUAGE_STANDARD: "gnu++17"
+        HEADER_SEARCH_PATHS:
+          - "Vendors/MLCSwift/Sources/ObjC/include"
+          - "../../tvm_home/include"
+          - "../../tvm_home/3rdparty/tvm-ffi/include"
+          - "../../tvm_home/3rdparty/tvm-ffi/3rdparty/dlpack/include"
   BeMoreAgent:
     type: application
     platform: iOS
@@ -17,8 +33,8 @@ targets:
         excludes:
           - "**/.DS_Store"
       - path: BeMoreAgentShell/Views/RepoSurfaceDetailView.swift
-      - path: Vendors/MLCSwift/Sources/Swift
-      - path: Vendors/MLCSwift/Sources/ObjC
+    dependencies:
+      - target: MLCSwift
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: BeMoreAgent
@@ -31,9 +47,6 @@ targets:
         SWIFT_BRIDGING_HEADER: BeMoreAgentShell/Bridging-Header.h
         HEADER_SEARCH_PATHS:
           - "Vendors/MLCSwift/Sources/ObjC/include"
-          - "../../tvm_home/include"
-          - "../../tvm_home/3rdparty/tvm-ffi/include"
-          - "../../tvm_home/3rdparty/tvm-ffi/3rdparty/dlpack/include"
   BeMoreAgentTests:
     type: bundle.unit-test
     platform: iOS
