@@ -2,7 +2,7 @@ name: BeMore iOS CI & TestFlight
 
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, release/build-47-6]
     paths:
       - 'apps/bemore-ios-native/**'
       - 'packages/core/**'
@@ -134,7 +134,7 @@ jobs:
             build
 
   testflight:
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/release/build-47-6')
     needs: validate
     runs-on: [self-hosted, prismtek-apps]
     defaults:
@@ -173,6 +173,14 @@ jobs:
             brew install xcodegen
           fi
           xcodegen --version
+
+      - name: Validate Build 47 metadata
+        run: |
+          BUILD=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' BeMoreAgentShell/Info.plist)
+          if [ "$BUILD" != "47" ]; then
+            echo "::error title=Wrong build number::Expected CFBundleVersion 47, got $BUILD"
+            exit 65
+          fi
 
       - name: Validate App Store Connect secrets
         run: |
