@@ -21,16 +21,14 @@ fallback = [
     "mlc-chat-config.json",
     "tensor-cache.json",
     "tokenizer.json",
-    "tokenizer.model",
     "tokenizer_config.json",
     "release-manifest.json",
-] + [f"params_shard_{index}.bin" for index in range(42)]
+    ] + [f"params_shard_{index}.bin" for index in range(42)]
 
 package_files = {
     "mlc-chat-config.json",
     "tensor-cache.json",
     "tokenizer.json",
-    "tokenizer.model",
     "tokenizer_config.json",
     "release-manifest.json",
 }
@@ -73,8 +71,11 @@ while IFS= read -r filename; do
   curl --fail --location --retry 5 --retry-delay 2 --continue-at - --output "$target" "$url"
 done < "$FILE_LIST"
 
-for required in mlc-chat-config.json tokenizer.json tokenizer.model tokenizer_config.json params_shard_0.bin; do
-  test -f "$DEST_DIR/$required"
+for required in mlc-chat-config.json tokenizer.json tokenizer_config.json params_shard_0.bin; do
+  if [ ! -f "$DEST_DIR/$required" ]; then
+    echo "ERROR: Required bundled model file missing: $required"
+    exit 1
+  fi
 done
 
 echo "Prepared bundled Gemma 4 MLC model at $DEST_DIR"
