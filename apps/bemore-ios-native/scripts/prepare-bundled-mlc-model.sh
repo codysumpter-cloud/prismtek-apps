@@ -60,17 +60,44 @@ with open(output_path, "w", encoding="utf-8") as handle:
     handle.write("\n")
 PY
 
+missing_count=0
 while IFS= read -r filename; do
   test -n "$filename" || continue
   target="$DEST_DIR/$filename"
+  if [[ ! -s "$target" ]]; then
+    missing_count=$((missing_count + 1))
+  fi
+done < "$FILE_LIST"
+
+echo "Bundled Gemma 4 cache check: $missing_count missing file(s)."
+
+while IFS= read -r filename; do
+  test -n "$filename" || continue
+  target="$DEST_DIR/$filename"
+  partial="$target.partial"
   url="https://huggingface.co/$REPO_ID/resolve/main/$filename"
   mkdir -p "$(dirname "$target")"
+
   if [[ -s "$target" ]]; then
     echo "Bundled model file already present: $filename"
     continue
   fi
+
   echo "Downloading bundled Gemma 4 model file: $filename"
-  curl --fail --location --retry 5 --retry-delay 2 --continue-at - --output "$target" "$url"
+  curl \
+    --fail \
+    --location \
+    --retry 10 \
+    --retry-delay 5 \
+    --retry-max-time 900 \
+    --connect-timeout 30 \
+    --max-time 1800 \
+    --continue-at - \
+    --output "$partial" \
+    "$url"
+
+  test -s "$partial"
+  mv "$partial" "$target"
 done < "$FILE_LIST"
 
 for required in mlc-chat-config.json tokenizer.json tokenizer.model tokenizer_config.json params_shard_0.bin; do
