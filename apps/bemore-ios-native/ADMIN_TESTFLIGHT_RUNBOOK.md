@@ -4,9 +4,10 @@ This is the single source of truth for producing a BeMoreAgent TestFlight upload
 
 ## Safe baseline
 
-- Current safe runtime baseline: `main` still uses `MLCBridgeEngine()` from `apps/bemore-ios-native/BeMoreAgentShell/BeMoreAgentApp.swift`
-- Do not merge speculative local-runtime branches just to force a build green
-- The current source build number in `apps/bemore-ios-native/BeMoreAgentShell/Info.plist` is `50`
+- Current safe runtime baseline: `main` uses `MLCBridgeEngine()` from `apps/bemore-ios-native/BeMoreAgentShell/BeMoreAgentApp.swift`.
+- Build 52 bundles the prepared Gemma MLC package during the TestFlight archive workflow so testers do not have to download every shard in-app.
+- Do not merge speculative local-runtime branches just to force a build green.
+- The current source build number in `apps/bemore-ios-native/BeMoreAgentShell/Info.plist` is `52`.
 
 ## Required repo state
 
@@ -67,8 +68,8 @@ This is an optional Xcode path override. If unset, the workflow defaults to `/Ap
 
 1. Branch from current `main`.
 2. Make the smallest safe iOS change.
-3. Keep `apps/bemore-ios-native/BeMoreAgentShell/Info.plist` `CFBundleVersion` aligned with the intended App Store Connect upload build. Current intended upload is `50`.
-4. Build `45` was already present in App Store Connect on 2026-04-23, so the repo moved to `46` after the upload lane failed with: `The bundle version must be higher than the previously uploaded version: '45'.`
+3. Keep `apps/bemore-ios-native/BeMoreAgentShell/Info.plist` `CFBundleVersion` aligned with the intended App Store Connect upload build. Current intended upload is `52`.
+4. The TestFlight workflow now runs `scripts/prepare-bundled-mlc-model.sh` before archive and verifies the archived app contains the bundled Gemma MLC package.
 5. Run local verification:
 
 ```bash
@@ -88,7 +89,8 @@ xcodebuild \
 8. Merge to `main`.
 9. Confirm `.github/workflows/bemore-ios-ci-testflight.yml` starts automatically, or run it manually with `workflow_dispatch` if needed.
 10. Open the workflow run summary and verify the archived/source version and build number match the intended release.
-11. Do not claim success until the upload path actually succeeds.
+11. Confirm the summary reports `Bundled Gemma MLC package: yes`.
+12. Do not claim success until the upload path actually succeeds.
 
 ## Workflow triggers
 
@@ -122,6 +124,7 @@ A release candidate is valid when all of the following are true:
 - the intended commit is on `main`
 - the `.github/workflows/bemore-ios-ci-testflight.yml` run for that commit succeeds
 - the workflow summary shows the expected version/build pair
+- the workflow summary shows the bundled Gemma MLC package was present
 - there is no archive/export/upload failure in the run logs
 
 ## External beta readiness checklist
