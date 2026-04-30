@@ -119,11 +119,6 @@ for required in mlc-chat-config.json tokenizer.json tokenizer_config.json params
     echo "ERROR: Required bundled model file missing: $DEST_DIR/$required"
     exit 1
   fi
-  if [ ! -f "$CACHE_DIR/$required" ]; then
-    echo "ERROR: Required bundled model file missing from cache: $CACHE_DIR/$required"
-    exit 1
-  fi
-done
 done
 
 echo "Prepared bundled Gemma 4 MLC model at $DEST_DIR"
