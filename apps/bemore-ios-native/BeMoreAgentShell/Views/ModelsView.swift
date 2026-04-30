@@ -146,7 +146,7 @@ struct ModelsView: View {
                     Text("\(model.parameterCount) parameters • \(model.family)")
                         .font(.caption)
                         .foregroundColor(BMOTheme.textSecondary)
-                    Text(BundledModelCatalog.hasBundledRecommendedModel ? "Included in this TestFlight build as a bundled MLC package. No long in-app model download should be required." : "Installs the official MLC package from Hugging Face: weights, tokenizer files, and mlc-chat-config.json. This replaces the broken raw GGUF download path.")
+                    Text(BundledModelCatalog.hasBundledRecommendedModel ? "Included in this TestFlight build as a bundled Gemma 4 MLC package. No long in-app model download should be required." : "Installs the prepared Gemma 4 MLC package from Hugging Face: weights, tokenizer files, and mlc-chat-config.json. This replaces the broken raw GGUF download path.")
                         .font(.caption)
                         .foregroundColor(BMOTheme.textTertiary)
                         .fixedSize(horizontal: false, vertical: true)
@@ -157,8 +157,8 @@ struct ModelsView: View {
 
             HStack(spacing: BMOTheme.spacingSM) {
                 infoTag("MLC package")
-                infoTag("Gemma 2 2B IT")
-                infoTag(BundledModelCatalog.hasBundledRecommendedModel ? "Bundled" : "~1.5 GB")
+                infoTag("Gemma 4 E2B IT")
+                infoTag(BundledModelCatalog.hasBundledRecommendedModel ? "Bundled" : "~2.7 GB")
             }
         }
         .bmoCard()
@@ -275,7 +275,7 @@ struct ModelsView: View {
                             .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusSmall, style: .continuous))
                     }
 
-                    Text("This downloads the prepared MLC package folder instead of a raw GGUF file. TestFlight builds should bundle this package; network install is only a fallback.")
+                    Text("This downloads the prepared Gemma 4 MLC package folder instead of a raw GGUF file. TestFlight builds should bundle this package; network install is only a fallback.")
                         .font(.caption)
                         .foregroundColor(BMOTheme.textTertiary)
                         .fixedSize(horizontal: false, vertical: true)
@@ -606,9 +606,14 @@ struct ModelsView: View {
     }
 
     private var installedRecommendedModel: InstalledModel? {
-        appState.modelStore.installedModels.first { model in
-            model.localFilename == MLCPackageManifest.gemma2_2B_IT_Q4F16_1.localFolderName ||
-            model.modelID == MLCPackageManifest.gemma2_2B_IT_Q4F16_1.modelID
+        let expectedFilename = MLCPackageManifest.gemma4_E2B_IT_Q4F16_1.localFolderName
+        let expectedModelID = MLCPackageManifest.gemma4_E2B_IT_Q4F16_1.modelID
+        let installedModels = appState.modelStore.installedModels
+
+        return installedModels.first { model in
+            let filenameMatches = model.localFilename == expectedFilename
+            let modelIDMatches = model.modelID == expectedModelID
+            return filenameMatches || modelIDMatches
         }
     }
 
