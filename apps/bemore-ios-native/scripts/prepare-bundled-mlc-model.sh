@@ -2,11 +2,11 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-MODEL_ID="gemma-2-2b-it-q4f16_1-MLC"
-REPO_ID="mlc-ai/gemma-2-2b-it-q4f16_1-MLC"
+MODEL_ID="gemma-4-E2B-it-q4f16_1-MLC"
+REPO_ID="welcoma/gemma-4-E2B-it-q4f16_1-MLC"
 DEST_DIR="$ROOT_DIR/BundledModels/$MODEL_ID"
 TMP_DIR="${RUNNER_TEMP:-${TMPDIR:-/tmp}}"
-FILE_LIST="$TMP_DIR/bemoreagent-mlc-model-files.txt"
+FILE_LIST="$TMP_DIR/bemoreagent-gemma4-mlc-model-files.txt"
 
 mkdir -p "$DEST_DIR" "$TMP_DIR"
 
@@ -23,7 +23,17 @@ fallback = [
     "tokenizer.json",
     "tokenizer.model",
     "tokenizer_config.json",
+    "release-manifest.json",
 ] + [f"params_shard_{index}.bin" for index in range(42)]
+
+package_files = {
+    "mlc-chat-config.json",
+    "tensor-cache.json",
+    "tokenizer.json",
+    "tokenizer.model",
+    "tokenizer_config.json",
+    "release-manifest.json",
+}
 
 try:
     with urllib.request.urlopen(api_url, timeout=30) as response:
@@ -34,13 +44,7 @@ try:
         if item.get("type", "file") == "file"
         and "/" not in item.get("path", "")
         and (
-            item["path"] in {
-                "mlc-chat-config.json",
-                "tensor-cache.json",
-                "tokenizer.json",
-                "tokenizer.model",
-                "tokenizer_config.json",
-            }
+            item["path"] in package_files
             or (item["path"].startswith("params_shard_") and item["path"].endswith(".bin"))
         )
     )
@@ -65,7 +69,7 @@ while IFS= read -r filename; do
     echo "Bundled model file already present: $filename"
     continue
   fi
-  echo "Downloading bundled model file: $filename"
+  echo "Downloading bundled Gemma 4 model file: $filename"
   curl --fail --location --retry 5 --retry-delay 2 --continue-at - --output "$target" "$url"
 done < "$FILE_LIST"
 
@@ -73,4 +77,4 @@ for required in mlc-chat-config.json tokenizer.json tokenizer.model tokenizer_co
   test -f "$DEST_DIR/$required"
 done
 
-echo "Prepared bundled MLC model at $DEST_DIR"
+echo "Prepared bundled Gemma 4 MLC model at $DEST_DIR"

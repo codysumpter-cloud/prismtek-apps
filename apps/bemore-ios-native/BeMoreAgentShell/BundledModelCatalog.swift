@@ -2,7 +2,7 @@ import Foundation
 
 enum BundledModelCatalog {
     private static let bundleRootName = "BundledModels"
-    private static let manifest = MLCPackageManifest.gemma2_2B_IT_Q4F16_1
+    private static let manifest = MLCPackageManifest.gemma4_E2B_IT_Q4F16_1
 
     static var bundledRecommendedModelURL: URL? {
         Bundle.main.url(forResource: manifest.localFolderName, withExtension: nil, subdirectory: bundleRootName)
