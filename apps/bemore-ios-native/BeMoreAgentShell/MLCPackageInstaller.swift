@@ -2,6 +2,7 @@ import Foundation
 
 struct MLCPackageManifest {
     let displayName: String
+    let repositoryID: String
     let repositoryBaseURL: URL
     let repositoryTreeAPIURL: URL
     let localFolderName: String
@@ -13,19 +14,21 @@ struct MLCPackageManifest {
         Paths.modelsDirectory.appendingPathComponent(localFolderName, isDirectory: true)
     }
 
-    static let gemma2_2B_IT_Q4F16_1 = MLCPackageManifest(
-        displayName: "Gemma 2 2B IT MLC",
-        repositoryBaseURL: URL(string: "https://huggingface.co/mlc-ai/gemma-2-2b-it-q4f16_1-MLC/resolve/main/")!,
-        repositoryTreeAPIURL: URL(string: "https://huggingface.co/api/models/mlc-ai/gemma-2-2b-it-q4f16_1-MLC/tree/main")!,
-        localFolderName: "gemma-2-2b-it-q4f16_1-MLC",
-        modelID: "gemma-2-2b-it-q4f16_1-MLC",
-        modelLib: "gemma2_q4f16_1",
+    static let gemma4_E2B_IT_Q4F16_1 = MLCPackageManifest(
+        displayName: "Gemma 4 E2B IT MLC",
+        repositoryID: "welcoma/gemma-4-E2B-it-q4f16_1-MLC",
+        repositoryBaseURL: URL(string: "https://huggingface.co/welcoma/gemma-4-E2B-it-q4f16_1-MLC/resolve/main/")!,
+        repositoryTreeAPIURL: URL(string: "https://huggingface.co/api/models/welcoma/gemma-4-E2B-it-q4f16_1-MLC/tree/main")!,
+        localFolderName: "gemma-4-E2B-it-q4f16_1-MLC",
+        modelID: "gemma-4-E2B-it-q4f16_1-MLC",
+        modelLib: "gemma-4-E2B-it-q4f16_1-MLC",
         fallbackFiles: [
             "mlc-chat-config.json",
             "tensor-cache.json",
             "tokenizer.json",
             "tokenizer.model",
-            "tokenizer_config.json"
+            "tokenizer_config.json",
+            "release-manifest.json"
         ] + (0...41).map { "params_shard_\($0).bin" }
     )
 }
@@ -76,7 +79,7 @@ final class MLCPackageInstaller: ObservableObject {
     }
 
     func installGemmaPackage(into modelStore: ModelCatalogStore, activate: @escaping @MainActor (String) async -> Void) async {
-        await install(MLCPackageManifest.gemma2_2B_IT_Q4F16_1, into: modelStore, activate: activate)
+        await install(MLCPackageManifest.gemma4_E2B_IT_Q4F16_1, into: modelStore, activate: activate)
     }
 
     func install(_ manifest: MLCPackageManifest, into modelStore: ModelCatalogStore, activate: @escaping @MainActor (String) async -> Void) async {
@@ -142,6 +145,7 @@ final class MLCPackageInstaller: ObservableObject {
             path == "tokenizer.json" ||
             path == "tokenizer.model" ||
             path == "tokenizer_config.json" ||
+            path == "release-manifest.json" ||
             (path.hasPrefix("params_shard_") && path.hasSuffix(".bin"))
     }
 
@@ -224,11 +228,11 @@ final class MLCPackageInstaller: ObservableObject {
 
     private func ensureEnoughDiskForGemmaPackage() throws {
         let values = try Paths.modelsDirectory.resourceValues(forKeys: [.volumeAvailableCapacityForImportantUsageKey])
-        if let available = values.volumeAvailableCapacityForImportantUsage, available < 2_500_000_000 {
+        if let available = values.volumeAvailableCapacityForImportantUsage, available < 3_500_000_000 {
             throw NSError(
                 domain: "MLCPackageInstaller",
                 code: 1002,
-                userInfo: [NSLocalizedDescriptionKey: "Gemma needs about 1.5 GB plus install room. Free at least 2.5 GB and try again."]
+                userInfo: [NSLocalizedDescriptionKey: "Gemma 4 needs about 2.7 GB plus install room. Free at least 3.5 GB and try again."]
             )
         }
     }
