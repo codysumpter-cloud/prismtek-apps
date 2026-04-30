@@ -2,10 +2,10 @@
   "device": "iphone",
   "model_list": [
     {
-      "model": "HF://mlc-ai/gemma-2-2b-it-q4f16_1-MLC",
-      "model_id": "gemma-2-2b-it-q4f16_1-MLC",
-      "model_lib": "gemma2_q4f16_1",
-      "estimated_vram_bytes": 2500000000,
+      "model": "HF://welcoma/gemma-4-E2B-it-q4f16_1-MLC",
+      "model_id": "gemma-4-E2B-it-q4f16_1-MLC",
+      "model_lib": "gemma-4-E2B-it-q4f16_1-MLC",
+      "estimated_vram_bytes": 3500000000,
       "overrides": {
         "context_window_size": 1024,
         "prefill_chunk_size": 128
