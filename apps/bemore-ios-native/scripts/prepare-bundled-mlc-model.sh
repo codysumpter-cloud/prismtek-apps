@@ -5,10 +5,12 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MODEL_ID="gemma-4-E2B-it-q4f16_1-MLC"
 REPO_ID="welcoma/gemma-4-E2B-it-q4f16_1-MLC"
 DEST_DIR="$ROOT_DIR/BundledModels/$MODEL_ID"
+CACHE_ROOT="${BEMORE_MODEL_CACHE_DIR:-${HOME:-/tmp}/.cache/bemoreagent/models}"
+CACHE_DIR="$CACHE_ROOT/$MODEL_ID"
 TMP_DIR="${RUNNER_TEMP:-${TMPDIR:-/tmp}}"
 FILE_LIST="$TMP_DIR/bemoreagent-gemma4-mlc-model-files.txt"
 
-mkdir -p "$DEST_DIR" "$TMP_DIR"
+mkdir -p "$DEST_DIR" "$CACHE_DIR" "$TMP_DIR"
 
 python3 - "$REPO_ID" "$FILE_LIST" <<'PY'
 import json
@@ -63,45 +65,60 @@ PY
 missing_count=0
 while IFS= read -r filename; do
   test -n "$filename" || continue
-  target="$DEST_DIR/$filename"
-  if [[ ! -s "$target" ]]; then
+  cached="$CACHE_DIR/$filename"
+  if [[ ! -s "$cached" ]]; then
     missing_count=$((missing_count + 1))
   fi
 done < "$FILE_LIST"
 
+echo "Bundled Gemma 4 persistent cache: $CACHE_DIR"
 echo "Bundled Gemma 4 cache check: $missing_count missing file(s)."
 
 while IFS= read -r filename; do
   test -n "$filename" || continue
-  target="$DEST_DIR/$filename"
-  partial="$target.partial"
+  cached="$CACHE_DIR/$filename"
+  partial="$cached.partial"
   url="https://huggingface.co/$REPO_ID/resolve/main/$filename"
-  mkdir -p "$(dirname "$target")"
+  mkdir -p "$(dirname "$cached")"
 
-  if [[ -s "$target" ]]; then
-    echo "Bundled model file already present: $filename"
+  if [[ -s "$cached" ]]; then
+    echo "Cached model file already present: $filename"
     continue
   fi
 
-  echo "Downloading bundled Gemma 4 model file: $filename"
+  echo "Downloading bundled Gemma 4 model file to persistent cache: $filename"
+  rm -f "$partial"
   curl \
     --fail \
     --location \
     --retry 10 \
     --retry-delay 5 \
-    --retry-max-time 900 \
+    --retry-max-time 1200 \
     --connect-timeout 30 \
-    --max-time 1800 \
-    --continue-at - \
+    --max-time 2400 \
+    --speed-time 120 \
+    --speed-limit 1024 \
     --output "$partial" \
     "$url"
 
   test -s "$partial"
-  mv "$partial" "$target"
+  mv "$partial" "$cached"
+done < "$FILE_LIST"
+
+rm -rf "$DEST_DIR"
+mkdir -p "$DEST_DIR"
+while IFS= read -r filename; do
+  test -n "$filename" || continue
+  cached="$CACHE_DIR/$filename"
+  target="$DEST_DIR/$filename"
+  test -s "$cached"
+  mkdir -p "$(dirname "$target")"
+  cp "$cached" "$target"
 done < "$FILE_LIST"
 
 for required in mlc-chat-config.json tokenizer.json tokenizer.model tokenizer_config.json params_shard_0.bin; do
   test -f "$DEST_DIR/$required"
+  test -f "$CACHE_DIR/$required"
 done
 
 echo "Prepared bundled Gemma 4 MLC model at $DEST_DIR"
