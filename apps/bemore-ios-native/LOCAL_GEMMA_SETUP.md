@@ -14,11 +14,11 @@ Users should not need a separate gallery app once BeMore links the native runtim
 
 ## Runtime path
 
-The preferred BeMore path is:
+The in-app path is:
 
 ```text
-Models screen
-  -> model source or file import
+Models tab
+  -> add model source, download, or import from Files
   -> Application Support/BeMoreAgent/Models
   -> LocalBrainService
   -> OnDeviceModelRouterEngine
@@ -93,7 +93,7 @@ The local route is ready when:
 1. The app imports or saves the model file.
 2. The validator recognizes it as `.task`, `.bin`, or a prepared MLC package.
 3. The app build links the matching native runtime.
-4. The Models screen can activate the local route.
+4. The Models tab can activate the local route.
 5. Chat generates a response with network providers disabled.
 6. LocalBrainService records load and generation events.
 
@@ -105,7 +105,8 @@ This branch adds:
 - `GoogleModelFileEngine`
 - `.task` / `.bin` validation pass-through in `LocalBrainService`
 - `scripts/validate-gemma-local-model.mjs`
+- Models tab routing to the already-compiled `ModelsTabView`, which has add-source, download, import, select, probe, and diagnostics flows
 
-Remaining follow-up:
+## Remaining runtime work
 
-- The Models screen needs its source/download rows updated so `.task` and `.bin` files are not mislabeled as unsupported once the native runtime is linked.
+The native MediaPipe/LiteRT dependency still has to be linked in the Xcode target before `.task` / `.bin` files can produce real tokens. Until then, the app can store and select artifacts, but local generation should report a runtime-missing state rather than pretending to run.
