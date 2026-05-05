@@ -6,7 +6,7 @@ import MediaPipeTasksGenai
 
 @main
 struct BeMoreAgentApp: App {
-    @StateObject private var appState = AppState(engine: LocalBrainService(engine: OnDeviceLLMRouterEngine()))
+    @StateObject private var appState = AppState(engine: LocalBrainService(engine: OnDeviceModelRouterEngine()))
 
     var body: some Scene {
         WindowGroup {
@@ -20,70 +20,68 @@ struct BeMoreAgentApp: App {
 }
 
 @MainActor
-final class OnDeviceLLMRouterEngine: LocalLLMEngine {
-    private let googleAIEdgeEngine = GoogleAIEdgeLLMEngine()
+final class OnDeviceModelRouterEngine: LocalLLMEngine {
+    private enum Route {
+        case google
+        case mlc
+    }
+
+    private let googleEngine = GoogleModelFileEngine()
     private let mlcEngine = MLCBridgeEngine()
-    private var activeEngine: LocalLLMEngine?
+    private var activeRoute: Route?
+
+    private var activeEngine: LocalLLMEngine? {
+        switch activeRoute {
+        case .google:
+            return googleEngine
+        case .mlc:
+            return mlcEngine
+        case nil:
+            return nil
+        }
+    }
 
     var backendDisplayName: String {
-        if googleAIEdgeEngine.supportsLocalModels {
-            return googleAIEdgeEngine.backendDisplayName
-        }
-        if mlcEngine.supportsLocalModels {
-            return mlcEngine.backendDisplayName
-        }
-        return "Stub runtime (Google AI Edge pending)"
+        if googleEngine.supportsLocalModels { return googleEngine.backendDisplayName }
+        if mlcEngine.supportsLocalModels { return mlcEngine.backendDisplayName }
+        return "Stub runtime (native local runtime pending)"
     }
 
-    var isRuntimeReady: Bool {
-        activeEngine?.isRuntimeReady ?? false
-    }
-
-    var supportsLocalModels: Bool {
-        googleAIEdgeEngine.supportsLocalModels || mlcEngine.supportsLocalModels
-    }
-
+    var isRuntimeReady: Bool { activeEngine?.isRuntimeReady ?? false }
+    var supportsLocalModels: Bool { googleEngine.supportsLocalModels || mlcEngine.supportsLocalModels }
     var requiresModelSelection: Bool { true }
 
     var runtimeRequirementMessage: String? {
-        if supportsLocalModels { return nil }
-        return "This build can import local model files, but it does not link Google AI Edge / MediaPipe GenAI or MLCSwift yet. Link the native runtime before activating local chat."
+        supportsLocalModels ? nil : "This build can import local model files, but it does not link the native local runtime yet."
     }
 
     func bootstrap() async throws {
-        try await googleAIEdgeEngine.bootstrap()
+        try await googleEngine.bootstrap()
         try await mlcEngine.bootstrap()
     }
 
     func configureRuntime(_ config: EngineRuntimeConfig?) async throws {
         guard let config else {
             try await activeEngine?.unloadRuntime()
-            activeEngine = nil
+            activeRoute = nil
             return
         }
 
-        let selectedEngine: LocalLLMEngine
-        if GoogleAIEdgeLLMEngine.canLoad(config.modelURL) {
-            selectedEngine = googleAIEdgeEngine
-        } else {
-            selectedEngine = mlcEngine
-        }
-
-        if activeEngine !== selectedEngine as AnyObject {
+        let nextRoute: Route = GoogleModelFileEngine.canLoad(config.modelURL) ? .google : .mlc
+        if activeRoute != nextRoute {
             try await activeEngine?.unloadRuntime()
-            activeEngine = selectedEngine
+            activeRoute = nextRoute
         }
 
-        try await selectedEngine.configureRuntime(config)
+        guard let activeEngine else {
+            throw NSError(domain: "OnDeviceModelRouterEngine", code: 1, userInfo: [NSLocalizedDescriptionKey: "Could not select a runtime for this model artifact."])
+        }
+        try await activeEngine.configureRuntime(config)
     }
 
     func generate(prompt: String, fileContexts: [WorkspaceFile], chatHistory: [ChatMessage], activeStack: CompiledStack?) async throws -> String {
         guard let activeEngine else {
-            throw NSError(
-                domain: "OnDeviceLLMRouterEngine",
-                code: 1,
-                userInfo: [NSLocalizedDescriptionKey: "Select and load a local model before generating."]
-            )
+            throw NSError(domain: "OnDeviceModelRouterEngine", code: 2, userInfo: [NSLocalizedDescriptionKey: "Select and load a local model before generating."])
         }
         return try await activeEngine.generate(prompt: prompt, fileContexts: fileContexts, chatHistory: chatHistory, activeStack: activeStack)
     }
@@ -94,12 +92,12 @@ final class OnDeviceLLMRouterEngine: LocalLLMEngine {
 
     func unloadRuntime() async throws {
         try await activeEngine?.unloadRuntime()
-        activeEngine = nil
+        activeRoute = nil
     }
 }
 
 @MainActor
-final class GoogleAIEdgeLLMEngine: LocalLLMEngine {
+final class GoogleModelFileEngine: LocalLLMEngine {
     private var runtimeConfig: EngineRuntimeConfig?
 
     #if canImport(MediaPipeTasksGenai)
@@ -112,9 +110,9 @@ final class GoogleAIEdgeLLMEngine: LocalLLMEngine {
 
     var backendDisplayName: String {
         #if canImport(MediaPipeTasksGenai)
-        return "Google AI Edge / MediaPipe GenAI"
+        return "MediaPipe GenAI"
         #else
-        return "Stub runtime (Google AI Edge pending)"
+        return "Stub runtime (MediaPipe GenAI pending)"
         #endif
     }
 
@@ -135,10 +133,7 @@ final class GoogleAIEdgeLLMEngine: LocalLLMEngine {
     }
 
     var requiresModelSelection: Bool { true }
-
-    var runtimeRequirementMessage: String? {
-        supportsLocalModels ? nil : "Link MediaPipeTasksGenAI / MediaPipeTasksGenAIC to activate .task and .bin local model files."
-    }
+    var runtimeRequirementMessage: String? { supportsLocalModels ? nil : "Link MediaPipeTasksGenai to activate .task and .bin model files." }
 
     func bootstrap() async throws {}
 
@@ -150,13 +145,8 @@ final class GoogleAIEdgeLLMEngine: LocalLLMEngine {
             llmInference = nil
             return
         }
-
         guard Self.canLoad(config.modelURL) else {
-            throw NSError(
-                domain: "GoogleAIEdgeLLMEngine",
-                code: 10,
-                userInfo: [NSLocalizedDescriptionKey: "Google AI Edge route expects a .task or .bin model artifact."]
-            )
+            throw NSError(domain: "GoogleModelFileEngine", code: 10, userInfo: [NSLocalizedDescriptionKey: "This route expects a .task or .bin model artifact."])
         }
 
         let options = LlmInferenceOptions()
@@ -167,11 +157,7 @@ final class GoogleAIEdgeLLMEngine: LocalLLMEngine {
         options.randomSeed = 101
         llmInference = try LlmInference(options: options)
         #else
-        throw NSError(
-            domain: "GoogleAIEdgeLLMEngine",
-            code: 11,
-            userInfo: [NSLocalizedDescriptionKey: runtimeRequirementMessage ?? "Google AI Edge runtime is not linked in this build."]
-        )
+        throw NSError(domain: "GoogleModelFileEngine", code: 11, userInfo: [NSLocalizedDescriptionKey: runtimeRequirementMessage ?? "Native local runtime is not linked in this build."])
         #endif
     }
 
@@ -180,29 +166,11 @@ final class GoogleAIEdgeLLMEngine: LocalLLMEngine {
 
         #if canImport(MediaPipeTasksGenai)
         guard let llmInference else {
-            throw NSError(
-                domain: "GoogleAIEdgeLLMEngine",
-                code: 12,
-                userInfo: [NSLocalizedDescriptionKey: "Load a .task or .bin model before generating."]
-            )
+            throw NSError(domain: "GoogleModelFileEngine", code: 12, userInfo: [NSLocalizedDescriptionKey: "Load a .task or .bin model before generating."])
         }
-
-        return try llmInference.generateResponse(inputText: finalPrompt)
-            .trimmingCharacters(in: .whitespacesAndNewlines)
+        return try llmInference.generateResponse(inputText: finalPrompt).trimmingCharacters(in: .whitespacesAndNewlines)
         #else
-        let filenames = fileContexts.map(\.filename).joined(separator: ", ")
-        let selected = runtimeConfig?.modelID ?? "none"
-        let attachedFiles = filenames.isEmpty ? "none" : filenames
-        return """
-        [BMO Agent — Stub Response]
-
-        Your prompt: \(prompt)
-        Selected model: \(selected)
-        Attached files: \(attachedFiles)
-        History: \(chatHistory.count) messages
-
-        This is a simulated response. Link MediaPipeTasksGenAI / MediaPipeTasksGenAIC to run .task or .bin local model artifacts fully on-device.
-        """
+        throw NSError(domain: "GoogleModelFileEngine", code: 13, userInfo: [NSLocalizedDescriptionKey: runtimeRequirementMessage ?? "Native local runtime is not linked in this build."])
         #endif
     }
 
