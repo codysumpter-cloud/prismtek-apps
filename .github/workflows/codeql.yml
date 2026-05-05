@@ -18,20 +18,10 @@ jobs:
   preflight:
     runs-on: [self-hosted, prismtek-apps]
     outputs:
-      codeql-enabled: ${{ steps.codeql.outputs.enabled }}
+      codeql-enabled: 'true'
     steps:
-      - name: Decide whether CodeQL can upload
-        id: codeql
-        run: |
-          if [ "${{ vars.ENABLE_CODEQL }}" != "true" ]; then
-            echo "enabled=false" >> "$GITHUB_OUTPUT"
-            echo "CodeQL is skipped because this repository has not explicitly opted into code scanning uploads."
-          elif [ "${{ github.event.repository.private }}" = "true" ] && [ "${{ vars.ENABLE_PRIVATE_CODEQL }}" != "true" ]; then
-            echo "enabled=false" >> "$GITHUB_OUTPUT"
-            echo "CodeQL upload is skipped because this private repository does not have GitHub Advanced Security enabled."
-          else
-            echo "enabled=true" >> "$GITHUB_OUTPUT"
-          fi
+      - name: Force CodeQL Enabled
+        run: echo "enabled=true" >> "$GITHUB_OUTPUT"
 
   analyze:
     needs: preflight
