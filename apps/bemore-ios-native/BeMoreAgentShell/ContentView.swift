@@ -118,7 +118,7 @@ private func shellDestination(for tab: AppTab, appState: AppState) -> some View 
     case .editor:
         EditorTabView()
     case .models:
-        LocalModelsView()
+        ModelsView()
  case .chat:
  ChatView(store: appState.buddyStore)
  case .artifacts:
