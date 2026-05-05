@@ -13,6 +13,7 @@ struct MissionControlView: View {
                 VStack(spacing: BMOTheme.spacingMD) {
                     buddyHomeCard
                     primaryFlowCard
+                    buddySymphonyCard
                     if let lastReceipt {
                         ActionReceiptCard(receipt: lastReceipt)
                     }
@@ -120,6 +121,96 @@ struct MissionControlView: View {
                     appState.route(to: .artifacts)
                 }
             }
+        }
+        .bmoCard()
+    }
+
+    private var buddySymphonyCard: some View {
+        let mission = BuddySymphonyMission.preview(for: store.activeBuddy)
+        return VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Buddy Symphony")
+                        .font(.headline)
+                        .foregroundColor(BMOTheme.textPrimary)
+                    Text("Queued work becomes isolated Buddy missions. This phone view is status-only until a Mac/runtime relay accepts the run.")
+                        .font(.caption)
+                        .foregroundColor(BMOTheme.textSecondary)
+                }
+                Spacer()
+                StatusBadge(label: "Read-only", color: BMOTheme.accent)
+            }
+
+            VStack(alignment: .leading, spacing: 10) {
+                HStack(alignment: .top, spacing: 10) {
+                    Image(systemName: mission.state.systemImage)
+                        .font(.title3)
+                        .foregroundColor(mission.state.color)
+                        .frame(width: 28)
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(mission.title)
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundColor(BMOTheme.textPrimary)
+                        Text(mission.summary)
+                            .font(.caption)
+                            .foregroundColor(BMOTheme.textSecondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+
+                    Spacer()
+
+                    StatusBadge(label: mission.state.title, color: mission.state.color)
+                }
+
+                VStack(spacing: 6) {
+                    detailRow("Buddy", value: mission.buddyName)
+                    detailRow("Workspace", value: mission.workspaceSummary)
+                    detailRow("Policy", value: mission.policySummary)
+                }
+            }
+            .padding(12)
+            .background(BMOTheme.backgroundSecondary)
+            .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusMedium, style: .continuous))
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Proofs required before growth")
+                    .font(.caption.weight(.semibold))
+                    .foregroundColor(BMOTheme.textPrimary)
+
+                ForEach(mission.proofs) { proof in
+                    HStack(alignment: .top, spacing: 8) {
+                        Image(systemName: proof.systemImage)
+                            .foregroundColor(proof.isSatisfied ? BMOTheme.success : BMOTheme.warning)
+                            .frame(width: 18)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(proof.title)
+                                .font(.caption.weight(.semibold))
+                                .foregroundColor(BMOTheme.textPrimary)
+                            Text(proof.summary)
+                                .font(.caption2)
+                                .foregroundColor(BMOTheme.textTertiary)
+                        }
+                        Spacer()
+                    }
+                }
+            }
+
+            HStack(spacing: 8) {
+                Button("Open Results") {
+                    appState.route(to: .artifacts)
+                }
+                .buttonStyle(BMOButtonStyle(isPrimary: false))
+
+                Button("Check Mac Relay") {
+                    Task { await appState.refreshMacRuntimeSnapshot() }
+                }
+                .buttonStyle(BMOButtonStyle(isPrimary: false))
+            }
+
+            Text("Growth recommendation only: BMO must convert accepted Symphony proofs into receipts before XP, bond, memory, unlocks, or evolution can change.")
+                .font(.caption2)
+                .foregroundColor(BMOTheme.textTertiary)
         }
         .bmoCard()
     }
@@ -368,5 +459,113 @@ struct MissionControlView: View {
             .contentShape(RoundedRectangle(cornerRadius: BMOTheme.radiusMedium, style: .continuous))
         }
         .buttonStyle(.plain)
+    }
+}
+
+private struct BuddySymphonyMission: Identifiable {
+    let id: String
+    let title: String
+    let summary: String
+    let buddyName: String
+    let workspaceSummary: String
+    let policySummary: String
+    let state: BuddySymphonyMissionState
+    let proofs: [BuddySymphonyProof]
+
+    static func preview(for buddy: BuddyInstance?) -> BuddySymphonyMission {
+        let buddyName = buddy?.displayName ?? "Unassigned Buddy"
+        let role = buddy?.identity.role ?? "mission-ready companion"
+        let workspaceName = buddy.map { ".buddy-symphony/\($0.instanceId.prefix(8))" } ?? ".buddy-symphony/pending"
+
+        return BuddySymphonyMission(
+            id: "preview-buddy-symphony",
+            title: "Prepare isolated work run",
+            summary: "\(buddyName) can supervise implementation work as a mission, but execution stays behind Mac relay and BMO receipts.",
+            buddyName: "\(buddyName) • \(role)",
+            workspaceSummary: "\(workspaceName) • relay required",
+            policySummary: "Receipts first, growth later",
+            state: buddy == nil ? .needsBuddy : .waitingRelay,
+            proofs: [
+                BuddySymphonyProof(
+                    title: "Reviewable diff or PR",
+                    summary: "Source changes must produce a diff, PR, or artifact reference before acceptance.",
+                    systemImage: "doc.text.magnifyingglass",
+                    isSatisfied: false
+                ),
+                BuddySymphonyProof(
+                    title: "Validation receipt",
+                    summary: "CI, build, or local validation must be attached before Buddy growth is considered.",
+                    systemImage: "checkmark.seal",
+                    isSatisfied: false
+                ),
+                BuddySymphonyProof(
+                    title: "BMO approval gate",
+                    summary: "XP, bond, memory, unlocks, and evolution only change after BMO accepts receipts.",
+                    systemImage: "lock.shield",
+                    isSatisfied: true
+                )
+            ]
+        )
+    }
+}
+
+private struct BuddySymphonyProof: Identifiable {
+    let id = UUID()
+    let title: String
+    let summary: String
+    let systemImage: String
+    let isSatisfied: Bool
+}
+
+private enum BuddySymphonyMissionState {
+    case needsBuddy
+    case waitingRelay
+    case running
+    case waitingReview
+    case accepted
+
+    var title: String {
+        switch self {
+        case .needsBuddy:
+            return "Needs Buddy"
+        case .waitingRelay:
+            return "Waiting Relay"
+        case .running:
+            return "Running"
+        case .waitingReview:
+            return "Review"
+        case .accepted:
+            return "Accepted"
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .needsBuddy:
+            return "person.crop.circle.badge.questionmark"
+        case .waitingRelay:
+            return "antenna.radiowaves.left.and.right"
+        case .running:
+            return "play.circle.fill"
+        case .waitingReview:
+            return "eye.fill"
+        case .accepted:
+            return "checkmark.circle.fill"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .needsBuddy:
+            return BMOTheme.warning
+        case .waitingRelay:
+            return BMOTheme.accent
+        case .running:
+            return BMOTheme.accent
+        case .waitingReview:
+            return BMOTheme.warning
+        case .accepted:
+            return BMOTheme.success
+        }
     }
 }
