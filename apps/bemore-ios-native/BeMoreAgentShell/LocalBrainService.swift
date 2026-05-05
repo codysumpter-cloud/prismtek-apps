@@ -262,17 +262,22 @@ final class LocalBrainService: ObservableObject, LocalLLMEngine {
     }
 
     private static func canAttemptLocalRuntimeLoad(_ config: EngineRuntimeConfig, isDirectory: Bool) -> Bool {
-        guard config.modelLib.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false else {
-            return false
+        let ext = config.modelURL.pathExtension.lowercased()
+
+        if ["task", "bin"].contains(ext) {
+            return true
         }
 
-        let ext = config.modelURL.pathExtension.lowercased()
-        if ["gguf", "task", "bin", "zip"].contains(ext) {
+        if ["gguf", "zip"].contains(ext) {
             return false
         }
 
         if ext == "mlmodelc" {
             return true
+        }
+
+        guard config.modelLib.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false else {
+            return false
         }
 
         if isDirectory {
@@ -292,15 +297,20 @@ final class LocalBrainService: ObservableObject, LocalLLMEngine {
 
     private static func invalidRuntimePackageMessage(for config: EngineRuntimeConfig) -> String {
         let ext = config.modelURL.pathExtension.lowercased()
+
+        if ["task", "bin"].contains(ext) {
+            return "This model artifact was saved, but the linked local runtime could not load it. Confirm the app target links the native Google model runtime and that the artifact matches that runtime."
+        }
+
         if config.modelLib.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             return "The selected local model is missing its packaged modelLib name. Import a prepared MLC model folder or add the model library name before activating it."
         }
 
-        if ["gguf", "task", "bin", "zip"].contains(ext) {
-            return "This downloaded model file was saved, but this TestFlight build cannot safely activate raw .\(ext) artifacts with the on-device runtime. Import a prepared MLC model folder, or use a cloud route until raw-file runtime support ships."
+        if ["gguf", "zip"].contains(ext) {
+            return "This downloaded model file was saved, but this iOS runtime cannot activate raw .\(ext) artifacts. Use a .task/.bin mobile artifact or a prepared MLC model folder."
         }
 
-        return "This local model was saved, but it does not look like a prepared runtime package. Import a prepared MLC model folder with a matching modelLib, or use a cloud route."
+        return "This local model was saved, but it does not look like a prepared runtime package. Import a prepared MLC model folder with a matching modelLib, or use a .task/.bin mobile artifact."
     }
 
     private func registerMemoryPressureObserverIfNeeded() {
