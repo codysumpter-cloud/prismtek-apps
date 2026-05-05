@@ -4,6 +4,7 @@ import UniformTypeIdentifiers
 struct LocalModelsView: View {
     @EnvironmentObject private var appState: AppState
     @State private var importerPresented = false
+    @State private var transferFormPresented = false
 
     var body: some View {
         NavigationStack {
@@ -25,8 +26,17 @@ struct LocalModelsView: View {
                         .foregroundColor(BMOTheme.textPrimary)
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        importerPresented = true
+                    Menu {
+                        Button {
+                            transferFormPresented = true
+                        } label: {
+                            Label("Add model source", systemImage: "arrow.down.circle")
+                        }
+                        Button {
+                            importerPresented = true
+                        } label: {
+                            Label("Import model file", systemImage: "folder")
+                        }
                     } label: {
                         Image(systemName: "plus.circle.fill")
                             .foregroundColor(BMOTheme.accent)
@@ -44,6 +54,10 @@ struct LocalModelsView: View {
                 case .failure(let error):
                     appState.modelStore.errorMessage = error.localizedDescription
                 }
+            }
+            .sheet(isPresented: $transferFormPresented) {
+                LocalModelDownloadSheet()
+                    .environmentObject(appState)
             }
             .alert("Model error", isPresented: Binding(get: {
                 appState.modelStore.errorMessage != nil
@@ -68,7 +82,7 @@ struct LocalModelsView: View {
             }
             detailRow("Backend", value: appState.backendDisplayName)
             detailRow("Status", value: appState.runtimeStatus)
-            Text("Import a .task, .bin, .mlmodelc, or prepared package folder. BeMore stores it in app storage and only activates it when the matching native runtime is available.")
+            Text("Add or import a mobile model artifact. BeMore stores it in app storage and only activates it when the matching native runtime is available.")
                 .font(.caption)
                 .foregroundColor(BMOTheme.textSecondary)
         }
@@ -83,12 +97,21 @@ struct LocalModelsView: View {
             Text("Use the same model artifact shape as the mobile runtime expects. No model binaries belong in git.")
                 .font(.caption)
                 .foregroundColor(BMOTheme.textSecondary)
-            Button {
-                importerPresented = true
-            } label: {
-                Label("Import model file", systemImage: "folder")
+            HStack(spacing: 10) {
+                Button {
+                    transferFormPresented = true
+                } label: {
+                    Label("Add source", systemImage: "arrow.down.circle")
+                }
+                .buttonStyle(BMOButtonStyle(isPrimary: true))
+
+                Button {
+                    importerPresented = true
+                } label: {
+                    Label("Import file", systemImage: "folder")
+                }
+                .buttonStyle(BMOButtonStyle(isPrimary: false))
             }
-            .buttonStyle(BMOButtonStyle(isPrimary: true))
         }
         .bmoCard()
     }
