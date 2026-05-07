@@ -8,6 +8,6 @@
     "outDir": "dist/server",
     "types": ["node"]
   },
-  "include": ["server.ts"],
+  "include": ["server.ts", "gemma4-gateway.ts"],
   "exclude": ["dist", "node_modules"]
 }

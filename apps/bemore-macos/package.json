@@ -5,9 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
+    "dev:windows": "tsx server.ts",
+    "dev:gemma4": "tsx gemma4-gateway.ts",
     "build": "vite build && tsc -p tsconfig.server.json",
     "lint": "tsc --noEmit && tsc -p tsconfig.server.json --noEmit",
-    "start": "node dist/server/server.js"
+    "start": "node dist/server/server.js",
+    "start:gemma4": "node dist/server/gemma4-gateway.js"
   },
   "dependencies": {
     "@prismtek/agent-protocol": "*",

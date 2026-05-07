@@ -1,0 +1,104 @@
+openapi: 3.1.0
+info:
+  title: BeMore Buddy Gemma 4 Gateway
+  version: 1.0.0
+  description: Gemma 4-only model gateway for BeMore Buddy desktop and custom GPT Actions.
+servers:
+  - url: https://YOUR_PUBLIC_GATEWAY_OR_TUNNEL_URL
+    description: Replace with the HTTPS URL that forwards to the local gateway.
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+security:
+  - bearerAuth: []
+paths:
+  /api/gemma4/status:
+    get:
+      operationId: getGemma4GatewayStatus
+      summary: Check Gemma 4 gateway status and allowed models.
+      responses:
+        '200':
+          description: Gateway status.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  gateway:
+                    type: string
+                  model:
+                    type: string
+                  allowedModels:
+                    type: array
+                    items:
+                      type: string
+                  apiBaseUrl:
+                    type: string
+                  requiresToken:
+                    type: boolean
+                  recovery:
+                    type: array
+                    items:
+                      type: string
+  /api/gemma4/chat:
+    post:
+      operationId: chatWithGemma4
+      summary: Send a BeMore Buddy chat turn through an allowed Gemma 4 model.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - messages
+              properties:
+                model:
+                  type: string
+                  description: Optional Gemma 4 model id. Defaults to BEMORE_GEMMA4_MODEL.
+                temperature:
+                  type: number
+                  default: 0.4
+                maxTokens:
+                  type: integer
+                  default: 1024
+                messages:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    required:
+                      - role
+                      - content
+                    properties:
+                      role:
+                        type: string
+                        enum:
+                          - system
+                          - user
+                          - assistant
+                          - tool
+                      content:
+                        type: string
+      responses:
+        '200':
+          description: Gemma 4 chat response.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  model:
+                    type: string
+                  text:
+                    type: string
+                  usage:
+                    type: object
+                  raw:
+                    type: object
