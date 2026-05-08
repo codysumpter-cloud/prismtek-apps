@@ -61,15 +61,20 @@ struct CouncilStarterBuddyTemplate: Identifiable, Codable, Hashable {
     var ascii: BuddyASCIITemplate
     var recommendedFor: [String]
 
-    var templateID: String { "starter.\(id).v1" }
+    // Marketplace & Provenance Extensions (Build 53)
+    var listing: BuddyTemplateListing
+    var utility: BuddyTemplateUtility
+    var provenance: BuddyTemplateProvenance
 
+    var templateID: String { "starter.\(id).v1" }
+    
     var starterClass: String {
         starterRole
             .split(separator: "/")
             .first
             .map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) } ?? starterRole
     }
-
+    
     var starterRoleName: String {
         let parts = starterRole
             .split(separator: "/")
@@ -77,6 +82,24 @@ struct CouncilStarterBuddyTemplate: Identifiable, Codable, Hashable {
         guard parts.count > 1 else { return canonicalRole }
         return parts[1]
     }
+}
+
+struct BuddyTemplateListing: Codable, Hashable {
+    var priceCents: Int
+    var visibility: String // "private", "public-free", "public-paid"
+    var category: String
+    var tags: [String]
+}
+
+struct BuddyTemplateUtility: Codable, Hashable {
+    var starterSkills: [String]
+    var taskBiases: [String: Double]
+}
+
+struct BuddyTemplateProvenance: Codable, Hashable {
+    var derivedFromTemplateID: String?
+    var version: String
+    var creatorID: String
 }
 
 struct BuddyImplementationGuidance: Codable, Hashable {
