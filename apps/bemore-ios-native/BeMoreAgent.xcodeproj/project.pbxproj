@@ -904,7 +904,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = BeMoreAgent;
+				PRODUCT_BUNDLE_IDENTIFIER = com.prismtek.buddy;
 				PRODUCT_NAME = BeMoreAgent;
 				SDKROOT = iphoneos;
 				SWIFT_BRIDGING_HEADER = "BeMoreAgentShell/Bridging-Header.h";
@@ -931,7 +931,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = BeMoreAgent;
+				PRODUCT_BUNDLE_IDENTIFIER = com.prismtek.buddy;
 				PRODUCT_NAME = BeMoreAgent;
 				SDKROOT = iphoneos;
 				SWIFT_BRIDGING_HEADER = "BeMoreAgentShell/Bridging-Header.h";
