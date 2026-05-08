@@ -8,6 +8,13 @@
   <string>app-store-connect</string>
   <key>signingStyle</key>
   <string>automatic</string>
+  <key>teamID</key>
+  <string>DY9FHPRZA9</string>
+  <key>provisioningProfiles</key>
+  <dict>
+    <key>com.prismtek.buddy</key>
+    <string>233e413d-cec0-4094-92b6-571ff77ee4d0</string>
+  </dict>
   <key>stripSwiftSymbols</key>
   <true/>
   <key>uploadSymbols</key>
