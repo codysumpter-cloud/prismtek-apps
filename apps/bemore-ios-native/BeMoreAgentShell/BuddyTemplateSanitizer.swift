@@ -8,7 +8,7 @@ struct BuddyTemplateSanitizer {
         // In a real-world scenario, this would map an active instance back to its starting seed
         // but for the shell, we derive it from the current state's identity.
         
-        let baseTemplate = instance.template ?? CouncilStarterBuddyTemplate.default(for: instance.identity)
+        let baseTemplate = Self.defaultTemplate(for: instance.identity)
         
         // 2. Create the sanitized copy
         var sanitized = baseTemplate
@@ -23,13 +23,13 @@ struct BuddyTemplateSanitizer {
         sanitized.provenance = BuddyTemplateProvenance(
             derivedFromTemplateID: baseTemplate.templateID,
             version: "1.0.0-sanitized",
-            creatorID: instance.ownerID
+            creatorID: instance.provenance.creatorId ?? "local-operator"
         )
         
         return sanitized
     }
     
-    static func default(for identity: BuddyIdentity) -> CouncilStarterBuddyTemplate {
+    static func defaultTemplate(for identity: BuddyIdentity) -> CouncilStarterBuddyTemplate {
         // Fallback for cases where the template link is broken
         // In a production environment, this would fetch the most recent canonical seed
         fatalError("Canonical seed missing for identity: \(identity.role)")
