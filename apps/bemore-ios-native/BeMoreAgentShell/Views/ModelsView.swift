@@ -7,6 +7,8 @@ struct ModelsView: View {
     @State private var isModelImporterPresented = false
     @State private var showAddSource = false
 
+    private let recommendedDisplayName = "Gemma 4 E2B IT LiteRT-LM"
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -23,41 +25,15 @@ struct ModelsView: View {
             }
             .background(BMOTheme.backgroundPrimary)
             .navigationTitle("")
-            .toolbar {
-                ToolbarItem(placement: .principal) {
-                    Text("Models")
-                        .font(.headline)
-                        .foregroundColor(BMOTheme.textPrimary)
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Menu {
-                        Button { isModelImporterPresented = true } label: {
-                            Label("Import prepared model", systemImage: "folder")
-                        }
-                        Button { showAddSource = true } label: {
-                            Label("Add model source URL", systemImage: "link")
-                        }
-                    } label: {
-                        Image(systemName: "plus.circle.fill")
-                            .foregroundColor(BMOTheme.accent)
-                    }
-                }
-            }
+            .toolbar { toolbarContent }
             .toolbarBackground(BMOTheme.backgroundPrimary, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .fileImporter(
                 isPresented: $isModelImporterPresented,
                 allowedContentTypes: [.folder, .data],
-                allowsMultipleSelection: true
-            ) { result in
-                switch result {
-                case .success(let urls):
-                    appState.modelStore.importPreparedModelItems(from: urls)
-                    Task { await clearUnsupportedLocalSelectionIfNeeded(showAlert: false) }
-                case .failure(let error):
-                    appState.modelStore.errorMessage = error.localizedDescription
-                }
-            }
+                allowsMultipleSelection: true,
+                onCompletion: handleImportedModels
+            )
             .sheet(isPresented: $showAddSource) {
                 AddModelSourceSheet()
                     .environmentObject(appState)
@@ -75,6 +51,38 @@ struct ModelsView: View {
                 BundledModelCatalog.installBundledRecommendedModelIfAvailable(into: appState.modelStore)
                 Task { await clearUnsupportedLocalSelectionIfNeeded(showAlert: false) }
             }
+        }
+    }
+
+    @ToolbarContentBuilder
+    private var toolbarContent: some ToolbarContent {
+        ToolbarItem(placement: .principal) {
+            Text("Models")
+                .font(.headline)
+                .foregroundColor(BMOTheme.textPrimary)
+        }
+        ToolbarItem(placement: .topBarTrailing) {
+            Menu {
+                Button { isModelImporterPresented = true } label: {
+                    Label("Import prepared model", systemImage: "folder")
+                }
+                Button { showAddSource = true } label: {
+                    Label("Add model source URL", systemImage: "link")
+                }
+            } label: {
+                Image(systemName: "plus.circle.fill")
+                    .foregroundColor(BMOTheme.accent)
+            }
+        }
+    }
+
+    private func handleImportedModels(_ result: Result<[URL], Error>) {
+        switch result {
+        case .success(let urls):
+            appState.modelStore.importPreparedModelItems(from: urls)
+            Task { await clearUnsupportedLocalSelectionIfNeeded(showAlert: false) }
+        case .failure(let error):
+            appState.modelStore.errorMessage = error.localizedDescription
         }
     }
 
@@ -110,8 +118,7 @@ struct ModelsView: View {
     }
 
     private var recommendedModelCard: some View {
-        let model = KnownModel.gemma4E2B
-        return VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: 14) {
             HStack {
                 Text("Recommended")
                     .font(.caption)
@@ -135,10 +142,10 @@ struct ModelsView: View {
                 }
 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(model.name)
+                    Text(recommendedDisplayName)
                         .font(.headline)
                         .foregroundColor(BMOTheme.textPrimary)
-                    Text("\(model.parameterCount) • \(model.family) • \(model.runtimeBackend)")
+                    Text("E2B • Gemma • LiteRT-LM")
                         .font(.caption)
                         .foregroundColor(BMOTheme.textSecondary)
                     Text(BundledModelCatalog.hasBundledRecommendedModel ? "Included in this TestFlight build as a LiteRT-LM .litertlm artifact. Live local generation still waits for the native runtime bridge." : "Installs the Gemma 4 E2B LiteRT-LM .litertlm artifact from Hugging Face. This replaces the broken raw GGUF path.")
@@ -172,8 +179,7 @@ struct ModelsView: View {
                     .font(.caption)
                     .foregroundColor(BMOTheme.textSecondary)
             }
-
-        case .downloading:
+        case .downloading(_, _, _, _):
             VStack(spacing: 8) {
                 ProgressView(value: packageInstaller.phase.progress ?? 0)
                     .tint(BMOTheme.accent)
@@ -189,7 +195,6 @@ struct ModelsView: View {
                         .foregroundColor(BMOTheme.accent)
                 }
             }
-
         case .failed(let message):
             VStack(alignment: .leading, spacing: 8) {
                 HStack(spacing: 6) {
@@ -204,78 +209,78 @@ struct ModelsView: View {
                     .foregroundColor(BMOTheme.textTertiary)
                     .fixedSize(horizontal: false, vertical: true)
                 Button("Retry LiteRT-LM install") {
-                    Task {
-                        await packageInstaller.installGemmaPackage(into: appState.modelStore) { filename in
-                            await appState.setSelectedInstalledModel(filename: filename)
-                        }
-                    }
+                    Task { await installRecommendedModel() }
                 }
                 .buttonStyle(BMOButtonStyle(isPrimary: false))
             }
-
         case .idle, .installed:
-            if let installedModel {
-                if isRuntimeCompatible(installedModel) {
-                    HStack(spacing: 8) {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundColor(BMOTheme.success)
-                        Text("Installed & Ready")
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                            .foregroundColor(BMOTheme.success)
-                        Spacer()
+            gemmaIdleActionArea(installedModel)
+        }
+    }
 
-                        if appState.runtimePreferences.selection.selectedInstalledFilename == installedModel.localFilename {
-                            StatusBadge(label: "Active", color: BMOTheme.accent)
-                        } else {
-                            Button("Activate") {
-                                Task { await appState.setSelectedInstalledModel(filename: installedModel.localFilename) }
-                            }
-                            .buttonStyle(BMOButtonStyle(isPrimary: false))
+    @ViewBuilder
+    private func gemmaIdleActionArea(_ installedModel: InstalledModel?) -> some View {
+        if let installedModel {
+            if isRuntimeCompatible(installedModel) {
+                HStack(spacing: 8) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(BMOTheme.success)
+                    Text("Installed & Ready")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(BMOTheme.success)
+                    Spacer()
+
+                    if appState.runtimePreferences.selection.selectedInstalledFilename == installedModel.localFilename {
+                        StatusBadge(label: "Active", color: BMOTheme.accent)
+                    } else {
+                        Button("Activate") {
+                            Task { await appState.setSelectedInstalledModel(filename: installedModel.localFilename) }
                         }
+                        .buttonStyle(BMOButtonStyle(isPrimary: false))
                     }
-                } else {
-                    unsupportedInstalledModelNotice(installedModel)
-                }
-            } else if BundledModelCatalog.hasBundledRecommendedModel {
-                VStack(alignment: .leading, spacing: 10) {
-                    HStack(spacing: 6) {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundColor(BMOTheme.success)
-                        Text("Bundled model included")
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                            .foregroundColor(BMOTheme.success)
-                    }
-                    Text("The bundled LiteRT-LM artifact will be registered automatically. It will stay inactive until the native LiteRT-LM bridge is linked.")
-                        .font(.caption)
-                        .foregroundColor(BMOTheme.textTertiary)
                 }
             } else {
-                VStack(alignment: .leading, spacing: 10) {
-                    Button {
-                        Task {
-                            await packageInstaller.installGemmaPackage(into: appState.modelStore) { filename in
-                                await appState.setSelectedInstalledModel(filename: filename)
-                            }
-                        }
-                    } label: {
-                        Label("Install Gemma 4 LiteRT-LM", systemImage: "arrow.down.circle.fill")
-                            .font(.subheadline)
-                            .fontWeight(.semibold)
-                            .foregroundColor(BMOTheme.backgroundPrimary)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 14)
-                            .background(BMOTheme.accent)
-                            .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusSmall, style: .continuous))
-                    }
-
-                    Text("This downloads gemma-4-E2B-it.litertlm instead of a raw GGUF file. Local generation remains gated until the runtime bridge is present.")
-                        .font(.caption)
-                        .foregroundColor(BMOTheme.textTertiary)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
+                unsupportedInstalledModelNotice(installedModel)
             }
+        } else if BundledModelCatalog.hasBundledRecommendedModel {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack(spacing: 6) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(BMOTheme.success)
+                    Text("Bundled model included")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(BMOTheme.success)
+                }
+                Text("The bundled LiteRT-LM artifact will be registered automatically. It will stay inactive until the native LiteRT-LM bridge is linked.")
+                    .font(.caption)
+                    .foregroundColor(BMOTheme.textTertiary)
+            }
+        } else {
+            VStack(alignment: .leading, spacing: 10) {
+                Button { Task { await installRecommendedModel() } } label: {
+                    Label("Install Gemma 4 LiteRT-LM", systemImage: "arrow.down.circle.fill")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundColor(BMOTheme.backgroundPrimary)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(BMOTheme.accent)
+                        .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusSmall, style: .continuous))
+                }
+
+                Text("This downloads gemma-4-E2B-it.litertlm instead of a raw GGUF file. Local generation remains gated until the runtime bridge is present.")
+                    .font(.caption)
+                    .foregroundColor(BMOTheme.textTertiary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+    }
+
+    private func installRecommendedModel() async {
+        await packageInstaller.installGemmaPackage(into: appState.modelStore) { filename in
+            await appState.setSelectedInstalledModel(filename: filename)
         }
     }
 
@@ -564,7 +569,7 @@ struct ModelsView: View {
                 .lineLimit(1)
 
             if !sourceIsRunnable {
-                Text("Saved source is a raw artifact or unknown package type. It can stay saved, but direct download is disabled until the source points at a prepared LiteRT-LM or runtime-supported package.")
+                Text("Saved source can stay saved, but direct download is disabled unless this build knows how to install that package type. Use the recommended Gemma installer for the LiteRT-LM artifact.")
                     .font(.caption2)
                     .foregroundColor(BMOTheme.warning)
                     .fixedSize(horizontal: false, vertical: true)
@@ -575,7 +580,7 @@ struct ModelsView: View {
                     if sourceIsRunnable {
                         appState.modelStore.download(model)
                     } else {
-                        appState.modelStore.errorMessage = "This source is not a prepared runtime package. Add a .litertlm artifact source or import a prepared runtime package from Files."
+                        appState.modelStore.errorMessage = "This source is not enabled for direct download in this build. Use the recommended LiteRT-LM installer or import a prepared runtime package from Files."
                     }
                 }
                 .font(.caption)
@@ -637,7 +642,7 @@ struct ModelsView: View {
         guard let url = URL(string: sourceURL) else { return false }
         let ext = url.pathExtension.lowercased()
         guard !Self.rawLocalArtifactExtensions.contains(ext) else { return false }
-        return ext == LiteRTLMAvailability.artifactExtension || ext == "mlmodelc" || sourceURL.localizedCaseInsensitiveContains("mlc-chat-config.json")
+        return ext == "mlmodelc" || sourceURL.localizedCaseInsensitiveContains("mlc-chat-config.json")
     }
 
     private func runtimePackageMessage(for model: InstalledModel) -> String {
