@@ -7,6 +7,10 @@ configs:
 settings:
   IPHONEOS_DEPLOYMENT_TARGET: 18.0
   SWIFT_VERSION: "5.9"
+packages:
+  SwiftLlama:
+    url: https://github.com/pgorzelany/swift-llama-cpp.git
+    branch: main
 
 targets:
   MLCSwift:
@@ -44,6 +48,7 @@ targets:
       Release: Config/MLCRuntime.xcconfig
     dependencies:
       - target: MLCSwift
+      - package: SwiftLlama
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: BeMoreAgent

@@ -621,6 +621,9 @@ struct ModelsView: View {
 
     private func isRuntimeCompatible(_ model: InstalledModel) -> Bool {
         let ext = model.localURL.pathExtension.lowercased()
+        if ext == LlamaCppAvailability.artifactExtension {
+            return LlamaCppAvailability.accepts(model)
+        }
         if ext == LiteRTLMAvailability.artifactExtension {
             return LiteRTLMAvailability.accepts(model)
         }
@@ -641,12 +644,18 @@ struct ModelsView: View {
     private func isRuntimeCompatibleSource(_ sourceURL: String) -> Bool {
         guard let url = URL(string: sourceURL) else { return false }
         let ext = url.pathExtension.lowercased()
+        if ext == LlamaCppAvailability.artifactExtension {
+            return LlamaCppAvailability.isAvailable
+        }
         guard !Self.rawLocalArtifactExtensions.contains(ext) else { return false }
         return ext == "mlmodelc" || sourceURL.localizedCaseInsensitiveContains("mlc-chat-config.json")
     }
 
     private func runtimePackageMessage(for model: InstalledModel) -> String {
         let ext = model.localURL.pathExtension.lowercased()
+        if ext == LlamaCppAvailability.artifactExtension {
+            return LlamaCppAvailability.requirementMessage
+        }
         if ext == LiteRTLMAvailability.artifactExtension {
             return LiteRTLMAvailability.requirementMessage
         }
