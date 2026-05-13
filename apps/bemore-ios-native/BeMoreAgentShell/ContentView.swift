@@ -69,10 +69,10 @@ struct DesktopShellView: View {
                     shellRow(.chat, subtitle: "Talk to your Buddy with a safe way back home")
                 }
 
- Section("Work") {
- shellRow(.files, subtitle: "Workspace files and source materials")
- shellRow(.artifacts, subtitle: "Results, receipts, and generated artifacts")
- }
+                Section("Work") {
+                    shellRow(.files, subtitle: "Workspace files and source materials")
+                    shellRow(.artifacts, subtitle: "Results, receipts, and generated artifacts")
+                }
 
                 Section("Control") {
                     shellRow(.settings, subtitle: "Onboarding, routes, tabs, and maintenance")
@@ -118,10 +118,10 @@ private func shellDestination(for tab: AppTab, appState: AppState) -> some View 
     case .editor:
         EditorTabView()
     case .models:
-        ModelsTabView()
- case .chat:
- ChatView(store: appState.buddyStore)
- case .artifacts:
+        ModelsView()
+    case .chat:
+        ChatView(store: appState.buddyStore)
+    case .artifacts:
         ArtifactsView()
     case .buddy:
         BuddyView(store: appState.buddyStore)

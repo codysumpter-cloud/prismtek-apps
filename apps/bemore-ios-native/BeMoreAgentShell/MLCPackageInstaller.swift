@@ -11,25 +11,18 @@ struct MLCPackageManifest {
     let fallbackFiles: [String]
 
     var localURL: URL {
-        Paths.modelsDirectory.appendingPathComponent(localFolderName, isDirectory: true)
+        Paths.modelsDirectory.appendingPathComponent(localFolderName, isDirectory: false)
     }
 
     static let gemma4_E2B_IT_Q4F16_1 = MLCPackageManifest(
-        displayName: "Gemma 4 E2B IT MLC",
-        repositoryID: "welcoma/gemma-4-E2B-it-q4f16_1-MLC",
-        repositoryBaseURL: URL(string: "https://huggingface.co/welcoma/gemma-4-E2B-it-q4f16_1-MLC/resolve/main/")!,
-        repositoryTreeAPIURL: URL(string: "https://huggingface.co/api/models/welcoma/gemma-4-E2B-it-q4f16_1-MLC/tree/main")!,
-        localFolderName: "gemma-4-E2B-it-q4f16_1-MLC",
-        modelID: "gemma-4-E2B-it-q4f16_1-MLC",
-        modelLib: "gemma-4-E2B-it-q4f16_1-MLC",
-        fallbackFiles: [
-            "mlc-chat-config.json",
-            "tensor-cache.json",
-            "tokenizer.json",
-            "tokenizer.model",
-            "tokenizer_config.json",
-            "release-manifest.json"
-        ] + (0...41).map { "params_shard_\($0).bin" }
+        displayName: "Gemma 4 E2B IT LiteRT-LM",
+        repositoryID: "litert-community/gemma-4-E2B-it-litert-lm",
+        repositoryBaseURL: URL(string: "https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm/resolve/main/")!,
+        repositoryTreeAPIURL: URL(string: "https://huggingface.co/api/models/litert-community/gemma-4-E2B-it-litert-lm/tree/main")!,
+        localFolderName: "gemma-4-E2B-it.litertlm",
+        modelID: "gemma-4-E2B-it",
+        modelLib: "litert-lm",
+        fallbackFiles: ["gemma-4-E2B-it.litertlm"]
     )
 }
 
@@ -52,7 +45,7 @@ final class MLCPackageInstaller: ObservableObject {
             case .idle:
                 return "Ready to install"
             case .resolvingManifest:
-                return "Finding package files"
+                return "Finding LiteRT-LM package"
             case .downloading(let file, let completed, let total, _):
                 return "Downloading \(file) (\(completed + 1)/\(total))"
             case .installed:
@@ -87,31 +80,33 @@ final class MLCPackageInstaller: ObservableObject {
             try ensureEnoughDiskForGemmaPackage()
             phase = .resolvingManifest
             let packageFiles = try await resolvePackageFiles(for: manifest)
+            guard let primaryFilename = packageFiles.first else {
+                throw NSError(domain: "LiteRTLMInstaller", code: 1000, userInfo: [NSLocalizedDescriptionKey: "No LiteRT-LM artifact was found for Gemma 4 E2B."])
+            }
 
-            let destinationRoot = manifest.localURL
-            let tempRoot = Paths.modelsDirectory.appendingPathComponent(".\(manifest.localFolderName)-partial-\(UUID().uuidString)", isDirectory: true)
+            let destinationURL = manifest.localURL
+            let tempRoot = Paths.modelsDirectory.appendingPathComponent(".\(manifest.modelID)-litertlm-partial-\(UUID().uuidString)", isDirectory: true)
+            let stagedURL = tempRoot.appendingPathComponent(primaryFilename, isDirectory: false)
+
             if fileManager.fileExists(atPath: tempRoot.path) {
                 try fileManager.removeItem(at: tempRoot)
             }
             try fileManager.createDirectory(at: tempRoot, withIntermediateDirectories: true)
 
-            for (index, filename) in packageFiles.enumerated() {
-                let sourceURL = manifest.repositoryBaseURL.appendingPathComponent(filename)
-                let destinationURL = tempRoot.appendingPathComponent(filename)
-                try fileManager.createDirectory(at: destinationURL.deletingLastPathComponent(), withIntermediateDirectories: true)
-                try await downloadFile(from: sourceURL, to: destinationURL) { [weak self] fraction in
-                    Task { @MainActor in
-                        self?.phase = .downloading(file: filename, completed: index, total: packageFiles.count, fraction: fraction)
-                    }
+            let sourceURL = manifest.repositoryBaseURL.appendingPathComponent(primaryFilename)
+            try await downloadFile(from: sourceURL, to: stagedURL) { [weak self] fraction in
+                Task { @MainActor in
+                    self?.phase = .downloading(file: primaryFilename, completed: 0, total: 1, fraction: fraction)
                 }
             }
 
-            try verifyPackage(at: tempRoot)
+            try verifyPackage(at: stagedURL)
 
-            if fileManager.fileExists(atPath: destinationRoot.path) {
-                try fileManager.removeItem(at: destinationRoot)
+            if fileManager.fileExists(atPath: destinationURL.path) {
+                try fileManager.removeItem(at: destinationURL)
             }
-            try fileManager.moveItem(at: tempRoot, to: destinationRoot)
+            try fileManager.moveItem(at: stagedURL, to: destinationURL)
+            try? fileManager.removeItem(at: tempRoot)
             try persistDescriptor(for: manifest)
 
             modelStore.refreshInstalledModels()
@@ -132,28 +127,21 @@ final class MLCPackageInstaller: ObservableObject {
         let files = decoded
             .filter { ($0.type ?? "file") == "file" }
             .map(\.path)
-            .filter(Self.isMLCPackageFile)
+            .filter(Self.isLiteRTLMFile)
             .sorted()
 
         return files.isEmpty ? manifest.fallbackFiles : files
     }
 
-    private static func isMLCPackageFile(_ path: String) -> Bool {
-        guard !path.contains("/") else { return false }
-        return path == "mlc-chat-config.json" ||
-            path == "tensor-cache.json" ||
-            path == "tokenizer.json" ||
-            path == "tokenizer.model" ||
-            path == "tokenizer_config.json" ||
-            path == "release-manifest.json" ||
-            (path.hasPrefix("params_shard_") && path.hasSuffix(".bin"))
+    private static func isLiteRTLMFile(_ path: String) -> Bool {
+        !path.contains("/") && path.lowercased().hasSuffix(".litertlm")
     }
 
     private func downloadFile(from sourceURL: URL, to destinationURL: URL, onProgress: @escaping @Sendable (Double) -> Void) async throws {
         let (asyncBytes, response) = try await session.bytes(from: sourceURL)
         if let http = response as? HTTPURLResponse, !(200...299).contains(http.statusCode) {
             throw NSError(
-                domain: "MLCPackageInstaller",
+                domain: "LiteRTLMInstaller",
                 code: http.statusCode,
                 userInfo: [NSLocalizedDescriptionKey: "Failed to download \(sourceURL.lastPathComponent) with HTTP \(http.statusCode)."]
             )
@@ -194,16 +182,12 @@ final class MLCPackageInstaller: ObservableObject {
     }
 
     private func verifyPackage(at url: URL) throws {
-        let required = ["mlc-chat-config.json", "tokenizer.json", "tokenizer.model", "tokenizer_config.json", "params_shard_0.bin"]
-        for filename in required {
-            let path = url.appendingPathComponent(filename).path
-            guard fileManager.fileExists(atPath: path) else {
-                throw NSError(
-                    domain: "MLCPackageInstaller",
-                    code: 1001,
-                    userInfo: [NSLocalizedDescriptionKey: "Downloaded package is incomplete. Missing \(filename)."]
-                )
-            }
+        guard url.pathExtension.lowercased() == "litertlm", fileManager.fileExists(atPath: url.path) else {
+            throw NSError(
+                domain: "LiteRTLMInstaller",
+                code: 1001,
+                userInfo: [NSLocalizedDescriptionKey: "Downloaded package is not a LiteRT-LM .litertlm artifact."]
+            )
         }
     }
 
@@ -228,11 +212,11 @@ final class MLCPackageInstaller: ObservableObject {
 
     private func ensureEnoughDiskForGemmaPackage() throws {
         let values = try Paths.modelsDirectory.resourceValues(forKeys: [.volumeAvailableCapacityForImportantUsageKey])
-        if let available = values.volumeAvailableCapacityForImportantUsage, available < 3_500_000_000 {
+        if let available = values.volumeAvailableCapacityForImportantUsage, available < 3_300_000_000 {
             throw NSError(
-                domain: "MLCPackageInstaller",
+                domain: "LiteRTLMInstaller",
                 code: 1002,
-                userInfo: [NSLocalizedDescriptionKey: "Gemma 4 needs about 2.7 GB plus install room. Free at least 3.5 GB and try again."]
+                userInfo: [NSLocalizedDescriptionKey: "Gemma 4 E2B LiteRT-LM needs about 2.6 GB plus install room. Free at least 3.3 GB and try again."]
             )
         }
     }

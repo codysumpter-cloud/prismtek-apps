@@ -16,7 +16,7 @@ enum BundledModelCatalog {
     @MainActor
     static func installBundledRecommendedModelIfAvailable(into modelStore: ModelCatalogStore) {
         guard let sourceURL = bundledRecommendedModelURL, isValidPackage(at: sourceURL) else { return }
-        let destinationURL = Paths.modelsDirectory.appendingPathComponent(manifest.localFolderName, isDirectory: true)
+        let destinationURL = Paths.modelsDirectory.appendingPathComponent(manifest.localFolderName, isDirectory: false)
         let fileManager = FileManager.default
 
         do {
@@ -33,7 +33,7 @@ enum BundledModelCatalog {
             try writeDescriptor()
             modelStore.load()
         } catch {
-            modelStore.errorMessage = "Bundled model install failed: \(error.localizedDescription)"
+            modelStore.errorMessage = "Bundled LiteRT-LM model install failed: \(error.localizedDescription)"
         }
     }
 
@@ -42,9 +42,7 @@ enum BundledModelCatalog {
         if let linkedTarget = try? fileManager.destinationOfSymbolicLink(atPath: destination.path) {
             return URL(fileURLWithPath: linkedTarget).path != target.path
         }
-        var isDirectory: ObjCBool = false
-        guard fileManager.fileExists(atPath: destination.path, isDirectory: &isDirectory) else { return true }
-        guard isDirectory.boolValue else { return true }
+        guard fileManager.fileExists(atPath: destination.path) else { return true }
         return !isValidPackage(at: destination)
     }
 
@@ -53,9 +51,7 @@ enum BundledModelCatalog {
     }
 
     private static func isValidPackage(at url: URL) -> Bool {
-        ["mlc-chat-config.json", "tokenizer.json", "tokenizer.model", "tokenizer_config.json", "params_shard_0.bin"].allSatisfy { marker in
-            FileManager.default.fileExists(atPath: url.appendingPathComponent(marker).path)
-        }
+        url.pathExtension.lowercased() == "litertlm" && FileManager.default.fileExists(atPath: url.path)
     }
 
     private static func writeDescriptor() throws {
