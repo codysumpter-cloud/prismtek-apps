@@ -39,19 +39,6 @@ targets:
     resources:
       - path: BundledModels
         type: folder
-    postBuildScripts:
-      - name: Copy bundled MLC model resources
-        script: |
-          set -euo pipefail
-          SRC="$SRCROOT/BundledModels"
-          DEST="$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/BundledModels"
-          if [ -d "$SRC" ]; then
-            rm -rf "$DEST"
-            mkdir -p "$(dirname "$DEST")"
-            ditto "$SRC" "$DEST"
-            test -f "$DEST/gemma-4-E2B-it-q4f16_1-MLC/mlc-chat-config.json"
-            test -f "$DEST/gemma-4-E2B-it-q4f16_1-MLC/params_shard_0.bin"
-          fi
     configFiles:
       Debug: Config/MLCRuntime.xcconfig
       Release: Config/MLCRuntime.xcconfig
