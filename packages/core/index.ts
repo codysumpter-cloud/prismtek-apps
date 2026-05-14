@@ -270,3 +270,4 @@ export interface InstalledPackageRecord {
 
 export * from './buddyStudio';
 export * from './guidedBuddyStudio';
+export * from './buddyTraining';
