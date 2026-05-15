@@ -37,6 +37,9 @@ jobs:
           test -f apps/api/package.json
           test -f apps/bemore-macos/package.json
           test -f apps/bemore-macos/server.ts
+          test -f integrations/buddy-chat/package.json
+          test -f integrations/buddy-chat/src/server.mjs
+          test -f integrations/buddy-chat/scripts/validate.mjs
           test -f packages/core/package.json
           test -f packages/app-factory/package.json
           test -f packages/sandbox/package.json
@@ -50,6 +53,9 @@ jobs:
       - name: Install Linux Tailwind native binding
         if: runner.os == 'Linux'
         run: npm install --no-save @tailwindcss/oxide-linux-x64-gnu@4.2.2
+
+      - name: Validate Buddy Chat app
+        run: node integrations/buddy-chat/scripts/validate.mjs
 
       - name: Typecheck web app
         run: npm --workspace apps/web run lint
