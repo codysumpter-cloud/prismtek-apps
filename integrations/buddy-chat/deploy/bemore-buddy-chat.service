@@ -1,0 +1,25 @@
+[Unit]
+Description=BeMore Buddy Chat app surface
+After=network-online.target ollama.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/prismtek-apps/integrations/buddy-chat
+Environment=BUDDY_CHAT_HOST=127.0.0.1
+Environment=BUDDY_CHAT_PORT=4388
+Environment=BUDDY_CHAT_PUBLIC_BASE_URL=https://buddy.example.com
+Environment=BUDDY_MODEL_BASE_URL=http://127.0.0.1:11434/v1
+Environment=BUDDY_MODEL=gemma4:e2b
+Environment=BUDDY_MODEL_MAX_TOKENS=512
+Environment=BUDDY_MODEL_TIMEOUT_MS=30000
+ExecStart=/usr/bin/node src/server.mjs
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target
