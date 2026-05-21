@@ -103,7 +103,9 @@ final class BuddyMonStore: ObservableObject {
         var next = state
         update(&next)
         next.activePet.lastUpdatedAt = now
-        next.activePet.mood = BuddyMonEngine.mood(for: next.activePet)
+        if next.activePet.mood != .evolving, next.activePet.mood != .training, next.activePet.mood != .battle {
+            next.activePet.mood = BuddyMonEngine.mood(for: next.activePet)
+        }
         next.collection = syncCollection(next.collection, activePet: next.activePet)
         state = next
         persist()
@@ -131,6 +133,7 @@ final class BuddyMonStore: ObservableObject {
             return
         }
 
+        let center = notificationCenter
         let minutes = BuddyMonEngine.minutesUntilAttentionNeeded(for: state.activePet)
         let content = UNMutableNotificationContent()
         content.title = "\(state.activePet.nickname) may need you soon"
@@ -139,10 +142,10 @@ final class BuddyMonStore: ObservableObject {
 
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: max(60 * 20, minutes * 60), repeats: false)
         let request = UNNotificationRequest(identifier: "buddymon-attention", content: content, trigger: trigger)
-        notificationCenter.requestAuthorization(options: [.alert, .sound, .badge]) { granted, _ in
+        center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, _ in
             guard granted else { return }
-            self.notificationCenter.removePendingNotificationRequests(withIdentifiers: ["buddymon-attention"])
-            self.notificationCenter.add(request)
+            center.removePendingNotificationRequests(withIdentifiers: ["buddymon-attention"])
+            center.add(request)
         }
 
         state.lastNotificationAt = now
