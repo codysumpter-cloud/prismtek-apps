@@ -66,6 +66,7 @@ struct DesktopShellView: View {
                 Section("Start Here") {
                     shellRow(.missionControl, subtitle: "Buddy-first home and next steps")
                     shellRow(.buddy, subtitle: "Your active Buddy, roster, and training")
+                    shellRow(.buddyMon, subtitle: "Raise, train, evolve, and spar a pocket companion")
                     shellRow(.chat, subtitle: "Talk to your Buddy with a safe way back home")
                 }
 
@@ -125,6 +126,8 @@ private func shellDestination(for tab: AppTab, appState: AppState) -> some View 
         ArtifactsView()
     case .buddy:
         BuddyView(store: appState.buddyStore)
+    case .buddyMon:
+        BuddyMonView()
     case .files:
         FilesView()
     case .pairing:
