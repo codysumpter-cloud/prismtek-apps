@@ -70,6 +70,7 @@ struct DesktopShellView: View {
                 }
 
                 Section("Work") {
+                    shellRow(.agent, subtitle: "Guarded web browser and app-tool bridge")
                     shellRow(.files, subtitle: "Workspace files and source materials")
                     shellRow(.artifacts, subtitle: "Results, receipts, and generated artifacts")
                 }
@@ -121,6 +122,8 @@ private func shellDestination(for tab: AppTab, appState: AppState) -> some View 
         ModelsView()
     case .chat:
         ChatView(store: appState.buddyStore)
+    case .agent:
+        BuddyAgentBrowserView()
     case .artifacts:
         ArtifactsView()
     case .buddy:
