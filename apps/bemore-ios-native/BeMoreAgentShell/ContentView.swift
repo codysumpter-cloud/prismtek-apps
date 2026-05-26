@@ -20,6 +20,12 @@ struct ContentView: View {
             }
         }
         .preferredColorScheme(appState.userPreferencesStore.preferences.theme.preferredColorScheme)
+        .onAppear {
+            appState.consumePendingBuddyIntentIfNeeded()
+        }
+        .onOpenURL { url in
+            appState.handleBuddyIntentURL(url)
+        }
     }
 }
 
