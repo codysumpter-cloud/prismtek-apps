@@ -11,7 +11,7 @@ struct AskBuddyIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
-        let saved = BuddyIntentBridge.enqueue(BuddyIntentRequest(kind: .askBuddy, text: request))
+        _ = BuddyIntentBridge.enqueue(BuddyIntentRequest(kind: .askBuddy, text: request))
         return .result(dialog: IntentDialog("Opening Buddy with your request."))
     }
 }
@@ -197,6 +197,16 @@ struct BuddyShortcutsProvider: AppShortcutsProvider {
             ],
             shortTitle: "Draft Message",
             systemImageName: "message.badge.fill"
+        )
+
+        AppShortcut(
+            intent: DraftBuddyEmailIntent(),
+            phrases: [
+                "Draft a Buddy email in \(.applicationName)",
+                "Ask Buddy to draft an email in \(.applicationName)"
+            ],
+            shortTitle: "Draft Email",
+            systemImageName: "envelope.badge.fill"
         )
 
         AppShortcut(
