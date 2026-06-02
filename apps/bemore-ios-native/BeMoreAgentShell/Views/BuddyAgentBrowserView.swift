@@ -1,22 +1,25 @@
 import SwiftUI
 import WebKit
 
+private let buddyActionLoopSchemaVersion = "2026-06-02.buddy-action.v1"
+
 struct BuddyAgentBrowserView: View {
     @State private var addressText = "https://www.google.com/search?q=Prismtek+Buddy+agent"
     @State private var currentURL = URL(string: "https://www.google.com/search?q=Prismtek+Buddy+agent")!
-    @State private var pendingTool: BuddyAgentToolDraft?
-    @State private var receipts: [BuddyAgentReceipt] = []
+    @State private var pendingAction: BuddyAction?
+    @State private var receipts: [BuddyReceipt] = []
 
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
                 header
                 toolRail
+                receiptTimeline
                 Divider().overlay(BMOTheme.divider)
                 BuddyWebView(url: currentURL)
                     .overlay(alignment: .bottom) {
-                        if let pendingTool {
-                            pendingToolCard(pendingTool)
+                        if let pendingAction {
+                            pendingActionCard(pendingAction)
                                 .padding()
                         }
                     }
@@ -37,12 +40,12 @@ struct BuddyAgentBrowserView: View {
                     Text("Guarded Agent Browser")
                         .foregroundColor(BMOTheme.textPrimary)
                         .font(.headline)
-                    Text("Buddy can research, prepare actions, and ask before touching phone tools.")
+                    Text("Buddy creates typed action drafts, asks before risky tools, and leaves receipts.")
                         .foregroundColor(BMOTheme.textSecondary)
                         .font(.caption)
                 }
                 Spacer()
-                StatusBadge(label: "User-approved", color: BMOTheme.success)
+                StatusBadge(label: "Action Loop v1", color: BMOTheme.success)
             }
 
             HStack(spacing: BMOTheme.spacingSM) {
@@ -71,57 +74,53 @@ struct BuddyAgentBrowserView: View {
     private var toolRail: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: BMOTheme.spacingSM) {
-                toolButton(
+                actionButton(
                     title: "Summarize Page",
                     icon: "doc.text.magnifyingglass",
-                    risk: "low"
-                ) {
-                    pendingTool = BuddyAgentToolDraft(
-                        title: "Summarize current page",
-                        risk: .low,
-                        summary: "Buddy will prepare a page summary from the visible browser context when the runtime/browser extraction bridge is connected.",
-                        confirmationLabel: "Save Summary Draft"
-                    )
-                }
+                    type: .browserSummarize,
+                    risk: .readOnly,
+                    intent: "Prepare a concise summary from the currently loaded browser page."
+                )
 
-                toolButton(
-                    title: "Save to Memory",
+                actionButton(
+                    title: "Save Memory",
                     icon: "brain.head.profile",
-                    risk: "low"
-                ) {
-                    pendingTool = BuddyAgentToolDraft(
-                        title: "Save page to Buddy memory",
-                        risk: .low,
-                        summary: "Buddy will save the current page URL and your note as a memory receipt. No external write happens without approval.",
-                        confirmationLabel: "Save Memory Receipt"
-                    )
-                }
+                    type: .memoryRemember,
+                    risk: .draftOnly,
+                    intent: "Save the current page URL and a user-reviewed note to Buddy memory."
+                )
 
-                toolButton(
+                actionButton(
+                    title: "Note Draft",
+                    icon: "note.text.badge.plus",
+                    type: .noteDraft,
+                    risk: .draftOnly,
+                    intent: "Prepare a reusable note draft from this page or task context."
+                )
+
+                actionButton(
                     title: "Calendar Draft",
                     icon: "calendar.badge.plus",
-                    risk: "medium"
-                ) {
-                    pendingTool = BuddyAgentToolDraft(
-                        title: "Prepare calendar event",
-                        risk: .medium,
-                        summary: "Buddy can draft a calendar event from the page or chat context. The event should be reviewed before EventKit creation is enabled.",
-                        confirmationLabel: "Prepare Event Draft"
-                    )
-                }
+                    type: .calendarDraft,
+                    risk: .draftOnly,
+                    intent: "Prepare a calendar event draft. EventKit creation remains a later approval step."
+                )
 
-                toolButton(
+                actionButton(
                     title: "Message Draft",
                     icon: "message.badge.waveform",
-                    risk: "high"
-                ) {
-                    pendingTool = BuddyAgentToolDraft(
-                        title: "Prepare message draft",
-                        risk: .high,
-                        summary: "Buddy can draft a message, but sending must stay user-reviewed through the system compose sheet or Messages handoff.",
-                        confirmationLabel: "Prepare Message Draft"
-                    )
-                }
+                    type: .messageDraft,
+                    risk: .draftOnly,
+                    intent: "Prepare a message draft. Sending remains user-reviewed."
+                )
+
+                actionButton(
+                    title: "Email Draft",
+                    icon: "envelope.badge.fill",
+                    type: .emailDraft,
+                    risk: .draftOnly,
+                    intent: "Prepare an email draft. Sending remains user-reviewed."
+                )
             }
             .padding(.horizontal, BMOTheme.spacingMD)
             .padding(.vertical, BMOTheme.spacingSM)
@@ -129,14 +128,72 @@ struct BuddyAgentBrowserView: View {
         .background(BMOTheme.backgroundSecondary)
     }
 
-    private func toolButton(title: String, icon: String, risk: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
+    @ViewBuilder
+    private var receiptTimeline: some View {
+        if !receipts.isEmpty {
+            VStack(alignment: .leading, spacing: BMOTheme.spacingXS) {
+                HStack {
+                    Label("Receipts", systemImage: "checklist.checked")
+                        .foregroundColor(BMOTheme.textPrimary)
+                        .font(.caption.weight(.semibold))
+                    Spacer()
+                    Text("local draft log")
+                        .foregroundColor(BMOTheme.textTertiary)
+                        .font(.caption2)
+                }
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: BMOTheme.spacingSM) {
+                        ForEach(Array(receipts.prefix(5))) { receipt in
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(receipt.title)
+                                    .foregroundColor(BMOTheme.textPrimary)
+                                    .font(.caption.weight(.semibold))
+                                    .lineLimit(1)
+                                Text(receipt.summary)
+                                    .foregroundColor(BMOTheme.textSecondary)
+                                    .font(.caption2)
+                                    .lineLimit(2)
+                                Text(receipt.createdAt, style: .time)
+                                    .foregroundColor(BMOTheme.textTertiary)
+                                    .font(.caption2)
+                            }
+                            .frame(width: 180, alignment: .leading)
+                            .padding(10)
+                            .background(BMOTheme.backgroundCard)
+                            .clipShape(RoundedRectangle(cornerRadius: BMOTheme.radiusSmall, style: .continuous))
+                        }
+                    }
+                }
+            }
+            .padding(.horizontal, BMOTheme.spacingMD)
+            .padding(.vertical, BMOTheme.spacingSM)
+            .background(BMOTheme.backgroundPrimary)
+        }
+    }
+
+    private func actionButton(
+        title: String,
+        icon: String,
+        type: BuddyActionType,
+        risk: BuddyRiskClass,
+        intent: String
+    ) -> some View {
+        Button {
+            pendingAction = BuddyAction.draft(
+                buddyId: "default",
+                title: title,
+                intent: intent,
+                type: type,
+                risk: risk,
+                currentURL: currentURL.absoluteString
+            )
+        } label: {
             HStack(spacing: 8) {
                 Image(systemName: icon)
                 VStack(alignment: .leading, spacing: 1) {
                     Text(title)
                         .font(.caption.weight(.semibold))
-                    Text("risk: \(risk)")
+                    Text(risk.displayLabel)
                         .font(.caption2)
                         .foregroundColor(BMOTheme.textTertiary)
                 }
@@ -150,45 +207,52 @@ struct BuddyAgentBrowserView: View {
         .buttonStyle(.plain)
     }
 
-    private func pendingToolCard(_ draft: BuddyAgentToolDraft) -> some View {
+    private func pendingActionCard(_ action: BuddyAction) -> some View {
         VStack(alignment: .leading, spacing: BMOTheme.spacingSM) {
             HStack {
-                Label(draft.title, systemImage: draft.risk.systemImage)
+                Label(action.title, systemImage: action.risk.systemImage)
                     .foregroundColor(BMOTheme.textPrimary)
                     .font(.headline)
                 Spacer()
-                StatusBadge(label: draft.risk.label, color: draft.risk.color)
+                StatusBadge(label: action.risk.displayLabel, color: action.risk.color)
             }
 
-            Text(draft.summary)
+            Text(action.intent)
                 .foregroundColor(BMOTheme.textSecondary)
                 .font(.subheadline)
                 .fixedSize(horizontal: false, vertical: true)
 
-            Text("Current page: \(currentURL.absoluteString)")
-                .foregroundColor(BMOTheme.textTertiary)
-                .font(.caption)
-                .lineLimit(2)
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Action type: \(action.type.rawValue)")
+                Text("Approval: \(action.requiresApproval ? "required" : "review-safe draft")")
+                Text("Current page: \(currentURL.absoluteString)")
+                    .lineLimit(2)
+            }
+            .foregroundColor(BMOTheme.textTertiary)
+            .font(.caption)
 
             HStack {
                 Button("Cancel") {
-                    pendingTool = nil
+                    let receipt = BuddyReceipt.from(
+                        action: action,
+                        status: .cancelled,
+                        summary: "User cancelled the action draft before execution."
+                    )
+                    receipts.insert(receipt, at: 0)
+                    pendingAction = nil
                 }
                 .buttonStyle(.bordered)
 
                 Spacer()
 
-                Button(draft.confirmationLabel) {
-                    receipts.insert(
-                        BuddyAgentReceipt(
-                            toolTitle: draft.title,
-                            url: currentURL.absoluteString,
-                            risk: draft.risk.label,
-                            createdAt: Date()
-                        ),
-                        at: 0
+                Button(action.type.confirmationLabel) {
+                    let receipt = BuddyReceipt.from(
+                        action: action,
+                        status: .completed,
+                        summary: action.type.receiptSummary
                     )
-                    pendingTool = nil
+                    receipts.insert(receipt, at: 0)
+                    pendingAction = nil
                 }
                 .buttonStyle(BMOButtonStyle(isPrimary: true))
             }
@@ -265,49 +329,181 @@ struct BuddyWebView: UIViewRepresentable {
     }
 }
 
-private struct BuddyAgentToolDraft: Identifiable, Equatable {
-    let id = UUID()
-    let title: String
-    let risk: BuddyAgentRisk
-    let summary: String
-    let confirmationLabel: String
-}
+private enum BuddyRiskClass: String, Codable, CaseIterable, Equatable {
+    case readOnly = "read-only"
+    case draftOnly = "draft-only"
+    case write
+    case externalAction = "external-action"
+    case destructive
+    case money
+    case identity
+    case location
+    case credential
+    case repoMutation = "repo-mutation"
 
-private struct BuddyAgentReceipt: Identifiable, Codable, Equatable {
-    let id = UUID()
-    let toolTitle: String
-    let url: String
-    let risk: String
-    let createdAt: Date
-}
-
-private enum BuddyAgentRisk: String, Equatable {
-    case low
-    case medium
-    case high
-
-    var label: String {
+    var displayLabel: String {
         switch self {
-        case .low: return "low risk"
-        case .medium: return "review"
-        case .high: return "confirm"
+        case .readOnly: return "read-only"
+        case .draftOnly: return "draft"
+        case .write, .externalAction, .location, .repoMutation: return "confirm"
+        case .destructive, .money, .identity: return "deny by default"
+        case .credential: return "denied"
+        }
+    }
+
+    var requiresApproval: Bool {
+        switch self {
+        case .readOnly, .draftOnly:
+            return false
+        case .write, .externalAction, .destructive, .money, .identity, .location, .credential, .repoMutation:
+            return true
         }
     }
 
     var systemImage: String {
         switch self {
-        case .low: return "checkmark.shield.fill"
-        case .medium: return "exclamationmark.shield.fill"
-        case .high: return "lock.shield.fill"
+        case .readOnly: return "checkmark.shield.fill"
+        case .draftOnly: return "doc.badge.plus"
+        case .write, .externalAction, .location, .repoMutation: return "exclamationmark.shield.fill"
+        case .destructive, .money, .identity, .credential: return "lock.shield.fill"
         }
     }
 
     var color: Color {
         switch self {
-        case .low: return BMOTheme.success
-        case .medium: return BMOTheme.warning
-        case .high: return BMOTheme.error
+        case .readOnly, .draftOnly: return BMOTheme.success
+        case .write, .externalAction, .location, .repoMutation: return BMOTheme.warning
+        case .destructive, .money, .identity, .credential: return BMOTheme.error
         }
+    }
+}
+
+private enum BuddyActionType: String, Codable, Equatable {
+    case browserOpen = "browser.open"
+    case browserSummarize = "browser.summarize"
+    case memoryRemember = "memory.remember"
+    case noteDraft = "note.draft"
+    case calendarDraft = "calendar.draft"
+    case messageDraft = "message.draft"
+    case emailDraft = "email.draft"
+
+    var confirmationLabel: String {
+        switch self {
+        case .browserOpen: return "Open Page"
+        case .browserSummarize: return "Save Summary Draft"
+        case .memoryRemember: return "Save Memory Receipt"
+        case .noteDraft: return "Prepare Note Draft"
+        case .calendarDraft: return "Prepare Event Draft"
+        case .messageDraft: return "Prepare Message Draft"
+        case .emailDraft: return "Prepare Email Draft"
+        }
+    }
+
+    var receiptSummary: String {
+        switch self {
+        case .browserOpen:
+            return "Buddy opened a guarded browser page."
+        case .browserSummarize:
+            return "Buddy prepared a review-safe page summary draft."
+        case .memoryRemember:
+            return "Buddy staged a memory write for user review."
+        case .noteDraft:
+            return "Buddy prepared a note draft."
+        case .calendarDraft:
+            return "Buddy prepared a calendar draft without creating an event."
+        case .messageDraft:
+            return "Buddy prepared a message draft without sending."
+        case .emailDraft:
+            return "Buddy prepared an email draft without sending."
+        }
+    }
+}
+
+private enum BuddyActionStatus: String, Codable, Equatable {
+    case draft
+    case needsReview = "needs-review"
+    case approved
+    case running
+    case completed
+    case failed
+    case cancelled
+    case denied
+}
+
+private struct BuddyActionInputRef: Identifiable, Codable, Equatable {
+    var id = UUID()
+    var kind: String
+    var label: String
+    var value: String
+    var redacted: Bool = false
+}
+
+private struct BuddyAction: Identifiable, Codable, Equatable {
+    var id: UUID
+    var schemaVersion: String
+    var buddyId: String
+    var title: String
+    var intent: String
+    var type: BuddyActionType
+    var source: String
+    var status: BuddyActionStatus
+    var risk: BuddyRiskClass
+    var requiresApproval: Bool
+    var createdAt: Date
+    var updatedAt: Date?
+    var inputRefs: [BuddyActionInputRef]
+    var receiptId: String?
+
+    static func draft(
+        buddyId: String,
+        title: String,
+        intent: String,
+        type: BuddyActionType,
+        risk: BuddyRiskClass,
+        currentURL: String
+    ) -> BuddyAction {
+        BuddyAction(
+            id: UUID(),
+            schemaVersion: buddyActionLoopSchemaVersion,
+            buddyId: buddyId,
+            title: title,
+            intent: intent,
+            type: type,
+            source: "agent-tab",
+            status: .draft,
+            risk: risk,
+            requiresApproval: risk.requiresApproval,
+            createdAt: Date(),
+            updatedAt: nil,
+            inputRefs: [
+                BuddyActionInputRef(kind: "url", label: "current-page", value: currentURL)
+            ],
+            receiptId: nil
+        )
+    }
+}
+
+private struct BuddyReceipt: Identifiable, Codable, Equatable {
+    var id: UUID
+    var actionId: UUID
+    var createdAt: Date
+    var status: BuddyActionStatus
+    var title: String
+    var summary: String
+    var risk: BuddyRiskClass
+    var redactions: [String]
+
+    static func from(action: BuddyAction, status: BuddyActionStatus, summary: String) -> BuddyReceipt {
+        BuddyReceipt(
+            id: UUID(),
+            actionId: action.id,
+            createdAt: Date(),
+            status: status,
+            title: action.title,
+            summary: summary,
+            risk: action.risk,
+            redactions: ["raw prompts", "tokens", "cookies", "private keys", "OAuth material"]
+        )
     }
 }
 
