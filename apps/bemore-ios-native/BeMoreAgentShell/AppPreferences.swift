@@ -12,6 +12,7 @@ enum AppTab: String, Codable, CaseIterable, Hashable, Identifiable {
     case pairing
     case models
     case chat
+    case agent
     case pricing
     case settings
 
@@ -44,6 +45,7 @@ enum AppTab: String, Codable, CaseIterable, Hashable, Identifiable {
         case .pairing: return "Mac"
         case .models: return "Models"
         case .chat: return "Chat"
+        case .agent: return "Agent"
         case .pricing: return "Pricing"
         case .settings: return "Settings"
         }
@@ -59,6 +61,7 @@ enum AppTab: String, Codable, CaseIterable, Hashable, Identifiable {
         case .pairing: return "macbook.and.iphone"
         case .models: return "cpu"
         case .chat: return "message.fill"
+        case .agent: return "safari.fill"
         case .pricing: return "creditcard.fill"
         case .settings: return "gearshape.fill"
         }
@@ -81,7 +84,7 @@ struct ShellPreferences: Codable, Hashable {
     var selectedTab: AppTab
 
     static let `default` = ShellPreferences(
-        orderedTabs: [.missionControl, .buddy, .chat, .editor, .models, .artifacts, .files, .settings, .pairing, .pricing],
+        orderedTabs: [.missionControl, .buddy, .chat, .agent, .editor, .models, .artifacts, .files, .settings, .pairing, .pricing],
         hiddenTabs: [.pairing, .pricing],
         selectedTab: .missionControl
     )
@@ -97,7 +100,7 @@ struct ShellPreferences: Codable, Hashable {
         }
         
         var hidden = hiddenTabs.filter { ($0.allowsHiding || $0.isInternalDraft) && AppTab.allCases.contains($0) }
-        hidden.subtract([.buddy, .chat, .editor, .models, .artifacts, .files, .settings])
+        hidden.subtract([.buddy, .chat, .agent, .editor, .models, .artifacts, .files, .settings])
         if order.filter({ !hidden.contains($0) }).isEmpty {
             hidden.removeAll()
         }

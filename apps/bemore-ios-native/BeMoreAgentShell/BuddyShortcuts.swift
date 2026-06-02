@@ -102,10 +102,101 @@ struct BuddyShortcutsProvider: AppShortcutsProvider {
             phrases: [
                 "Teach \(.applicationName) Buddy planning",
                 "Plan my day with \(.applicationName)",
-                "Train Buddy in \(.applicationName)"
+                "Train Buddy planning in \(.applicationName)"
+            ],
+            shortTitle: "Buddy Planning",
+            systemImageName: "sparkle.magnifyingglass"
+        )
+
+        AppShortcut(
+            intent: AskBuddyIntent(),
+            phrases: [
+                "Ask \(.applicationName)",
+                "Ask Buddy in \(.applicationName)",
+                "Talk to Buddy in \(.applicationName)"
+            ],
+            shortTitle: "Ask Buddy",
+            systemImageName: "message.fill"
+        )
+
+        AppShortcut(
+            intent: TeachBuddyIntent(),
+            phrases: [
+                "Teach a preference to \(.applicationName)",
+                "Train my Buddy in \(.applicationName)"
             ],
             shortTitle: "Teach Buddy",
-            systemImageName: "sparkle.magnifyingglass"
+            systemImageName: "graduationcap.fill"
+        )
+
+        AppShortcut(
+            intent: OpenBuddyAgentBrowserIntent(),
+            phrases: [
+                "Open Buddy browser in \(.applicationName)",
+                "Open agent browser in \(.applicationName)"
+            ],
+            shortTitle: "Buddy Browser",
+            systemImageName: "safari.fill"
+        )
+
+        AppShortcut(
+            intent: SaveBuddyMemoryIntent(),
+            phrases: [
+                "Save to Buddy in \(.applicationName)",
+                "Remember this with \(.applicationName)"
+            ],
+            shortTitle: "Save Memory",
+            systemImageName: "brain.head.profile"
+        )
+
+        AppShortcut(
+            intent: CreateBuddyReminderIntent(),
+            phrases: [
+                "Create a Buddy reminder in \(.applicationName)",
+                "Ask Buddy to draft a reminder in \(.applicationName)"
+            ],
+            shortTitle: "Reminder Draft",
+            systemImageName: "bell.badge.fill"
+        )
+
+        AppShortcut(
+            intent: DraftBuddyMessageIntent(),
+            phrases: [
+                "Draft a Buddy message in \(.applicationName)",
+                "Ask Buddy to draft a message in \(.applicationName)"
+            ],
+            shortTitle: "Draft Message",
+            systemImageName: "message.badge.fill"
+        )
+
+        AppShortcut(
+            intent: DraftBuddyEmailIntent(),
+            phrases: [
+                "Draft a Buddy email in \(.applicationName)",
+                "Ask Buddy to draft an email in \(.applicationName)"
+            ],
+            shortTitle: "Draft Email",
+            systemImageName: "envelope.badge.fill"
+        )
+
+        AppShortcut(
+            intent: StartBuddyFocusIntent(),
+            phrases: [
+                "Start Buddy focus in \(.applicationName)",
+                "Focus with Buddy in \(.applicationName)"
+            ],
+            shortTitle: "Buddy Focus",
+            systemImageName: "timer"
+        )
+
+        AppShortcut(
+            intent: OpenBuddyProjectRoomIntent(),
+            phrases: [
+                "Open Buddy project room in \(.applicationName)",
+                "Open a project with Buddy in \(.applicationName)"
+            ],
+            shortTitle: "Project Room",
+            systemImageName: "folder.badge.gearshape"
         )
     }
 }
