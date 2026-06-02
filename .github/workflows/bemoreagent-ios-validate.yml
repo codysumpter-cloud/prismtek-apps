@@ -60,13 +60,21 @@ jobs:
 
       - name: Build for iOS Simulator
         run: |
+          set -o pipefail
           xcodebuild \
             -project BeMoreAgent.xcodeproj \
             -scheme BeMoreAgent \
             -sdk iphonesimulator \
             -destination 'generic/platform=iOS Simulator' \
             -derivedDataPath .build/DerivedData \
-            build
+            build 2>&1 | tee bemoreagent-ios-build.log
+
+      - name: Upload iOS build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bemoreagent-ios-build-log
+          path: apps/bemore-ios-native/bemoreagent-ios-build.log
 
       - name: Publish validation summary
         if: always()
