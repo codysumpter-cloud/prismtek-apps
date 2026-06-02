@@ -1,6 +1,6 @@
 # Buddy Action Loop v1
 
-Buddy is not a model picker and not a normal chatbot. Buddy is an agent living in a safe product environment: browser, memory, drafts, approvals, receipts, and model/tool routing.
+Buddy is not a model picker and not a normal chatbot. Buddy is an agent operating environment: browser, memory, drafts, approvals, receipts, model/tool routing, and a minimum two-agent execution loop.
 
 This document defines the first shippable vertical slice for `prismtek-apps` after the guarded Agent Browser MVP.
 
@@ -8,23 +8,63 @@ This document defines the first shippable vertical slice for `prismtek-apps` aft
 
 Buddy can:
 
-1. Read a user-selected page or prompt.
-2. Prepare a useful draft action.
-3. Ask for review before anything external happens.
-4. Save a receipt.
-5. Remember the useful result for later.
+1. Receive a human request through the Orchestrator agent.
+2. Break the request into safe worker steps.
+3. Delegate work to a Worker agent.
+4. Let the Worker continue across steps without interrupting the human for safe actions.
+5. Stop and ask the human only when a dangerous, external, destructive, credential, identity, money, location, or repo-mutation action is requested.
+6. Save receipts for each completed, cancelled, denied, or failed action.
+7. Remember useful results for later.
 
 The first version should prove the loop, not every possible tool.
 
 ```text
-user intent
-  -> BuddyAction draft
-  -> risk policy
-  -> review / approval card
-  -> draft-only or approved execution
-  -> BuddyReceipt
+human intent
+  -> Orchestrator receives request
+  -> Orchestrator creates BuddyAgentSession
+  -> Orchestrator delegates next step to Worker
+  -> Worker performs safe BuddyAction(s)
+  -> Worker reports step result to Orchestrator
+  -> Orchestrator reprompts Worker with the next step
+  -> repeat until done, blocked, failed, or human approval is required
+  -> BuddyReceipt(s)
   -> optional BuddyMemoryWrite
 ```
+
+## Minimum complete architecture
+
+Buddy is considered minimally complete only when it supports at least two agents:
+
+| Agent | Role | Human contact | Tool execution | Required behavior |
+| --- | --- | --- | --- | --- |
+| Orchestrator | Talks to the human, owns the original request, decomposes work, approves next worker instruction | Yes | Limited / policy-driven | Must receive worker reports, decide next step, and request human approval when risk policy requires it. |
+| Worker | Performs delegated steps, uses tools, reports progress | No direct human contact by default | Yes, within policy | Must report after each completed step and must stop when a dangerous action requires approval. |
+
+The Worker should not keep asking the human for direction. It should report to the Orchestrator, and the Orchestrator should continue the process from the human's original request unless approval is required.
+
+## Autonomy boundary
+
+The default run mode is `supervised-autonomy`:
+
+- Safe `read-only` and `draft-only` actions can continue without human interruption.
+- The Worker must report each completed step to the Orchestrator.
+- The Orchestrator may reprompt the Worker with the next instruction.
+- The Orchestrator is the only default human-facing agent.
+- Unknown or missing risk classification stops the loop.
+- Dangerous requests pause the worker and create an approval request.
+
+Human approval is required for:
+
+| Risk class | Default |
+| --- | --- |
+| `write` | confirm |
+| `external-action` | confirm |
+| `destructive` | deny-by-default |
+| `money` | deny-by-default |
+| `identity` | deny-by-default |
+| `location` | confirm |
+| `credential` | deny |
+| `repo-mutation` | confirm |
 
 ## What ships in v1
 
@@ -35,6 +75,7 @@ user intent
 - Tool chips create typed `BuddyAction` drafts instead of local-only ad hoc structs.
 - Approval card shows the action title, risk class, current page/input, provider/tool, and what will happen.
 - Receipt timeline shows completed, cancelled, denied, or failed actions.
+- Contracts support `BuddyAgentSession`, `BuddyAgentRuntimeProfile`, `BuddyDelegation`, and `BuddyWorkerReport`.
 
 ### Safe v1 actions
 
@@ -54,7 +95,8 @@ user intent
 - Credential inventory.
 - Trading, gambling, wallet, deposit, withdrawal, or other money-action execution.
 - Destructive repo/file mutations.
-- Background autonomous operation without receipts and user-visible state.
+- Background autonomous operation without receipts, worker reports, risk policy, and user-visible state.
+- Worker-to-human direct contact by default.
 
 ## Contract source
 
@@ -96,9 +138,27 @@ BuddyActionStore
 
 Persist to app storage using JSON first. Do not block v1 on cloud sync.
 
-### 3. Wire browser tool chips
+### 3. Add local agent session store
 
-Each chip should create a `BuddyAction`:
+Create the minimum two-agent state model:
+
+```text
+BuddyAgentSessionStore
+- sessions: [BuddyAgentSession]
+- delegations: [BuddyDelegation]
+- workerReports: [BuddyWorkerReport]
+- startSession(originalHumanRequest)
+- delegateNextStep(sessionId, instruction)
+- receiveWorkerReport(report)
+- requestHumanApproval(report)
+- resumeAfterApproval(sessionId)
+```
+
+The app can start with a local mock Worker, but the contract must already preserve the real Orchestrator/Worker boundary.
+
+### 4. Wire browser tool chips
+
+Each chip should create a `BuddyAction` assigned to either Orchestrator or Worker:
 
 - Summarize Page -> `browser.summarize`
 - Save to Memory -> `memory.remember`
@@ -106,41 +166,52 @@ Each chip should create a `BuddyAction`:
 - Message Draft -> `message.draft`
 - Email Draft -> `email.draft`
 
-### 4. Add receipts timeline
+Safe actions may be delegated to Worker. Approval-required actions must pause and route to Orchestrator.
+
+### 5. Add receipts and worker reports timeline
 
 Add a simple timeline to Agent tab or Artifacts:
 
+- session ID
 - action title
+- assigned agent role
 - status
 - risk
 - tool/provider
 - timestamp
 - redaction notes
+- worker report summary
 
 Receipts should never store raw secrets, tokens, cookies, private keys, OAuth materials, or full private prompts.
 
-### 5. Bridge to Buddy-Agent later
+### 6. Bridge to Buddy-Agent later
 
-Once app-local loop is stable, bridge actions to `buddy-agent`:
+Once app-local loop is stable, bridge sessions/actions to `buddy-agent`:
 
 ```text
+POST /buddy/sessions
+POST /buddy/sessions/:id/delegations
 POST /buddy/actions
+POST /buddy/worker-reports
 GET /buddy/actions/:id
 GET /buddy/receipts
 ```
 
-The runtime should accept only typed actions and should return sanitized receipts.
+The runtime should accept only typed sessions/actions/reports and should return sanitized receipts.
 
 ## Done definition
 
 Buddy Action Loop v1 is done when a tester can:
 
 1. Open the Agent tab.
-2. Load a page or search.
-3. Tap Summarize Page.
-4. See a typed approval/result card.
-5. Save the result to memory.
-6. See a receipt in the timeline.
-7. Recall the saved item later.
+2. Enter a request for Buddy.
+3. See an Orchestrator session start.
+4. See the Orchestrator delegate a safe step to a Worker.
+5. See the Worker complete a step and report back.
+6. See the Orchestrator continue with the next step without asking the human again.
+7. See the loop pause when an approval-required action is requested.
+8. Approve or deny through the Orchestrator-facing approval card.
+9. See a receipt in the timeline.
+10. Save or recall the useful result later.
 
-No action should send, post, create calendar events, mutate repos, or touch money without explicit review and a receipt.
+No action should send, post, create calendar events, mutate repos, execute dangerous commands, or touch money without explicit review and a receipt.
