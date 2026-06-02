@@ -191,7 +191,7 @@ export interface BuddyAgentSession {
   updatedAt?: string;
 }
 
-export interface BuddyReceipt {
+export interface BuddyActionReceipt {
   id: string;
   actionId: string;
   sessionId?: string;
