@@ -1,0 +1,14 @@
+{
+  "name": "prismtek-youtube-buddy-lipsync",
+  "version": "1.1.0",
+  "description": "App-facing contract for the Buddy talking-host lip-sync workflow.",
+  "canonical_runtime": "codysumpter-cloud/buddy-agent#18",
+  "operator_reference": "codysumpter-cloud/buddy-brain#315",
+  "local_device_reference": "codysumpter-cloud/omni-buddy#11",
+  "app_surface": {
+    "default_mode": "proof_preview",
+    "runtime_owner": "buddy-agent",
+    "ui_owner": "prismtek-apps"
+  },
+  "receipt_type": "buddy_lipsync_receipt"
+}
