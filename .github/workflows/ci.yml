@@ -52,7 +52,7 @@ jobs:
 
       - name: Install Linux Tailwind native binding
         if: runner.os == 'Linux'
-        run: npm install --no-save @tailwindcss/oxide-linux-x64-gnu@4.2.2
+        run: npm install --no-save @tailwindcss/oxide-linux-x64-gnu@4.3.0
 
       - name: Validate Buddy Chat app
         run: node integrations/buddy-chat/scripts/validate.mjs
@@ -73,4 +73,13 @@ jobs:
         run: npm --workspace apps/bemore-macos run lint
 
       - name: Build repository
-        run: npm run build
+        run: |
+          set -o pipefail
+          npm run build 2>&1 | tee build.log
+
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-build-log
+          path: build.log
