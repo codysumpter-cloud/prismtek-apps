@@ -13,3 +13,4 @@ export * from "./runtime/RuntimePairingState";
 export * from "./runtime/RuntimeCapabilityState";
 export * from "./runtime/RuntimeActionReceipt";
 export * from "./compat/compatibility";
+export * from "./actions/BuddyActionLoop";
