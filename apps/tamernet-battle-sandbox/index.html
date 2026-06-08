@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TamerNet Battle Sandbox</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Prismtek Prototype</p>
+        <h1>TamerNet Battle Sandbox</h1>
+        <p>
+          A combat-first creature MMO prototype: move the trainer, command the active creature,
+          bait cooldowns, dodge danger, capture weakened wilds, and test alpha-boss mechanics.
+        </p>
+      </div>
+      <div class="pill">Original placeholder assets • No dependencies • Runs locally</div>
+    </section>
+
+    <section class="game-layout">
+      <div class="canvas-wrap">
+        <canvas id="game" width="960" height="640" aria-label="TamerNet battle sandbox canvas"></canvas>
+      </div>
+
+      <aside class="panel">
+        <h2>Controls</h2>
+        <dl class="controls">
+          <dt>Move</dt><dd>WASD / Arrow keys</dd>
+          <dt>Dodge</dt><dd>Space</dd>
+          <dt>Command moves</dt><dd>1 / 2 / 3 / 4</dd>
+          <dt>Swap creature</dt><dd>Tab</dd>
+          <dt>Capture</dt><dd>C near low-HP wild</dd>
+          <dt>Alpha mode</dt><dd>R</dd>
+          <dt>Reset</dt><dd>Enter</dd>
+          <dt>Pause</dt><dd>P</dd>
+        </dl>
+
+        <h2>Battle Notes</h2>
+        <ul>
+          <li>Moves use windup, active frames, recovery, hitboxes, and cooldowns.</li>
+          <li>Trainer dodge protects the trainer, not the creature.</li>
+          <li>Alpha mode increases boss HP, telegraphs larger AoEs, and tracks contribution.</li>
+          <li>This is intentionally battle-first before regions, marketplace, breeding, or BYO-file import.</li>
+        </ul>
+
+        <h2>Combat Log</h2>
+        <ol id="log" class="log"></ol>
+      </aside>
+    </section>
+  </main>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
