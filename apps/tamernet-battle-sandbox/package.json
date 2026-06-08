@@ -1,0 +1,11 @@
+{
+  "name": "@prismtek/tamernet-battle-sandbox",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Playable real-time creature command combat prototype for TamerNet.",
+  "type": "module",
+  "scripts": {
+    "dev": "python3 -m http.server 8080",
+    "serve": "python3 -m http.server 8080"
+  }
+}
