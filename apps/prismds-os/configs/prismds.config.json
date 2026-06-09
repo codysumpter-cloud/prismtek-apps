@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "name": "PrismDS Layer",
+  "targetDevice": "anbernic-rgds",
+  "installRoot": "~/.local/share/prismds",
+  "safeMode": true,
+  "frontends": {
+    "preferred": "emulationstation",
+    "fallback": "desktop-launchers"
+  },
+  "emulators": {
+    "azahar": {
+      "enabled": true,
+      "preferred": true,
+      "binary": "apps/azahar/Azahar.AppImage",
+      "contentRoot": "roms/3ds",
+      "saveRoot": "saves/3ds",
+      "defaultArgs": []
+    },
+    "lowlevel3ds": {
+      "enabled": true,
+      "preferred": false,
+      "binary": "apps/lowlevel-3ds/emulator",
+      "contentRoot": "roms/3ds",
+      "workspaceRoot": "bios/3ds/local-system-files",
+      "defaultArgs": []
+    }
+  },
+  "runtimeDirs": [
+    "apps/azahar",
+    "apps/lowlevel-3ds",
+    "bios/3ds/local-system-files",
+    "bin",
+    "configs",
+    "logs/prismds",
+    "roms/3ds",
+    "saves/3ds",
+    "screenshots/3ds",
+    "states/3ds",
+    "tmp"
+  ],
+  "performance": {
+    "governor": "performance",
+    "nice": -5,
+    "ioniceClass": "best-effort",
+    "ioniceLevel": 0
+  }
+}
