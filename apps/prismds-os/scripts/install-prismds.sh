@@ -10,8 +10,8 @@ DESKTOP_DIR="$HOME/.local/share/applications"
 
 runtime_dirs=(
   "apps/azahar"
-  "apps/lowlevel-3ds"
-  "bios/3ds/local-system-files"
+  "apps/lab"
+  "data/lab-files"
   "bin"
   "configs/emulationstation"
   "logs/prismds"
@@ -33,9 +33,9 @@ cp "$APP_DIR/configs/emulationstation/es_systems_3ds.xml" "$CONFIG_DIR/emulation
 cp "$APP_DIR/configs/desktop/prismds.desktop" "$DESKTOP_DIR/prismds.desktop"
 
 install -m 0755 "$APP_DIR/scripts/launch-azahar.sh" "$BIN_DIR/prismds-launch-azahar.sh"
-install -m 0755 "$APP_DIR/scripts/launch-lowlevel-3ds.sh" "$BIN_DIR/prismds-launch-lowlevel-3ds.sh"
+install -m 0755 "$APP_DIR/scripts/launch-lab.sh" "$BIN_DIR/prismds-launch-lab.sh"
 install -m 0755 "$APP_DIR/scripts/performance-mode.sh" "$BIN_DIR/prismds-performance-mode.sh"
-install -m 0755 "$APP_DIR/scripts/validate-local-3ds-lab-files.sh" "$BIN_DIR/prismds-validate-local-3ds-lab-files.sh"
+install -m 0755 "$APP_DIR/scripts/validate-lab-files.sh" "$BIN_DIR/prismds-validate-lab-files.sh"
 
 cat > "$BIN_DIR/prismds-session.sh" <<'SESSION'
 #!/usr/bin/env bash
@@ -49,12 +49,7 @@ fi
 SESSION
 chmod 0755 "$BIN_DIR/prismds-session.sh"
 
-cat <<EOF
-PrismDS installed.
-
-Next steps:
-1. Put Azahar at: $PRISMDS_HOME/apps/azahar/Azahar.AppImage
-2. Put your 3DS content at: $PRISMDS_HOME/roms/3ds
-3. Optional lab executable: $PRISMDS_HOME/apps/lowlevel-3ds/emulator
-4. Run: $BIN_DIR/prismds-launch-azahar.sh
-EOF
+printf 'PrismDS installed.\n'
+printf 'Add Azahar at: %s\n' "$PRISMDS_HOME/apps/azahar/Azahar.AppImage"
+printf 'Add game files at: %s\n' "$PRISMDS_HOME/roms/3ds"
+printf 'Optional lab executable: %s\n' "$PRISMDS_HOME/apps/lab/emulator"
