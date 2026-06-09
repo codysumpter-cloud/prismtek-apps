@@ -32,7 +32,7 @@ const REQUIRED_REPO_FILES = [
 const RUNTIME_DIRS = [
   'apps/azahar',
   'apps/lab',
-  'bios/lab-files',
+  'data/lab-files',
   'bin',
   'configs',
   'logs/prismds',
@@ -98,7 +98,7 @@ async function build() {
   const dist = path.join(ROOT, 'dist');
   await mkdir(dist, { recursive: true });
   const manifest = {
-    name: '@prismtek/prismds-os-layer',
+    name: '@prismtek/prismds-layer',
     version: VERSION,
     builtAt: new Date().toISOString(),
     target: 'Anbernic RG DS / RK3568 / Android + Linux',
@@ -139,7 +139,7 @@ async function doctor() {
     ['Azahar binary', path.join(home, 'apps/azahar/Azahar.AppImage')],
     ['Lab binary', path.join(home, 'apps/lab/emulator')],
     ['3DS content folder', path.join(home, 'roms/3ds')],
-    ['Local lab file folder', path.join(home, 'bios/lab-files')],
+    ['Local lab file folder', path.join(home, 'data/lab-files')],
     ['PrismDS bin folder', path.join(home, 'bin')]
   ];
   for (const [label, target] of checks) {
@@ -149,7 +149,7 @@ async function doctor() {
   console.log(`adb: ${(await commandExists('adb')) ? 'found' : 'missing'}`);
   console.log(`emulationstation: ${(await commandExists('emulationstation')) ? 'found' : 'missing'}`);
 
-  const labRoot = path.join(home, 'bios/lab-files');
+  const labRoot = path.join(home, 'data/lab-files');
   if (await exists(labRoot)) {
     const entries = await readdir(labRoot);
     const totalBytes = (await Promise.all(entries.map((entry) => fileSize(path.join(labRoot, entry))))).reduce((sum, size) => sum + size, 0);
