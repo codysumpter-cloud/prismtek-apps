@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "3ds-lab-externals",
+  "description": "External source checkouts used by the Prismtek 3DS Lab workflow. These repositories are cloned locally and are intentionally not vendored into prismtek-apps.",
+  "checkoutRoot": "external/nintendo-3ds",
+  "policy": {
+    "vendorSource": false,
+    "allowProprietaryConsoleDumps": false,
+    "allowCopyrightedGameDumps": false,
+    "notes": [
+      "Use only files dumped from hardware and software you own.",
+      "Do not commit boot ROMs, NAND images, SD images, cartridge dumps, CIAs, save files, title keys, or other private/copyrighted data.",
+      "Keep GPL-family upstream source isolated as external checkouts unless a future licensing review explicitly approves a different integration path."
+    ]
+  },
+  "repositories": [
+    {
+      "name": "3Beans",
+      "owner": "Hydr8gon",
+      "url": "https://github.com/Hydr8gon/3Beans.git",
+      "branch": "master",
+      "path": "external/nintendo-3ds/3Beans",
+      "role": "Low-level Nintendo 3DS emulator used for local desktop experiments and future BeMore/Buddy 3DS Lab workflow research.",
+      "licenseNotes": "GPL-3.0; do not vendor into Prismtek Apps without license review."
+    },
+    {
+      "name": "GodMode9",
+      "owner": "d0k3",
+      "url": "https://github.com/d0k3/GodMode9.git",
+      "branch": "master",
+      "path": "external/nintendo-3ds/GodMode9",
+      "role": "3DS console file browser and dumping utility reference for users who own real 3DS hardware.",
+      "licenseNotes": "External tool/reference only; do not bundle console dumps or keys."
+    },
+    {
+      "name": "Luma3DS",
+      "owner": "LumaTeam",
+      "url": "https://github.com/LumaTeam/Luma3DS.git",
+      "branch": "master",
+      "path": "external/nintendo-3ds/Luma3DS",
+      "role": "Nintendo 3DS custom firmware reference for homebrew/dev workflows on user-owned hardware.",
+      "licenseNotes": "GPL-3.0; keep isolated unless a future license review approves deeper integration."
+    }
+  ]
+}
