@@ -18,7 +18,7 @@
       "name": "3Beans",
       "owner": "Hydr8gon",
       "url": "https://github.com/Hydr8gon/3Beans.git",
-      "branch": "master",
+      "branch": "main",
       "path": "external/nintendo-3ds/3Beans",
       "role": "Low-level Nintendo 3DS emulator used for local desktop experiments and future BeMore/Buddy 3DS Lab workflow research.",
       "licenseNotes": "GPL-3.0; do not vendor into Prismtek Apps without license review."
