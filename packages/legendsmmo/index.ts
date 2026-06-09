@@ -1,46 +1,12 @@
-export interface RomAdapterManifest {
-  id: string;
-  name: string;
-  version: string;
-}
-
-export interface CreatureRecord {
-  id: string;
-  name: string;
-}
-
-export interface ItemRecord {
-  id: string;
-  name: string;
-}
-
-export interface MapRecord {
-  id: string;
-  name: string;
-}
-
-export interface RomAdapter {
-  manifest: RomAdapterManifest;
-
-  validate(source: Uint8Array): Promise<boolean>;
-
-  listCreatures(): Promise<CreatureRecord[]>;
-  listItems(): Promise<ItemRecord[]>;
-  listMaps(): Promise<MapRecord[]>;
-}
-
-export class LocalAdapterRegistry {
-  private adapters = new Map<string, RomAdapter>();
-
-  register(adapter: RomAdapter) {
-    this.adapters.set(adapter.manifest.id, adapter);
-  }
-
-  get(id: string) {
-    return this.adapters.get(id);
-  }
-
-  list() {
-    return [...this.adapters.values()];
-  }
-}
+export * from "./src/content";
+export * from "./src/battle";
+export * from "./src/localAdapter";
+export * from "./src/adapters/jsonContentPackAdapter";
+export * from "./src/sampleContent";
+export * from "./src/player";
+export * from "./src/party";
+export * from "./src/inventory";
+export * from "./src/world";
+export * from "./src/encounters";
+export * from "./src/saveGame";
+export * from "./src/networking/protocol";
