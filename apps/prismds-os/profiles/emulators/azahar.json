@@ -1,0 +1,23 @@
+{
+  "id": "azahar",
+  "name": "Azahar",
+  "kind": "high-level-3ds-emulator",
+  "priority": 1,
+  "recommendedForRgds": true,
+  "platforms": ["Android", "Linux", "Windows", "macOS"],
+  "expectedBinaryNames": ["Azahar.AppImage", "azahar", "azahar-qt"],
+  "defaultLinuxPath": "~/.local/share/prismds/apps/azahar/Azahar.AppImage",
+  "defaultRomExtensions": [".3ds", ".cci", ".cxi", ".cia"],
+  "launchMode": "game-or-gui",
+  "rgdsStrategy": {
+    "android": "preferred-first-test-path",
+    "linux": "use-appimage-or-native-build-if-gpu-stack-allows",
+    "resolution": "native-or-1x-first",
+    "audioLatency": "prefer-safe-defaults-before-tuning"
+  },
+  "notes": [
+    "Best practical first target for RGDS 3DS gameplay experiments.",
+    "Performance depends heavily on GPU driver, Android/Linux image, and game.",
+    "Do not ship ROMs or system files."
+  ]
+}
