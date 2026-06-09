@@ -17,19 +17,19 @@
       "saveRoot": "saves/3ds",
       "defaultArgs": []
     },
-    "lowlevel3ds": {
+    "lab": {
       "enabled": true,
       "preferred": false,
-      "binary": "apps/lowlevel-3ds/emulator",
+      "binary": "apps/lab/emulator",
       "contentRoot": "roms/3ds",
-      "workspaceRoot": "bios/3ds/local-system-files",
+      "workspaceRoot": "data/lab-files",
       "defaultArgs": []
     }
   },
   "runtimeDirs": [
     "apps/azahar",
-    "apps/lowlevel-3ds",
-    "bios/3ds/local-system-files",
+    "apps/lab",
+    "data/lab-files",
     "bin",
     "configs",
     "logs/prismds",
