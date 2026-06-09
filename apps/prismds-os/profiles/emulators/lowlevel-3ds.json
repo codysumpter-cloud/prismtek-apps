@@ -6,7 +6,7 @@
   "recommendedForRgds": false,
   "platforms": ["Linux", "Windows", "macOS"],
   "expectedBinaryNames": ["emulator"],
-  "defaultLinuxPath": "~/.local/share/prismds/apps/lowlevel-3ds/emulator",
+  "defaultLinuxPath": "~/.local/share/prismds/apps/lab/emulator",
   "defaultContentExtensions": [".3ds", ".cci"],
   "launchMode": "lab",
   "rgdsStrategy": {
