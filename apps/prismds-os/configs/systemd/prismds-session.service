@@ -1,0 +1,14 @@
+[Unit]
+Description=PrismDS handheld frontend session
+Documentation=README.md
+After=graphical-session.target
+
+[Service]
+Type=simple
+Environment=PRISMDS_HOME=%h/.local/share/prismds
+ExecStart=%h/.local/share/prismds/bin/prismds-session.sh
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=default.target
