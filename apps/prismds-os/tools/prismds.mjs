@@ -7,8 +7,10 @@ import process from 'node:process';
 
 const ROOT = path.resolve(new URL('..', import.meta.url).pathname);
 const DEFAULT_HOME = path.join(os.homedir(), '.local', 'share', 'prismds');
+const VERSION = '0.1.0';
 const REQUIRED_REPO_FILES = [
   'README.md',
+  'metadata/prismds.manifest.json',
   'profiles/rgds.json',
   'profiles/emulators/azahar.json',
   'profiles/emulators/lowlevel-3ds.json',
@@ -43,10 +45,10 @@ function usage() {
   console.log(`PrismDS OS Layer
 
 Usage:
-  prismds check              Validate repo package files
-  prismds build              Build a distributable manifest under dist/
-  prismds doctor             Inspect this device/runtime install
-  prismds emit-install-plan  Print the directories the installer will create
+  node tools/prismds.mjs check              Validate repo package files
+  node tools/prismds.mjs build              Build a distributable manifest under dist/
+  node tools/prismds.mjs doctor             Inspect this device/runtime install
+  node tools/prismds.mjs emit-install-plan  Print the directories the installer will create
 
 Environment:
   PRISMDS_HOME  Override runtime install path. Default: ${DEFAULT_HOME}
@@ -87,13 +89,14 @@ async function checkRepo() {
     if (!(await exists(path.join(ROOT, rel)))) missing.push(rel);
   }
 
-  const profiles = [
+  const jsonFiles = [
+    'metadata/prismds.manifest.json',
     'profiles/rgds.json',
     'profiles/emulators/azahar.json',
     'profiles/emulators/lowlevel-3ds.json',
     'configs/prismds.config.json'
   ];
-  for (const rel of profiles) {
+  for (const rel of jsonFiles) {
     JSON.parse(await readFile(path.join(ROOT, rel), 'utf8'));
   }
 
@@ -112,10 +115,12 @@ async function build() {
   const dist = path.join(ROOT, 'dist');
   await mkdir(dist, { recursive: true });
   const manifest = {
-    name: '@prismtek/prismds-os',
-    version: JSON.parse(await readFile(path.join(ROOT, 'package.json'), 'utf8')).version,
+    name: '@prismtek/prismds-os-layer',
+    version: VERSION,
     builtAt: new Date().toISOString(),
     target: 'Anbernic RG DS / RK3568 / Android + Linux',
+    npmWorkspace: false,
+    reason: 'Kept outside npm workspace lockfile so npm ci remains stable.',
     files: REQUIRED_REPO_FILES,
     runtimeDirs: RUNTIME_DIRS
   };
@@ -132,6 +137,7 @@ async function emitInstallPlan() {
 async function doctor() {
   const home = process.env.PRISMDS_HOME || DEFAULT_HOME;
   console.log('PrismDS doctor');
+  console.log(`Version: ${VERSION}`);
   console.log(`Platform: ${process.platform} ${process.arch}`);
   console.log(`Node: ${process.version}`);
   console.log(`Runtime root: ${home}`);
@@ -167,9 +173,9 @@ async function doctor() {
     console.log(`Local lab system files: ${entries.length} file(s), ${totalBytes} bytes`);
   }
 
-  const romDir = path.join(home, 'roms/3ds');
-  if (await exists(romDir)) {
-    const entries = await readdir(romDir);
+  const contentDir = path.join(home, 'roms/3ds');
+  if (await exists(contentDir)) {
+    const entries = await readdir(contentDir);
     const content = entries.filter((name) => /\.(3ds|cci|cxi|cia)$/i.test(name));
     console.log(`3DS content: ${content.length} file(s)`);
   }
