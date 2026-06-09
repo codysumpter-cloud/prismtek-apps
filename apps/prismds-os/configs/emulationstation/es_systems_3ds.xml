@@ -1,0 +1,11 @@
+<systemList>
+  <system>
+    <name>n3ds</name>
+    <fullname>Nintendo 3DS</fullname>
+    <path>%HOME%/.local/share/prismds/roms/3ds</path>
+    <extension>.3ds .3DS .cci .CCI .cxi .CXI .cia .CIA</extension>
+    <command>%HOME%/.local/share/prismds/bin/prismds-launch-azahar.sh %ROM%</command>
+    <platform>n3ds</platform>
+    <theme>n3ds</theme>
+  </system>
+</systemList>

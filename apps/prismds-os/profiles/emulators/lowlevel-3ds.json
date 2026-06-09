@@ -1,0 +1,22 @@
+{
+  "id": "lowlevel-3ds",
+  "name": "Low-level 3DS lab profile",
+  "kind": "experimental-emulator-profile",
+  "priority": 2,
+  "recommendedForRgds": false,
+  "platforms": ["Linux", "Windows", "macOS"],
+  "expectedBinaryNames": ["emulator"],
+  "defaultLinuxPath": "~/.local/share/prismds/apps/lab/emulator",
+  "defaultContentExtensions": [".3ds", ".cci"],
+  "launchMode": "lab",
+  "rgdsStrategy": {
+    "linux": "experimental-only",
+    "android": "not-supported-by-this-layer",
+    "expectedPerformance": "unknown-until-arm64-build-and-drivers-are-verified"
+  },
+  "notes": [
+    "This is an experimental lab target, not the first playable RGDS path.",
+    "PrismDS does not bundle emulators, games, or private local files.",
+    "Use Azahar first for practical testing."
+  ]
+}

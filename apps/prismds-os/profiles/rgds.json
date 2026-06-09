@@ -1,0 +1,43 @@
+{
+  "id": "anbernic-rgds",
+  "name": "Anbernic RG DS",
+  "codename": "rgds",
+  "vendor": "Anbernic",
+  "category": "dual-screen-retro-handheld",
+  "chipset": "Rockchip RK3568",
+  "cpu": {
+    "architecture": "arm64",
+    "cores": 4,
+    "class": "Cortex-A55",
+    "maxClockMhz": 2000
+  },
+  "gpu": {
+    "name": "Mali-G52 2EE",
+    "apis": ["OpenGL ES", "Vulkan depends on vendor image"]
+  },
+  "memoryMb": 3072,
+  "screens": [
+    {
+      "id": "top",
+      "sizeInches": 4.0,
+      "resolution": "640x480",
+      "touch": false,
+      "role": "primary-top"
+    },
+    {
+      "id": "bottom",
+      "sizeInches": 4.0,
+      "resolution": "640x480",
+      "touch": true,
+      "role": "primary-bottom-touch"
+    }
+  ],
+  "operatingSystems": ["Android 14", "Linux 64-bit"],
+  "safeInstallMode": "userland-layer",
+  "defaultRuntimeRoot": "~/.local/share/prismds",
+  "notes": [
+    "Prefer Android Azahar first for practical testing.",
+    "Use Linux PrismDS launchers for frontend integration and experiments.",
+    "Do not replace the vendor image until recovery and hardware support are verified."
+  ]
+}

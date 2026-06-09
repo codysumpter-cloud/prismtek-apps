@@ -1,0 +1,25 @@
+{
+  "id": "dev.prismtek.prismds",
+  "name": "PrismDS Layer",
+  "version": "0.1.0",
+  "summary": "Reversible RGDS launcher layer for dual-screen emulation experiments.",
+  "targetDevice": "Anbernic RG DS",
+  "installMode": "userland",
+  "changesBootImage": false,
+  "includedBinaries": [],
+  "includedCommercialContent": false,
+  "primaryEmulator": "Azahar",
+  "labProfile": "lowlevel-3ds",
+  "entrypoints": [
+    "tools/prismds.mjs",
+    "scripts/install-prismds.sh",
+    "scripts/launch-azahar.sh",
+    "scripts/launch-lab.sh"
+  ],
+  "status": {
+    "linuxLayer": "functional",
+    "androidHelper": "functional",
+    "bootableImage": "not-implemented",
+    "rgdsHardwareValidation": "pending-on-device"
+  }
+}
