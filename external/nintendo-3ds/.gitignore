@@ -1,0 +1,16 @@
+# Local upstream checkouts are intentionally not vendored into prismtek-apps.
+/3Beans/
+/GodMode9/
+/Luma3DS/
+
+# Local emulator/profile/data artifacts must stay private.
+/*.bin
+/*.img
+/*.cia
+/*.3ds
+/*.cci
+/*.cxi
+/*.sav
+/saves/
+/profiles/
+/runtime-data/
