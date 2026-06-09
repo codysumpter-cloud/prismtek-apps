@@ -11,7 +11,7 @@ const REQUIRED_REPO_FILES = [
   'README.md',
   'profiles/rgds.json',
   'profiles/emulators/azahar.json',
-  'profiles/emulators/3beans.json',
+  'profiles/emulators/lowlevel-3ds.json',
   'configs/prismds.config.json',
   'configs/emulationstation/es_systems_3ds.xml',
   'configs/systemd/prismds-session.service',
@@ -19,16 +19,16 @@ const REQUIRED_REPO_FILES = [
   'scripts/install-prismds.sh',
   'scripts/uninstall-prismds.sh',
   'scripts/launch-azahar.sh',
-  'scripts/launch-3beans.sh',
-  'scripts/validate-3beans-dumps.sh',
+  'scripts/launch-lowlevel-3ds.sh',
+  'scripts/validate-local-3ds-lab-files.sh',
   'scripts/performance-mode.sh',
   'scripts/install-azahar-android-adb.sh'
 ];
 
 const RUNTIME_DIRS = [
   'apps/azahar',
-  'apps/3beans',
-  'bios/3ds/3beans',
+  'apps/lowlevel-3ds',
+  'bios/3ds/local-system-files',
   'bin',
   'configs',
   'logs/prismds',
@@ -37,12 +37,6 @@ const RUNTIME_DIRS = [
   'screenshots/3ds',
   'states/3ds',
   'tmp'
-];
-
-const EXPECTED_DUMPS = [
-  ['boot9.bin', 0x10000],
-  ['boot11.bin', 0x10000],
-  ['nand.bin', 0x10000000]
 ];
 
 function usage() {
@@ -96,7 +90,7 @@ async function checkRepo() {
   const profiles = [
     'profiles/rgds.json',
     'profiles/emulators/azahar.json',
-    'profiles/emulators/3beans.json',
+    'profiles/emulators/lowlevel-3ds.json',
     'configs/prismds.config.json'
   ];
   for (const rel of profiles) {
@@ -154,8 +148,9 @@ async function doctor() {
 
   const checks = [
     ['Azahar binary', path.join(home, 'apps/azahar/Azahar.AppImage')],
-    ['3Beans binary', path.join(home, 'apps/3beans/3Beans')],
-    ['3DS ROM folder', path.join(home, 'roms/3ds')],
+    ['Low-level 3DS lab binary', path.join(home, 'apps/lowlevel-3ds/emulator')],
+    ['3DS content folder', path.join(home, 'roms/3ds')],
+    ['Local system-file folder', path.join(home, 'bios/3ds/local-system-files')],
     ['PrismDS bin folder', path.join(home, 'bin')]
   ];
   for (const [label, target] of checks) {
@@ -165,18 +160,18 @@ async function doctor() {
   console.log(`adb: ${(await commandExists('adb')) ? 'found' : 'missing'}`);
   console.log(`emulationstation: ${(await commandExists('emulationstation')) ? 'found' : 'missing'}`);
 
-  const dumpRoot = path.join(home, 'bios/3ds/3beans');
-  for (const [file, minBytes] of EXPECTED_DUMPS) {
-    const size = await fileSize(path.join(dumpRoot, file));
-    const status = size >= minBytes ? 'ok' : size > 0 ? 'too small' : 'missing';
-    console.log(`${file}: ${status} (${size} bytes)`);
+  const labRoot = path.join(home, 'bios/3ds/local-system-files');
+  if (await exists(labRoot)) {
+    const entries = await readdir(labRoot);
+    const totalBytes = (await Promise.all(entries.map((entry) => fileSize(path.join(labRoot, entry))))).reduce((sum, size) => sum + size, 0);
+    console.log(`Local lab system files: ${entries.length} file(s), ${totalBytes} bytes`);
   }
 
   const romDir = path.join(home, 'roms/3ds');
   if (await exists(romDir)) {
     const entries = await readdir(romDir);
-    const roms = entries.filter((name) => /\.(3ds|cci|cxi|cia)$/i.test(name));
-    console.log(`3DS content: ${roms.length} file(s)`);
+    const content = entries.filter((name) => /\.(3ds|cci|cxi|cia)$/i.test(name));
+    console.log(`3DS content: ${content.length} file(s)`);
   }
 }
 
