@@ -16,7 +16,6 @@ const REQUIRED_REPO_FILES = [
   'profiles/emulators/lowlevel-3ds.json',
   'configs/prismds.config.json',
   'configs/emulationstation/es_systems_3ds.xml',
-  'configs/systemd/prismds-session.service',
   'configs/desktop/prismds.desktop',
   'scripts/install-prismds.sh',
   'scripts/uninstall-prismds.sh',
