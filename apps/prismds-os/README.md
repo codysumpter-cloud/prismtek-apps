@@ -7,17 +7,17 @@ It is **not** a bootloader replacement and it does **not** flash firmware. It in
 ## Goals
 
 - Make **Azahar** the practical first 3DS path on RGDS.
-- Keep **3Beans** available as a low-level 3DS system-emulation lab target.
+- Keep a generic **low-level 3DS lab** path available for 3DS OS-emulation experiments.
 - Use the RGDS dual-screen form factor intentionally.
 - Keep everything reversible and non-destructive.
-- Avoid shipping copyrighted Nintendo firmware, keys, NAND, games, or BIOS files.
+- Avoid shipping copyrighted firmware, keys, system files, games, or BIOS files.
 
 ## What is functional now
 
 - Installable Linux-side folder layout under `~/.local/share/prismds` by default.
 - RGDS hardware profile and emulator capability metadata.
-- Launch scripts for Azahar and 3Beans.
-- Dump validator for 3Beans-required files.
+- Launch scripts for Azahar and a locally supplied low-level 3DS emulator.
+- Local-file validator for the low-level lab profile.
 - Root-optional performance helper.
 - Android ADB helper for side-loading an Azahar APK you provide.
 - EmulationStation system config for a 3DS collection.
@@ -26,8 +26,8 @@ It is **not** a bootloader replacement and it does **not** flash firmware. It in
 
 ## What this does not do yet
 
-- It does not include Azahar or 3Beans binaries.
-- It does not include ROMs, keys, NAND, firmware, or copyrighted assets.
+- It does not include emulator binaries.
+- It does not include games, firmware, keys, system files, or copyrighted assets.
 - It does not replace the RGDS kernel, bootloader, DTB, or vendor OS image.
 - It does not promise playable 3DS speed on RK3568.
 
@@ -35,7 +35,7 @@ It is **not** a bootloader replacement and it does **not** flash firmware. It in
 
 ```bash
 cd apps/prismds-os
-npm run check
+node tools/prismds.mjs check
 bash scripts/install-prismds.sh
 node tools/prismds.mjs doctor
 ```
@@ -44,23 +44,21 @@ After installing, place emulator binaries here:
 
 ```text
 ~/.local/share/prismds/apps/azahar/Azahar.AppImage
-~/.local/share/prismds/apps/3beans/3Beans
+~/.local/share/prismds/apps/lowlevel-3ds/emulator
 ```
 
-Place 3DS content here:
+Place 3DS content and local lab files here:
 
 ```text
 ~/.local/share/prismds/roms/3ds/
-~/.local/share/prismds/bios/3ds/3beans/boot9.bin
-~/.local/share/prismds/bios/3ds/3beans/boot11.bin
-~/.local/share/prismds/bios/3ds/3beans/nand.bin
+~/.local/share/prismds/bios/3ds/local-system-files/
 ```
 
 Then launch:
 
 ```bash
 ~/.local/share/prismds/bin/prismds-launch-azahar.sh
-~/.local/share/prismds/bin/prismds-launch-3beans.sh
+~/.local/share/prismds/bin/prismds-launch-lowlevel-3ds.sh
 ```
 
 ## Android-side Azahar helper
@@ -77,8 +75,8 @@ The script does not download APKs. You provide the APK from a trusted source.
 
 ```text
 apps/prismds-os/
-  configs/       frontend, systemd, desktop, udev, and PrismDS config templates
-  docs/          RGDS install, architecture, compatibility, legal dump notes
+  configs/       frontend, systemd, desktop, and PrismDS config templates
+  docs/          RGDS install, architecture, compatibility, legal notes
   metadata/      manifest and release notes
   profiles/      RGDS and emulator capability metadata
   scripts/       Linux/Android installer, launchers, validators, perf helper
