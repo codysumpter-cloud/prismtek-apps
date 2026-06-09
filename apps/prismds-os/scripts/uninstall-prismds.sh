@@ -13,13 +13,15 @@ User content is intentionally kept:
 - saves/
 - states/
 - screenshots/
-- bios/
+- data/
 EOF
 
 rm -f "$DESKTOP_FILE"
 rm -f "$PRISMDS_HOME/bin/prismds-launch-azahar.sh"
+rm -f "$PRISMDS_HOME/bin/prismds-launch-lab.sh"
 rm -f "$PRISMDS_HOME/bin/prismds-launch-lowlevel-3ds.sh"
 rm -f "$PRISMDS_HOME/bin/prismds-performance-mode.sh"
+rm -f "$PRISMDS_HOME/bin/prismds-validate-lab-files.sh"
 rm -f "$PRISMDS_HOME/bin/prismds-validate-local-3ds-lab-files.sh"
 rm -f "$PRISMDS_HOME/bin/prismds-session.sh"
 rm -f "$PRISMDS_HOME/configs/prismds.config.json"
