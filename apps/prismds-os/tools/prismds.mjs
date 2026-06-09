@@ -20,8 +20,8 @@ const REQUIRED_REPO_FILES = [
   'scripts/install-prismds.sh',
   'scripts/uninstall-prismds.sh',
   'scripts/launch-azahar.sh',
-  'scripts/launch-lowlevel-3ds.sh',
-  'scripts/validate-local-3ds-lab-files.sh',
+  'scripts/launch-lab.sh',
+  'scripts/validate-lab-files.sh',
   'scripts/performance-mode.sh',
   'scripts/install-azahar-android-adb.sh',
   'docs/RGDS_INSTALL.md',
@@ -31,8 +31,8 @@ const REQUIRED_REPO_FILES = [
 
 const RUNTIME_DIRS = [
   'apps/azahar',
-  'apps/lowlevel-3ds',
-  'bios/3ds/local-system-files',
+  'apps/lab',
+  'bios/lab-files',
   'bin',
   'configs',
   'logs/prismds',
@@ -137,9 +137,9 @@ async function doctor() {
 
   const checks = [
     ['Azahar binary', path.join(home, 'apps/azahar/Azahar.AppImage')],
-    ['Low-level 3DS lab binary', path.join(home, 'apps/lowlevel-3ds/emulator')],
+    ['Lab binary', path.join(home, 'apps/lab/emulator')],
     ['3DS content folder', path.join(home, 'roms/3ds')],
-    ['Local system-file folder', path.join(home, 'bios/3ds/local-system-files')],
+    ['Local lab file folder', path.join(home, 'bios/lab-files')],
     ['PrismDS bin folder', path.join(home, 'bin')]
   ];
   for (const [label, target] of checks) {
@@ -149,11 +149,11 @@ async function doctor() {
   console.log(`adb: ${(await commandExists('adb')) ? 'found' : 'missing'}`);
   console.log(`emulationstation: ${(await commandExists('emulationstation')) ? 'found' : 'missing'}`);
 
-  const labRoot = path.join(home, 'bios/3ds/local-system-files');
+  const labRoot = path.join(home, 'bios/lab-files');
   if (await exists(labRoot)) {
     const entries = await readdir(labRoot);
     const totalBytes = (await Promise.all(entries.map((entry) => fileSize(path.join(labRoot, entry))))).reduce((sum, size) => sum + size, 0);
-    console.log(`Local lab system files: ${entries.length} file(s), ${totalBytes} bytes`);
+    console.log(`Local lab files: ${entries.length} file(s), ${totalBytes} bytes`);
   }
 
   const contentDir = path.join(home, 'roms/3ds');
