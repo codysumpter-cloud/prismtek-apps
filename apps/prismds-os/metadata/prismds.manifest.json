@@ -9,12 +9,12 @@
   "includedBinaries": [],
   "includedCommercialContent": false,
   "primaryEmulator": "Azahar",
-  "labEmulatorProfile": "lowlevel-3ds",
+  "labProfile": "lowlevel-3ds",
   "entrypoints": [
     "tools/prismds.mjs",
     "scripts/install-prismds.sh",
     "scripts/launch-azahar.sh",
-    "scripts/launch-lowlevel-3ds.sh"
+    "scripts/launch-lab.sh"
   ],
   "status": {
     "linuxLayer": "functional",
