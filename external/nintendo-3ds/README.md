@@ -2,7 +2,7 @@
 
 This folder is a local workspace for 3DS-related upstream projects discovered from the 3Beans video/repo chain.
 
-The upstream source is **not vendored** into `prismtek-apps` by default. Use `scripts/bootstrap-3ds-lab.sh` to clone or update the repositories locally when you need them.
+The upstream source is **not vendored** into `prismtek-apps` by default. Keep the upstream repositories as local-only checkouts when you need to inspect or build them.
 
 ## Included upstreams
 
@@ -12,15 +12,25 @@ The upstream source is **not vendored** into `prismtek-apps` by default. Use `sc
 | GodMode9 | `external/nintendo-3ds/GodMode9` | 3DS file browser/dumping tool reference for user-owned consoles. |
 | Luma3DS | `external/nintendo-3ds/Luma3DS` | 3DS custom firmware reference for homebrew/dev workflows. |
 
-## Bootstrap
+## Local checkout commands
 
 From the repo root:
 
 ```bash
-./scripts/bootstrap-3ds-lab.sh
+mkdir -p external/nintendo-3ds
+
+git clone --branch main --single-branch https://github.com/Hydr8gon/3Beans.git external/nintendo-3ds/3Beans
+git clone --branch master --single-branch https://github.com/d0k3/GodMode9.git external/nintendo-3ds/GodMode9
+git clone --branch master --single-branch https://github.com/LumaTeam/Luma3DS.git external/nintendo-3ds/Luma3DS
 ```
 
-The script reads `external/nintendo-3ds/manifest.json` and clones/updates each upstream checkout.
+To update an existing checkout:
+
+```bash
+git -C external/nintendo-3ds/3Beans pull --ff-only
+git -C external/nintendo-3ds/GodMode9 pull --ff-only
+git -C external/nintendo-3ds/Luma3DS pull --ff-only
+```
 
 ## Safety and license boundary
 
