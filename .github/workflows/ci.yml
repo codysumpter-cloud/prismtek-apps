@@ -37,6 +37,8 @@ jobs:
           test -f apps/api/package.json
           test -f apps/bemore-macos/package.json
           test -f apps/bemore-macos/server.ts
+          test -d apps/prismds-os
+          test -f apps/prismds-os/tools/prismds.mjs
           test -f integrations/buddy-chat/package.json
           test -f integrations/buddy-chat/src/server.mjs
           test -f integrations/buddy-chat/scripts/validate.mjs
@@ -46,6 +48,12 @@ jobs:
           test -f packages/agent-protocol/package.json
           test -f packages/workspace-core/package.json
           test -f packages/receipts-core/package.json
+
+      - name: Validate PrismDS layer
+        run: |
+          node apps/prismds-os/tools/prismds.mjs check
+          node apps/prismds-os/tools/prismds.mjs build
+          bash -n apps/prismds-os/scripts/*.sh
 
       - name: Install dependencies
         run: npm ci
