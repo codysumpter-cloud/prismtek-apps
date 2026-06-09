@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=PrismDS
+Comment=RGDS dual-screen 3DS emulation launcher layer
+Exec=%h/.local/share/prismds/bin/prismds-session.sh
+Icon=applications-games
+Terminal=false
+Categories=Game;Emulator;
+StartupNotify=true
