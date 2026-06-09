@@ -1,0 +1,12 @@
+[submodule "external/nintendo-3ds/3Beans"]
+	path = external/nintendo-3ds/3Beans
+	url = https://github.com/Hydr8gon/3Beans.git
+	branch = master
+[submodule "external/nintendo-3ds/GodMode9"]
+	path = external/nintendo-3ds/GodMode9
+	url = https://github.com/d0k3/GodMode9.git
+	branch = master
+[submodule "external/nintendo-3ds/Luma3DS"]
+	path = external/nintendo-3ds/Luma3DS
+	url = https://github.com/LumaTeam/Luma3DS.git
+	branch = master
