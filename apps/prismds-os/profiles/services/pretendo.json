@@ -1,0 +1,16 @@
+{
+  "id": "pretendo",
+  "name": "Pretendo Network",
+  "kind": "community-network-service",
+  "status": "verified-public-project",
+  "officialWebsite": "https://pretendo.network",
+  "source": "https://github.com/PretendoNetwork",
+  "targets": ["3ds", "wii-u", "emulator-support-varies"],
+  "rgdsRole": "document-and-link",
+  "autoInstall": false,
+  "notes": [
+    "Pretendo is an open-source Nintendo Network replacement for 3DS and Wii U.",
+    "Use official setup instructions for supported devices and emulators.",
+    "PrismDS stores links and compatibility notes only; it does not modify network credentials automatically."
+  ]
+}
