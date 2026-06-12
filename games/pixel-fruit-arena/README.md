@@ -45,6 +45,8 @@ powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\validate_
 powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\build.ps1
 ```
 
+`tools/test.mjs` imports the runtime modules and smoke-tests all six fruit attacks, 2-player match creation, combat events, ring-outs, match completion, and release guards. `tools/test.ps1` runs the same runtime smoke test when Node.js is available.
+
 All `tools/*.ps1` scripts resolve paths relative to the script location, so they also work when run from inside `games/pixel-fruit-arena/`.
 
 Manual QA steps live in [`docs/LOCAL_QA_CHECKLIST.md`](docs/LOCAL_QA_CHECKLIST.md).
@@ -96,7 +98,7 @@ python tools/generate_animation_manifest.py assets/reference/onepiece-test/walk 
 python tools/validate_sprites.py assets/characters/prismtek_placeholder_character.json
 ```
 
-Reference assets are development-only. `USE_REFERENCE_TEST_ASSETS=true` is allowed for local testing only, and the runtime flag in `src/systems/runtimeConfig.js` defaults to off (it requires both `localhost` and `?referenceAssets=true`). Release builds force reference assets off by removing `assets/reference` from `dist` and scrubbing every `.gif`.
+Reference assets are development-only. `USE_REFERENCE_TEST_ASSETS=true` is allowed for local testing only, and the runtime flag in `src/systems/runtimeConfig.js` defaults to off (it requires both `localhost` and `?referenceAssets=true`). Release builds force reference assets off by removing `assets/reference` from `dist` and failing if any `.gif` remains in the release artifact.
 
 ## Known Limitations
 
