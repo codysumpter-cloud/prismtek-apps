@@ -1,0 +1,13 @@
+{
+  "id": "sky_ruins",
+  "name": "Sky Ruins Arena",
+  "theme": "original floating ruin arena",
+  "platforms": [
+    { "x": 220, "y": 410, "w": 520, "h": 34 },
+    { "x": 120, "y": 310, "w": 180, "h": 22 },
+    { "x": 660, "y": 310, "w": 180, "h": 22 },
+    { "x": 390, "y": 225, "w": 180, "h": 20 }
+  ],
+  "respawns": [{ "x": 300, "y": 230 }, { "x": 660, "y": 230 }, { "x": 420, "y": 150 }, { "x": 540, "y": 150 }],
+  "ring_out": { "left": -170, "right": 1130, "top": -220, "bottom": 720 }
+}
