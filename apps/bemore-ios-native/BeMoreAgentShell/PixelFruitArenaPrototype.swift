@@ -843,7 +843,6 @@ struct PixelCharacterSprite: View {
         }
         .frame(width: 54 * scale, height: 66 * scale)
         .drawingGroup(opaque: false, colorMode: .nonLinear)
-        .interpolation(.none)
     }
 }
 
@@ -882,7 +881,7 @@ struct EffectView: View {
 
 struct PixelRect: View {
     let color: Color
-    var body: some View { Rectangle().fill(color).interpolation(.none) }
+    var body: some View { Rectangle().fill(color) }
 }
 
 struct PixelArenaButton: View {
