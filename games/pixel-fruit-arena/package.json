@@ -9,7 +9,8 @@
     "validate:assets": "python tools/validate_sprites.py assets/characters/prismtek_placeholder_character.json",
     "build:ps": "powershell -ExecutionPolicy Bypass -File tools/build.ps1",
     "test:ps": "powershell -ExecutionPolicy Bypass -File tools/test.ps1",
-    "validate:assets:ps": "powershell -ExecutionPolicy Bypass -File tools/validate_sprites.ps1 assets/characters/prismtek_placeholder_character.json"
+    "validate:assets:ps": "powershell -ExecutionPolicy Bypass -File tools/validate_sprites.ps1 assets/characters/prismtek_placeholder_character.json",
+    "serve:ps": "powershell -ExecutionPolicy Bypass -File tools/serve.ps1"
   },
   "keywords": [
     "game",

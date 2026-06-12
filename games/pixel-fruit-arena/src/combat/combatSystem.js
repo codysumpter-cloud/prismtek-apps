@@ -12,8 +12,8 @@ export function createFighter({ slot, character, fruitId, fruit, spawn }) {
     vx: 0,
     vy: 0,
     facing: slot % 2 === 0 ? 1 : -1,
-    w: 34,
-    h: 52,
+    w: 38,
+    h: 58,
     stocks: 3,
     damage: 0,
     jumps: 2,
@@ -23,8 +23,12 @@ export function createFighter({ slot, character, fruitId, fruit, spawn }) {
     awakening: 0,
     awakened: 0,
     cooldowns: {},
+    animTime: 0,
+    attackFlash: 0,
+    attackKind: "attack",
     state: "idle",
-    ai: slot > 1
+    spriteKey: character.sprite_key || ["pink", "owlet", "dude", "pink"][slot % 4],
+    ai: Boolean(character.cpu)
   };
 }
 
@@ -36,6 +40,8 @@ export function updateFighter(f, dt, input, stage) {
   f.invulnerable = Math.max(0, f.invulnerable - dt);
   f.hitstun = Math.max(0, f.hitstun - dt);
   f.awakened = Math.max(0, f.awakened - dt);
+  f.attackFlash = Math.max(0, f.attackFlash - dt);
+  f.animTime += dt;
   for (const key of Object.keys(f.cooldowns)) f.cooldowns[key] = Math.max(0, f.cooldowns[key] - dt);
   f.awakening = Math.min(100, f.awakening + dt * 1.8);
 
@@ -66,7 +72,9 @@ export function updateFighter(f, dt, input, stage) {
   f.x += f.vx * dt;
   f.y += f.vy * dt;
   solvePlatforms(f, stage.platforms);
-  f.state = deriveState(f);
+  const nextState = deriveState(f);
+  if (nextState !== f.state) f.animTime = 0;
+  f.state = nextState;
 }
 
 export function applyAttack(attacker, defenders, ability, events) {
@@ -79,7 +87,11 @@ export function applyAttack(attacker, defenders, ability, events) {
   if (ability.kind === "jump" || ability.kind === "uppercut") attacker.vy = -620;
   if (ability.kind === "slam") attacker.vy = 720;
 
-  events.push({ type: "attack", attacker: attacker.id, ability, x: attacker.x, y: attacker.y, facing: attacker.facing, color: attacker.fruit.color });
+  attacker.attackFlash = 0.18;
+  attacker.attackKind = ability.kind === "projectile" || ability.kind === "beam" || ability.kind === "field" ? "special" : "attack";
+  attacker.state = attacker.attackKind;
+  attacker.animTime = 0;
+  events.push({ ttl: 0.22, type: "attack", attacker: attacker.id, ability, x: attacker.x, y: attacker.y + 22, facing: attacker.facing, color: attacker.fruit.color });
   for (const target of defenders) {
     if (target.stocks <= 0 || target.invulnerable > 0) continue;
     const dx = target.x - attacker.x;
@@ -93,7 +105,7 @@ export function applyAttack(attacker, defenders, ability, events) {
       target.awakening = Math.min(100, target.awakening + ability.damage * 1.2);
       attacker.awakening = Math.min(100, attacker.awakening + ability.damage * 1.6);
       gainMastery(attacker.character, attacker.fruitId, 0.35);
-      events.push({ type: "hit", attacker: attacker.id, target: target.id, ability });
+      events.push({ ttl: 0.24, type: "hit", attacker: attacker.id, target: target.id, x: target.x, y: target.y + 24, color: attacker.fruit.color, ability });
     }
   }
 }
@@ -126,7 +138,7 @@ function solvePlatforms(f, platforms) {
 
 function deriveState(f) {
   if (f.hitstun > 0) return "hurt";
-  if (f.awakened > 0) return "special";
+  if (f.attackFlash > 0) return f.attackKind;
   if (!f.grounded && f.vy < 0) return "jump";
   if (!f.grounded) return "fall";
   if (Math.abs(f.vx) > 220) return "run";

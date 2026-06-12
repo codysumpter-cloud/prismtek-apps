@@ -21,6 +21,8 @@ export function createCharacter(overrides = {}) {
     equipped_fruit: overrides.equippedFruit || overrides.equipped_fruit || owned[0] || "flame",
     fruit_mastery: Object.fromEntries(owned.map((fruitId) => [fruitId, 0])),
     cosmetics_unlocked: ["starter"],
-    stats: { wins: 0, ringouts: 0 }
+    stats: { wins: 0, ringouts: 0 },
+    sprite_key: overrides.spriteKey || overrides.sprite_key || "pink",
+    cpu: Boolean(overrides.cpu)
   };
 }

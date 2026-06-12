@@ -30,6 +30,19 @@ assert.equal(characterManifest.sprite_width, 64);
 assert.equal(characterManifest.sprite_height, 64);
 assert.equal(characterManifest.animations.length, 10);
 assert.equal(process.env.USE_REFERENCE_TEST_ASSETS === "true" && process.env.NODE_ENV === "production", false, "reference assets cannot be used in production");
+for (const asset of [
+  "assets/characters/tiny-hero/pink/idle_4.png",
+  "assets/characters/tiny-hero/pink/run_6.png",
+  "assets/characters/tiny-hero/owlet/attack1_4.png",
+  "assets/characters/tiny-hero/dude/hurt_4.png",
+  "assets/stages/four-seasons/four-seasons-tileset.png",
+  "assets/licenses/craftpix-tiny-hero-license.txt",
+  "assets/licenses/rottingpixels-four-seasons.txt"
+]) {
+  assert.ok(existsSync(path.join(root, asset)), `missing runtime asset: ${asset}`);
+}
+const referenceFiles = readdirSync(path.join(root, "assets/reference/onepiece-test")).filter((name) => name !== ".gitkeep");
+assert.equal(referenceFiles.length, 0, "reference test assets must not be committed as runtime files");
 
 const html = await readFile(path.join(root, "index.html"), "utf8");
 assert.match(html, /rel="manifest"/, "index must link a web app manifest");
@@ -118,7 +131,11 @@ function createTestFighter(slot, fruitId, x, y) {
     awakening: 0,
     awakened: 0,
     cooldowns: {},
+    animTime: 0,
+    attackFlash: 0,
+    attackKind: "attack",
     state: "idle",
+    spriteKey: "pink",
     ai: false
   };
 }
