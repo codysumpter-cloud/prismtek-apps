@@ -10,12 +10,15 @@ import "./systems/runtimeConfig.js";
 const canvas = document.querySelector("#game");
 const hud = document.querySelector("#hud");
 const menu = document.querySelector("#menu");
+const gameWrap = document.querySelector("#gameWrap");
+const screenButton = document.querySelector("#screenButton");
+const deviceStatus = document.querySelector("#deviceStatus");
 const renderer = new Renderer(canvas, SKY_RUINS);
 const keyboard = new KeyboardInput();
 const gamepads = new GamepadInput();
 
 const saveKey = "prismtek.pixelFruitArena.profile";
-const stored = JSON.parse(localStorage.getItem(saveKey) || "null");
+const stored = safeLoadProfile();
 const profile = stored || createCharacter({
   name: "Prism Runner",
   appearance: {
@@ -34,6 +37,8 @@ profile.equipped_fruit ||= profile.equippedFruit || profile.owned_fruits[0] || "
 profile.fruit_mastery ||= Object.fromEntries(profile.owned_fruits.map((fruitId) => [fruitId, 0]));
 
 let mode = "menu";
+let deferredInstall = null;
+let serviceWorkerReady = false;
 let match = createMatch({
   stage: SKY_RUINS,
   players: [
@@ -42,6 +47,17 @@ let match = createMatch({
   ],
   fruits: FRUITS
 });
+
+registerPortableRuntime();
+
+function safeLoadProfile() {
+  try {
+    return JSON.parse(localStorage.getItem(saveKey) || "null");
+  } catch {
+    localStorage.removeItem(saveKey);
+    return null;
+  }
+}
 
 function persistProfile() {
   localStorage.setItem(saveKey, JSON.stringify(profile));
@@ -75,6 +91,7 @@ function updateMenu() {
     profile,
     fruits: FRUITS,
     cosmetics: COSMETICS,
+    canInstall: Boolean(deferredInstall),
     onStart: startMatch,
     onEquip: (fruitId) => {
       profile.equipped_fruit = fruitId;
@@ -91,8 +108,56 @@ function updateMenu() {
       profile.appearance[key] = value;
       persistProfile();
     },
-    onMode: openMenu
+    onMode: openMenu,
+    onInstall: promptInstall
   });
+}
+
+function promptInstall() {
+  if (!deferredInstall) return;
+  deferredInstall.prompt();
+  deferredInstall.userChoice.finally(() => {
+    deferredInstall = null;
+    updateMenu();
+  });
+}
+
+function registerPortableRuntime() {
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("./sw.js").then(() => {
+      serviceWorkerReady = true;
+      renderDeviceStatus();
+    }).catch(() => renderDeviceStatus());
+  }
+
+  window.addEventListener("beforeinstallprompt", (event) => {
+    event.preventDefault();
+    deferredInstall = event;
+    updateMenu();
+    renderDeviceStatus();
+  });
+
+  screenButton?.addEventListener("click", () => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen?.();
+    } else {
+      gameWrap?.requestFullscreen?.();
+    }
+  });
+
+  window.addEventListener("gamepadconnected", renderDeviceStatus);
+  window.addEventListener("gamepaddisconnected", renderDeviceStatus);
+  window.addEventListener("resize", renderDeviceStatus);
+  renderDeviceStatus();
+}
+
+function renderDeviceStatus() {
+  if (!deviceStatus) return;
+  const pads = Array.from(navigator.getGamepads?.() || []).filter(Boolean);
+  const installState = deferredInstall ? "Install ready" : "Install via browser menu";
+  const offlineState = serviceWorkerReady ? "Offline cache ready" : "Offline cache pending";
+  const shape = `${Math.round(window.innerWidth)}x${Math.round(window.innerHeight)}`;
+  deviceStatus.textContent = `${pads.length} controller${pads.length === 1 ? "" : "s"} · ${offlineState} · ${installState} · ${shape}`;
 }
 
 let last = performance.now();
@@ -117,6 +182,7 @@ function frame(now) {
 
   renderer.draw(match.snapshot(), mode);
   renderHud(hud, match.snapshot(), FRUITS);
+  renderDeviceStatus();
   requestAnimationFrame(frame);
 }
 
