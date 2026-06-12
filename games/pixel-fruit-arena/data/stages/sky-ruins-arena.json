@@ -1,0 +1,22 @@
+{
+  "id": "sky_ruins_arena",
+  "name": "Sky Ruins Arena",
+  "size": { "width": 960, "height": 540 },
+  "cameraSafeArea": { "x": 0, "y": 0, "width": 960, "height": 540 },
+  "ringOut": { "left": -140, "right": 1100, "top": -220, "bottom": 720 },
+  "spawns": [
+    { "x": 260, "y": 330 },
+    { "x": 700, "y": 330 },
+    { "x": 380, "y": 220 },
+    { "x": 580, "y": 220 }
+  ],
+  "platforms": [
+    { "id": "main", "x": 190, "y": 410, "width": 580, "height": 32 },
+    { "id": "left", "x": 245, "y": 295, "width": 170, "height": 22 },
+    { "id": "right", "x": 545, "y": 295, "width": 170, "height": 22 },
+    { "id": "top", "x": 405, "y": 185, "width": 150, "height": 20 }
+  ],
+  "hazards": [
+    { "id": "wind_rune", "x": 445, "y": 442, "width": 70, "height": 24, "damagePerSecond": 7, "launchY": -7 }
+  ]
+}
