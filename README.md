@@ -2,97 +2,117 @@
 
 ![CI](https://github.com/codysumpter-cloud/prismtek-apps/actions/workflows/ci.yml/badge.svg) ![CodeQL](https://github.com/codysumpter-cloud/prismtek-apps/actions/workflows/codeql.yml/badge.svg)
 
-Canonical product monorepo for **BeMore** and future **Prismtek** apps.
+Prismtek-apps is the runnable software workspace for Prismtek applications and actual programs that need to run somewhere: mobile apps, desktop apps, web apps, games, tools, workers, servers, demos, and shipped product surfaces.
 
-This repository implements the BeMore iOS app — a companion-first product where users adopt, train, and care for AI Buddies. It does **not** own the runtime substrate, policy layer, or public website.
+It is **not** a single SwiftUI repository. SwiftUI is one implementation technology for specific Apple targets.
 
-## What BeMore Is
+It is **not** the KnowledgeVault, the Buddy runtime, or the Buddy governance layer.
 
-A **native iPhone app** with a loop: create Buddy instances from archetypes, customize their appearance with ASCII or pixel art, train their proficiencies through daily interaction, spar locally to test growth, and export/import trade packages. OAuth linking surfaces for GitHub and ChatGPT enable runtime-powered workflows. A macOS dual-target supports operator command execution when paired.
+## Repository model
+
+```text
+repo root = Prismtek runnable software workspace
+```
+
+Target layout:
+
+```text
+apps/
+  mobile/
+  desktop/
+  web/
+  admin/
+
+games/
+services/
+packages/
+tools/
+docs/
+legacy/
+```
+
+Current code has not all been physically moved yet. Migrations are staged so existing builds keep working.
+
+## Current major surfaces
+
+| Surface | Current path | Role |
+| --- | --- | --- |
+| BeMore iOS native | `apps/bemore-ios-native/` | Mobile app |
+| BeMore Agent Platform iOS | `apps/bemoreagent-platform-ios/` | Mobile app with platform/admin behavior |
+| BeMore macOS native | `apps/bemore-macos-native/` | Desktop app |
+| BeMore desktop/web shell | `apps/bemore-macos/` | Desktop-style web app/local shell |
+| BeMore web | `apps/web/` | Browser product surface |
+| PrismDS for RGDS | `apps/prismds-os/` | RGDS launcher/userland product |
+| TamerNet battle sandbox | `apps/tamernet-battle-sandbox/` | Game prototype |
+| BeMore CLI | `apps/bemore-cli/` | Developer CLI |
+| Product API | `apps/api/` | Service |
+| Buddy chat integration | `integrations/buddy-chat/` | Service/integration server |
+| Shared packages | `packages/*` | Reused product/service code |
+
+## Architecture docs
+
+Start here:
+
+- [`docs/architecture/repository-audit.md`](docs/architecture/repository-audit.md)
+- [`docs/architecture/monorepo-target-map.md`](docs/architecture/monorepo-target-map.md)
+- [`docs/architecture/path-ownership.md`](docs/architecture/path-ownership.md)
+
+These documents are the source of truth for staged repo reorganization.
+
+## Repo boundaries
+
+| Repo | Owns |
+| --- | --- |
+| `Prismtek-apps` | Runnable software workspace and shipped/product surfaces. |
+| `KnowledgeVault` | Memory, brain, long-lived notes, graph records, and agent-readable knowledge. |
+| `buddy-agent` | Runtime/operator implementation. |
+| `buddy-brain` | Orchestration, governance, policy, planning, and coordination. |
+| `omni-buddy` | Raspberry Pi/local multimodal Buddy hardware runtime. |
+
+## Migration order
+
+1. Add governance docs and README framing. No product moves.
+2. Move `apps/tamernet-battle-sandbox` to `games/tamernet-battle-sandbox`.
+3. Move `apps/bemore-cli` to `tools/cli/bemore-cli`.
+4. Move `apps/api` to `services/api` and `integrations/buddy-chat` to `services/buddy-chat`.
+5. Decide final ownership for `apps/prismds-os` after packaging review.
+6. Move Apple projects last, one product at a time.
+7. Quarantine root/generated legacy material only after reference scans.
 
 ## Quick start
 
+Install workspace dependencies:
+
 ```bash
 npm install
+```
+
+Run the current default dev command:
+
+```bash
 npm run dev
 ```
 
-For iOS development:
+Run common checks:
+
+```bash
+npm run lint
+npm run build
+```
+
+## Apple development
+
+Apple projects are intentionally left in their current paths until dedicated migration PRs update Xcode, XcodeGen, signing, and CI references.
+
+For the current BeMore iOS native app:
+
 ```bash
 cd apps/bemore-ios-native
 xcodegen generate
 open BeMoreAgent.xcodeproj
 ```
 
-## At a glance
-
-- **Product:** BeMore — AI companion
-- **Target:** iPhone iOS app (with macOS dual-target for operator commands)
-- **Current version:** 0.2 (build 41 in TestFlight)
-- **Architecture:** Native SwiftUI + TCA pattern + sync-over-async relay to runtime
-
-## What this repo owns
-
-- **BeMore iOS app** — SwiftUI-based Buddy management UI
-- **Buddy lifecycle** — creation, equipment, training, care, trade
-- **Appearance studio** — ASCII/PixelLab hybrid customization
-- **OAuth surfaces** — GitHub, ChatGPT account linking (relay-based)
-- **Tamagotchi loop** — daily check-ins, care actions, streaks
-- **Local sparring** — Buddy v. Buddy battles with growth reflection
-- **Trade packages** — export/import with sanitation
-- **Operator command UI** — macOS only; iOS shows "use Mac relay" fallback
-
-## What it does not own
-
-- Execution runtime (lives in BeMore-stack)
-- LLM inference (relayed)
-- Public marketing site (prismtek-site)
-- Council/policy (BeMore-stack)
-
-## Product architecture
-
-```
-┌─────────────────────────────────────────┐
-│           BeMore iOS App               │
-│  ┌─────────┐ ┌──────────┐ ┌─────────┐  │
-│  │  Buddy  │ │ Appearance│ │  OAuth  │  │
-│  │  View   │ │ Studio    │ │ Links   │  │
-│  └────┬────┘ └─────┬─────┘ └────┬────┘  │
-│       └────────────┴────────────┘      │
-│                  │                       │
-│           BuddyInstanceStore            │
-│                  │                       │
-│         ┌──────┴─────┐                 │
-│         ▼            ▼                 │
-│   Tamagotchi    RelayServices         │
-│   Engine        (sync-over-async)     │
-└─────────────────────────────────────────┘
-                    │
-                    ▼
-              BeMore-stack
-         (execution substrate)
-```
-
-## Current features
-
-- **Guided Buddy creation** — archetype selection, appearance mode (ASCII/Pixel), voice config
-- **Daily care loop** — feed, play, train, check-in with streaks
-- **Proficiency training** — 12 skill categories, incremental growth
-- **Local sparring** — Buddy battles with loadout strategy
-- **Trade packages** — sanitized export/import with validation
-- **OAuth account linking** — GitHub (private repo access), ChatGPT (API integration)
-- **Tamagotchi-like care** — energy, attention, mood, daily goals
-- **Operator commands** — macOS dual-target only; security-audited shell execution
-
-## Getting started
-
-### Prerequisites
-
-- Xcode 16.3+
-- iOS 18.3+ target
-- macOS 15.3+ (for dual-target)
-
-### Build the app
+Build example:
 
 ```bash
 cd apps/bemore-ios-native
@@ -100,35 +120,29 @@ xcodegen generate
 xcodebuild -project BeMoreAgent.xcodeproj -scheme BeMoreAgent -sdk iphonesimulator build
 ```
 
-### Useful commands
+## Game prototype development
+
+Current TamerNet sandbox path before PR2 migration:
 
 ```bash
-npm run lint
-npm run build
-npm run dev
+cd apps/tamernet-battle-sandbox
+python3 -m http.server 8080
 ```
 
-## Structure
+After PR2, this should become:
 
-```
-apps/
-  bemore-ios-native/    SwiftUI app, Xcode project
-  api/                  Product-facing backend
-  web/                  React web surface
-
-packages/
-  agent-protocol/       Runtime communication contracts
-  core/                 Shared types
-  app-factory/          App scaffolding
-
-Docs in docs/ORGANIZATION.md
+```bash
+cd games/tamernet-battle-sandbox
+python3 -m http.server 8080
 ```
 
-## Runtime boundary
+## Safety rules
 
-- **Product (this repo)** renders UI, manages Buddy state, handles OAuth flows
-- **BeMore-stack** owns execution, skills, council decisions, Codex runs
-- **Relay** sync-over-async bridge between them
+- Do not bulk-move Xcode projects.
+- Do not treat SwiftUI as the repository default.
+- Do not bury games, services, or web apps under Apple assumptions.
+- Do not extract shared packages until reuse is proven.
+- Do not delete or quarantine root artifacts until reference scans prove they are unused.
 
 ## License
 
