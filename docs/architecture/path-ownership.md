@@ -52,13 +52,12 @@ Rules:
 
 ### Games
 
-`apps/tamernet-battle-sandbox` is the first safe physical move candidate because it is a browser-playable game prototype and is currently misclassified under `apps/`.
+`games/tamernet-battle-sandbox` is the first staged physical move because it is a browser-playable game prototype and was previously misclassified under `apps/`.
 
-Move target:
+Current path:
 
 ```text
-apps/tamernet-battle-sandbox/
-→ games/tamernet-battle-sandbox/
+games/tamernet-battle-sandbox/
 ```
 
 Validation:
