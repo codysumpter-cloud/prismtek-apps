@@ -2,9 +2,34 @@
 
 Pixel Fruit Arena is a Prismtek platform-fighting MVP. Players create an original fighter, equip modular fruit powers, and battle locally with stocks, knockback, ring-outs, and awakening meters.
 
-## Run
+## Quick Start
 
-Open `index.html` in a browser, or serve the folder with any static server.
+The game is plain HTML/JS/CSS with no install step. Because it uses ES modules, most browsers (Chrome/Edge) block it over `file://`, so serve it over HTTP.
+
+**Option A - open the HTML directly (limited browser support).** Double-click `index.html`. Firefox may load it; Chrome and Edge block ES modules from `file://` and show a blank page. If you see a blank page, use Option B or C.
+
+**Option B - any static server.** From `games/pixel-fruit-arena/`:
+
+```bash
+npx serve -l 4173 .        # Node
+python -m http.server 4173 # Python
+```
+
+**Option C - PowerShell only (no Node/Python needed).** From the repo root:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\serve.ps1
+```
+
+Then open:
+
+```text
+http://localhost:4173
+```
+
+Add `-Port 4174` if 4173 is busy, or `-Dist` to serve the release build from `dist/` after running `tools/build.ps1`. Stop with Ctrl+C.
+
+## Validate
 
 ```bash
 npm test
@@ -12,21 +37,29 @@ npm run build
 python tools/validate_sprites.py assets/characters/prismtek_placeholder_character.json
 ```
 
-Windows fallback when Node or Python are not on PATH:
+Windows fallback when Node or Python are not on PATH (run from the repo root):
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File games/pixel-fruit-arena/tools/test.ps1
-powershell -ExecutionPolicy Bypass -File games/pixel-fruit-arena/tools/validate_sprites.ps1 games/pixel-fruit-arena/assets/characters/prismtek_placeholder_character.json
-powershell -ExecutionPolicy Bypass -File games/pixel-fruit-arena/tools/build.ps1
+powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\test.ps1
+powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\validate_sprites.ps1 games\pixel-fruit-arena\assets\characters\prismtek_placeholder_character.json
+powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\build.ps1
 ```
 
+All `tools/*.ps1` scripts resolve paths relative to the script location, so they also work when run from inside `games/pixel-fruit-arena/`.
+
+Manual QA steps live in [`docs/LOCAL_QA_CHECKLIST.md`](docs/LOCAL_QA_CHECKLIST.md).
+
 ## Controls
+
+Press the **Controls** button in the main menu (or pause with Esc) for the full in-game table.
 
 P1 keyboard: arrows to move and jump, `/` attack, `.` special 1, `,` special 2, right Shift dodge, Enter awaken.
 
 P2 keyboard: WASD to move and jump, F/G/H abilities, left Shift dodge, T awaken.
 
 Controllers: left stick move, face buttons jump and abilities, shoulder dodge and awaken, start menu.
+
+Debug overlay: press `` ` `` (backtick) or F3 to toggle FPS, player/fruit state, build mode, and the reference-asset flag.
 
 ## Character Creator
 
@@ -65,7 +98,16 @@ python tools/generate_animation_manifest.py assets/reference/onepiece-test/walk 
 python tools/validate_sprites.py assets/characters/prismtek_placeholder_character.json
 ```
 
-Reference assets are development-only. `USE_REFERENCE_TEST_ASSETS=true` is allowed for local testing only. Release builds force reference assets off by removing `assets/reference` from `dist`.
+Reference assets are development-only. `USE_REFERENCE_TEST_ASSETS=true` is allowed for local testing only, and the runtime flag in `src/systems/runtimeConfig.js` defaults to off (it requires both `localhost` and `?referenceAssets=true`). Release builds force reference assets off by removing `assets/reference` from `dist` and scrubbing every `.gif`.
+
+## Known Limitations
+
+- Multiplayer is local-only; there is no online multiplayer yet.
+- All art is original placeholder pixel art, not final production art.
+- Controller support depends on the browser's Gamepad API; button numbering may vary by pad and browser.
+- Reference assets (`assets/reference/`) are dev-only, git-ignored, and excluded from release builds.
+- Combat balance is a first pass and intentionally rough.
+- CPU opponents (players 3-4 without controllers) use very simple placeholder behavior.
 
 ## Adding Fruits
 
