@@ -39,7 +39,8 @@ try {
       $resolvedTarget = (Resolve-Path -LiteralPath $targetPath).Path
     }
 
-    if ($null -eq $resolvedTarget -or -not $resolvedTarget.StartsWith($resolvedRoot, [System.StringComparison]::OrdinalIgnoreCase)) {
+    $resolvedRootPrefix = $resolvedRoot.TrimEnd([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar) + [System.IO.Path]::DirectorySeparatorChar
+    if ($null -eq $resolvedTarget -or -not $resolvedTarget.StartsWith($resolvedRootPrefix, [System.StringComparison]::OrdinalIgnoreCase)) {
       $context.Response.StatusCode = 404
       $bytes = [System.Text.Encoding]::UTF8.GetBytes("Not found")
       $context.Response.OutputStream.Write($bytes, 0, $bytes.Length)

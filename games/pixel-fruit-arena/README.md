@@ -27,6 +27,8 @@ http://localhost:4173
 
 Add `-Port 4174` if 4173 is busy, or `-Dist` to serve the release build from `dist/` after running `tools/build.ps1`.
 
+Use `Fight CPU` from the main menu for the fastest playable match. Local 2P, 3P, and 4P setup remains available from the same menu.
+
 ## Validate
 
 ```bash
@@ -83,6 +85,8 @@ Combat uses stock count, damage-scaled knockback, hit stun, double jumps, dodges
 Match setup supports 2, 3, or 4 players. Local keyboard and controller input share the same action model so online play can later feed the same input stream.
 
 ## Asset Pipeline
+
+Playable runtime art is loaded from locally available free pixel-art packs with credit/license notes under `assets/licenses`. The shipped runtime does not use the One Piece reference GIFs.
 
 Reference GIF tooling lives in `tools/`:
 

@@ -16,6 +16,22 @@ if ($character.sprite_width -ne 64 -or $character.sprite_height -ne 64) { throw 
 if (@($character.animations).Count -ne 10) { throw "character must define ten animations" }
 if ($env:USE_REFERENCE_TEST_ASSETS -eq "true" -and $env:NODE_ENV -eq "production") { throw "reference assets cannot be used in production" }
 
+$requiredAssets = @(
+  "assets/characters/tiny-hero/pink/idle_4.png",
+  "assets/characters/tiny-hero/pink/run_6.png",
+  "assets/characters/tiny-hero/owlet/attack1_4.png",
+  "assets/characters/tiny-hero/dude/hurt_4.png",
+  "assets/stages/four-seasons/four-seasons-tileset.png",
+  "assets/licenses/craftpix-tiny-hero-license.txt",
+  "assets/licenses/rottingpixels-four-seasons.txt"
+)
+foreach ($asset in $requiredAssets) {
+  if (-not (Test-Path -LiteralPath (Join-Path $ProjectRoot $asset))) { throw "missing runtime asset: $asset" }
+}
+
+$referenceLeak = Get-ChildItem -LiteralPath (Join-Path $ProjectRoot "assets/reference/onepiece-test") -File -ErrorAction SilentlyContinue | Where-Object { $_.Name -ne ".gitkeep" }
+if ($referenceLeak) { throw "reference test assets must not be committed as runtime files" }
+
 $nodeCommand = Get-Command node -ErrorAction SilentlyContinue
 if ($nodeCommand) {
   Push-Location $ProjectRoot

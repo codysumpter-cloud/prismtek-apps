@@ -21,6 +21,7 @@ const saveKey = "prismtek.pixelFruitArena.profile";
 const stored = safeLoadProfile();
 const profile = stored || createCharacter({
   name: "Prism Runner",
+  spriteKey: "pink",
   appearance: {
     hairStyle: "crest",
     hairColor: "#5ee7ff",
@@ -35,15 +36,17 @@ const profile = stored || createCharacter({
 profile.owned_fruits ||= Object.keys(FRUITS);
 profile.equipped_fruit ||= profile.equippedFruit || profile.owned_fruits[0] || "flame";
 profile.fruit_mastery ||= Object.fromEntries(profile.owned_fruits.map((fruitId) => [fruitId, 0]));
+profile.sprite_key ||= "pink";
 
 let mode = "menu";
+let lastWinnerName = "";
 let deferredInstall = null;
 let serviceWorkerReady = false;
 let match = createMatch({
   stage: SKY_RUINS,
   players: [
     { slot: 0, character: profile, fruitId: profile.equipped_fruit },
-    { slot: 1, character: createCharacter({ name: "Volt Guest", ownedFruits: Object.keys(FRUITS), equippedFruit: "volt" }), fruitId: "volt" }
+    { slot: 1, character: createCharacter({ name: "Volt CPU", spriteKey: "owlet", ownedFruits: Object.keys(FRUITS), equippedFruit: "volt", cpu: true }), fruitId: "volt" }
   ],
   fruits: FRUITS
 });
@@ -63,15 +66,19 @@ function persistProfile() {
   localStorage.setItem(saveKey, JSON.stringify(profile));
 }
 
-function startMatch(playerCount = 2) {
+function startMatch(playerCount = 2, options = {}) {
   const fruitIds = Object.keys(FRUITS);
+  const spriteKeys = ["pink", "owlet", "dude", "pink"];
   const players = Array.from({ length: playerCount }, (_, index) => ({
     slot: index,
     character: index === 0 ? profile : createCharacter({
       name: `P${index + 1} Guest`,
+      ...(options.cpuGuests ? { name: `${FRUITS[fruitIds[index % fruitIds.length]].name.replace(" Fruit", "")} CPU` } : {}),
+      spriteKey: spriteKeys[index % spriteKeys.length],
       appearance: COSMETICS.presets[index % COSMETICS.presets.length],
       ownedFruits: fruitIds,
-      equippedFruit: fruitIds[index % fruitIds.length]
+      equippedFruit: fruitIds[index % fruitIds.length],
+      cpu: Boolean(options.cpuGuests)
     }),
     fruitId: index === 0 ? profile.equipped_fruit : fruitIds[index % fruitIds.length]
   }));
@@ -89,6 +96,7 @@ function updateMenu() {
   renderMenu(menu, {
     mode,
     profile,
+    winnerName: lastWinnerName,
     fruits: FRUITS,
     cosmetics: COSMETICS,
     canInstall: Boolean(deferredInstall),
@@ -174,6 +182,7 @@ function frame(now) {
   if (mode === "fight") {
     match.update(dt, actions);
     if (match.isComplete()) {
+      lastWinnerName = match.winner()?.character.name || "No one";
       mode = "results";
       menu.hidden = false;
       updateMenu();

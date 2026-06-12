@@ -26,10 +26,14 @@ export class KeyboardInput {
     this.down = new Set();
     this.queue = [];
     window.addEventListener("keydown", (event) => {
+      if (keyMap[event.code] || taps[event.code]) event.preventDefault();
       if (!this.down.has(event.code) && taps[event.code]) this.queue.push(taps[event.code]);
       this.down.add(event.code);
     });
-    window.addEventListener("keyup", (event) => this.down.delete(event.code));
+    window.addEventListener("keyup", (event) => {
+      if (keyMap[event.code] || taps[event.code]) event.preventDefault();
+      this.down.delete(event.code);
+    });
   }
 
   read() {
