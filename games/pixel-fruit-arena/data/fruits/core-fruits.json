@@ -1,0 +1,74 @@
+[
+  {
+    "id": "flame",
+    "name": "Flame Fruit",
+    "color": "#ff6b2b",
+    "awakening": "Inferno Mode",
+    "mastery": 0,
+    "abilities": [
+      { "id": "fireball", "name": "Fireball", "type": "projectile", "damage": 9, "knockback": 15, "cooldown": 0.35 },
+      { "id": "flame_dash", "name": "Flame Dash", "type": "dash", "damage": 8, "knockback": 18, "cooldown": 0.55 },
+      { "id": "burning_uppercut", "name": "Burning Uppercut", "type": "uppercut", "damage": 14, "knockback": 24, "cooldown": 0.8 }
+    ]
+  },
+  {
+    "id": "frost",
+    "name": "Frost Fruit",
+    "color": "#68e8ff",
+    "awakening": "Frozen Domain",
+    "mastery": 0,
+    "abilities": [
+      { "id": "ice_spike", "name": "Ice Spike", "type": "projectile", "damage": 8, "knockback": 14, "cooldown": 0.35, "status": "freeze" },
+      { "id": "freeze_field", "name": "Freeze Field", "type": "field", "damage": 4, "knockback": 5, "cooldown": 0.75, "status": "freeze" },
+      { "id": "ice_slide", "name": "Ice Slide", "type": "dash", "damage": 7, "knockback": 16, "cooldown": 0.55 }
+    ]
+  },
+  {
+    "id": "volt",
+    "name": "Volt Fruit",
+    "color": "#ffe34d",
+    "awakening": "Thunderstorm",
+    "mastery": 0,
+    "abilities": [
+      { "id": "lightning_bolt", "name": "Lightning Bolt", "type": "beam", "damage": 10, "knockback": 18, "cooldown": 0.35 },
+      { "id": "blink_dash", "name": "Blink Dash", "type": "blink", "damage": 7, "knockback": 15, "cooldown": 0.55 },
+      { "id": "chain_shock", "name": "Chain Shock", "type": "burst", "damage": 12, "knockback": 20, "cooldown": 0.85 }
+    ]
+  },
+  {
+    "id": "shadow",
+    "name": "Shadow Fruit",
+    "color": "#7c4dff",
+    "awakening": "Abyss Form",
+    "mastery": 0,
+    "abilities": [
+      { "id": "pull_field", "name": "Pull Field", "type": "pull", "damage": 2, "knockback": -8, "cooldown": 0.65 },
+      { "id": "shadow_burst", "name": "Shadow Burst", "type": "burst", "damage": 12, "knockback": 20, "cooldown": 0.55 },
+      { "id": "null_zone", "name": "Null Zone", "type": "null", "damage": 3, "knockback": 2, "cooldown": 0.9 }
+    ]
+  },
+  {
+    "id": "rubber",
+    "name": "Rubber Fruit",
+    "color": "#ff72c7",
+    "awakening": "Freedom Form",
+    "mastery": 0,
+    "abilities": [
+      { "id": "stretch_punch", "name": "Stretch Punch", "type": "reach", "damage": 9, "knockback": 17, "cooldown": 0.35 },
+      { "id": "bounce_jump", "name": "Bounce Jump", "type": "jump", "damage": 5, "knockback": 12, "cooldown": 0.55 },
+      { "id": "giant_fist", "name": "Giant Fist", "type": "heavy", "damage": 16, "knockback": 29, "cooldown": 0.95 }
+    ]
+  },
+  {
+    "id": "gravity",
+    "name": "Gravity Fruit",
+    "color": "#4f67ff",
+    "awakening": "Singularity Mode",
+    "mastery": 0,
+    "abilities": [
+      { "id": "pull", "name": "Pull", "type": "pull", "damage": 2, "knockback": -9, "cooldown": 0.55 },
+      { "id": "slam", "name": "Slam", "type": "slam", "damage": 12, "knockback": 25, "cooldown": 0.75 },
+      { "id": "float_strike", "name": "Float Strike", "type": "floatHeavy", "damage": 15, "knockback": 23, "cooldown": 0.9 }
+    ]
+  }
+]
