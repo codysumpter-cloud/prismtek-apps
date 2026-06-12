@@ -14,4 +14,9 @@ if (Test-Path -LiteralPath $referencePath) {
 if (Test-Path -LiteralPath $referencePath) {
   throw "Reference assets leaked into release build"
 }
-Write-Output "Build complete. USE_REFERENCE_TEST_ASSETS forced false for release artifacts."
+$gifLeaks = @(Get-ChildItem -LiteralPath $dist -Recurse -File -Filter "*.gif" -ErrorAction SilentlyContinue)
+if ($gifLeaks.Count -gt 0) {
+  $paths = $gifLeaks | ForEach-Object { $_.FullName.Substring($dist.Path.Length + 1) }
+  throw "GIF assets leaked into release build:`n$($paths -join "`n")"
+}
+Write-Output "Build complete. Reference assets and GIF files excluded from release artifacts."
