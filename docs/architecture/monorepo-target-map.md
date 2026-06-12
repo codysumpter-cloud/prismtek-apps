@@ -90,7 +90,7 @@ Do not place mobile apps here just because they contain admin screens. A product
 
 Playable games, game prototypes, battle sandboxes, simulation surfaces, and game runtimes.
 
-Planned homes:
+Current and planned homes:
 
 ```text
 games/tamernet-battle-sandbox/
@@ -189,7 +189,7 @@ legacy/quarantined-generated/
 ## Migration order
 
 1. Governance docs and README only.
-2. Move `apps/tamernet-battle-sandbox` to `games/tamernet-battle-sandbox`.
+2. Move `games/tamernet-battle-sandbox` into the games workspace.
 3. Move `apps/bemore-cli` to `tools/cli/bemore-cli`.
 4. Move `apps/api` to `services/api` and `integrations/buddy-chat` to `services/buddy-chat`.
 5. Decide and move `apps/prismds-os` only after packaging ownership is clear.
