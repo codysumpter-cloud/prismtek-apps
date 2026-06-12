@@ -2,17 +2,21 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="color-scheme" content="dark">
+    <meta name="theme-color" content="#16243a">
     <title>Pixel Fruit Arena</title>
+    <link rel="manifest" href="./app.webmanifest">
     <link rel="stylesheet" href="./src/ui/styles.css">
   </head>
   <body>
     <main id="app" class="app-shell">
-      <section class="game-wrap" aria-label="Pixel Fruit Arena">
+      <section id="gameWrap" class="game-wrap" aria-label="Pixel Fruit Arena">
         <canvas id="game" width="960" height="540"></canvas>
         <div id="hud" class="hud"></div>
         <div id="menu" class="menu-panel"></div>
+        <div id="deviceStatus" class="device-status" aria-live="polite"></div>
+        <button id="screenButton" class="fullscreen-button" type="button">Screen</button>
       </section>
     </main>
     <script type="module" src="./src/main.js"></script>
