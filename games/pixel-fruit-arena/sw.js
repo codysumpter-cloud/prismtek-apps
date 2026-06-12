@@ -1,13 +1,15 @@
-const CACHE_NAME = "pixel-fruit-arena-v1";
+const CACHE_NAME = "pixel-fruit-arena-v2-playable";
 const ASSETS = [
   "./",
   "./index.html",
   "./src/main.js",
+  "./src/assets/assetManifest.js",
   "./src/fruits/fruits.js",
   "./src/stages/skyRuins.js",
   "./src/characters/characterCreator.js",
   "./src/systems/matchSystem.js",
   "./src/systems/runtimeConfig.js",
+  "./src/combat/combatStyles.js",
   "./src/combat/combatSystem.js",
   "./src/multiplayer/input.js",
   "./src/ui/dom.js",
@@ -31,5 +33,13 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
-  event.respondWith(caches.match(event.request).then((cached) => cached || fetch(event.request)));
+  event.respondWith(
+    fetch(event.request).then((response) => {
+      if (response.ok) {
+        const copy = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+      }
+      return response;
+    }).catch(() => caches.match(event.request))
+  );
 });

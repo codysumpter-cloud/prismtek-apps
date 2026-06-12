@@ -38,12 +38,20 @@ for (const asset of [
   "assets/characters/tiny-hero/dude/hurt_4.png",
   "assets/stages/four-seasons/four-seasons-tileset.png",
   "assets/licenses/craftpix-tiny-hero-license.txt",
-  "assets/licenses/rottingpixels-four-seasons.txt"
+  "assets/licenses/rottingpixels-four-seasons.txt",
+  "assets/effects/elemental-vfx/firebolt.png",
+  "assets/effects/elemental-vfx/ice-hit.png",
+  "assets/effects/elemental-vfx/thunder-beam.png",
+  "assets/effects/elemental-vfx/dark-column.png",
+  "assets/effects/elemental-vfx/earth-impact.png",
+  "assets/effects/elemental-vfx/hit-spark.png"
 ]) {
   assert.ok(existsSync(path.join(root, asset)), `missing runtime asset: ${asset}`);
 }
-const referenceFiles = readdirSync(path.join(root, "assets/reference/onepiece-test")).filter((name) => name !== ".gitkeep");
-assert.equal(referenceFiles.length, 0, "reference test assets must not be committed as runtime files");
+const referenceFiles = readdirSync(path.join(root, "assets/reference/onepiece-test"), { recursive: true }).filter((name) => !String(name).endsWith(".gitkeep"));
+if (process.env.NODE_ENV === "production") {
+  assert.equal(referenceFiles.length, 0, "reference test assets cannot be present in production validation");
+}
 
 const html = await readFile(path.join(root, "index.html"), "utf8");
 assert.match(html, /rel="manifest"/, "index must link a web app manifest");

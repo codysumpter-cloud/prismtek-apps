@@ -11,7 +11,8 @@
     "build:ps": "powershell -ExecutionPolicy Bypass -File tools/build.ps1",
     "test:ps": "powershell -ExecutionPolicy Bypass -File tools/test.ps1",
     "validate:assets:ps": "powershell -ExecutionPolicy Bypass -File tools/validate_sprites.ps1 assets/characters/prismtek_placeholder_character.json",
-    "serve:ps": "powershell -ExecutionPolicy Bypass -File tools/serve.ps1"
+    "serve:ps": "powershell -ExecutionPolicy Bypass -File tools/serve.ps1",
+    "install:reference:ps": "powershell -ExecutionPolicy Bypass -File tools/install_local_onepiece_reference_assets.ps1"
   },
   "keywords": [
     "game",
