@@ -2,15 +2,20 @@
   "name": "@prismtek/pixel-fruit-arena",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
+  "description": "Pixel Fruit Arena MVP - local multiplayer platform fighting prototype.",
   "scripts": {
-    "dev": "vite --host 0.0.0.0",
     "build": "node tools/build.mjs",
-    "lint": "node tools/lint.mjs",
-    "test": "node tests/smoke.mjs",
-    "validate": "python3 tools/validate_sprites.py && node tests/smoke.mjs"
+    "test": "node tools/test.mjs",
+    "validate:assets": "python tools/validate_sprites.py assets/characters/prismtek_placeholder_character.json",
+    "build:ps": "powershell -ExecutionPolicy Bypass -File tools/build.ps1",
+    "test:ps": "powershell -ExecutionPolicy Bypass -File tools/test.ps1",
+    "validate:assets:ps": "powershell -ExecutionPolicy Bypass -File tools/validate_sprites.ps1 assets/characters/prismtek_placeholder_character.json"
   },
-  "devDependencies": {
-    "vite": "^8.0.16"
-  }
+  "keywords": [
+    "game",
+    "platform-fighter",
+    "pixel-art",
+    "prismtek"
+  ],
+  "license": "UNLICENSED"
 }

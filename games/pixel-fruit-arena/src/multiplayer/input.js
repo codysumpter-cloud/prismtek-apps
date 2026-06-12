@@ -1,52 +1,74 @@
-export function createInputManager(target = window) {
-  const state = {};
-  const bindings = {
-    KeyA: [1, 'left'], KeyD: [1, 'right'], KeyW: [1, 'jump'], KeyJ: [1, 'attack'], KeyK: [1, 'special1'], KeyL: [1, 'special2'], Semicolon: [1, 'special3'], ShiftLeft: [1, 'dodge'], KeyI: [1, 'awaken'],
-    ArrowLeft: [2, 'left'], ArrowRight: [2, 'right'], ArrowUp: [2, 'jump'], Numpad1: [2, 'attack'], Numpad2: [2, 'special1'], Numpad3: [2, 'special2'], Numpad4: [2, 'special3'], Numpad0: [2, 'dodge'], Numpad5: [2, 'awaken'],
-  };
+const keyMap = {
+  ArrowLeft: { slot: 0, type: "move", value: -1 },
+  ArrowRight: { slot: 0, type: "move", value: 1 },
+  KeyA: { slot: 1, type: "move", value: -1 },
+  KeyD: { slot: 1, type: "move", value: 1 }
+};
 
-  function set(code, value) {
-    const binding = bindings[code];
-    if (!binding) return;
-    const [slot, action] = binding;
-    state[slot] ??= {};
-    state[slot][action] = value;
+const taps = {
+  ArrowUp: { slot: 0, type: "jump" },
+  Slash: { slot: 0, type: "attack", index: 0 },
+  Period: { slot: 0, type: "attack", index: 1 },
+  Comma: { slot: 0, type: "attack", index: 2 },
+  ShiftRight: { slot: 0, type: "dodge" },
+  Enter: { slot: 0, type: "awaken" },
+  KeyW: { slot: 1, type: "jump" },
+  KeyF: { slot: 1, type: "attack", index: 0 },
+  KeyG: { slot: 1, type: "attack", index: 1 },
+  KeyH: { slot: 1, type: "attack", index: 2 },
+  ShiftLeft: { slot: 1, type: "dodge" },
+  KeyT: { slot: 1, type: "awaken" },
+  Escape: { slot: 0, type: "menu" }
+};
+
+export class KeyboardInput {
+  constructor() {
+    this.down = new Set();
+    this.queue = [];
+    window.addEventListener("keydown", (event) => {
+      if (!this.down.has(event.code) && taps[event.code]) this.queue.push(taps[event.code]);
+      this.down.add(event.code);
+    });
+    window.addEventListener("keyup", (event) => this.down.delete(event.code));
   }
 
-  target.addEventListener('keydown', (event) => set(event.code, true));
-  target.addEventListener('keyup', (event) => set(event.code, false));
-
-  return {
-    state,
-    press(slot, action) {
-      state[slot] ??= {};
-      state[slot][action] = true;
-    },
-    release(slot, action) {
-      state[slot] ??= {};
-      state[slot][action] = false;
-    },
-    snapshot() {
-      return JSON.parse(JSON.stringify(state));
-    },
-  };
+  read() {
+    const actions = [...this.queue];
+    this.queue.length = 0;
+    for (const [code, action] of Object.entries(keyMap)) {
+      if (this.down.has(code)) actions.push(action);
+    }
+    return actions;
+  }
 }
 
-export function pollGamepads(input) {
-  const pads = navigator.getGamepads?.() ?? [];
-  for (let index = 0; index < Math.min(4, pads.length); index += 1) {
-    const pad = pads[index];
-    if (!pad) continue;
-    const slot = index + 1;
-    input.state[slot] ??= {};
-    input.state[slot].left = pad.axes[0] < -0.35;
-    input.state[slot].right = pad.axes[0] > 0.35;
-    input.state[slot].jump = pad.buttons[0]?.pressed;
-    input.state[slot].attack = pad.buttons[2]?.pressed;
-    input.state[slot].special1 = pad.buttons[1]?.pressed;
-    input.state[slot].special2 = pad.buttons[3]?.pressed;
-    input.state[slot].special3 = pad.buttons[5]?.pressed;
-    input.state[slot].dodge = pad.buttons[4]?.pressed;
-    input.state[slot].awaken = pad.buttons[7]?.pressed;
+export class GamepadInput {
+  constructor() {
+    this.prev = new Map();
+  }
+
+  read() {
+    const actions = [];
+    for (const pad of navigator.getGamepads?.() || []) {
+      if (!pad) continue;
+      const slot = Math.min(3, pad.index);
+      const axis = Math.abs(pad.axes[0]) > 0.25 ? Math.sign(pad.axes[0]) : 0;
+      if (axis) actions.push({ slot, type: "move", value: axis });
+      this.edge(pad, 0, () => actions.push({ slot, type: "jump" }));
+      this.edge(pad, 1, () => actions.push({ slot, type: "attack", index: 0 }));
+      this.edge(pad, 2, () => actions.push({ slot, type: "attack", index: 1 }));
+      this.edge(pad, 3, () => actions.push({ slot, type: "attack", index: 2 }));
+      this.edge(pad, 4, () => actions.push({ slot, type: "dodge" }));
+      this.edge(pad, 5, () => actions.push({ slot, type: "awaken" }));
+      this.edge(pad, 9, () => actions.push({ slot, type: "menu" }));
+    }
+    return actions;
+  }
+
+  edge(pad, button, fn) {
+    const key = `${pad.index}:${button}`;
+    const pressed = Boolean(pad.buttons[button]?.pressed);
+    if (pressed && !this.prev.get(key)) fn();
+    this.prev.set(key, pressed);
   }
 }

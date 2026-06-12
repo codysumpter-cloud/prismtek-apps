@@ -7,7 +7,6 @@ enum AppTab: String, Codable, CaseIterable, Hashable, Identifiable {
     case missionControl
     case editor
     case buddy
-    case arena
     case files
     case artifacts
     case pairing
@@ -41,7 +40,6 @@ enum AppTab: String, Codable, CaseIterable, Hashable, Identifiable {
         case .missionControl: return "Home"
         case .editor: return "Studio"
         case .buddy: return "Buddy"
-        case .arena: return "Arena"
         case .files: return "Workspace"
         case .artifacts: return "Results"
         case .pairing: return "Mac"
@@ -58,7 +56,6 @@ enum AppTab: String, Codable, CaseIterable, Hashable, Identifiable {
         case .missionControl: return "heart.text.square.fill"
         case .editor: return "paintpalette.fill"
         case .buddy: return "person.crop.circle.badge.checkmark"
-        case .arena: return "gamecontroller.fill"
         case .files: return "folder.fill"
         case .artifacts: return "checklist.checked"
         case .pairing: return "macbook.and.iphone"
@@ -87,7 +84,7 @@ struct ShellPreferences: Codable, Hashable {
     var selectedTab: AppTab
 
     static let `default` = ShellPreferences(
-        orderedTabs: [.missionControl, .buddy, .arena, .chat, .agent, .editor, .models, .artifacts, .files, .settings, .pairing, .pricing],
+        orderedTabs: [.missionControl, .buddy, .chat, .agent, .editor, .models, .artifacts, .files, .settings, .pairing, .pricing],
         hiddenTabs: [.pairing, .pricing],
         selectedTab: .missionControl
     )
@@ -103,7 +100,7 @@ struct ShellPreferences: Codable, Hashable {
         }
         
         var hidden = hiddenTabs.filter { ($0.allowsHiding || $0.isInternalDraft) && AppTab.allCases.contains($0) }
-        hidden.subtract([.buddy, .arena, .chat, .agent, .editor, .models, .artifacts, .files, .settings])
+        hidden.subtract([.buddy, .chat, .agent, .editor, .models, .artifacts, .files, .settings])
         if order.filter({ !hidden.contains($0) }).isEmpty {
             hidden.removeAll()
         }

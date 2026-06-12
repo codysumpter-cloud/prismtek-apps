@@ -72,7 +72,6 @@ struct DesktopShellView: View {
                 Section("Start Here") {
                     shellRow(.missionControl, subtitle: "Buddy-first home and next steps")
                     shellRow(.buddy, subtitle: "Your active Buddy, roster, and training")
-                    shellRow(.arena, subtitle: "Pixel fruit arena prototype")
                     shellRow(.chat, subtitle: "Talk to your Buddy with a safe way back home")
                 }
 
@@ -131,8 +130,6 @@ private func shellDestination(for tab: AppTab, appState: AppState) -> some View 
         ChatView(store: appState.buddyStore)
     case .agent:
         BuddyAgentBrowserView()
-    case .arena:
-        PixelFruitArenaRootView()
     case .artifacts:
         ArtifactsView()
     case .buddy:

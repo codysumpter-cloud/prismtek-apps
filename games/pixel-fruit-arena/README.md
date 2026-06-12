@@ -1,190 +1,80 @@
 # Pixel Fruit Arena
 
-Original Prismtek pixel-art platform fighting MVP.
-
-Players create a custom 64x64-style pixel brawler, equip one modular Mystic Fruit, and fight in local multiplayer on an original arena stage. Character identity, fruit equipment, progression, combat, input, stages, and UI are intentionally separated so the game can grow into controller-friendly handheld/Steam Deck play and future online modes.
+Pixel Fruit Arena is a Prismtek platform-fighting MVP. Players create an original fighter, equip modular fruit powers, and battle locally with stocks, knockback, ring-outs, and awakening meters.
 
 ## Run
 
+Open `index.html` in a browser, or serve the folder with any static server.
+
 ```bash
-cd games/pixel-fruit-arena
-npm install
-npm run dev
+npm test
+npm run build
+python tools/validate_sprites.py assets/characters/prismtek_placeholder_character.json
 ```
 
-Open the local Vite URL. The game also supports a dependency-light static build:
+Windows fallback when Node or Python are not on PATH:
 
-```bash
-npm run build
-npm run validate
+```powershell
+powershell -ExecutionPolicy Bypass -File games/pixel-fruit-arena/tools/test.ps1
+powershell -ExecutionPolicy Bypass -File games/pixel-fruit-arena/tools/validate_sprites.ps1 games/pixel-fruit-arena/assets/characters/prismtek_placeholder_character.json
+powershell -ExecutionPolicy Bypass -File games/pixel-fruit-arena/tools/build.ps1
 ```
 
 ## Controls
 
-Player 1 keyboard:
+P1 keyboard: arrows to move and jump, `/` attack, `.` special 1, `,` special 2, right Shift dodge, Enter awaken.
 
-- Move: `A` / `D`
-- Jump / double jump: `W`
-- Attack: `J`
-- Special 1 / 2 / 3: `K` / `L` / `;`
-- Dodge: left `Shift`
-- Awaken: `I`
+P2 keyboard: WASD to move and jump, F/G/H abilities, left Shift dodge, T awaken.
 
-Player 2 keyboard:
-
-- Move: arrow left / right
-- Jump: arrow up
-- Attack: numpad `1`
-- Special 1 / 2 / 3: numpad `2` / `3` / `4`
-- Dodge: numpad `0`
-- Awaken: numpad `5`
-
-Controller support polls browser Gamepad API:
-
-- Left stick: move
-- Face buttons: jump / attack / specials
-- Shoulder: dodge
-- Trigger: awakening
-
-Unfilled local slots become CPU placeholders.
+Controllers: left stick move, face buttons jump and abilities, shoulder dodge and awaken, start menu.
 
 ## Character Creator
 
-The creator edits:
+Character identity is independent from fruit powers. Profiles persist locally as:
 
-- name
-- hair style
-- hair color
-- skin tone
-- outfit colors
-- accessory color
+```json
+{
+  "name": "",
+  "appearance": {},
+  "owned_fruits": [],
+  "equipped_fruit": ""
+}
+```
 
-Character identity is stored in `data/characters/default-profile.json` and remains separate from equipped fruit power.
+Players can edit name, hair color, skin tone, outfit colors, and accessory colors.
 
 ## Fruit System
 
-Fruits are modular equipment in `data/fruits/core-fruits.json` and runtime helpers live under `src/fruits/`.
+Fruits are equipment modules in `src/fruits`. The MVP includes Flame, Frost, Volt, Shadow, Rubber, and Gravity. Each fruit has three abilities and a unique awakening mode. Switching fruits does not reset mastery.
 
-Playable fruits:
+## Combat And Awakening
 
-- Flame Fruit — Fireball, Flame Dash, Burning Uppercut; Awakening: Inferno Mode
-- Frost Fruit — Ice Spike, Freeze Field, Ice Slide; Awakening: Frozen Domain
-- Volt Fruit — Lightning Bolt, Blink Dash, Chain Shock; Awakening: Thunderstorm
-- Shadow Fruit — Pull Field, Shadow Burst, Null Zone; Awakening: Abyss Form
-- Rubber Fruit — Stretch Punch, Bounce Jump, Giant Fist; Awakening: Freedom Form
-- Gravity Fruit — Pull, Slam, Float Strike; Awakening: Singularity Mode
+Combat uses stock count, damage-scaled knockback, hit stun, double jumps, dodges, respawns, and ring-outs. Awakening meter gains from survival, damage dealt, and damage taken. Activating awakening grants temporary speed, cooldown, and power boosts with fruit-colored effects.
 
-Mastery persists per fruit on the profile map. Switching fruits never resets mastery.
+## Multiplayer
 
-## Awakening System
-
-Each fighter has an awakening meter. It gains from:
-
-- damage dealt
-- damage taken
-- survival time
-
-At 100 meter, activate Awakening for a temporary boost and fruit-colored visual effect. The MVP currently applies boost modifiers and visual state; future work should add bespoke transformations per fruit.
-
-## Combat System
-
-Implemented basics:
-
-- platform movement
-- jumping and double jump
-- basic attack
-- three fruit specials
-- hit stun
-- knockback scaling by damage percentage
-- ring outs
-- respawn
-- stock count
-- CPU placeholders
-
-This is a platform fighter model, not a traditional health-bar fighter.
-
-## Stage System
-
-Stage data lives in `data/stages/sky-ruins-arena.json`.
-
-Current stage:
-
-- Sky Ruins Arena
-- multiple platforms
-- 4 spawn points
-- ring-out zones
-- simple wind-rune hazard
-- original environment concept
+Match setup supports 2, 3, or 4 players. Local keyboard and controller input share the same action model so online play can later feed the same input stream.
 
 ## Asset Pipeline
 
-Reference GIF tools are dev-only:
+Reference GIF tooling lives in `tools/`:
 
 ```bash
-python3 tools/extract_gif_frames.py "/path/to/reference.gif" --out assets/reference/onepiece-test
-python3 tools/generate_animation_manifest.py
-python3 tools/validate_sprites.py
+python tools/extract_gif_frames.py path/to/reference.gif --out assets/reference/onepiece-test --animation walk
+python tools/generate_animation_manifest.py assets/reference/onepiece-test/walk --animation walk --fps 12 --loop
+python tools/validate_sprites.py assets/characters/prismtek_placeholder_character.json
 ```
 
-Reference output belongs only in `assets/reference/onepiece-test/` and is guarded by `README_REFERENCE_ASSETS.md`.
+Reference assets are development-only. `USE_REFERENCE_TEST_ASSETS=true` is allowed for local testing only. Release builds force reference assets off by removing `assets/reference` from `dist`.
 
-`USE_REFERENCE_TEST_ASSETS=true` may be used for local development only.
+## Adding Fruits
 
-Release builds force:
+Add a fruit definition to `src/fruits/fruits.js` and mirror static metadata in `data/fruits/fruits.json`. Fruit abilities should remain data-driven and use the shared combat kinds before adding custom systems.
 
-```bash
-USE_REFERENCE_TEST_ASSETS=false
-```
+## Adding Stages
 
-The build script validates that reference extraction outputs are not included when building production artifacts.
+Add a stage module in `src/stages`, then add data under `data/stages`. A stage needs platforms, ring-out bounds, and at least four respawn points.
 
-## Add a Fruit
+## Adding Cosmetics And Animations
 
-1. Add the fruit to `data/fruits/core-fruits.json`.
-2. Define exactly three abilities and one awakening name.
-3. Add or tune behavior in `src/combat/combatState.js` by ability `type`.
-4. Add icon/art under `assets/fruits/` when original art exists.
-5. Update tests if the schema changes.
-
-## Add a Stage
-
-1. Add a JSON file under `data/stages/`.
-2. Include `size`, `ringOut`, 4 `spawns`, `platforms`, and optional `hazards`.
-3. Register it in `src/stages/stageRegistry.js` when multi-stage selection lands.
-4. Add original pixel art under `assets/stages/`.
-
-## Add Cosmetics
-
-1. Extend `appearance` in `data/characters/default-profile.json`.
-2. Add UI inputs in `src/systems/game.js` creator screen.
-3. Render the cosmetic in `src/ui/render.js`.
-4. Keep cosmetics independent from fruit equipment.
-
-## Add Animations
-
-1. Update `data/characters/prismtek-placeholder.animations.json`.
-2. Use `tools/generate_animation_manifest.py` for a skeleton.
-3. Add original frames under `assets/characters/`.
-4. Keep sprite dimensions 64x64 for MVP compatibility.
-
-## Architecture
-
-```txt
-assets/      original and dev-only reference asset folders
-data/        fruit, stage, character, and animation definitions
-src/combat/  match state, physics, attacks, knockback, respawn
-src/fruits/  fruit registry and progression helpers
-src/stages/  stage loading and collision helpers
-src/ui/      canvas renderer and CSS
-src/systems/ app orchestration and screen flow
-src/multiplayer/ keyboard/controller input
-```
-
-## Current Limitations
-
-- Original shipped character is a simple generated placeholder, not final production art.
-- Online play is not implemented yet, but state/input boundaries are shaped for it.
-- Controller support depends on browser Gamepad API support.
-- Fruit awakenings share generic boost behavior in MVP.
-- CPU is a placeholder behavior loop, not a real fighting AI.
-- Static build copies files and validates data; asset packing can be upgraded later.
+Cosmetics belong to character appearance data and should not affect fruit ownership. Add animation manifests under `assets/characters` with 64x64 frames, origin, hurtbox, and hitbox metadata. Validate with `tools/validate_sprites.py`.

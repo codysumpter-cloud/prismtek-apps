@@ -1,0 +1,21 @@
+{
+  "id": "prismtek_placeholder",
+  "name": "Prism Runner",
+  "original": true,
+  "sprite_width": 64,
+  "sprite_height": 64,
+  "style": "crisp pixel art, no antialiasing, readable handheld silhouette",
+  "palette": ["#111827", "#26344f", "#f4c542", "#5ee7ff", "#8d563f", "#ef476f"],
+  "animations": [
+    { "name": "idle", "frames": 4, "fps": 6, "loop": true, "origin": [32, 56], "hurtbox": [20, 10, 24, 42], "hitbox": [18, 8, 28, 46] },
+    { "name": "walk", "frames": 6, "fps": 10, "loop": true, "origin": [32, 56], "hurtbox": [20, 10, 24, 42], "hitbox": [18, 8, 28, 46] },
+    { "name": "run", "frames": 6, "fps": 14, "loop": true, "origin": [32, 56], "hurtbox": [20, 10, 24, 42], "hitbox": [18, 8, 28, 46] },
+    { "name": "jump", "frames": 3, "fps": 10, "loop": false, "origin": [32, 56], "hurtbox": [20, 10, 24, 42], "hitbox": [18, 8, 28, 46] },
+    { "name": "fall", "frames": 3, "fps": 10, "loop": true, "origin": [32, 56], "hurtbox": [20, 10, 24, 42], "hitbox": [18, 8, 28, 46] },
+    { "name": "attack", "frames": 5, "fps": 14, "loop": false, "origin": [32, 56], "hurtbox": [20, 10, 24, 42], "hitbox": [28, 12, 26, 28] },
+    { "name": "special", "frames": 6, "fps": 12, "loop": false, "origin": [32, 56], "hurtbox": [20, 10, 24, 42], "hitbox": [16, 8, 36, 44] },
+    { "name": "hurt", "frames": 3, "fps": 10, "loop": false, "origin": [32, 56], "hurtbox": [20, 10, 24, 42], "hitbox": [18, 8, 28, 46] },
+    { "name": "knockout", "frames": 5, "fps": 8, "loop": false, "origin": [32, 56], "hurtbox": [20, 10, 24, 42], "hitbox": [18, 8, 28, 46] },
+    { "name": "victory", "frames": 6, "fps": 8, "loop": true, "origin": [32, 56], "hurtbox": [20, 10, 24, 42], "hitbox": [18, 8, 28, 46] }
+  ]
+}

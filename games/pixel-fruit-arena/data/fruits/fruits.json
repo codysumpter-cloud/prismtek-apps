@@ -1,0 +1,8 @@
+[
+  { "id": "flame", "name": "Flame Fruit", "abilities": ["Fireball", "Flame Dash", "Burning Uppercut"], "awakening": "Inferno Mode" },
+  { "id": "frost", "name": "Frost Fruit", "abilities": ["Ice Spike", "Freeze Field", "Ice Slide"], "awakening": "Frozen Domain" },
+  { "id": "volt", "name": "Volt Fruit", "abilities": ["Lightning Bolt", "Blink Dash", "Chain Shock"], "awakening": "Thunderstorm" },
+  { "id": "shadow", "name": "Shadow Fruit", "abilities": ["Pull Field", "Shadow Burst", "Null Zone"], "awakening": "Abyss Form" },
+  { "id": "rubber", "name": "Rubber Fruit", "abilities": ["Stretch Punch", "Bounce Jump", "Giant Fist"], "awakening": "Freedom Form" },
+  { "id": "gravity", "name": "Gravity Fruit", "abilities": ["Pull", "Slam", "Float Strike"], "awakening": "Singularity Mode" }
+]

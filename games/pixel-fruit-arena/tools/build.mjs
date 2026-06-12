@@ -1,16 +1,16 @@
-import { mkdir, cp, rm } from 'node:fs/promises';
-import { spawnSync } from 'node:child_process';
-import { resolve } from 'node:path';
+import { cp, mkdir, rm } from "node:fs/promises";
+import { existsSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const root = resolve(import.meta.dirname, '..');
-const out = resolve(root, 'dist');
-
-const validation = spawnSync('python3', ['tools/validate_sprites.py'], { cwd: root, stdio: 'inherit', env: { ...process.env, NODE_ENV: 'production', USE_REFERENCE_TEST_ASSETS: 'false' } });
-if (validation.status !== 0) process.exit(validation.status ?? 1);
-
-await rm(out, { recursive: true, force: true });
-await mkdir(out, { recursive: true });
-await cp(resolve(root, 'index.html'), resolve(out, 'index.html'));
-await cp(resolve(root, 'src'), resolve(out, 'src'), { recursive: true });
-await cp(resolve(root, 'data'), resolve(out, 'data'), { recursive: true });
-console.log('Built Pixel Fruit Arena to dist/ with reference assets excluded.');
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const dist = path.join(root, "dist");
+await rm(dist, { recursive: true, force: true });
+await mkdir(dist, { recursive: true });
+for (const entry of ["index.html", "src", "data", "assets"]) {
+  await cp(path.join(root, entry), path.join(dist, entry), { recursive: true });
+}
+const referencePath = path.join(dist, "assets", "reference");
+await rm(referencePath, { recursive: true, force: true });
+if (existsSync(referencePath)) throw new Error("Reference assets leaked into release build");
+console.log("Build complete. USE_REFERENCE_TEST_ASSETS forced false for release artifacts.");
