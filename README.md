@@ -31,7 +31,7 @@ docs/
 legacy/
 ```
 
-Current code has not all been physically moved yet. Migrations are staged so existing builds keep working.
+Current code is being moved in stages so existing builds keep working.
 
 ## Current major surfaces
 
@@ -43,7 +43,7 @@ Current code has not all been physically moved yet. Migrations are staged so exi
 | BeMore desktop/web shell | `apps/bemore-macos/` | Desktop-style web app/local shell |
 | BeMore web | `apps/web/` | Browser product surface |
 | PrismDS for RGDS | `apps/prismds-os/` | RGDS launcher/userland product |
-| TamerNet battle sandbox | `apps/tamernet-battle-sandbox/` | Game prototype |
+| TamerNet battle sandbox | `games/tamernet-battle-sandbox/` | Game prototype |
 | BeMore CLI | `apps/bemore-cli/` | Developer CLI |
 | Product API | `apps/api/` | Service |
 | Buddy chat integration | `integrations/buddy-chat/` | Service/integration server |
@@ -72,7 +72,7 @@ These documents are the source of truth for staged repo reorganization.
 ## Migration order
 
 1. Add governance docs and README framing. No product moves.
-2. Move `apps/tamernet-battle-sandbox` to `games/tamernet-battle-sandbox`.
+2. Move `games/tamernet-battle-sandbox` into the games workspace.
 3. Move `apps/bemore-cli` to `tools/cli/bemore-cli`.
 4. Move `apps/api` to `services/api` and `integrations/buddy-chat` to `services/buddy-chat`.
 5. Decide final ownership for `apps/prismds-os` after packaging review.
@@ -122,14 +122,7 @@ xcodebuild -project BeMoreAgent.xcodeproj -scheme BeMoreAgent -sdk iphonesimulat
 
 ## Game prototype development
 
-Current TamerNet sandbox path before PR2 migration:
-
-```bash
-cd apps/tamernet-battle-sandbox
-python3 -m http.server 8080
-```
-
-After PR2, this should become:
+Current TamerNet sandbox path:
 
 ```bash
 cd games/tamernet-battle-sandbox
