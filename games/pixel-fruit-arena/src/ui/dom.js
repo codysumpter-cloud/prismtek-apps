@@ -28,14 +28,16 @@ export function renderMenu(node, props) {
         <button data-start="4">4P Match</button>
         <button data-mode="creator">Creator</button>
         <button data-mode="fruits">Fruits</button>
+        <button data-install ${props.canInstall ? "" : "disabled"}>Install App</button>
       </nav>
       ${props.mode === "creator" ? creator(props) : ""}
       ${props.mode === "fruits" ? fruits(props) : ""}
-      <footer>Keyboard P1: arrows, / . , RShift, Enter. P2: WASD, F G H, LShift, T. Controllers supported.</footer>
+      <footer>Keyboard P1: arrows, / . , RShift, Enter. P2: WASD, F G H, LShift, T. Controllers: left stick, face buttons, shoulders, start. Local 3P/4P uses connected controllers or simple CPU placeholders for extra slots.</footer>
     </div>`;
   node.querySelectorAll("[data-start]").forEach((button) => button.addEventListener("click", () => props.onStart(Number(button.dataset.start))));
   node.querySelectorAll("[data-mode]").forEach((button) => button.addEventListener("click", () => props.onMode(button.dataset.mode)));
   node.querySelectorAll("[data-equip]").forEach((button) => button.addEventListener("click", () => props.onEquip(button.dataset.equip)));
+  node.querySelector("[data-install]")?.addEventListener("click", () => props.onInstall?.());
   const name = node.querySelector("[data-name]");
   if (name) name.addEventListener("input", (event) => props.onName(event.target.value));
   node.querySelectorAll("[data-appearance]").forEach((input) => input.addEventListener("input", (event) => props.onAppearance(input.dataset.appearance, event.target.value)));
