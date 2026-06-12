@@ -62,6 +62,12 @@ jobs:
         if: runner.os == 'Linux'
         run: npm install --no-save @tailwindcss/oxide-linux-x64-gnu@4.3.0
 
+      - name: Validate Pixel Fruit Arena
+        run: |
+          npm --prefix games/pixel-fruit-arena test
+          python3 games/pixel-fruit-arena/tools/validate_sprites.py games/pixel-fruit-arena/assets/characters/prismtek_placeholder_character.json
+          npm --prefix games/pixel-fruit-arena run build
+
       - name: Validate Buddy Chat app
         run: node integrations/buddy-chat/scripts/validate.mjs
 
