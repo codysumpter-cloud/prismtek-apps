@@ -1,0 +1,51 @@
+name: Pixel Fruit Arena
+
+on:
+  pull_request:
+    paths:
+      - "games/pixel-fruit-arena/**"
+      - ".github/workflows/pixel-fruit-arena.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "games/pixel-fruit-arena/**"
+      - ".github/workflows/pixel-fruit-arena.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+
+      - name: Run runtime smoke tests
+        working-directory: games/pixel-fruit-arena
+        run: npm test
+
+      - name: Validate sprite manifest
+        working-directory: games/pixel-fruit-arena
+        run: python3 tools/validate_sprites.py assets/characters/prismtek_placeholder_character.json
+
+      - name: Build release artifact
+        working-directory: games/pixel-fruit-arena
+        run: npm run build
+
+      - name: Verify release artifact safety
+        working-directory: games/pixel-fruit-arena
+        run: |
+          test -d dist
+          test ! -d dist/assets/reference
+          if find dist -type f -iname '*.gif' | grep -q .; then
+            echo "GIF assets leaked into dist"
+            find dist -type f -iname '*.gif'
+            exit 1
+          fi
