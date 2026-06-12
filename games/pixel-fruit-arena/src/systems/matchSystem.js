@@ -24,6 +24,7 @@ export function createMatch({ stage, players, fruits }) {
         if (f.stocks <= 0) continue;
         const input = resolveInput(f, actions, fighters);
         updateFighter(f, dt, input, stage);
+        if (f.slowTime <= 0) f.slowFactor = 1;
       }
       for (const action of actions.filter((a) => a.type === "attack")) {
         const f = fighters[action.slot];

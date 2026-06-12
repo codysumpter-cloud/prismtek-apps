@@ -1,4 +1,5 @@
 import { CHARACTER_SPRITES, STAGE_ART } from "../assets/assetManifest.js";
+import { runtimeConfig } from "../systems/runtimeConfig.js";
 
 export class Renderer {
   constructor(canvas, stage) {
@@ -7,7 +8,9 @@ export class Renderer {
     this.ctx.imageSmoothingEnabled = false;
     this.stage = stage;
     this.images = new Map();
+    this.referenceManifest = null;
     this.loadManifestImages();
+    if (runtimeConfig.useReferenceTestAssets) this.loadReferenceManifest();
   }
 
   loadManifestImages() {
@@ -15,6 +18,22 @@ export class Renderer {
       for (const animation of Object.values(sprite.animations)) this.load(animation.src);
     }
     this.load(STAGE_ART.skyRuins.tileset);
+  }
+
+  async loadReferenceManifest() {
+    try {
+      const response = await fetch("assets/reference/onepiece-test/runtime/manifest.json", { cache: "no-store" });
+      if (!response.ok) {
+        console.warn("Reference asset mode is enabled, but the local One Piece reference manifest was not found.");
+        return;
+      }
+      this.referenceManifest = await response.json();
+      for (const effect of Object.values(this.referenceManifest.effects || {})) this.load(effect.src);
+      if (this.referenceManifest.stageTexture) this.load(this.referenceManifest.stageTexture.src);
+      console.warn("Local reference attack assets enabled. Development/fan testing only; release builds exclude these files.");
+    } catch (error) {
+      console.warn("Failed to load local reference attack assets.", error);
+    }
   }
 
   load(src) {
@@ -29,8 +48,8 @@ export class Renderer {
     const ctx = this.ctx;
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     drawSky(ctx, snapshot.elapsed);
-    drawStage(ctx, snapshot.stage, this.images.get(STAGE_ART.skyRuins.tileset));
-    for (const effect of snapshot.effects || []) drawEffect(ctx, effect);
+    drawStage(ctx, snapshot.stage, this.images.get(STAGE_ART.skyRuins.tileset), this.referenceManifest, this.images);
+    for (const effect of snapshot.effects || []) drawEffect(ctx, effect, this.referenceManifest, this.images);
     for (const f of snapshot.fighters) drawFighter(ctx, f, this.images);
     if (mode !== "fight") drawDim(ctx, this.canvas);
   }
@@ -55,15 +74,26 @@ function drawSky(ctx, elapsed) {
   ctx.fillRect(0, 452, 960, 88);
 }
 
-function drawStage(ctx, stage, tileset) {
-  drawRuinsBackdrop(ctx, tileset);
+function drawStage(ctx, stage, tileset, referenceManifest, images) {
+  drawRuinsBackdrop(ctx, tileset, referenceManifest, images);
   for (const p of stage.platforms) drawPlatform(ctx, p, tileset);
 }
 
-function drawRuinsBackdrop(ctx, tileset) {
+function drawRuinsBackdrop(ctx, tileset, referenceManifest, images) {
   ctx.fillStyle = "rgba(14, 22, 35, .35)";
   ctx.fillRect(76, 365, 84, 170);
   ctx.fillRect(792, 350, 78, 190);
+  const referenceTexture = referenceManifest?.stageTexture ? images.get(referenceManifest.stageTexture.src) : null;
+  if (isReady(referenceTexture)) {
+    ctx.save();
+    ctx.globalAlpha = 0.22;
+    const pattern = ctx.createPattern(referenceTexture, "repeat");
+    if (pattern) {
+      ctx.fillStyle = pattern;
+      ctx.fillRect(0, 286, 960, 254);
+    }
+    ctx.restore();
+  }
   ctx.fillStyle = "#61715e";
   for (let y = 370; y < 530; y += 24) {
     ctx.fillRect(82, y, 70, 10);
@@ -168,13 +198,17 @@ function drawNameplate(ctx, f) {
   ctx.fillText(text, Math.round(f.x), Math.round(f.y - 9));
 }
 
-function drawEffect(ctx, effect) {
+function drawEffect(ctx, effect, referenceManifest, images) {
   const alpha = Math.max(0, Math.min(1, effect.ttl / 0.25));
   ctx.save();
   ctx.globalAlpha = alpha;
   ctx.strokeStyle = effect.color || "#ffffff";
   ctx.fillStyle = effect.color || "#ffffff";
   if (effect.type === "attack") {
+    if (drawReferenceEffect(ctx, effect, referenceManifest, images, alpha)) {
+      ctx.restore();
+      return;
+    }
     const length = effect.ability.kind === "projectile" || effect.ability.kind === "beam" ? 92 : 42;
     ctx.lineWidth = 6;
     ctx.beginPath();
@@ -193,6 +227,32 @@ function drawEffect(ctx, effect) {
     ctx.fillRect(effect.x - 18, effect.y - 18, 36, 36);
   }
   ctx.restore();
+}
+
+function drawReferenceEffect(ctx, effect, referenceManifest, images, alpha) {
+  const effectAsset = referenceManifest?.effects?.[effect.ability?.id] || referenceManifest?.effects?.[effect.ability?.kind];
+  if (!effectAsset) return false;
+  const image = images.get(effectAsset.src);
+  if (!isReady(image)) return false;
+  const scale = effectAsset.scale || 1;
+  const width = (effectAsset.width || image.naturalWidth) * scale;
+  const height = (effectAsset.height || image.naturalHeight) * scale;
+  const offsetX = effectAsset.offsetX ?? 54;
+  const offsetY = effectAsset.offsetY ?? -10;
+  const x = Math.round(effect.x + effect.facing * offsetX);
+  const y = Math.round(effect.y + offsetY);
+
+  ctx.save();
+  ctx.globalAlpha = Math.min(1, alpha + 0.15);
+  if (effect.facing < 0) {
+    ctx.translate(x, y);
+    ctx.scale(-1, 1);
+    ctx.drawImage(image, -width / 2, -height / 2, width, height);
+  } else {
+    ctx.drawImage(image, x - width / 2, y - height / 2, width, height);
+  }
+  ctx.restore();
+  return true;
 }
 
 function drawDim(ctx, canvas) {

@@ -29,8 +29,8 @@ foreach ($asset in $requiredAssets) {
   if (-not (Test-Path -LiteralPath (Join-Path $ProjectRoot $asset))) { throw "missing runtime asset: $asset" }
 }
 
-$referenceLeak = Get-ChildItem -LiteralPath (Join-Path $ProjectRoot "assets/reference/onepiece-test") -File -ErrorAction SilentlyContinue | Where-Object { $_.Name -ne ".gitkeep" }
-if ($referenceLeak) { throw "reference test assets must not be committed as runtime files" }
+$referenceFiles = Get-ChildItem -LiteralPath (Join-Path $ProjectRoot "assets/reference/onepiece-test") -Recurse -File -ErrorAction SilentlyContinue | Where-Object { $_.Name -ne ".gitkeep" }
+if ($env:NODE_ENV -eq "production" -and $referenceFiles) { throw "reference test assets cannot be present in production validation" }
 
 $nodeCommand = Get-Command node -ErrorAction SilentlyContinue
 if ($nodeCommand) {

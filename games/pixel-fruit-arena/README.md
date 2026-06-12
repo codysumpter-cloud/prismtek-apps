@@ -29,6 +29,21 @@ Add `-Port 4174` if 4173 is busy, or `-Dist` to serve the release build from `di
 
 Use `Fight CPU` from the main menu for the fastest playable match. Local 2P, 3P, and 4P setup remains available from the same menu.
 
+For local fan/dev testing with the One Piece reference GIFs in your Downloads folder:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\install_local_onepiece_reference_assets.ps1
+powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\serve.ps1
+```
+
+Then open:
+
+```text
+http://localhost:4173/?referenceAssets=true
+```
+
+Those files are copied under `assets/reference/onepiece-test/runtime/`, which is git-ignored and removed from release builds.
+
 ## Validate
 
 ```bash

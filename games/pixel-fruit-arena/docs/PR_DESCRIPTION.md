@@ -2,11 +2,15 @@
 
 ## PR Summary
 
-Follow-up to the merged MVP PR. Adds runtime pixel-art character sheets and textured stage art, wires them into the canvas renderer, adds a quick `Fight CPU` path, fixes CPU/winner match flow, and expands release validation so reference assets stay dev-only.
+Follow-up to the merged MVP PR. Adds runtime pixel-art character sheets and textured stage art, wires them into the canvas renderer, adds a quick `Fight CPU` path, fixes CPU/winner match flow, improves fruit ability behavior, and expands release validation so reference assets stay dev-only.
+
+This update also adds an opt-in local fan/dev reference mode for the One Piece GIFs in Downloads. The install script copies those files into a git-ignored reference folder and the renderer only loads them from localhost when `?referenceAssets=true` is set. They are not committed and release builds remove `assets/reference`.
 
 ## Gameplay Summary
 
 Playable local platform-fighter MVP with animated fighters, a textured Sky Ruins arena, stock-based combat, knockback scaling, double jumps, dodge, ring-outs, respawn invulnerability, CPU placeholders, and 2-4 player match setup. `Fight CPU` starts a quick one-player match against an AI opponent.
+
+Fruit behavior is more distinct: Frost slows, Shadow can null special use, Gravity/Shadow pulls drag opponents, Volt chain attacks add extra stun, Rubber bounce improves recovery, and Blink moves immediately before the hit check.
 
 ## Asset Pipeline Summary
 
@@ -26,6 +30,8 @@ The build script removes `games/pixel-fruit-arena/dist/assets/reference` so refe
 
 Browser QA passed on `http://localhost:4173/` via `tools/serve.ps1`: the main menu loaded, `Fight CPU` started an active match, keyboard jump/attack input was accepted, HUD stayed in fight mode, animated fighters and stage art rendered, and no browser console errors were reported.
 
+Local reference mode QA passed with `?referenceAssets=true`: One Piece GIF attack overlays and the local reference backdrop loaded from ignored `assets/reference/onepiece-test/runtime` files.
+
 Merged-main PR content was also validated from a clean `main` snapshot on `http://localhost:4174/` with the same browser QA flow. Node/npm/Python are still unavailable on PATH here, so package-managed JS checks could not be run directly.
 
 ## Future Roadmap
@@ -39,6 +45,7 @@ Merged-main PR content was also validated from a clean `main` snapshot on `http:
 ## Known Limitations
 
 - Visuals use placeholder Prismtek runtime integration over locally available free pixel-art packs and are not final production art.
+- One Piece reference files are local fan/dev-only and must be removed/replaced before any release or public distribution.
 - CPU behavior is intentionally simple.
 - Multiplayer is local only.
 - No package-managed engine dependency is used in this workspace MVP.

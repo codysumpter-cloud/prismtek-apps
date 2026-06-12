@@ -22,6 +22,9 @@ export function createFighter({ slot, character, fruitId, fruit, spawn }) {
     invulnerable: 1.2,
     awakening: 0,
     awakened: 0,
+    slowTime: 0,
+    slowFactor: 1,
+    nullTime: 0,
     cooldowns: {},
     animTime: 0,
     attackFlash: 0,
@@ -34,12 +37,15 @@ export function createFighter({ slot, character, fruitId, fruit, spawn }) {
 
 export function updateFighter(f, dt, input, stage) {
   const accel = f.awakened > 0 ? 1800 : 1450;
-  const maxSpeed = f.awakened > 0 ? 330 : 275;
+  const statusSpeed = f.slowTime > 0 ? f.slowFactor : 1;
+  const maxSpeed = (f.awakened > 0 ? 330 : 275) * statusSpeed;
   const gravity = f.awakened > 0 ? 1220 : 1380;
 
   f.invulnerable = Math.max(0, f.invulnerable - dt);
   f.hitstun = Math.max(0, f.hitstun - dt);
   f.awakened = Math.max(0, f.awakened - dt);
+  f.slowTime = Math.max(0, f.slowTime - dt);
+  f.nullTime = Math.max(0, f.nullTime - dt);
   f.attackFlash = Math.max(0, f.attackFlash - dt);
   f.animTime += dt;
   for (const key of Object.keys(f.cooldowns)) f.cooldowns[key] = Math.max(0, f.cooldowns[key] - dt);
@@ -47,7 +53,7 @@ export function updateFighter(f, dt, input, stage) {
 
   if (f.hitstun <= 0) {
     if (input.move) {
-      f.vx += input.move * accel * dt;
+      f.vx += input.move * accel * statusSpeed * dt;
       f.facing = Math.sign(input.move);
     } else {
       f.vx *= f.grounded ? 0.78 : 0.96;
@@ -79,11 +85,13 @@ export function updateFighter(f, dt, input, stage) {
 
 export function applyAttack(attacker, defenders, ability, events) {
   if (!ability || attacker.cooldowns[ability.id] > 0 || attacker.hitstun > 0) return;
+  if (attacker.nullTime > 0 && ability.kind !== "melee" && ability.kind !== "heavy") return;
   attacker.cooldowns[ability.id] = ability.cooldown * (attacker.awakened > 0 ? 0.65 : 1);
-  const range = ability.range || (ability.kind === "projectile" || ability.kind === "beam" ? 150 : 58);
+  const range = ability.range || rangeFor(ability);
   const power = attacker.awakened > 0 ? 1.35 : 1;
 
   if (ability.kind === "dash" || ability.kind === "blink") attacker.vx = attacker.facing * ability.speed;
+  if (ability.kind === "blink") attacker.x += attacker.facing * 52;
   if (ability.kind === "jump" || ability.kind === "uppercut") attacker.vy = -620;
   if (ability.kind === "slam") attacker.vy = 720;
 
@@ -91,7 +99,7 @@ export function applyAttack(attacker, defenders, ability, events) {
   attacker.attackKind = ability.kind === "projectile" || ability.kind === "beam" || ability.kind === "field" ? "special" : "attack";
   attacker.state = attacker.attackKind;
   attacker.animTime = 0;
-  events.push({ ttl: 0.22, type: "attack", attacker: attacker.id, ability, x: attacker.x, y: attacker.y + 22, facing: attacker.facing, color: attacker.fruit.color });
+  events.push({ ttl: ttlFor(ability), type: "attack", attacker: attacker.id, fruitId: attacker.fruitId, ability, x: attacker.x, y: attacker.y + 22, facing: attacker.facing, color: attacker.fruit.color });
   for (const target of defenders) {
     if (target.stocks <= 0 || target.invulnerable > 0) continue;
     const dx = target.x - attacker.x;
@@ -102,11 +110,49 @@ export function applyAttack(attacker, defenders, ability, events) {
       target.hitstun = 0.18 + target.damage / 420;
       target.vx = direction * (Math.abs(ability.knockback) + target.damage * 5) * power;
       target.vy = -180 - target.damage * 2.5;
+      applyStatus(attacker, target, ability, power);
       target.awakening = Math.min(100, target.awakening + ability.damage * 1.2);
       attacker.awakening = Math.min(100, attacker.awakening + ability.damage * 1.6);
       gainMastery(attacker.character, attacker.fruitId, 0.35);
-      events.push({ ttl: 0.24, type: "hit", attacker: attacker.id, target: target.id, x: target.x, y: target.y + 24, color: attacker.fruit.color, ability });
+      events.push({ ttl: 0.24, type: "hit", attacker: attacker.id, fruitId: attacker.fruitId, target: target.id, x: target.x, y: target.y + 24, color: attacker.fruit.color, ability });
     }
+  }
+}
+
+function rangeFor(ability) {
+  if (ability.kind === "projectile" || ability.kind === "beam") return 170;
+  if (ability.kind === "field" || ability.kind === "burst") return 132;
+  if (ability.kind === "pull" || ability.kind === "chain") return 150;
+  if (ability.kind === "slam") return 96;
+  return 62;
+}
+
+function ttlFor(ability) {
+  if (ability.kind === "field") return 0.8;
+  if (ability.kind === "beam" || ability.kind === "projectile") return 0.42;
+  if (ability.kind === "slam" || ability.kind === "heavy") return 0.36;
+  return 0.25;
+}
+
+function applyStatus(attacker, target, ability, power) {
+  if (ability.slow) {
+    target.slowTime = Math.max(target.slowTime, 1.5 * power);
+    target.slowFactor = Math.min(target.slowFactor, ability.slow);
+  }
+  if (ability.kind === "field" && ability.id === "null_zone") {
+    target.nullTime = Math.max(target.nullTime, 1.8 * power);
+    target.cooldowns = Object.fromEntries(Object.entries(target.cooldowns).map(([key, value]) => [key, Math.max(value, 0.35)]));
+  }
+  if (ability.kind === "chain") {
+    target.hitstun += 0.08;
+  }
+  if (ability.kind === "pull") {
+    target.vx += Math.sign(attacker.x - target.x || attacker.facing) * 260 * power;
+    target.vy -= 90 * power;
+  }
+  if (ability.kind === "jump") {
+    attacker.vy = -700;
+    attacker.jumps = Math.max(attacker.jumps, 1);
   }
 }
 
