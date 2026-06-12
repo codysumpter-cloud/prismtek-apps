@@ -1,0 +1,19 @@
+{
+  "character": "prismtek_placeholder",
+  "sprite_width": 64,
+  "sprite_height": 64,
+  "origin": [32, 56],
+  "hurtbox": [20, 10, 24, 42],
+  "animations": {
+    "idle": { "frames": 4, "fps": 6, "loop": true },
+    "walk": { "frames": 6, "fps": 10, "loop": true },
+    "run": { "frames": 6, "fps": 14, "loop": true },
+    "jump": { "frames": 2, "fps": 8, "loop": false },
+    "fall": { "frames": 2, "fps": 8, "loop": true },
+    "attack": { "frames": 5, "fps": 14, "loop": false, "hitbox": [34, 20, 20, 16] },
+    "special": { "frames": 6, "fps": 12, "loop": false, "hitbox": [28, 12, 30, 28] },
+    "hurt": { "frames": 3, "fps": 10, "loop": false },
+    "knockout": { "frames": 4, "fps": 8, "loop": false },
+    "victory": { "frames": 5, "fps": 8, "loop": true }
+  }
+}
