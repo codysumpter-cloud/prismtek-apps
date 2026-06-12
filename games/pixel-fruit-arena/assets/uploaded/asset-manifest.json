@@ -1,0 +1,75 @@
+{
+  "schema": 1,
+  "source": "user-uploaded Pixel Fruit Arena asset intake",
+  "releaseStatus": "license-review-required",
+  "packs": [
+    {
+      "id": "loose-items-7",
+      "name": "items_7.png",
+      "type": "items",
+      "runtimePath": "assets/uploaded/items/items_7.png",
+      "use": ["inventory-icons", "pickup-icons", "stage-props"],
+      "notes": "Small loose item sheet uploaded in chat. Confirm license/originality before public release."
+    },
+    {
+      "id": "rpg-weapons-sheet",
+      "name": "RPG_Weapons.png / RPG_Weapons.aseprite",
+      "type": "weapons",
+      "runtimePath": "assets/uploaded/weapons/RPG_Weapons.png",
+      "sourcePath": "assets/uploaded/weapons/RPG_Weapons.aseprite",
+      "use": ["weapon-icons", "pickup-weapons", "cosmetic-loadout"],
+      "notes": "Large weapon sheet and Aseprite source uploaded in chat. Needs slicing metadata before runtime selection UI."
+    },
+    {
+      "id": "hairstyle-gif",
+      "name": "Hairstyle.gif",
+      "type": "cosmetic-animation",
+      "runtimePath": "assets/uploaded/cosmetics/hair/Hairstyle.gif",
+      "use": ["character-creator-hair", "animation-reference"],
+      "notes": "Hair animation uploaded in chat. Prefer extracted PNG frames for production/runtime."
+    },
+    {
+      "id": "water-example-stage",
+      "name": "water-example.tmx",
+      "type": "stage-map",
+      "runtimePath": "assets/uploaded/stages/water-example.tmx",
+      "use": ["stage-prototype", "water-tilemap-reference"],
+      "notes": "TMX map uploaded in chat. Requires tileset path validation before runtime map loading."
+    },
+    {
+      "id": "rpgiab-icon-pack",
+      "name": "rpgiab_icon_pack_v1.3.zip",
+      "type": "icons",
+      "use": ["ui-icons", "inventory-icons", "editor-icons"],
+      "notes": "Zip pack uploaded in chat. Import with tools/import_uploaded_assets.py after confirming license."
+    },
+    {
+      "id": "elementals-ground-monk",
+      "name": "Elementals_ground_monk_FREE_v1.3.1.zip",
+      "type": "character-pack",
+      "use": ["ground-style-fighter-reference", "monk-combat-animation-reference"],
+      "notes": "Free elemental character pack uploaded in chat. Verify redistribution terms before shipping."
+    },
+    {
+      "id": "32rogues",
+      "name": "32rogues-0.5.0.zip",
+      "type": "roguelike-tiles-items",
+      "use": ["items", "tiles", "props"],
+      "notes": "Zip pack uploaded in chat. Import with tools/import_uploaded_assets.py after confirming license."
+    },
+    {
+      "id": "clothes-snacks",
+      "name": "Clothes_snacks Asset Pack.zip",
+      "type": "clothes-food-props",
+      "use": ["cosmetics", "healing-items", "stage-props"],
+      "notes": "Zip pack uploaded in chat. Import with tools/import_uploaded_assets.py after confirming license."
+    },
+    {
+      "id": "clothes",
+      "name": "Clothes.zip",
+      "type": "cosmetics",
+      "use": ["character-creator-outfits", "costume-variants"],
+      "notes": "Zip pack uploaded in chat. Import with tools/import_uploaded_assets.py after confirming license."
+    }
+  ]
+}
