@@ -21,4 +21,18 @@ assert.equal(character.sprite_width, 64);
 assert.equal(character.sprite_height, 64);
 assert.equal(character.animations.length, 10);
 assert.equal(process.env.USE_REFERENCE_TEST_ASSETS === "true" && process.env.NODE_ENV === "production", false, "reference assets cannot be used in production");
-console.log("Tests passed: fruits, stage, character manifest, release guard.");
+
+const html = await readFile(path.join(root, "index.html"), "utf8");
+assert.match(html, /rel="manifest"/, "index must link a web app manifest");
+assert.match(html, /deviceStatus/, "index must expose device status UI");
+
+const manifest = JSON.parse(await readFile(path.join(root, "manifest.json"), "utf8"));
+assert.equal(manifest.name, "Pixel Fruit Arena");
+assert.ok(manifest.start_url, "manifest needs start_url");
+assert.ok(manifest.display, "manifest needs display mode");
+
+const serviceWorker = await readFile(path.join(root, "sw.js"), "utf8");
+assert.match(serviceWorker, /CACHE_NAME/, "service worker needs a named cache");
+assert.match(serviceWorker, /fetch/, "service worker needs fetch handling");
+
+console.log("Tests passed: fruits, stage, character manifest, PWA shell, service worker, release guard.");
