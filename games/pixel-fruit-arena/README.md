@@ -59,8 +59,6 @@ P2 keyboard: WASD to move and jump, F/G/H abilities, left Shift dodge, T awaken.
 
 Controllers: left stick move, face buttons jump and abilities, shoulder dodge and awaken, start menu.
 
-Debug overlay: press `` ` `` (backtick) or F3 to toggle FPS, player/fruit state, build mode, and the reference-asset flag.
-
 ## Character Creator
 
 Character identity is independent from fruit powers. Profiles persist locally as:
