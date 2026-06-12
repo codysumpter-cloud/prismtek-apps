@@ -2,9 +2,32 @@
 
 Pixel Fruit Arena is a Prismtek platform-fighting MVP. Players create an original fighter, equip modular fruit powers, and battle locally with stocks, knockback, ring-outs, and awakening meters.
 
-## Run
+## Quick Start
 
-Open `index.html` in a browser, or serve the folder with any static server.
+The game is plain HTML/JS/CSS with no install step. Because it uses ES modules, serve it over HTTP instead of relying on `file://` browser behavior.
+
+From `games/pixel-fruit-arena/`:
+
+```bash
+npx serve -l 4173 .        # Node
+python -m http.server 4173 # Python
+```
+
+PowerShell-only fallback from the repo root:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\serve.ps1
+```
+
+Then open:
+
+```text
+http://localhost:4173
+```
+
+Add `-Port 4174` if 4173 is busy, or `-Dist` to serve the release build from `dist/` after running `tools/build.ps1`.
+
+## Validate
 
 ```bash
 npm test
@@ -12,13 +35,17 @@ npm run build
 python tools/validate_sprites.py assets/characters/prismtek_placeholder_character.json
 ```
 
-Windows fallback when Node or Python are not on PATH:
+Windows fallback from the repo root:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File games/pixel-fruit-arena/tools/test.ps1
-powershell -ExecutionPolicy Bypass -File games/pixel-fruit-arena/tools/validate_sprites.ps1 games/pixel-fruit-arena/assets/characters/prismtek_placeholder_character.json
-powershell -ExecutionPolicy Bypass -File games/pixel-fruit-arena/tools/build.ps1
+powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\test.ps1
+powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\validate_sprites.ps1 games\pixel-fruit-arena\assets\characters\prismtek_placeholder_character.json
+powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\build.ps1
 ```
+
+`tools/test.mjs` imports the runtime modules and smoke-tests all six fruit attacks, PWA shell metadata, 2-player match creation, combat events, ring-outs, match completion, and release guards. `tools/test.ps1` runs the same runtime smoke test when Node.js is available.
+
+Manual QA steps live in [`docs/LOCAL_QA_CHECKLIST.md`](docs/LOCAL_QA_CHECKLIST.md).
 
 ## Controls
 
@@ -65,7 +92,16 @@ python tools/generate_animation_manifest.py assets/reference/onepiece-test/walk 
 python tools/validate_sprites.py assets/characters/prismtek_placeholder_character.json
 ```
 
-Reference assets are development-only. `USE_REFERENCE_TEST_ASSETS=true` is allowed for local testing only. Release builds force reference assets off by removing `assets/reference` from `dist`.
+Reference assets are development-only. `USE_REFERENCE_TEST_ASSETS=true` is allowed for local testing only. Release builds remove `assets/reference` from `dist` and fail if any `.gif` remains in the release artifact.
+
+## Known Limitations
+
+- Multiplayer is local-only; there is no online multiplayer yet.
+- All art is original placeholder pixel art, not final production art.
+- Controller support depends on the browser's Gamepad API; button numbering may vary by pad and browser.
+- Reference assets (`assets/reference/`) are dev-only, git-ignored, and excluded from release builds.
+- Combat balance is a first pass and intentionally rough.
+- CPU opponents use simple placeholder behavior.
 
 ## Adding Fruits
 
