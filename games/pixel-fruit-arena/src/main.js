@@ -1,6 +1,7 @@
 import { FRUITS } from "./fruits/fruits.js";
 import { SKY_RUINS } from "./stages/skyRuins.js";
 import { createCharacter, COSMETICS } from "./characters/characterCreator.js";
+import { COMBAT_STYLES } from "./combat/combatStyles.js";
 import { createMatch } from "./systems/matchSystem.js";
 import { KeyboardInput, GamepadInput } from "./multiplayer/input.js";
 import { Renderer } from "./ui/renderer.js";
@@ -22,6 +23,7 @@ const stored = safeLoadProfile();
 const profile = stored || createCharacter({
   name: "Prism Runner",
   spriteKey: "pink",
+  combatStyle: "duelist",
   appearance: {
     hairStyle: "crest",
     hairColor: "#5ee7ff",
@@ -37,6 +39,7 @@ profile.owned_fruits ||= Object.keys(FRUITS);
 profile.equipped_fruit ||= profile.equippedFruit || profile.owned_fruits[0] || "flame";
 profile.fruit_mastery ||= Object.fromEntries(profile.owned_fruits.map((fruitId) => [fruitId, 0]));
 profile.sprite_key ||= "pink";
+profile.combat_style ||= "duelist";
 
 let mode = "menu";
 let lastWinnerName = "";
@@ -75,6 +78,7 @@ function startMatch(playerCount = 2, options = {}) {
       name: `P${index + 1} Guest`,
       ...(options.cpuGuests ? { name: `${FRUITS[fruitIds[index % fruitIds.length]].name.replace(" Fruit", "")} CPU` } : {}),
       spriteKey: spriteKeys[index % spriteKeys.length],
+      combatStyle: COSMETICS.combatStyles[index % COSMETICS.combatStyles.length],
       appearance: COSMETICS.presets[index % COSMETICS.presets.length],
       ownedFruits: fruitIds,
       equippedFruit: fruitIds[index % fruitIds.length],
@@ -99,6 +103,7 @@ function updateMenu() {
     winnerName: lastWinnerName,
     fruits: FRUITS,
     cosmetics: COSMETICS,
+    combatStyles: COMBAT_STYLES,
     canInstall: Boolean(deferredInstall),
     onStart: startMatch,
     onEquip: (fruitId) => {
@@ -115,8 +120,17 @@ function updateMenu() {
     onAppearance: (key, value) => {
       profile.appearance[key] = value;
       persistProfile();
+      updateMenu();
     },
-    onMode: openMenu,
+    onCharacterOption: (key, value) => {
+      profile[key] = value;
+      persistProfile();
+      updateMenu();
+    },
+    onMode: (nextMode) => {
+      openMenu(nextMode);
+      updateMenu();
+    },
     onInstall: promptInstall
   });
 }
@@ -165,7 +179,7 @@ function renderDeviceStatus() {
   const installState = deferredInstall ? "Install ready" : "Install via browser menu";
   const offlineState = serviceWorkerReady ? "Offline cache ready" : "Offline cache pending";
   const shape = `${Math.round(window.innerWidth)}x${Math.round(window.innerHeight)}`;
-  deviceStatus.textContent = `${pads.length} controller${pads.length === 1 ? "" : "s"} · ${offlineState} · ${installState} · ${shape}`;
+  deviceStatus.textContent = `${pads.length} controller${pads.length === 1 ? "" : "s"} | ${offlineState} | ${installState} | ${shape}`;
 }
 
 let last = performance.now();

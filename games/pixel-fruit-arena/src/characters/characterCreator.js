@@ -1,5 +1,7 @@
 export const COSMETICS = {
   hairStyles: ["crest", "bob", "spikes", "cap"],
+  spriteKeys: ["pink", "owlet", "dude"],
+  combatStyles: ["duelist", "brawler", "striker", "ranger", "guardian", "trickster"],
   hairColors: ["#5ee7ff", "#f15bb5", "#f4c542", "#2dd36f", "#f7f7ff"],
   skinTones: ["#5b3926", "#8d563f", "#b97855", "#d8a17c", "#f1c6a8"],
   outfitColors: ["#26344f", "#28536b", "#512d6d", "#1f7a5c", "#8f2d56"],
@@ -23,6 +25,7 @@ export function createCharacter(overrides = {}) {
     cosmetics_unlocked: ["starter"],
     stats: { wins: 0, ringouts: 0 },
     sprite_key: overrides.spriteKey || overrides.sprite_key || "pink",
+    combat_style: overrides.combatStyle || overrides.combat_style || "duelist",
     cpu: Boolean(overrides.cpu)
   };
 }

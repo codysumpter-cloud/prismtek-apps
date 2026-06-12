@@ -1,4 +1,4 @@
-import { CHARACTER_SPRITES, STAGE_ART } from "../assets/assetManifest.js";
+import { ABILITY_VFX, CHARACTER_SPRITES, STAGE_ART, VFX_SHEETS } from "../assets/assetManifest.js";
 import { runtimeConfig } from "../systems/runtimeConfig.js";
 
 export class Renderer {
@@ -17,6 +17,7 @@ export class Renderer {
     for (const sprite of Object.values(CHARACTER_SPRITES)) {
       for (const animation of Object.values(sprite.animations)) this.load(animation.src);
     }
+    for (const sheet of Object.values(VFX_SHEETS)) this.load(sheet.src);
     this.load(STAGE_ART.skyRuins.tileset);
   }
 
@@ -205,6 +206,10 @@ function drawEffect(ctx, effect, referenceManifest, images) {
   ctx.strokeStyle = effect.color || "#ffffff";
   ctx.fillStyle = effect.color || "#ffffff";
   if (effect.type === "attack") {
+    if (drawVfxSheet(ctx, effect, images)) {
+      ctx.restore();
+      return;
+    }
     if (drawReferenceEffect(ctx, effect, referenceManifest, images, alpha)) {
       ctx.restore();
       return;
@@ -218,6 +223,10 @@ function drawEffect(ctx, effect, referenceManifest, images) {
     ctx.fillRect(effect.x + effect.facing * length - 4, effect.y - 12, 8, 8);
   }
   if (effect.type === "hit") {
+    if (drawVfxSheet(ctx, { ...effect, ability: { id: "hit" } }, images)) {
+      ctx.restore();
+      return;
+    }
     ctx.lineWidth = 4;
     ctx.beginPath();
     ctx.arc(effect.x, effect.y, 24 * alpha + 8, 0, Math.PI * 2);
@@ -227,6 +236,39 @@ function drawEffect(ctx, effect, referenceManifest, images) {
     ctx.fillRect(effect.x - 18, effect.y - 18, 36, 36);
   }
   ctx.restore();
+}
+
+function drawVfxSheet(ctx, effect, images) {
+  const key = ABILITY_VFX[effect.ability?.id] || ABILITY_VFX[effect.ability?.kind];
+  const sheet = key ? VFX_SHEETS[key] : null;
+  if (!sheet) return false;
+  const image = images.get(sheet.src);
+  if (!isReady(image)) return false;
+
+  const elapsed = effect.age ?? Math.max(0, (effect.duration || 0.25) - effect.ttl);
+  const rawFrame = Math.floor(elapsed * sheet.fps);
+  const frame = Math.max(0, Math.min(sheet.frames - 1, rawFrame));
+  const columns = sheet.columns || Math.max(1, Math.floor(image.naturalWidth / sheet.frameWidth));
+  const sx = (frame % columns) * sheet.frameWidth;
+  const sy = Math.floor(frame / columns) * sheet.frameHeight;
+  const width = sheet.frameWidth * sheet.scale;
+  const height = sheet.frameHeight * sheet.scale;
+  const offsetX = sheet.offsetX ?? 40;
+  const offsetY = sheet.offsetY ?? -8;
+  const x = Math.round(effect.x + (effect.facing || 1) * offsetX);
+  const y = Math.round(effect.y + offsetY);
+
+  ctx.save();
+  ctx.globalAlpha = Math.max(ctx.globalAlpha, 0.85);
+  if ((effect.facing || 1) < 0) {
+    ctx.translate(x, y);
+    ctx.scale(-1, 1);
+    ctx.drawImage(image, sx, sy, sheet.frameWidth, sheet.frameHeight, -width / 2, -height / 2, width, height);
+  } else {
+    ctx.drawImage(image, sx, sy, sheet.frameWidth, sheet.frameHeight, x - width / 2, y - height / 2, width, height);
+  }
+  ctx.restore();
+  return true;
 }
 
 function drawReferenceEffect(ctx, effect, referenceManifest, images, alpha) {

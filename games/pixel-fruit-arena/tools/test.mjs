@@ -38,7 +38,13 @@ for (const asset of [
   "assets/characters/tiny-hero/dude/hurt_4.png",
   "assets/stages/four-seasons/four-seasons-tileset.png",
   "assets/licenses/craftpix-tiny-hero-license.txt",
-  "assets/licenses/rottingpixels-four-seasons.txt"
+  "assets/licenses/rottingpixels-four-seasons.txt",
+  "assets/effects/elemental-vfx/firebolt.png",
+  "assets/effects/elemental-vfx/ice-hit.png",
+  "assets/effects/elemental-vfx/thunder-beam.png",
+  "assets/effects/elemental-vfx/dark-column.png",
+  "assets/effects/elemental-vfx/earth-impact.png",
+  "assets/effects/elemental-vfx/hit-spark.png"
 ]) {
   assert.ok(existsSync(path.join(root, asset)), `missing runtime asset: ${asset}`);
 }

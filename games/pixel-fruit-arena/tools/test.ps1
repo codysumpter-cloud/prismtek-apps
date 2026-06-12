@@ -23,7 +23,13 @@ $requiredAssets = @(
   "assets/characters/tiny-hero/dude/hurt_4.png",
   "assets/stages/four-seasons/four-seasons-tileset.png",
   "assets/licenses/craftpix-tiny-hero-license.txt",
-  "assets/licenses/rottingpixels-four-seasons.txt"
+  "assets/licenses/rottingpixels-four-seasons.txt",
+  "assets/effects/elemental-vfx/firebolt.png",
+  "assets/effects/elemental-vfx/ice-hit.png",
+  "assets/effects/elemental-vfx/thunder-beam.png",
+  "assets/effects/elemental-vfx/dark-column.png",
+  "assets/effects/elemental-vfx/earth-impact.png",
+  "assets/effects/elemental-vfx/hit-spark.png"
 )
 foreach ($asset in $requiredAssets) {
   if (-not (Test-Path -LiteralPath (Join-Path $ProjectRoot $asset))) { throw "missing runtime asset: $asset" }

@@ -85,7 +85,7 @@ Character identity is independent from fruit powers. Profiles persist locally as
 }
 ```
 
-Players can edit name, hair color, skin tone, outfit colors, and accessory colors.
+Players can edit name, body sprite, hair style, combat style, hair color, skin tone, outfit colors, and accessory colors. Combat style is independent from fruit powers and currently supports Duelist, Brawler, Striker, Ranger, Guardian, and Trickster.
 
 ## Fruit System
 
@@ -101,7 +101,7 @@ Match setup supports 2, 3, or 4 players. Local keyboard and controller input sha
 
 ## Asset Pipeline
 
-Playable runtime art is loaded from locally available free pixel-art packs with credit/license notes under `assets/licenses`. The shipped runtime does not use the One Piece reference GIFs.
+Playable runtime art is loaded from locally available free pixel-art packs with credit/license notes under `assets/licenses`. Elemental attack VFX from the user's Downloads packs live under `assets/effects/elemental-vfx` with a license verification note. Verify those pack licenses before public release. The shipped runtime does not use the One Piece reference GIFs.
 
 Reference GIF tooling lives in `tools/`:
 
@@ -116,7 +116,8 @@ Reference assets are development-only. `USE_REFERENCE_TEST_ASSETS=true` is allow
 ## Known Limitations
 
 - Multiplayer is local-only; there is no online multiplayer yet.
-- All art is original placeholder pixel art, not final production art.
+- All character/stage art is placeholder pixel art, not final production art.
+- Downloaded elemental VFX packs are wired for local playability; confirm their licenses before any public release.
 - Controller support depends on the browser's Gamepad API; button numbering may vary by pad and browser.
 - Reference assets (`assets/reference/`) are dev-only, git-ignored, and excluded from release builds.
 - Combat balance is a first pass and intentionally rough.

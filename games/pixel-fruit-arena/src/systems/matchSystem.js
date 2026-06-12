@@ -17,6 +17,7 @@ export function createMatch({ stage, players, fruits }) {
       elapsed += dt;
       events.length = 0;
       for (let i = effects.length - 1; i >= 0; i -= 1) {
+        effects[i].age = (effects[i].age || 0) + dt;
         effects[i].ttl -= dt;
         if (effects[i].ttl <= 0) effects.splice(i, 1);
       }
@@ -31,14 +32,14 @@ export function createMatch({ stage, players, fruits }) {
         if (!f || f.stocks <= 0) continue;
         applyAttack(f, fighters.filter((other) => other !== f), f.fruit.abilities[action.index], events);
       }
-      effects.push(...events);
+      effects.push(...events.map((event) => ({ age: 0, duration: event.duration || event.ttl || 0.25, ...event })));
       for (const f of fighters) {
         if (f.stocks > 0 && checkRingOut(f, stage)) {
           const spawn = stage.respawns[f.slot % stage.respawns.length];
           f.x = spawn.x;
           f.y = spawn.y;
           f.invulnerable = 1.35;
-          effects.push({ ttl: 0.65, type: "ringout", fighter: f.id, x: spawn.x, y: spawn.y, color: f.fruit.color });
+          effects.push({ age: 0, ttl: 0.65, duration: 0.65, type: "ringout", fighter: f.id, x: spawn.x, y: spawn.y, color: f.fruit.color });
         }
       }
     },
