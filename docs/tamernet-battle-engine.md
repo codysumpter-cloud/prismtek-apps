@@ -12,7 +12,7 @@ The differentiated product is not a turn-based clone. It is a battle-first creat
 
 ## Current sandbox
 
-`apps/tamernet-battle-sandbox` is the first local prototype. It is intentionally tiny and browser-native so the combat toy can be tested before building MMO infrastructure.
+`games/tamernet-battle-sandbox` is the first local prototype. It is intentionally tiny and browser-native so the combat toy can be tested before building MMO infrastructure.
 
 ## Public reference: maierfelix/PokeMMO
 

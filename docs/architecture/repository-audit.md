@@ -29,7 +29,7 @@ This audit classifies the current major repo surfaces by their actual role so fu
 | `apps/bemore-macos/` | Runnable app | Web/desktop-style BeMore Buddy surface with local gateway pieces. Needs later classification as desktop shell vs web app. | `apps/desktop/bemore-macos/` until proven otherwise |
 | `apps/web/` | Runnable app | React/Vite web product surface. | `apps/web/bemore-web/` |
 | `apps/prismds-os/` | Runnable app | RGDS userland launcher layer. Not a boot image or flasher. | `apps/desktop/prismds-os/` or `tools/launchers/prismds-os/`; decide by release packaging |
-| `apps/tamernet-battle-sandbox/` | Game | Browser-playable battle sandbox prototype. | `games/tamernet-battle-sandbox/` |
+| `games/tamernet-battle-sandbox/` | Game | Browser-playable battle sandbox prototype. | `games/tamernet-battle-sandbox/` |
 | `apps/bemore-cli/` | Developer tool | CLI surface for repo/product workflows. | `tools/cli/bemore-cli/` |
 | `apps/api/` | Service | Product-facing API server. | `services/api/` |
 | `integrations/buddy-chat/` | Service | Deployable Buddy chat integration/server with VPS runbook. | `services/buddy-chat/` |
@@ -54,10 +54,10 @@ This audit classifies the current major repo surfaces by their actual role so fu
 
 ## Immediate findings
 
-1. `apps/` currently mixes mobile apps, desktop apps, web apps, CLI tools, services, launcher products, and games.
+1. `apps/` still mixes mobile apps, desktop apps, web apps, CLI tools, services, and launcher products.
 2. SwiftUI is present for Apple targets, but it must not define repository-wide architecture.
 3. `integrations/buddy-chat` behaves like a service, not a miscellaneous integration folder.
-4. `apps/tamernet-battle-sandbox` is the safest first physical move because it is a browser game prototype with simple local serving.
+4. `games/tamernet-battle-sandbox` is now the first staged migration into the games workspace.
 5. Apple projects should move last because Xcode project paths, generated projects, signing, TestFlight, and Xcode Cloud are path-sensitive.
 6. Root/generated artifacts should be quarantined only after reference scans and build validation.
 

@@ -213,7 +213,7 @@ LibHunt:
 
 ## Recommended game-mode roadmap
 
-1. Keep the current `apps/tamernet-battle-sandbox` as a playable toy.
+1. Keep `games/tamernet-battle-sandbox` as a playable toy.
 2. Create `packages/tamernet-battle-core`.
 3. Move commands, entities, hitboxes, cooldowns, and replay events into that package.
 4. Add deterministic simulation tests.
