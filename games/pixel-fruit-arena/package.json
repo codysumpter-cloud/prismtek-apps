@@ -2,6 +2,7 @@
   "name": "@prismtek/pixel-fruit-arena",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "description": "Pixel Fruit Arena MVP - local multiplayer platform fighting prototype.",
   "scripts": {
     "build": "node tools/build.mjs",
