@@ -7,10 +7,10 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dist = path.join(root, "dist");
 await rm(dist, { recursive: true, force: true });
 await mkdir(dist, { recursive: true });
-for (const entry of ["index.html", "src", "data", "assets"]) {
+for (const entry of ["index.html", "app.webmanifest", "sw.js", "src", "data", "assets"]) {
   await cp(path.join(root, entry), path.join(dist, entry), { recursive: true });
 }
 const referencePath = path.join(dist, "assets", "reference");
 await rm(referencePath, { recursive: true, force: true });
 if (existsSync(referencePath)) throw new Error("Reference assets leaked into release build");
-console.log("Build complete. USE_REFERENCE_TEST_ASSETS forced false for release artifacts.");
+console.log("Build complete. USE_REFERENCE_TEST_ASSETS forced false for release artifacts. PWA shell copied.");
