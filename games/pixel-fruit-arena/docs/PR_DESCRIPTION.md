@@ -39,4 +39,4 @@ The build script removes `games/pixel-fruit-arena/dist/assets/reference` so refe
 - Multiplayer is local only.
 - No package-managed engine dependency is used in this workspace MVP.
 - Browser QA was blocked in this environment by the OS sandbox error `CreateProcessAsUserW failed: 5`.
-- Local branch, commit, push, and PR creation could not run here because this workspace has no `.git` directory and `git`/`gh` are not available on PATH.
+- Local `git`, `gh`, `node`, `npm`, and `python` were not available on PATH, so branch repair and PR updates were completed through the GitHub connector.
