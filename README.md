@@ -97,20 +97,22 @@ http://localhost:8080
 
 Known limits: no server authority, multiplayer, PvP duel mode, marketplace, breeding, economy, legendary custody, or BYO-file importer yet.
 
-## Apps and programs
+## Products
 
-| Surface | Current path | Role |
-| --- | --- | --- |
-| BeMore iOS native | `apps/bemore-ios-native/` | Mobile app |
-| BeMore Agent Platform iOS | `apps/bemoreagent-platform-ios/` | Mobile app with platform/admin behavior |
-| BeMore macOS native | `apps/bemore-macos-native/` | Desktop app |
-| BeMore desktop/web shell | `apps/bemore-macos/` | Desktop-style web app/local shell |
-| BeMore web | `apps/web/` | Browser product surface |
-| PrismDS for RGDS | `apps/prismds-os/` | RGDS launcher/userland product |
-| BeMore CLI | `apps/bemore-cli/` | Developer CLI |
-| Product API | `apps/api/` | Service |
-| Buddy chat integration | `integrations/buddy-chat/` | Service/integration server |
-| Shared packages | `packages/*` | Reused product/service code |
+| Product | Category | Current path | Role |
+| --- | --- | --- | --- |
+| Pixel Fruit Arena | Game | `games/pixel-fruit-arena/` | Playable browser/PWA platform-fighting MVP |
+| TamerNet Battle Sandbox | Game prototype | `games/tamernet-battle-sandbox/` | Playable browser creature-battle sandbox |
+| BeMore iOS native | Mobile app | `apps/bemore-ios-native/` | Native iOS Buddy/operator app |
+| BeMore Agent Platform iOS | Mobile app | `apps/bemoreagent-platform-ios/` | iOS platform/admin-capable app |
+| BeMore macOS native | Desktop app | `apps/bemore-macos-native/` | Native macOS app |
+| BeMore desktop/web shell | Desktop/web app | `apps/bemore-macos/` | Desktop-style web app/local shell |
+| BeMore web | Web app | `apps/web/` | Browser product surface |
+| PrismDS for RGDS | Launcher/userland product | `apps/prismds-os/` | RGDS launcher/userland product |
+| BeMore CLI | Developer tool | `apps/bemore-cli/` | Developer CLI |
+| Product API | Service | `apps/api/` | Product API service |
+| Buddy chat integration | Service/integration | `integrations/buddy-chat/` | Buddy chat integration server |
+| Shared packages | Shared code | `packages/*` | Reused product/service code |
 
 ## Repository model
 
