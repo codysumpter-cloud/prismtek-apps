@@ -2,6 +2,18 @@
 
 Use this checklist for local smoke testing only. Do not use it to claim platform verification unless the exact platform was tested.
 
+## Automated Smoke Checks
+
+Run these before manual QA:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\test.ps1
+powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\validate_sprites.ps1 games\pixel-fruit-arena\assets\characters\prismtek_placeholder_character.json
+powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\build.ps1
+```
+
+The Node test imports runtime modules and checks all fruit attacks, 2-player match creation, combat events, ring-outs, match completion, and release guards. The PowerShell test runs the Node smoke test when Node.js is available.
+
 ## Startup
 
 - Serve the game over HTTP from `games/pixel-fruit-arena/`.
