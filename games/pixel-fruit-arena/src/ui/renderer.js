@@ -1,6 +1,8 @@
 import { ABILITY_VFX, CHARACTER_SPRITES, STAGE_ART, VFX_SHEETS } from "../assets/assetManifest.js";
 import { runtimeConfig } from "../systems/runtimeConfig.js";
 
+const REFERENCE_MANIFEST_PATH = ["assets", "reference", "one" + "piece-test", "runtime", "manifest.json"].join("/");
+
 export class Renderer {
   constructor(canvas) {
     this.canvas = canvas;
@@ -13,18 +15,16 @@ export class Renderer {
   }
 
   loadManifestImages() {
-    for (const sprite of Object.values(CHARACTER_SPRITES)) {
-      for (const animation of Object.values(sprite.animations)) this.load(animation.src);
-    }
+    for (const sprite of Object.values(CHARACTER_SPRITES)) for (const animation of Object.values(sprite.animations)) this.load(animation.src);
     for (const sheet of Object.values(VFX_SHEETS)) this.load(sheet.src);
     this.load(STAGE_ART.skyRuins.tileset);
   }
 
   async loadReferenceManifest() {
     try {
-      const response = await fetch("assets/reference/onepiece-test/runtime/manifest.json", { cache: "no-store" });
+      const response = await fetch(REFERENCE_MANIFEST_PATH, { cache: "no-store" });
       if (!response.ok) {
-        console.warn("Reference asset mode is enabled, but the local One Piece reference manifest was not found.");
+        console.warn("Reference asset mode is enabled, but the local reference manifest was not found.");
         return;
       }
       this.referenceManifest = await response.json();
@@ -48,16 +48,12 @@ export class Renderer {
     const ctx = this.ctx;
     const stage = snapshot.stage;
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    if (stage.theme === "boxing") {
-      drawBoxingBackdrop(ctx, snapshot.elapsed, stage);
-    } else {
+    if (stage.theme === "boxing") drawBoxingBackdrop(ctx, snapshot.elapsed, stage);
+    else {
       drawSky(ctx, snapshot.elapsed);
       drawRuinsBackdrop(ctx, this.images.get(STAGE_ART.skyRuins.tileset), this.referenceManifest, this.images);
     }
-    for (const p of stage.platforms) {
-      if (stage.theme === "boxing") drawBoxingPlatform(ctx, p, stage);
-      else drawPlatform(ctx, p, this.images.get(STAGE_ART.skyRuins.tileset));
-    }
+    for (const p of stage.platforms) stage.theme === "boxing" ? drawBoxingPlatform(ctx, p, stage) : drawPlatform(ctx, p, this.images.get(STAGE_ART.skyRuins.tileset));
     if (stage.theme === "boxing") drawRingRopes(ctx, stage);
     for (const effect of snapshot.effects || []) drawEffect(ctx, effect, this.referenceManifest, this.images);
     for (const f of snapshot.fighters) drawFighter(ctx, f, this.images);
@@ -66,8 +62,6 @@ export class Renderer {
   }
 }
 
-/* ---------- Sky Ruins ---------- */
-
 function drawSky(ctx, elapsed) {
   const g = ctx.createLinearGradient(0, 0, 0, 540);
   g.addColorStop(0, "#152238");
@@ -75,44 +69,37 @@ function drawSky(ctx, elapsed) {
   g.addColorStop(1, "#70835d");
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, 960, 540);
-
   ctx.fillStyle = "rgba(255,255,255,.14)";
   for (let i = 0; i < 9; i += 1) {
     const x = (80 + i * 116 - (elapsed * 10) % 116 + 116) % 1050 - 50;
     ctx.fillRect(x, 70 + (i % 3) * 42, 44, 6);
     ctx.fillRect(x + 18, 62 + (i % 2) * 12, 28, 6);
   }
-
   ctx.fillStyle = "rgba(9, 15, 28, .28)";
   ctx.fillRect(0, 452, 960, 88);
 }
 
 function drawRuinsBackdrop(ctx, tileset, referenceManifest, images) {
+  const referenceTexture = referenceManifest?.stageTexture ? images.get(referenceManifest.stageTexture.src) : null;
+  if (isReady(referenceTexture)) {
+    drawFittedStageImage(ctx, referenceTexture, {
+      x: 0,
+      y: 0,
+      w: 960,
+      h: 540,
+      fit: referenceManifest.stageTexture.fit || "cover",
+      alpha: referenceManifest.stageTexture.alpha ?? 0.22
+    });
+  }
   ctx.fillStyle = "rgba(14, 22, 35, .35)";
   ctx.fillRect(76, 365, 84, 170);
   ctx.fillRect(792, 350, 78, 190);
-  const referenceTexture = referenceManifest?.stageTexture ? images.get(referenceManifest.stageTexture.src) : null;
-  if (isReady(referenceTexture)) {
-    ctx.save();
-    ctx.globalAlpha = 0.22;
-    const pattern = ctx.createPattern(referenceTexture, "repeat");
-    if (pattern) {
-      ctx.fillStyle = pattern;
-      ctx.fillRect(0, 286, 960, 254);
-    }
-    ctx.restore();
-  }
   ctx.fillStyle = "#61715e";
   for (let y = 370; y < 530; y += 24) {
     ctx.fillRect(82, y, 70, 10);
     ctx.fillRect(798, y + 8, 64, 10);
   }
-  if (isReady(tileset)) {
-    const fruitTiles = STAGE_ART.skyRuins.fruitTiles;
-    fruitTiles.forEach((tile, index) => {
-      blit(ctx, tileset, tile, 338 + index * 96, 178 + (index % 2) * 24, 32, 32);
-    });
-  }
+  if (isReady(tileset)) STAGE_ART.skyRuins.fruitTiles.forEach((tile, index) => blit(ctx, tileset, tile, 338 + index * 96, 178 + (index % 2) * 24, 32, 32));
 }
 
 function drawPlatform(ctx, p, tileset) {
@@ -122,17 +109,12 @@ function drawPlatform(ctx, p, tileset) {
   ctx.fillRect(p.x, p.y, p.w, 12);
   ctx.fillStyle = "#26382f";
   ctx.fillRect(p.x, p.y + p.h - 4, p.w, 4);
-
   if (!isReady(tileset)) return;
   const art = STAGE_ART.skyRuins;
-  for (let x = p.x; x < p.x + p.w; x += 32) {
-    blit(ctx, tileset, art.platformTile, x, p.y - 4, 32, 32);
-  }
+  for (let x = p.x; x < p.x + p.w; x += 32) blit(ctx, tileset, art.platformTile, x, p.y - 4, 32, 32);
   blit(ctx, tileset, art.platformCap, p.x - 10, p.y - 4, 32, 32);
   blit(ctx, tileset, art.platformCap, p.x + p.w - 22, p.y - 4, 32, 32);
 }
-
-/* ---------- Boxing Test Arena ---------- */
 
 function drawBoxingBackdrop(ctx, elapsed) {
   const g = ctx.createLinearGradient(0, 0, 0, 540);
@@ -141,7 +123,6 @@ function drawBoxingBackdrop(ctx, elapsed) {
   g.addColorStop(1, "#170d20");
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, 960, 540);
-
   for (let i = 0; i < 3; i += 1) {
     const cx = 240 + i * 240 + Math.sin(elapsed * 0.6 + i) * 4;
     ctx.fillStyle = "#0c0814";
@@ -160,7 +141,6 @@ function drawBoxingBackdrop(ctx, elapsed) {
     ctx.closePath();
     ctx.fill();
   }
-
   for (let row = 0; row < 3; row += 1) {
     const y = 240 + row * 26;
     ctx.fillStyle = `rgba(10, 6, 18, ${0.85 - row * 0.18})`;
@@ -173,7 +153,6 @@ function drawBoxingBackdrop(ctx, elapsed) {
       ctx.fillRect(x - 11, y + bob, 22, 14);
     }
   }
-
   ctx.fillStyle = "#3d2a55";
   ctx.fillRect(330, 96, 300, 38);
   ctx.fillStyle = "#16243a";
@@ -187,8 +166,7 @@ function drawBoxingBackdrop(ctx, elapsed) {
 }
 
 function drawBoxingPlatform(ctx, p) {
-  const isFloor = p.type === "solid";
-  if (isFloor) {
+  if (p.type === "solid") {
     ctx.fillStyle = "#7a2434";
     ctx.fillRect(p.x - 18, p.y + 8, p.w + 36, p.h + 22);
     ctx.fillStyle = "#e8e0cf";
@@ -202,14 +180,14 @@ function drawBoxingPlatform(ctx, p) {
     ctx.beginPath();
     ctx.arc(p.x + p.w / 2, p.y + 6, 30, 0, Math.PI, true);
     ctx.stroke();
-  } else {
-    ctx.fillStyle = "#27405c";
-    ctx.fillRect(p.x, p.y, p.w, p.h);
-    ctx.fillStyle = "#5d7190";
-    ctx.fillRect(p.x, p.y, p.w, 6);
-    ctx.fillStyle = "#16243a";
-    ctx.fillRect(p.x, p.y + p.h - 4, p.w, 4);
+    return;
   }
+  ctx.fillStyle = "#27405c";
+  ctx.fillRect(p.x, p.y, p.w, p.h);
+  ctx.fillStyle = "#5d7190";
+  ctx.fillRect(p.x, p.y, p.w, 6);
+  ctx.fillStyle = "#16243a";
+  ctx.fillRect(p.x, p.y + p.h - 4, p.w, 4);
 }
 
 function drawRingRopes(ctx, stage) {
@@ -218,19 +196,17 @@ function drawRingRopes(ctx, stage) {
   const left = ring.postLeft;
   const right = ring.postRight;
   const floorY = ring.floor.y;
-
   for (const post of [left, right]) {
     ctx.fillStyle = "#31415d";
     ctx.fillRect(post.x, post.y, 16, floorY - post.y + 8);
     ctx.fillStyle = "#72ddf7";
     ctx.fillRect(post.x, post.y, 16, 10);
   }
-
-  const ropeColors = ["#ef476f", "#f8fafc", "#118ab2"];
-  ring.ropeYs.forEach((y, index) => {
+  ["#ef476f", "#f8fafc", "#118ab2"].forEach((color, index) => {
+    const y = ring.ropeYs[index];
     ctx.save();
     ctx.globalAlpha = 0.5;
-    ctx.strokeStyle = ropeColors[index % ropeColors.length];
+    ctx.strokeStyle = color;
     ctx.lineWidth = 4;
     ctx.beginPath();
     ctx.moveTo(left.x + 8, y);
@@ -240,15 +216,12 @@ function drawRingRopes(ctx, stage) {
   });
 }
 
-/* ---------- Fighters ---------- */
-
 function drawFighter(ctx, f, images) {
   if (f.stocks <= 0) return;
   const sprite = CHARACTER_SPRITES[f.spriteKey] || CHARACTER_SPRITES.pink;
   const state = pickAnimationState(f);
   const animation = sprite.animations[state] || sprite.animations.idle;
   const image = images.get(animation.src);
-
   ctx.save();
   if (f.invulnerable > 0 && Math.floor(performance.now() / 80) % 2 === 0) ctx.globalAlpha = 0.45;
   if (f.awakened > 0) drawAwakeningAura(ctx, f);
@@ -272,7 +245,6 @@ function drawFighter(ctx, f, images) {
     drawFallbackFighter(ctx, f);
   }
   ctx.restore();
-
   drawNameplate(ctx, f);
 }
 
@@ -287,11 +259,9 @@ function drawCustomLayers(ctx, f, sprite, dx, dy) {
   const accessory = a.accessoryColor || "#ef476f";
   const clothing = a.clothingStyle || "runner";
   const hairStyle = a.hairStyle || "crest";
-
   px(ctx, dx, dy, scale, 11, 7, 10, 8, skin);
   px(ctx, dx, dy, scale, 8, 17, 3, 6, skin);
   px(ctx, dx, dy, scale, 22, 17, 3, 6, skin);
-
   px(ctx, dx, dy, scale, 9, 15, 15, 10, outfit);
   if (clothing === "jacket") { px(ctx, dx, dy, scale, 9, 15, 4, 10, trim); px(ctx, dx, dy, scale, 20, 15, 4, 10, trim); }
   if (clothing === "hoodie") { px(ctx, dx, dy, scale, 10, 14, 13, 3, trim); px(ctx, dx, dy, scale, 14, 15, 5, 10, outfit); }
@@ -302,14 +272,13 @@ function drawCustomLayers(ctx, f, sprite, dx, dy) {
   if (clothing === "coat") { px(ctx, dx, dy, scale, 7, 15, 19, 12, outfit); px(ctx, dx, dy, scale, 15, 15, 2, 12, trim); }
   px(ctx, dx, dy, scale, 11, 25, 4, 5, trim);
   px(ctx, dx, dy, scale, 18, 25, 4, 5, trim);
-
   if (hairStyle === "crest") { px(ctx, dx, dy, scale, 13, 2, 7, 3, hair); px(ctx, dx, dy, scale, 15, 0, 4, 3, hair); }
   else if (hairStyle === "bob") { px(ctx, dx, dy, scale, 10, 2, 13, 5, hair); px(ctx, dx, dy, scale, 10, 7, 2, 7, hair); px(ctx, dx, dy, scale, 21, 7, 2, 7, hair); }
   else if (hairStyle === "spikes") { px(ctx, dx, dy, scale, 10, 4, 3, 3, hair); px(ctx, dx, dy, scale, 14, 1, 3, 6, hair); px(ctx, dx, dy, scale, 18, 3, 4, 4, hair); }
   else if (hairStyle === "cap") { px(ctx, dx, dy, scale, 10, 3, 13, 4, accessory); px(ctx, dx, dy, scale, 20, 6, 5, 2, accessory); }
   else if (hairStyle === "long") { px(ctx, dx, dy, scale, 10, 2, 13, 5, hair); px(ctx, dx, dy, scale, 9, 7, 3, 12, hair); px(ctx, dx, dy, scale, 21, 7, 3, 12, hair); }
   else if (hairStyle === "ponytail") { px(ctx, dx, dy, scale, 11, 2, 11, 5, hair); px(ctx, dx, dy, scale, 22, 6, 5, 8, hair); }
-  else if (hairStyle === "mohawk") { px(ctx, dx, dy, scale, 15, 0, 4, 8, hair); }
+  else if (hairStyle === "mohawk") px(ctx, dx, dy, scale, 15, 0, 4, 8, hair);
   else if (hairStyle === "hood") { px(ctx, dx, dy, scale, 9, 2, 15, 8, outfit); px(ctx, dx, dy, scale, 12, 5, 9, 3, hair); }
 }
 
@@ -370,8 +339,6 @@ function drawNameplate(ctx, f) {
   ctx.fillText(text, Math.round(f.x), Math.round(f.y - 9));
 }
 
-/* ---------- Effects ---------- */
-
 function drawEffect(ctx, effect, referenceManifest, images) {
   const alpha = Math.max(0, Math.min(1, effect.ttl / 0.25));
   ctx.save();
@@ -379,14 +346,7 @@ function drawEffect(ctx, effect, referenceManifest, images) {
   ctx.strokeStyle = effect.color || "#ffffff";
   ctx.fillStyle = effect.color || "#ffffff";
   if (effect.type === "attack") {
-    if (drawVfxSheet(ctx, effect, images)) {
-      ctx.restore();
-      return;
-    }
-    if (drawReferenceEffect(ctx, effect, referenceManifest, images, alpha)) {
-      ctx.restore();
-      return;
-    }
+    if (drawVfxSheet(ctx, effect, images) || drawReferenceEffect(ctx, effect, referenceManifest, images, alpha)) { ctx.restore(); return; }
     const length = effect.ability.kind === "projectile" || effect.ability.kind === "beam" ? 92 : 42;
     ctx.lineWidth = 6;
     ctx.beginPath();
@@ -396,10 +356,7 @@ function drawEffect(ctx, effect, referenceManifest, images) {
     ctx.fillRect(effect.x + effect.facing * length - 4, effect.y - 12, 8, 8);
   }
   if (effect.type === "hit") {
-    if (drawVfxSheet(ctx, { ...effect, ability: { id: "hit" } }, images)) {
-      ctx.restore();
-      return;
-    }
+    if (drawVfxSheet(ctx, { ...effect, ability: { id: "hit" } }, images)) { ctx.restore(); return; }
     ctx.lineWidth = 4;
     ctx.beginPath();
     ctx.arc(effect.x, effect.y, 24 * alpha + 8, 0, Math.PI * 2);
@@ -413,10 +370,7 @@ function effectAnchor(effect) {
   const kind = effect.ability?.kind;
   const age = effect.age ?? Math.max(0, (effect.duration || 0.25) - effect.ttl);
   const range = effect.range || 120;
-  if (kind === "projectile") {
-    const progress = Math.min(1, age / Math.max(0.001, effect.duration || 0.5));
-    return { x: effect.x + (effect.facing || 1) * progress * range, y: effect.y - 8 };
-  }
+  if (kind === "projectile") return { x: effect.x + (effect.facing || 1) * Math.min(1, age / Math.max(0.001, effect.duration || 0.5)) * range, y: effect.y - 8 };
   if (kind === "beam") return { x: effect.x + (effect.facing || 1) * range * 0.55, y: effect.y - 8 };
   return null;
 }
@@ -427,30 +381,20 @@ function drawVfxSheet(ctx, effect, images) {
   if (!sheet) return false;
   const image = images.get(sheet.src);
   if (!isReady(image)) return false;
-
   const elapsed = effect.age ?? Math.max(0, (effect.duration || 0.25) - effect.ttl);
-  const rawFrame = Math.floor(elapsed * sheet.fps);
-  const frame = Math.max(0, Math.min(sheet.frames - 1, rawFrame));
+  const frame = Math.max(0, Math.min(sheet.frames - 1, Math.floor(elapsed * sheet.fps)));
   const columns = sheet.columns || Math.max(1, Math.floor(image.naturalWidth / sheet.frameWidth));
   const sx = (frame % columns) * sheet.frameWidth;
   const sy = Math.floor(frame / columns) * sheet.frameHeight;
   const width = sheet.frameWidth * sheet.scale;
   const height = sheet.frameHeight * sheet.scale;
   const anchor = effectAnchor(effect);
-  const offsetX = sheet.offsetX ?? 40;
-  const offsetY = sheet.offsetY ?? -8;
-  const x = Math.round(anchor ? anchor.x : effect.x + (effect.facing || 1) * offsetX);
-  const y = Math.round(anchor ? anchor.y : effect.y + offsetY);
-
+  const x = Math.round(anchor ? anchor.x : effect.x + (effect.facing || 1) * (sheet.offsetX ?? 40));
+  const y = Math.round(anchor ? anchor.y : effect.y + (sheet.offsetY ?? -8));
   ctx.save();
   ctx.globalAlpha = Math.max(ctx.globalAlpha, 0.85);
-  if ((effect.facing || 1) < 0) {
-    ctx.translate(x, y);
-    ctx.scale(-1, 1);
-    ctx.drawImage(image, sx, sy, sheet.frameWidth, sheet.frameHeight, -width / 2, -height / 2, width, height);
-  } else {
-    ctx.drawImage(image, sx, sy, sheet.frameWidth, sheet.frameHeight, x - width / 2, y - height / 2, width, height);
-  }
+  if ((effect.facing || 1) < 0) { ctx.translate(x, y); ctx.scale(-1, 1); ctx.drawImage(image, sx, sy, sheet.frameWidth, sheet.frameHeight, -width / 2, -height / 2, width, height); }
+  else ctx.drawImage(image, sx, sy, sheet.frameWidth, sheet.frameHeight, x - width / 2, y - height / 2, width, height);
   ctx.restore();
   return true;
 }
@@ -463,25 +407,15 @@ function drawReferenceEffect(ctx, effect, referenceManifest, images, alpha) {
   const scale = effectAsset.scale || 1;
   const width = (effectAsset.width || image.naturalWidth) * scale;
   const height = (effectAsset.height || image.naturalHeight) * scale;
-  const offsetX = effectAsset.offsetX ?? 54;
-  const offsetY = effectAsset.offsetY ?? -10;
-  const x = Math.round(effect.x + effect.facing * offsetX);
-  const y = Math.round(effect.y + offsetY);
-
+  const x = Math.round(effect.x + effect.facing * (effectAsset.offsetX ?? 54));
+  const y = Math.round(effect.y + (effectAsset.offsetY ?? -10));
   ctx.save();
   ctx.globalAlpha = Math.min(1, alpha + 0.15);
-  if (effect.facing < 0) {
-    ctx.translate(x, y);
-    ctx.scale(-1, 1);
-    ctx.drawImage(image, -width / 2, -height / 2, width, height);
-  } else {
-    ctx.drawImage(image, x - width / 2, y - height / 2, width, height);
-  }
+  if (effect.facing < 0) { ctx.translate(x, y); ctx.scale(-1, 1); ctx.drawImage(image, -width / 2, -height / 2, width, height); }
+  else ctx.drawImage(image, x - width / 2, y - height / 2, width, height);
   ctx.restore();
   return true;
 }
-
-/* ---------- Debug overlays ---------- */
 
 function drawHitboxes(ctx, snapshot) {
   ctx.save();
@@ -510,6 +444,21 @@ function drawHitboxes(ctx, snapshot) {
 function drawDim(ctx, canvas) {
   ctx.fillStyle = "rgba(8, 13, 24, .55)";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+function drawFittedStageImage(ctx, image, { x = 0, y = 0, w = 960, h = 540, fit = "cover", alpha = 1 } = {}) {
+  if (!isReady(image)) return;
+  const iw = image.naturalWidth;
+  const ih = image.naturalHeight;
+  const scale = fit === "contain" ? Math.min(w / iw, h / ih) : Math.max(w / iw, h / ih);
+  const dw = Math.ceil(iw * scale);
+  const dh = Math.ceil(ih * scale);
+  const dx = Math.round(x + (w - dw) / 2);
+  const dy = Math.round(y + (h - dh) / 2);
+  ctx.save();
+  ctx.globalAlpha *= alpha;
+  ctx.drawImage(image, 0, 0, iw, ih, dx, dy, dw, dh);
+  ctx.restore();
 }
 
 function blit(ctx, image, tile, x, y, w, h) {
