@@ -1,4 +1,5 @@
 dist/
+artifacts/
 .asset-tmp/
 assets/reference/onepiece-test/*
 !assets/reference/onepiece-test/.gitkeep
