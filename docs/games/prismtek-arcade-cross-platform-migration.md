@@ -46,8 +46,36 @@ The five arcade games now have first-class `games/<slug>/` folders on the migrat
 - per-game README files
 - a shared Prismtek arcade runtime under `games/_shared/prismtek-arcade/`
 - a Node smoke validator that checks each game folder has an HTML mount point, runtime import, boot call, and package scripts
+- a PowerShell smoke validator for Windows/no-Node validation environments
 
 This is a runnable browser import path. It is not yet a packaged itch.io, desktop, mobile, or Nintendo DS release.
+
+## Latest local validation receipt
+
+Date: June 13, 2026
+
+Environment: Windows PowerShell in a real `prismtek-apps` checkout, with standalone `node`, `npm`, and Python unavailable on PATH.
+
+Command run:
+
+```powershell
+$games = @('flappy-pixel','crossy-pixel','pixel-snake','neon-brick-breaker','pixel-stacker')
+foreach ($game in $games) {
+  powershell -ExecutionPolicy Bypass -File games\_shared\prismtek-arcade\smoke.ps1 games\$game
+}
+```
+
+Result:
+
+- `flappy-pixel` smoke passed.
+- `crossy-pixel` smoke passed.
+- `pixel-snake` smoke passed.
+- `neon-brick-breaker` smoke passed.
+- `pixel-stacker` smoke passed.
+- All five arcade `package.json` files parsed successfully.
+- `git diff --check` exited successfully. It reported line-ending warnings for touched package files, but no whitespace errors.
+
+The Node smoke path remains unverified in this environment because `node` and `npm` are unavailable on PATH.
 
 ## Mega-app inspection result
 
