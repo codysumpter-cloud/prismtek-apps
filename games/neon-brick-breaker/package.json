@@ -1,0 +1,1 @@
+{"name":"@prismtek/neon-brick-game","version":"0.1.0","private":true,"type":"module","scripts":{"dev":"python3 -m http.server 4173","test":"node ../_shared/prismtek-arcade/smoke.mjs .","build":"npm test"},"license":"UNLICENSED"}
