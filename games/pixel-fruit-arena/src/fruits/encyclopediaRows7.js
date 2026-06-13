@@ -1,0 +1,1 @@
+export default `soulforge,Soulforge,legendary,spirit,soul_summons;shadowloom,Shadowloom,legendary,spirit,shadow_theft;ghostwhisper,Ghostwhisper,rare,spirit,ghost_projections;revival,Revival,legendary,spirit,second_life;toybox,Toybox,legendary,control,toy_transformation`;
