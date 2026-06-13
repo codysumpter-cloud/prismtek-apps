@@ -11,6 +11,7 @@ const KB1_TAPS = {
   Period: { type: "attack", index: 1 },
   Comma: { type: "attack", index: 2 },
   ShiftRight: { type: "dodge" },
+  ControlRight: { type: "haki" },
   Enter: { type: "awaken" }
 };
 const KB2_HOLDS = {
@@ -23,6 +24,7 @@ const KB2_TAPS = {
   KeyG: { type: "attack", index: 1 },
   KeyH: { type: "attack", index: 2 },
   ShiftLeft: { type: "dodge" },
+  KeyQ: { type: "haki" },
   KeyT: { type: "awaken" }
 };
 // Held vertical aim for directional attack modifiers (up/down variants).
@@ -78,7 +80,7 @@ export class KeyboardInput {
 }
 
 // Standard-mapping gamepad buttons:
-// 0=A 1=B 2=X 3=Y 4=LB 5=RB 9=Start 12=Up 13=Down 14=Left 15=Right
+// 0=A 1=B 2=X 3=Y 4=LB 5=RB 6=LT 9=Start 12=Up 13=Down 14=Left 15=Right
 export class GamepadInput {
   constructor() {
     this.prev = new Map();
@@ -106,6 +108,7 @@ export class GamepadInput {
       this.edge(pad, 3, () => actions.push({ device, type: "attack", index: 1 }));
       this.edge(pad, 1, () => actions.push({ device, type: "attack", index: 2 }));
       this.edge(pad, 4, () => actions.push({ device, type: "dodge" }));
+      this.edge(pad, 6, () => actions.push({ device, type: "haki" }));
       this.edge(pad, 5, () => actions.push({ device, type: "awaken" }));
       this.edge(pad, 9, () => actions.push({ device, type: "menu" }));
     }
