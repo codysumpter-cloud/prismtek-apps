@@ -1,0 +1,1 @@
+export default `heatpress,Heatpress,rare,elemental,body_heat;ovencore,Ovencore,rare,elemental,ambient_heat_fields;buttercream,Buttercream,common,control,cream_constructs;candyglass,Candyglass,common,control,candy_walls;magnetide,Magnetide,legendary,metal,metal_attraction`;
