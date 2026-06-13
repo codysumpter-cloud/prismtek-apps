@@ -6,6 +6,7 @@
 [<kbd>⬇ GitHub Releases</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/releases)
 [<kbd>▶ Open Pixel Fruit Arena</kbd>](games/pixel-fruit-arena/)
 [<kbd>▶ Open TamerNet Battle Sandbox</kbd>](games/tamernet-battle-sandbox/)
+[<kbd>🕹 Arcade migration tracker</kbd>](docs/games/prismtek-arcade-cross-platform-migration.md)
 
 Prismtek-apps is the runnable software workspace for Prismtek products: mobile apps, desktop apps, web apps, games, tools, services, demos, and shipped product surfaces.
 
@@ -125,6 +126,21 @@ http://localhost:8080
 
 Known limits: no server authority, multiplayer, PvP duel mode, marketplace, breeding, economy, legendary custody, or BYO-file importer yet.
 
+### Incoming Prismtek arcade migration
+
+[<kbd>Open migration tracker</kbd>](docs/games/prismtek-arcade-cross-platform-migration.md)
+[<kbd>Open GitHub issue #154</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/issues/154)
+
+Verified incoming games from `prismtek-site`:
+
+- Flappy Pixel
+- Crossy Pixel
+- Pixel Snake
+- Neon Brick Breaker
+- Pixel Stacker
+
+These are not listed as playable from `prismtek-apps` until their `games/<slug>/` folders exist and builds are validated.
+
 ## Products
 
 | Product | Category | Current path | Role |
@@ -175,6 +191,7 @@ Start here:
 - [`docs/architecture/monorepo-target-map.md`](docs/architecture/monorepo-target-map.md)
 - [`docs/architecture/path-ownership.md`](docs/architecture/path-ownership.md)
 - [`docs/PLATFORM_TEST_MATRIX.md`](docs/PLATFORM_TEST_MATRIX.md)
+- [`docs/games/prismtek-arcade-cross-platform-migration.md`](docs/games/prismtek-arcade-cross-platform-migration.md)
 
 These documents are the source of truth for staged repo reorganization.
 
