@@ -1,0 +1,1 @@
+export default `swimstone,Swimstone,rare,terrain,solid_swim;flagwave,Flagwave,common,control,flutter_surfaces;glare,Glare,rare,vision,xray_sight;luckluck,Luckluck,rare,fate,luck_bend;goldtouch,Goldtouch,legendary,metal,gold_control`;
