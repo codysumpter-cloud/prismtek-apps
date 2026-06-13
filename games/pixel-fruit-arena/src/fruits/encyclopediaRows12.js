@@ -1,0 +1,1 @@
+export default `slowmo,Slowmo,rare,time,slow_beams;washwave,Washwave,common,utility,cleanse;rustbite,Rustbite,common,metal,corrode_gear;wheelspin,Wheelspin,common,body,spinning_wheel_limbs;kiloweight,Kiloweight,common,body,weight_shifting`;
