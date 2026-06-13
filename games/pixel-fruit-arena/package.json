@@ -8,6 +8,7 @@
     "build": "node tools/build.mjs",
     "test": "node tools/test.mjs",
     "validate:assets": "python tools/validate_sprites.py assets/characters/prismtek_placeholder_character.json",
+    "import:shipoffools-fruits": "node tools/import_shipoffools_fruits.mjs",
     "build:ps": "powershell -ExecutionPolicy Bypass -File tools/build.ps1",
     "test:ps": "powershell -ExecutionPolicy Bypass -File tools/test.ps1",
     "validate:assets:ps": "powershell -ExecutionPolicy Bypass -File tools/validate_sprites.ps1 assets/characters/prismtek_placeholder_character.json",
