@@ -1,0 +1,1 @@
+export default `stormdragon,Stormdragon,mythic,beast,dragon_form;sunape,Sunape,mythic,beast,cartoon_elasticity;buddhalight,Buddhalight,legendary,beast,golden_giant_form;leopardclaw,Leopardclaw,rare,beast,predator_speed;wolfmoon,Wolfmoon,rare,beast,wolf_senses`;
