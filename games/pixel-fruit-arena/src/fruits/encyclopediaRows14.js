@@ -1,0 +1,1 @@
+export default `waxworks,Waxworks,common,control,wax_walls;bombpop,Bombpop,rare,explosive,blast_body;chopchop,Chopchop,rare,body,separate_parts;slipstream,Slipstream,common,body,smooth_slide;jacketbond,Jacketbond,common,utility,ally_bond`;
