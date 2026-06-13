@@ -1,4 +1,6 @@
-export const FRUITS = {
+import { PRISMTEK_ENCYCLOPEDIA_FRUITS } from "./prismtekFruitEncyclopedia.js";
+
+const STARTER_FRUITS = {
   flame: {
     id: "flame",
     name: "Flame Fruit",
@@ -72,6 +74,8 @@ export const FRUITS = {
     ]
   }
 };
+
+export const FRUITS = { ...STARTER_FRUITS, ...PRISMTEK_ENCYCLOPEDIA_FRUITS };
 
 export function masteryFor(character, fruitId) {
   return character.fruit_mastery?.[fruitId] || 0;
