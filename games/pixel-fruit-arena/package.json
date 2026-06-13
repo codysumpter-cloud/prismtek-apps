@@ -8,6 +8,7 @@
     "build": "node tools/build.mjs",
     "test": "node tools/test.mjs",
     "catalog:assets": "node tools/build_asset_catalog.mjs",
+    "validate:catalog": "node tools/validate_asset_catalog.mjs",
     "validate:assets": "python tools/validate_sprites.py assets/characters/prismtek_placeholder_character.json",
     "build:ps": "powershell -ExecutionPolicy Bypass -File tools/build.ps1",
     "test:ps": "powershell -ExecutionPolicy Bypass -File tools/test.ps1",
