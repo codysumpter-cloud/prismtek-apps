@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Flappy Pixel</title>
+    <style>
+      html,body{margin:0;min-height:100%;background:#101018;color:#f7f7ff;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}body{display:grid;place-items:center}.shell{width:min(94vw,560px);padding:18px;background:#17172a;border:3px solid #5ee7ff;box-shadow:0 0 0 4px #252545}header,footer{display:flex;align-items:center;justify-content:space-between;gap:12px}.eyebrow{margin:0;color:#ffd166;text-transform:uppercase;letter-spacing:.14em;font-size:12px}h1{margin:.1rem 0 .7rem;font-size:26px}canvas{width:100%;image-rendering:pixelated;background:#101018;border:2px solid #363659}.score{text-align:right;font-size:26px}.score small{display:block;font-size:11px;color:#9ca3af}button{font:inherit;color:#101018;background:#5ee7ff;border:0;padding:8px 12px;font-weight:700}footer{margin-top:10px;color:#d1d5db;font-size:13px}
+    </style>
+  </head>
+  <body>
+    <main id="game-root"></main>
+    <script type="module">
+      import { createArcadeGame } from "../_shared/prismtek-arcade/arcade-core.js";
+      createArcadeGame({ slug: "flappy-pixel", title: "Flappy Pixel", instructions: "Press Space, click, or tap to flap through the gates." });
+    </script>
+  </body>
+</html>
