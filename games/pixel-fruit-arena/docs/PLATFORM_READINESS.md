@@ -19,7 +19,7 @@ Pixel Fruit Arena is currently a verified local web/browser MVP. This matrix tra
 | Linux / Steam Deck | Unverified | Static web output should be browser-runnable, but there is no Linux/Steam Deck runtime, package, or device/browser receipt. |
 | RGDS Android mode | Unverified | No Android WebView/browser-on-RGDS runtime receipt, touch/control mapping receipt, APK, or RGDS Android artifact exists. |
 | RGDS Linux mode | Unverified | No RGDS Linux browser/runtime receipt, PortMaster package, native package, or device artifact exists. |
-| itch.io / downloadable ZIP | Partially verified | `npm run package:zip` now builds, validates `dist/`, and creates `artifacts/pixel-fruit-arena-web.zip` with `index.html` at the archive root. A real artifact/release/upload receipt is still required before calling it downloadable. |
+| itch.io / downloadable ZIP | Partially verified | ZIP packaging now builds, validates `dist/`, and creates `artifacts/pixel-fruit-arena-web.zip` with `index.html` at the archive root. A local Windows artifact receipt exists; public upload/download verification is still required before calling it verified downloadable support. |
 
 ## Local run receipt checklist
 
@@ -32,6 +32,14 @@ npm run validate:dist
 npm run package:zip
 ```
 
+PowerShell-only fallback from the repository root:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\test.ps1
+powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\validate_sprites.ps1 games\pixel-fruit-arena\assets\characters\prismtek_placeholder_character.json
+powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\package_zip.ps1
+```
+
 Expected artifact path after a successful package run:
 
 ```text
@@ -39,6 +47,31 @@ artifacts/pixel-fruit-arena-web.zip
 ```
 
 The ZIP should contain the contents of `dist/` at the archive root, including `index.html`.
+
+## Latest local artifact receipt
+
+Date: June 13, 2026
+
+Environment: Windows PowerShell in a real `prismtek-apps` checkout, with standalone `node`, `npm`, and Python unavailable on PATH.
+
+Commands run:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\test.ps1
+powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\validate_sprites.ps1 games\pixel-fruit-arena\assets\characters\prismtek_placeholder_character.json
+powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\package_zip.ps1
+powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\validate_dist.ps1
+git diff --check
+```
+
+Results:
+
+- PowerShell test script passed. Its Node smoke-test branch was skipped because `node` was unavailable on PATH.
+- Sprite validation passed for `assets/characters/prismtek_placeholder_character.json`.
+- `dist/` validation passed with 85 files, no `assets/reference`, and no `.gif` leaks.
+- `artifacts/pixel-fruit-arena-web.zip` was created with 87 entries and `index.html` at the archive root.
+- ZIP SHA-256: `6A0E85D4E663A6412D7F6EFFCC3B2D20C7D0D4C12A9A0D4F86DBD648AEEE2B8C`
+- `git diff --check` exited successfully. It reported line-ending warnings for touched text files, but no whitespace errors.
 
 ## Manual/device verification checklist
 
@@ -89,4 +122,4 @@ For each platform, capture the exact date, device/OS/browser, command/artifact u
 
 ## Honest current label
 
-Pixel Fruit Arena is a verified local web/browser MVP with a newly documented ZIP packaging path. It is not yet a fully verified cross-platform downloadable game.
+Pixel Fruit Arena is a verified local web/browser MVP with a locally verified ZIP packaging path. It is not yet a fully verified cross-platform downloadable game.

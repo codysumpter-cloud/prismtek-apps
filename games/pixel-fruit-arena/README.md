@@ -2,7 +2,7 @@
 
 Pixel Fruit Arena is a Prismtek platform-fighting MVP. Players create an original fighter, equip modular fruit powers, and battle locally with stocks, knockback, ring-outs, and awakening meters.
 
-Current honest label: **verified local web/browser MVP with a ZIP packaging path; not yet a fully verified cross-platform downloadable game.**
+Current honest label: **verified local web/browser MVP with a locally verified ZIP packaging path; not yet a fully verified cross-platform downloadable game.**
 
 ## Quick Start
 
@@ -69,6 +69,7 @@ Windows fallback from the repo root:
 powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\test.ps1
 powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\validate_sprites.ps1 games\pixel-fruit-arena\assets\characters\prismtek_placeholder_character.json
 powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\build.ps1
+powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\validate_dist.ps1
 ```
 
 `tools/test.mjs` imports the runtime modules and smoke-tests fruit attacks, PWA shell metadata, 2-player match creation, combat events, ring-outs, match completion, and release guards. `tools/test.ps1` runs the same runtime smoke test when Node.js is available.
@@ -95,7 +96,13 @@ Expected local artifact path:
 artifacts/pixel-fruit-arena-web.zip
 ```
 
-The ZIP contains the contents of `dist/` at the archive root, including `index.html`. The `artifacts/` folder is git-ignored; do not claim a downloadable release exists until this ZIP is actually generated and attached to a GitHub release, uploaded to itch.io, or otherwise published with a receipt.
+The ZIP contains the contents of `dist/` at the archive root, including `index.html`. The `artifacts/` folder is git-ignored; do not claim a public downloadable release exists until this ZIP is attached to a GitHub release, uploaded to itch.io, or otherwise published with a receipt.
+
+PowerShell-only fallback from the repo root:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\package_zip.ps1
+```
 
 ## Platform readiness
 
@@ -109,7 +116,7 @@ Full details live in [`docs/PLATFORM_READINESS.md`](docs/PLATFORM_READINESS.md).
 | Linux / Steam Deck | Unverified | No Linux/Steam Deck runtime, package, controller, or device receipt exists. |
 | RGDS Android mode | Unverified | No Android WebView/browser-on-RGDS runtime receipt, APK, or RGDS Android control receipt exists. |
 | RGDS Linux mode | Unverified | No RGDS Linux runtime, PortMaster-style package, or device receipt exists. |
-| itch.io / downloadable ZIP | Partially verified | ZIP packaging flow is now scripted, but an actual generated/uploaded artifact receipt is still required. |
+| itch.io / downloadable ZIP | Partially verified | ZIP packaging flow is scripted and has a local Windows artifact receipt; public upload/download verification is still required. |
 
 ## Controls
 
