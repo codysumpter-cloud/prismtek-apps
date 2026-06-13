@@ -1,0 +1,1 @@
+export const PRISMTEK_FRUIT_ENCYCLOPEDIA = [];
