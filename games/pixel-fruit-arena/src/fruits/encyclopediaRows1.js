@@ -1,0 +1,1 @@
+export default `ember,Ember,starter,elemental,fire_body;frostbite,Frostbite,starter,elemental,freezing_touch;stormvolt,Stormvolt,starter,elemental,lightning_body;gloom,Gloom,starter,gravity-dark,dark_pull;rubberheart,Rubberheart,starter,body,stretching`;
