@@ -7,6 +7,7 @@ This document tracks the verified migration path for moving Prismtek arcade game
 - Target repo: `codysumpter-cloud/prismtek-apps`
 - Target game root: `games/`
 - Related tracker: <https://github.com/codysumpter-cloud/prismtek-apps/issues/154>
+- Migration branch: `migrate/prismtek-arcade-games`
 
 ## Verified source repos
 
@@ -18,18 +19,35 @@ This document tracks the verified migration path for moving Prismtek arcade game
 
 `prismtek-site/src/arcade/game-catalog.tsx` and `prismtek-site/src/arcade/shared.ts` currently define five active arcade games:
 
-| Game ID | Name | Source component | Target path |
-| --- | --- | --- | --- |
-| `flappy-pixel` | Flappy Pixel | `src/arcade/games/FlappyPixelGame.tsx` | `games/flappy-pixel/` |
-| `crossy-pixel` | Crossy Pixel | `src/arcade/games/CrossyPixelGame.tsx` | `games/crossy-pixel/` |
-| `pixel-snake` | Pixel Snake | `src/arcade/games/PixelSnakeGame.tsx` | `games/pixel-snake/` |
-| `neon-brick-breaker` | Neon Brick Breaker | `src/arcade/games/NeonBrickBreakerGame.tsx` | `games/neon-brick-breaker/` |
-| `pixel-stacker` | Pixel Stacker | `src/arcade/games/PixelStackerGame.tsx` | `games/pixel-stacker/` |
+| Game ID | Name | Source component | Target path | Import state |
+| --- | --- | --- | --- | --- |
+| `flappy-pixel` | Flappy Pixel | `src/arcade/games/FlappyPixelGame.tsx` | `games/flappy-pixel/` | Browser folder imported |
+| `crossy-pixel` | Crossy Pixel | `src/arcade/games/CrossyPixelGame.tsx` | `games/crossy-pixel/` | Browser folder imported |
+| `pixel-snake` | Pixel Snake | `src/arcade/games/PixelSnakeGame.tsx` | `games/pixel-snake/` | Browser folder imported |
+| `neon-brick-breaker` | Neon Brick Breaker | `src/arcade/games/NeonBrickBreakerGame.tsx` | `games/neon-brick-breaker/` | Browser folder imported |
+| `pixel-stacker` | Pixel Stacker | `src/arcade/games/PixelStackerGame.tsx` | `games/pixel-stacker/` | Browser folder imported |
 
-The target repo currently documents only these games:
+## Current target repo game inventory
 
 - `games/pixel-fruit-arena/`
 - `games/tamernet-battle-sandbox/`
+- `games/flappy-pixel/`
+- `games/crossy-pixel/`
+- `games/pixel-snake/`
+- `games/neon-brick-breaker/`
+- `games/pixel-stacker/`
+
+## Phase 1 import note
+
+The five arcade games now have first-class `games/<slug>/` folders on the migration branch with:
+
+- standalone browser entrypoints
+- per-game `package.json` scripts
+- per-game README files
+- a shared Prismtek arcade runtime under `games/_shared/prismtek-arcade/`
+- a Node smoke validator that checks each game folder has an HTML mount point, runtime import, boot call, and package scripts
+
+This is a runnable browser import path. It is not yet a packaged itch.io, desktop, mobile, or Nintendo DS release.
 
 ## Mega-app inspection result
 
@@ -55,7 +73,7 @@ Connector code search did not find additional game sources using `game`, `arcade
 
 ## Shared files expected from `prismtek-site`
 
-The React/browser imports depend on these shared modules or equivalents:
+The original React/browser imports depend on these shared modules or equivalents:
 
 - `src/arcade/shared.ts`
 - `src/arcade/types.ts`
@@ -64,11 +82,13 @@ The React/browser imports depend on these shared modules or equivalents:
 - `src/arcade/components/PlayfieldFrame.tsx`
 - `src/arcade/games/pixel-snake/*` where required by `PixelSnakeGame.tsx`
 
+The branch uses a standalone browser runtime equivalent instead of wiring the old React site runtime directly, so each game can run from its own folder with a simple static server while the larger packaging path is built out.
+
 ## Platform matrix
 
 | Platform | Target output | Expected strategy | Current truth rule |
 | --- | --- | --- | --- |
-| Browser | Static web build | Vite/React build per game or shared arcade package | Claim support only after the game boots and a smoke test passes. |
+| Browser | Static web build | Standalone arcade folders with shared runtime | Claim support only after the game boots and a smoke test passes. |
 | itch.io | HTML5 zip | Zip each static web build with `index.html` at archive root | Claim support only after artifact generation is scripted. |
 | Windows | `.exe` or zipped app | Tauri, Electron, or WebView shell | Claim support only after artifact exists in Releases. |
 | macOS | `.app`/`.dmg` or zipped app | Tauri, Electron, WebView shell, or native wrapper | Claim support only after build/signing path is documented and validated. |
