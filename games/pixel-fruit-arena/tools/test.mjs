@@ -80,7 +80,8 @@ for (const asset of [
 ]) {
   assert.ok(existsSync(path.join(root, asset)), `missing runtime asset: ${asset}`);
 }
-const referenceFiles = readdirSync(path.join(root, "assets/reference/onepiece-test"), { recursive: true }).filter((name) => !String(name).endsWith(".gitkeep"));
+const referenceDir = path.join(root, "assets/reference/onepiece-test");
+const referenceFiles = existsSync(referenceDir) ? readdirSync(referenceDir, { recursive: true }).filter((name) => !String(name).endsWith(".gitkeep")) : [];
 if (process.env.NODE_ENV === "production") assert.equal(referenceFiles.length, 0, "reference test assets cannot be present in production validation");
 
 const html = await readFile(path.join(root, "index.html"), "utf8");
