@@ -1,7 +1,13 @@
+import { bodyIds, clothingStyleIds, hairStyleIds } from "../assets/assetCatalog.js";
+
+const FALLBACK_HAIR = ["crest", "bob", "spikes", "cap", "long", "ponytail", "mohawk", "hood"];
+const FALLBACK_CLOTHING = ["runner", "jacket", "hoodie", "armor", "robe", "skirt", "gi", "coat"];
+const FALLBACK_BODIES = ["male_basic", "female_basic", "pink", "owlet", "dude"];
+
 export const COSMETICS = {
-  hairStyles: ["crest", "bob", "spikes", "cap", "long", "ponytail", "mohawk", "hood"],
-  clothingStyles: ["runner", "jacket", "hoodie", "armor", "robe", "skirt", "gi", "coat"],
-  spriteKeys: ["male_basic", "female_basic", "pink", "owlet", "dude"],
+  hairStyles: hairStyleIds(FALLBACK_HAIR),
+  clothingStyles: clothingStyleIds(FALLBACK_CLOTHING),
+  spriteKeys: bodyIds(FALLBACK_BODIES),
   combatStyles: ["duelist", "brawler", "striker", "ranger", "guardian", "trickster"],
   hairColors: ["#5ee7ff", "#f15bb5", "#f4c542", "#2dd36f", "#f7f7ff", "#1b1f3b", "#7f5539", "#ffafcc"],
   skinTones: ["#5b3926", "#8d563f", "#b97855", "#d8a17c", "#f1c6a8"],
@@ -18,7 +24,7 @@ export const COSMETICS = {
 export function createCharacter(overrides = {}) {
   const owned = overrides.ownedFruits || overrides.owned_fruits || ["flame"];
   const appearance = { ...COSMETICS.presets[0], ...(overrides.appearance || {}) };
-  appearance.clothingStyle ||= appearance.outfitStyle || "runner";
+  appearance.clothingStyle ||= appearance.outfitStyle || COSMETICS.clothingStyles[0] || "runner";
   return {
     name: overrides.name || "",
     appearance,
@@ -27,7 +33,7 @@ export function createCharacter(overrides = {}) {
     fruit_mastery: Object.fromEntries(owned.map((fruitId) => [fruitId, 0])),
     cosmetics_unlocked: ["starter"],
     stats: { wins: 0, ringouts: 0 },
-    sprite_key: overrides.spriteKey || overrides.sprite_key || "male_basic",
+    sprite_key: overrides.spriteKey || overrides.sprite_key || COSMETICS.spriteKeys[0] || "male_basic",
     combat_style: overrides.combatStyle || overrides.combat_style || "duelist",
     cpu: Boolean(overrides.cpu)
   };
