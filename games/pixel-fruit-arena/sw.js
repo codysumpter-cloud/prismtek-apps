@@ -1,4 +1,4 @@
-const CACHE_NAME = "pixel-fruit-arena-v4-fruit-encyclopedia";
+const CACHE_NAME = "pixel-fruit-arena-v5-character-customization";
 const ASSETS = [
   "./",
   "./index.html",
@@ -38,6 +38,8 @@ const ASSETS = [
   "./src/ui/styles.css",
   "./data/fruits/fruits.json",
   "./data/stages/sky_ruins.json",
+  "./assets/characters/prismtek-custom/male-basic.svg",
+  "./assets/characters/prismtek-custom/female-basic.svg",
   "./assets/characters/prismtek_placeholder.svg",
   "./assets/characters/prismtek_placeholder_character.json"
 ];
