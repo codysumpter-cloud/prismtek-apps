@@ -100,6 +100,14 @@ assert.match(serviceWorker, /male-basic\.svg/, "service worker must cache male c
 assert.match(serviceWorker, /female-basic\.svg/, "service worker must cache female character sheet");
 assert.match(serviceWorker, /fetch/, "service worker needs fetch handling");
 
+const rendererSource = await readFile(path.join(root, "src/ui/renderer.js"), "utf8");
+assert.match(rendererSource, /drawFittedStageImage/, "renderer must include fitted stage background drawing");
+assert.match(rendererSource, /fit: referenceManifest\.stageTexture\.fit \|\| "cover"/, "stage texture metadata should control cover/contain behavior");
+assert.doesNotMatch(rendererSource, /createPattern\(referenceTexture/, "stage backgrounds should be fitted, not repeated as incorrectly-sized patterns");
+assert.match(rendererSource, /drawBoxingBackdrop/, "boxing backdrop renderer must remain intact");
+assert.match(rendererSource, /drawRingRopes/, "ring rope renderer must remain intact");
+assert.match(rendererSource, /drawCustomLayers/, "customization overlays must remain additive");
+
 for (const fruitId of Object.keys(FRUITS)) {
   const attacker = createTestFighter(0, fruitId, 300, 230);
   const defender = createTestFighter(1, "flame", 340, 230);
@@ -177,7 +185,7 @@ assert.equal(ringout.health, ringout.maxHealth, "ring-out should reset health");
 snapshot.fighters[1].stocks = 0;
 assert.equal(match.isComplete(), true, "match should complete when one fighter remains");
 
-console.log("Tests passed: character customization, encyclopedia fruits, awakened moves, haki, health HUD data, directional modifiers, match combat, ring-outs, completion, release guard.");
+console.log("Tests passed: character customization, fitted stage backgrounds, encyclopedia fruits, awakened moves, haki, health HUD data, directional modifiers, match combat, ring-outs, completion, release guard.");
 
 function createTestFighter(slot, fruitId, x, y) {
   return {
