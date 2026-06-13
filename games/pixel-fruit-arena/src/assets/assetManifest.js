@@ -1,4 +1,35 @@
+const customRoot = "assets/characters/prismtek-custom";
+
+const customCharacterAnimations = (src) => ({
+  idle: { src, frames: 4, fps: 7, loop: true },
+  walk: { src, frames: 4, fps: 10, loop: true },
+  run: { src, frames: 4, fps: 13, loop: true },
+  jump: { src, frames: 4, fps: 11, loop: false },
+  fall: { src, frames: 4, fps: 11, loop: false },
+  attack: { src, frames: 4, fps: 15, loop: false },
+  special: { src, frames: 4, fps: 13, loop: false },
+  hurt: { src, frames: 4, fps: 10, loop: false },
+  knockout: { src, frames: 4, fps: 10, loop: false },
+  victory: { src, frames: 4, fps: 7, loop: true }
+});
+
 export const CHARACTER_SPRITES = {
+  male_basic: {
+    name: "Basic Male",
+    customizable: true,
+    frameWidth: 32,
+    frameHeight: 32,
+    scale: 2,
+    animations: customCharacterAnimations(`${customRoot}/male-basic.svg`)
+  },
+  female_basic: {
+    name: "Basic Female",
+    customizable: true,
+    frameWidth: 32,
+    frameHeight: 32,
+    scale: 2,
+    animations: customCharacterAnimations(`${customRoot}/female-basic.svg`)
+  },
   pink: {
     name: "Prism Imp",
     frameWidth: 32,
