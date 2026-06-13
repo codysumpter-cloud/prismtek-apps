@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "generatedBy": "tools/build_asset_catalog.mjs",
+  "generatedAt": null,
+  "source": "repo-seed",
+  "root": "assets",
+  "note": "Runtime source of truth is src/assets/generatedAssetCatalog.js. Run npm run assets:catalog to regenerate both files from assets on disk.",
+  "counts": {
+    "bodies": 5,
+    "hair": 8,
+    "clothing": 8,
+    "vfx": 8,
+    "tilesets": 1,
+    "stageBackgrounds": 0,
+    "weapons": 0,
+    "items": 0,
+    "fruitIcons": 0,
+    "props": 0,
+    "ui": 0
+  }
+}
