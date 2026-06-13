@@ -1,0 +1,22 @@
+{
+  "name": "@prismtek/prismtek-arcade",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "tsc --noEmit",
+    "export:itch": "npm run build && node scripts/export-itch.mjs"
+  },
+  "dependencies": {
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.1.0",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.16"
+  }
+}
