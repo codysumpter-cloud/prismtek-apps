@@ -1,0 +1,1 @@
+export default `stringline,Stringline,legendary,control,strings;mochidough,Mochidough,legendary,body,sticky_body;biscuitwall,Biscuitwall,rare,summon,cookie_soldiers;mirrorlake,Mirrorlake,rare,space,mirror_travel;bookbind,Bookbind,rare,control,book_traps`;
