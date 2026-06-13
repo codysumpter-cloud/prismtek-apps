@@ -4,7 +4,8 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { createCharacter } from "../src/characters/characterCreator.js";
+import { CHARACTER_SPRITES } from "../src/assets/assetManifest.js";
+import { COSMETICS, createCharacter } from "../src/characters/characterCreator.js";
 import { applyAttack, checkRingOut, variantFor, awakenedAbilityFor } from "../src/combat/combatSystem.js";
 import { FRUITS } from "../src/fruits/fruits.js";
 import { PRISMTEK_FRUIT_ENCYCLOPEDIA } from "../src/fruits/prismtekFruitEncyclopedia.js";
@@ -27,6 +28,28 @@ for (const fruit of Object.values(FRUITS)) {
   assert.equal(fruit.abilities.length, 3, `${fruit.id} must have three runtime abilities`);
 }
 
+assert.ok(COSMETICS.spriteKeys.includes("male_basic"), "male body must be selectable");
+assert.ok(COSMETICS.spriteKeys.includes("female_basic"), "female body must be selectable");
+assert.ok(COSMETICS.hairStyles.length >= 8, "hair customization needs imported-style options");
+assert.ok(COSMETICS.clothingStyles.length >= 8, "clothing customization needs imported-style options");
+assert.ok(CHARACTER_SPRITES.male_basic?.customizable, "male sprite must be marked customizable");
+assert.ok(CHARACTER_SPRITES.female_basic?.customizable, "female sprite must be marked customizable");
+for (const key of ["male_basic", "female_basic"]) {
+  const sprite = CHARACTER_SPRITES[key];
+  assert.equal(sprite.frameWidth, 32, `${key} should match current tiny-hero frame width`);
+  assert.equal(sprite.frameHeight, 32, `${key} should match current tiny-hero frame height`);
+  for (const animation of ["idle", "walk", "run", "jump", "fall", "attack", "special", "hurt", "knockout", "victory"]) {
+    assert.ok(sprite.animations[animation], `${key} missing ${animation} animation`);
+    assert.ok(existsSync(path.join(root, sprite.animations[animation].src)), `missing ${key}/${animation} sprite sheet`);
+  }
+}
+const male = createCharacter({ spriteKey: "male_basic", appearance: { hairStyle: "mohawk", clothingStyle: "armor" } });
+const female = createCharacter({ spriteKey: "female_basic", appearance: { hairStyle: "ponytail", clothingStyle: "skirt" } });
+assert.equal(male.sprite_key, "male_basic");
+assert.equal(female.sprite_key, "female_basic");
+assert.equal(male.appearance.clothingStyle, "armor");
+assert.equal(female.appearance.clothingStyle, "skirt");
+
 const stageData = JSON.parse(await readFile(path.join(root, "data/stages/sky_ruins.json"), "utf8"));
 assert.ok(stageData.platforms.length >= 3, "stage needs multiple platforms");
 assert.ok(stageData.respawns.length >= 4, "stage needs four respawn points");
@@ -39,6 +62,8 @@ assert.equal(characterManifest.sprite_height, 64);
 assert.equal(characterManifest.animations.length, 10);
 assert.equal(process.env.USE_REFERENCE_TEST_ASSETS === "true" && process.env.NODE_ENV === "production", false, "reference assets cannot be used in production");
 for (const asset of [
+  "assets/characters/prismtek-custom/male-basic.svg",
+  "assets/characters/prismtek-custom/female-basic.svg",
   "assets/characters/tiny-hero/pink/idle_4.png",
   "assets/characters/tiny-hero/pink/run_6.png",
   "assets/characters/tiny-hero/owlet/attack1_4.png",
@@ -56,9 +81,7 @@ for (const asset of [
   assert.ok(existsSync(path.join(root, asset)), `missing runtime asset: ${asset}`);
 }
 const referenceFiles = readdirSync(path.join(root, "assets/reference/onepiece-test"), { recursive: true }).filter((name) => !String(name).endsWith(".gitkeep"));
-if (process.env.NODE_ENV === "production") {
-  assert.equal(referenceFiles.length, 0, "reference test assets cannot be present in production validation");
-}
+if (process.env.NODE_ENV === "production") assert.equal(referenceFiles.length, 0, "reference test assets cannot be present in production validation");
 
 const html = await readFile(path.join(root, "index.html"), "utf8");
 assert.match(html, /rel="manifest"/, "index must link a web app manifest");
@@ -72,6 +95,8 @@ assert.ok(manifest.display, "manifest needs display mode");
 const serviceWorker = await readFile(path.join(root, "sw.js"), "utf8");
 assert.match(serviceWorker, /CACHE_NAME/, "service worker needs a named cache");
 assert.match(serviceWorker, /prismtekFruitEncyclopedia/, "service worker must cache encyclopedia runtime modules");
+assert.match(serviceWorker, /male-basic\.svg/, "service worker must cache male character sheet");
+assert.match(serviceWorker, /female-basic\.svg/, "service worker must cache female character sheet");
 assert.match(serviceWorker, /fetch/, "service worker needs fetch handling");
 
 for (const fruitId of Object.keys(FRUITS)) {
@@ -120,13 +145,15 @@ const match = createMatch({
   stage: SKY_RUINS,
   fruits: FRUITS,
   players: [
-    { slot: 0, character: createCharacter({ name: "P1", ownedFruits: Object.keys(FRUITS), equippedFruit: "flame" }), fruitId: "flame" },
-    { slot: 1, character: createCharacter({ name: "P2", ownedFruits: Object.keys(FRUITS), equippedFruit: "volt" }), fruitId: "volt" }
+    { slot: 0, character: createCharacter({ name: "P1", spriteKey: "male_basic", ownedFruits: Object.keys(FRUITS), equippedFruit: "flame" }), fruitId: "flame" },
+    { slot: 1, character: createCharacter({ name: "P2", spriteKey: "female_basic", ownedFruits: Object.keys(FRUITS), equippedFruit: "volt" }), fruitId: "volt" }
   ]
 });
 
 let snapshot = match.snapshot();
 assert.equal(snapshot.fighters.length, 2, "2P match should create two fighters");
+assert.equal(snapshot.fighters[0].spriteKey, "male_basic", "male fighter should be playable");
+assert.equal(snapshot.fighters[1].spriteKey, "female_basic", "female fighter should be playable");
 snapshot.fighters[0].invulnerable = 0;
 snapshot.fighters[1].invulnerable = 0;
 snapshot.fighters[0].x = 300;
@@ -149,7 +176,7 @@ assert.equal(ringout.health, ringout.maxHealth, "ring-out should reset health");
 snapshot.fighters[1].stocks = 0;
 assert.equal(match.isComplete(), true, "match should complete when one fighter remains");
 
-console.log("Tests passed: encyclopedia fruits, awakened moves, haki, health HUD data, directional modifiers, match combat, ring-outs, completion, release guard.");
+console.log("Tests passed: character customization, encyclopedia fruits, awakened moves, haki, health HUD data, directional modifiers, match combat, ring-outs, completion, release guard.");
 
 function createTestFighter(slot, fruitId, x, y) {
   return {
@@ -184,7 +211,7 @@ function createTestFighter(slot, fruitId, x, y) {
     attackFlash: 0,
     attackKind: "attack",
     state: "idle",
-    spriteKey: "pink",
+    spriteKey: "male_basic",
     ai: false
   };
 }
