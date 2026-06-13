@@ -1,6 +1,4 @@
-import { SHIP_OF_FOOLS_FRUITS } from "./generatedShipOfFoolsFruits.js";
-
-const CORE_FRUITS = {
+export const FRUITS = {
   flame: {
     id: "flame",
     name: "Flame Fruit",
@@ -73,11 +71,6 @@ const CORE_FRUITS = {
       { id: "float_strike", name: "Float Strike", kind: "uppercut", damage: 12, knockback: 500, cooldown: 0.95 }
     ]
   }
-};
-
-export const FRUITS = {
-  ...CORE_FRUITS,
-  ...SHIP_OF_FOOLS_FRUITS
 };
 
 export function masteryFor(character, fruitId) {

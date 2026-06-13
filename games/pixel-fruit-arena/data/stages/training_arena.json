@@ -1,0 +1,16 @@
+{
+  "id": "training_arena",
+  "name": "Boxing Test Arena",
+  "theme": "boxing",
+  "platforms": [
+    { "x": 150, "y": 430, "w": 660, "h": 40, "type": "solid" },
+    { "x": 250, "y": 300, "w": 140, "h": 18, "type": "oneway" },
+    { "x": 570, "y": 300, "w": 140, "h": 18, "type": "oneway" }
+  ],
+  "respawns": [
+    { "x": 330, "y": 300 },
+    { "x": 630, "y": 300 },
+    { "x": 430, "y": 300 },
+    { "x": 530, "y": 300 }
+  ]
+}

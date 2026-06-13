@@ -1,4 +1,4 @@
-const CACHE_NAME = "pixel-fruit-arena-v2-playable";
+const CACHE_NAME = "pixel-fruit-arena-v3-arena-update";
 const ASSETS = [
   "./",
   "./index.html",
@@ -6,6 +6,10 @@ const ASSETS = [
   "./src/assets/assetManifest.js",
   "./src/fruits/fruits.js",
   "./src/stages/skyRuins.js",
+  "./src/stages/trainingArena.js",
+  "./src/stages/stages.js",
+  "./data/stages/training_arena.json",
+  "./assets/effects/elemental-vfx/flame-fireball.png",
   "./src/characters/characterCreator.js",
   "./src/systems/matchSystem.js",
   "./src/systems/runtimeConfig.js",

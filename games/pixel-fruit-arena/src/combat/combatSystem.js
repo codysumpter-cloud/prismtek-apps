@@ -1,3 +1,4 @@
+// Combat core: fighters, movement, directional hitboxes, knockback.
 import { gainMastery } from "../fruits/fruits.js";
 import { styleFor } from "./combatStyles.js";
 
@@ -33,7 +34,8 @@ export function createFighter({ slot, character, fruitId, fruit, spawn }) {
     state: "idle",
     spriteKey: character.sprite_key || ["pink", "owlet", "dude", "pink"][slot % 4],
     combatStyle: styleFor(character.combat_style),
-    ai: Boolean(character.cpu)
+    ai: Boolean(character.cpu),
+    dummy: Boolean(character.dummy)
   };
 }
 
@@ -53,6 +55,10 @@ export function updateFighter(f, dt, input, stage) {
   f.animTime += dt;
   for (const key of Object.keys(f.cooldowns)) f.cooldowns[key] = Math.max(0, f.cooldowns[key] - dt);
   f.awakening = Math.min(100, f.awakening + dt * 1.8);
+
+  // Held direction state drives directional attack variants.
+  f.heldMove = input.move || 0;
+  f.heldAim = input.aim || 0;
 
   if (f.hitstun <= 0) {
     if (input.move) {
@@ -86,57 +92,121 @@ export function updateFighter(f, dt, input, stage) {
   f.state = nextState;
 }
 
+// Directional input modifiers: every ability has five variants chosen by the
+// direction held when the attack is pressed.
+// - Neutral: baseline
+// - Forward (toward facing): stronger and longer, lunges in, slower recovery
+// - Back (away from facing): quicker and safer, hops back, lighter hit
+// - Up: rising hit, raises the hitbox and launches the target skyward
+// - Down: low hit, lowers the hitbox, spikes/keeps targets grounded
+export const MOVE_VARIANTS = {
+  neutral: { id: "neutral", label: "Neutral", damage: 1, knockback: 1, range: 1, cooldown: 1, dy: 0, launch: 0, shift: 0 },
+  forward: { id: "forward", label: "Forward", damage: 1.15, knockback: 1.12, range: 1.12, cooldown: 1.12, dy: 0, launch: 0, shift: 150 },
+  back: { id: "back", label: "Back", damage: 0.85, knockback: 0.9, range: 0.9, cooldown: 0.78, dy: 0, launch: 0, shift: -130 },
+  up: { id: "up", label: "Rising", damage: 1.05, knockback: 1, range: 0.95, cooldown: 1.05, dy: -44, launch: -240, shift: 0 },
+  down: { id: "down", label: "Low", damage: 1.1, knockback: 0.85, range: 0.95, cooldown: 1.15, dy: 34, launch: 200, shift: 0 }
+};
+
+export function variantFor(attacker) {
+  if ((attacker.heldAim || 0) < 0) return MOVE_VARIANTS.up;
+  if ((attacker.heldAim || 0) > 0) return MOVE_VARIANTS.down;
+  const move = attacker.heldMove || 0;
+  if (move && Math.sign(move) === Math.sign(attacker.facing)) return MOVE_VARIANTS.forward;
+  if (move) return MOVE_VARIANTS.back;
+  return MOVE_VARIANTS.neutral;
+}
+
+// Geometry of an ability's hitbox, relative to the attacker. Directional
+// abilities only reach in front of the attacker; fields/bursts surround them.
+export function hitboxFor(attacker, ability, styleRange = 1, variant = MOVE_VARIANTS.neutral) {
+  const range = (ability.range || rangeFor(ability)) * styleRange * variant.range;
+  const omni = OMNI_KINDS.has(ability.kind);
+  const tall = ability.kind === "uppercut" || ability.kind === "slam" || ability.kind === "jump";
+  const height = tall ? 150 : ability.kind === "field" || ability.kind === "burst" ? 130 : 96;
+  const cx = attacker.x + (omni ? 0 : attacker.facing * (range / 2));
+  const cy = attacker.y + attacker.h / 2 + (ability.kind === "slam" ? 30 : tall ? -24 : 0) + variant.dy;
+  const width = omni ? range * 2 : range + attacker.w * 0.5;
+  return { x: cx - width / 2, y: cy - height / 2, w: width, h: height };
+}
+
+const OMNI_KINDS = new Set(["field", "burst", "pull"]);
+
 export function applyAttack(attacker, defenders, ability, events) {
   if (!ability || attacker.cooldowns[ability.id] > 0 || attacker.hitstun > 0) return;
   if (attacker.nullTime > 0 && ability.kind !== "melee" && ability.kind !== "heavy") return;
   const style = attacker.combatStyle || styleFor("duelist");
-  attacker.cooldowns[ability.id] = ability.cooldown * style.cooldown * (attacker.awakened > 0 ? 0.65 : 1);
-  const range = (ability.range || rangeFor(ability)) * style.range;
-  const power = (attacker.awakened > 0 ? 1.35 : 1) * style.damage;
-  const knockbackPower = (attacker.awakened > 0 ? 1.28 : 1) * style.knockback;
+  const variant = variantFor(attacker);
+  attacker.cooldowns[ability.id] = ability.cooldown * style.cooldown * variant.cooldown * (attacker.awakened > 0 ? 0.65 : 1);
+  const power = (attacker.awakened > 0 ? 1.35 : 1) * style.damage * variant.damage;
+  const knockbackPower = (attacker.awakened > 0 ? 1.28 : 1) * style.knockback * variant.knockback;
 
   if (ability.kind === "dash" || ability.kind === "blink") attacker.vx = attacker.facing * ability.speed;
   if (ability.kind === "blink") attacker.x += attacker.facing * 52;
   if (ability.kind === "jump" || ability.kind === "uppercut") attacker.vy = -620;
   if (ability.kind === "slam") attacker.vy = 720;
+  if (variant.shift) attacker.vx += attacker.facing * variant.shift;
+  if (variant.id === "up" && attacker.grounded) attacker.vy = Math.min(attacker.vy, -180);
 
   attacker.attackFlash = 0.18;
   attacker.attackKind = ability.kind === "projectile" || ability.kind === "beam" || ability.kind === "field" ? "special" : "attack";
   attacker.state = attacker.attackKind;
   attacker.animTime = 0;
+
+  const box = hitboxFor(attacker, ability, style.range, variant);
   const ttl = ttlFor(ability);
-  events.push({ ttl, duration: ttl, type: "attack", attacker: attacker.id, fruitId: attacker.fruitId, ability, x: attacker.x, y: attacker.y + 22, facing: attacker.facing, color: attacker.fruit.color });
+  events.push({
+    ttl,
+    duration: ttl,
+    type: "attack",
+    attacker: attacker.id,
+    fruitId: attacker.fruitId,
+    ability,
+    variant: variant.id,
+    variantLabel: variant.label,
+    x: attacker.x,
+    y: attacker.y + 22 + variant.dy,
+    facing: attacker.facing,
+    color: attacker.fruit.color,
+    hitbox: box,
+    range: (ability.range || rangeFor(ability)) * style.range * variant.range
+  });
+
   for (const target of defenders) {
     if (target.stocks <= 0 || target.invulnerable > 0) continue;
+    const tx = target.x;
+    const ty = target.y + target.h / 2;
+    const inBox = tx + target.w / 2 > box.x && tx - target.w / 2 < box.x + box.w
+      && ty + target.h / 2 > box.y && ty - target.h / 2 < box.y + box.h;
+    if (!inBox) continue;
     const dx = target.x - attacker.x;
-    const dy = target.y - attacker.y;
-    if (Math.abs(dx) < range && Math.abs(dy) < 76) {
-      const direction = ability.knockback < 0 ? -Math.sign(dx || attacker.facing) : Math.sign(dx || attacker.facing);
-      const targetStyle = target.combatStyle || styleFor("duelist");
-      target.damage += Math.round(ability.damage * power);
-      target.hitstun = 0.18 + target.damage / 420;
-      target.vx = direction * (Math.abs(ability.knockback) + target.damage * 5) * knockbackPower / targetStyle.weight;
-      target.vy = -180 - target.damage * 2.5;
-      applyStatus(attacker, target, ability, power);
-      target.awakening = Math.min(100, target.awakening + ability.damage * 1.2);
-      attacker.awakening = Math.min(100, attacker.awakening + ability.damage * 1.6);
-      gainMastery(attacker.character, attacker.fruitId, 0.35);
-      events.push({ ttl: 0.24, duration: 0.24, type: "hit", attacker: attacker.id, fruitId: attacker.fruitId, target: target.id, x: target.x, y: target.y + 24, color: attacker.fruit.color, ability });
-    }
+    const direction = ability.knockback < 0 ? -Math.sign(dx || attacker.facing) : Math.sign(dx || attacker.facing);
+    const targetStyle = target.combatStyle || styleFor("duelist");
+    target.damage += Math.round(ability.damage * power);
+    target.hitstun = 0.18 + target.damage / 420;
+    target.vx = direction * (Math.abs(ability.knockback) + target.damage * 5) * knockbackPower / targetStyle.weight;
+    target.vy = -180 - target.damage * 2.5 + variant.launch;
+    if (variant.id === "down" && target.grounded) target.vy = -60; // low hits keep grounded foes pinned
+    applyStatus(attacker, target, ability, power);
+    target.awakening = Math.min(100, target.awakening + ability.damage * 1.2);
+    attacker.awakening = Math.min(100, attacker.awakening + ability.damage * 1.6);
+    gainMastery(attacker.character, attacker.fruitId, 0.35);
+    events.push({ ttl: 0.24, duration: 0.24, type: "hit", attacker: attacker.id, fruitId: attacker.fruitId, target: target.id, x: target.x, y: target.y + 24, color: attacker.fruit.color, ability });
   }
 }
 
 function rangeFor(ability) {
-  if (ability.kind === "projectile" || ability.kind === "beam") return 170;
-  if (ability.kind === "field" || ability.kind === "burst") return 132;
+  if (ability.kind === "projectile" || ability.kind === "beam") return 190;
+  if (ability.kind === "field" || ability.kind === "burst") return 110;
   if (ability.kind === "pull" || ability.kind === "chain") return 150;
   if (ability.kind === "slam") return 96;
-  return 62;
+  if (ability.kind === "dash" || ability.kind === "blink") return 120;
+  return 68;
 }
 
 function ttlFor(ability) {
   if (ability.kind === "field") return 0.8;
-  if (ability.kind === "beam" || ability.kind === "projectile") return 0.42;
+  if (ability.kind === "beam") return 0.42;
+  if (ability.kind === "projectile") return 0.5;
   if (ability.kind === "slam" || ability.kind === "heavy") return 0.36;
   return 0.25;
 }

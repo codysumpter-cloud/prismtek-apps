@@ -2,11 +2,10 @@ import { ABILITY_VFX, CHARACTER_SPRITES, STAGE_ART, VFX_SHEETS } from "../assets
 import { runtimeConfig } from "../systems/runtimeConfig.js";
 
 export class Renderer {
-  constructor(canvas, stage) {
+  constructor(canvas) {
     this.canvas = canvas;
     this.ctx = canvas.getContext("2d");
     this.ctx.imageSmoothingEnabled = false;
-    this.stage = stage;
     this.images = new Map();
     this.referenceManifest = null;
     this.loadManifestImages();
@@ -45,16 +44,29 @@ export class Renderer {
     return image;
   }
 
-  draw(snapshot, mode) {
+  draw(snapshot, mode, options = {}) {
     const ctx = this.ctx;
+    const stage = snapshot.stage;
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    drawSky(ctx, snapshot.elapsed);
-    drawStage(ctx, snapshot.stage, this.images.get(STAGE_ART.skyRuins.tileset), this.referenceManifest, this.images);
+    if (stage.theme === "boxing") {
+      drawBoxingBackdrop(ctx, snapshot.elapsed, stage);
+    } else {
+      drawSky(ctx, snapshot.elapsed);
+      drawRuinsBackdrop(ctx, this.images.get(STAGE_ART.skyRuins.tileset), this.referenceManifest, this.images);
+    }
+    for (const p of stage.platforms) {
+      if (stage.theme === "boxing") drawBoxingPlatform(ctx, p, stage);
+      else drawPlatform(ctx, p, this.images.get(STAGE_ART.skyRuins.tileset));
+    }
+    if (stage.theme === "boxing") drawRingRopes(ctx, stage);
     for (const effect of snapshot.effects || []) drawEffect(ctx, effect, this.referenceManifest, this.images);
     for (const f of snapshot.fighters) drawFighter(ctx, f, this.images);
+    if (options.showHitboxes) drawHitboxes(ctx, snapshot);
     if (mode !== "fight") drawDim(ctx, this.canvas);
   }
 }
+
+/* ---------- Sky Ruins ---------- */
 
 function drawSky(ctx, elapsed) {
   const g = ctx.createLinearGradient(0, 0, 0, 540);
@@ -73,11 +85,6 @@ function drawSky(ctx, elapsed) {
 
   ctx.fillStyle = "rgba(9, 15, 28, .28)";
   ctx.fillRect(0, 452, 960, 88);
-}
-
-function drawStage(ctx, stage, tileset, referenceManifest, images) {
-  drawRuinsBackdrop(ctx, tileset, referenceManifest, images);
-  for (const p of stage.platforms) drawPlatform(ctx, p, tileset);
 }
 
 function drawRuinsBackdrop(ctx, tileset, referenceManifest, images) {
@@ -124,6 +131,128 @@ function drawPlatform(ctx, p, tileset) {
   blit(ctx, tileset, art.platformCap, p.x - 10, p.y - 4, 32, 32);
   blit(ctx, tileset, art.platformCap, p.x + p.w - 22, p.y - 4, 32, 32);
 }
+
+/* ---------- Boxing Test Arena ---------- */
+
+function drawBoxingBackdrop(ctx, elapsed, stage) {
+  // Gym wall gradient
+  const g = ctx.createLinearGradient(0, 0, 0, 540);
+  g.addColorStop(0, "#1a1026");
+  g.addColorStop(0.6, "#2b1a38");
+  g.addColorStop(1, "#170d20");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 960, 540);
+
+  // Hanging spotlights with subtle sway
+  for (let i = 0; i < 3; i += 1) {
+    const cx = 240 + i * 240 + Math.sin(elapsed * 0.6 + i) * 4;
+    ctx.fillStyle = "#0c0814";
+    ctx.fillRect(cx - 3, 0, 6, 46);
+    ctx.fillStyle = "#39304d";
+    ctx.fillRect(cx - 18, 44, 36, 16);
+    const beam = ctx.createLinearGradient(cx, 60, cx, 430);
+    beam.addColorStop(0, "rgba(255, 238, 170, .20)");
+    beam.addColorStop(1, "rgba(255, 238, 170, 0)");
+    ctx.fillStyle = beam;
+    ctx.beginPath();
+    ctx.moveTo(cx - 14, 60);
+    ctx.lineTo(cx + 14, 60);
+    ctx.lineTo(cx + 120, 430);
+    ctx.lineTo(cx - 120, 430);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  // Crowd silhouettes (two stands, gently bobbing rows)
+  for (let row = 0; row < 3; row += 1) {
+    const y = 240 + row * 26;
+    ctx.fillStyle = `rgba(10, 6, 18, ${0.85 - row * 0.18})`;
+    for (let i = 0; i < 24; i += 1) {
+      const x = 8 + i * 41 + (row % 2) * 18;
+      const bob = Math.sin(elapsed * 2 + i * 1.7 + row) * 2;
+      ctx.beginPath();
+      ctx.arc(x, y + bob, 11, Math.PI, 0);
+      ctx.fill();
+      ctx.fillRect(x - 11, y + bob, 22, 14);
+    }
+  }
+
+  // Banner
+  ctx.fillStyle = "#3d2a55";
+  ctx.fillRect(330, 96, 300, 38);
+  ctx.fillStyle = "#16243a";
+  ctx.fillRect(336, 102, 288, 26);
+  ctx.fillStyle = "#ffd166";
+  ctx.font = "bold 16px ui-sans-serif, system-ui";
+  ctx.textAlign = "center";
+  ctx.fillText("PIXEL FRUIT TEST ARENA", 480, 120);
+
+  // Floor outside the ring
+  ctx.fillStyle = "#241430";
+  ctx.fillRect(0, 470, 960, 70);
+}
+
+function drawBoxingPlatform(ctx, p, stage) {
+  const isFloor = p.type === "solid";
+  if (isFloor) {
+    // Ring apron + canvas mat
+    ctx.fillStyle = "#7a2434";
+    ctx.fillRect(p.x - 18, p.y + 8, p.w + 36, p.h + 22);
+    ctx.fillStyle = "#e8e0cf";
+    ctx.fillRect(p.x, p.y, p.w, 12);
+    ctx.fillStyle = "#cfc4ab";
+    ctx.fillRect(p.x, p.y + 12, p.w, p.h - 12);
+    // Mat seams
+    ctx.fillStyle = "rgba(90, 70, 60, .35)";
+    for (let x = p.x + 60; x < p.x + p.w; x += 110) ctx.fillRect(x, p.y, 3, p.h);
+    // Center logo circle
+    ctx.strokeStyle = "#a8333f";
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.arc(p.x + p.w / 2, p.y + 6, 30, 0, Math.PI, true);
+    ctx.stroke();
+  } else {
+    // Hanging corner pads / side platforms styled as padded turnbuckle planks
+    ctx.fillStyle = "#27405c";
+    ctx.fillRect(p.x, p.y, p.w, p.h);
+    ctx.fillStyle = "#5d7190";
+    ctx.fillRect(p.x, p.y, p.w, 6);
+    ctx.fillStyle = "#16243a";
+    ctx.fillRect(p.x, p.y + p.h - 4, p.w, 4);
+  }
+}
+
+function drawRingRopes(ctx, stage) {
+  const ring = stage.ring;
+  if (!ring) return;
+  const left = ring.postLeft;
+  const right = ring.postRight;
+  const floorY = ring.floor.y;
+
+  // Posts
+  for (const post of [left, right]) {
+    ctx.fillStyle = "#31415d";
+    ctx.fillRect(post.x, post.y, 16, floorY - post.y + 8);
+    ctx.fillStyle = "#72ddf7";
+    ctx.fillRect(post.x, post.y, 16, 10);
+  }
+
+  // Ropes (drawn behind fighters would be nicer, but readable here with low alpha)
+  const ropeColors = ["#ef476f", "#f8fafc", "#118ab2"];
+  ring.ropeYs.forEach((y, index) => {
+    ctx.save();
+    ctx.globalAlpha = 0.5;
+    ctx.strokeStyle = ropeColors[index % ropeColors.length];
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(left.x + 8, y);
+    ctx.quadraticCurveTo((left.x + right.x) / 2 + 8, y + 7, right.x + 8, y);
+    ctx.stroke();
+    ctx.restore();
+  });
+}
+
+/* ---------- Fighters ---------- */
 
 function drawFighter(ctx, f, images) {
   if (f.stocks <= 0) return;
@@ -199,6 +328,8 @@ function drawNameplate(ctx, f) {
   ctx.fillText(text, Math.round(f.x), Math.round(f.y - 9));
 }
 
+/* ---------- Effects ---------- */
+
 function drawEffect(ctx, effect, referenceManifest, images) {
   const alpha = Math.max(0, Math.min(1, effect.ttl / 0.25));
   ctx.save();
@@ -238,6 +369,22 @@ function drawEffect(ctx, effect, referenceManifest, images) {
   ctx.restore();
 }
 
+// Position of an attack effect over its lifetime: projectiles travel along
+// the facing direction, beams hold at mid-range, everything else stays put.
+function effectAnchor(effect) {
+  const kind = effect.ability?.kind;
+  const age = effect.age ?? Math.max(0, (effect.duration || 0.25) - effect.ttl);
+  const range = effect.range || 120;
+  if (kind === "projectile") {
+    const progress = Math.min(1, age / Math.max(0.001, effect.duration || 0.5));
+    return { x: effect.x + (effect.facing || 1) * progress * range, y: effect.y - 8 };
+  }
+  if (kind === "beam") {
+    return { x: effect.x + (effect.facing || 1) * range * 0.55, y: effect.y - 8 };
+  }
+  return null;
+}
+
 function drawVfxSheet(ctx, effect, images) {
   const key = ABILITY_VFX[effect.ability?.id] || ABILITY_VFX[effect.ability?.kind];
   const sheet = key ? VFX_SHEETS[key] : null;
@@ -253,10 +400,11 @@ function drawVfxSheet(ctx, effect, images) {
   const sy = Math.floor(frame / columns) * sheet.frameHeight;
   const width = sheet.frameWidth * sheet.scale;
   const height = sheet.frameHeight * sheet.scale;
+  const anchor = effectAnchor(effect);
   const offsetX = sheet.offsetX ?? 40;
   const offsetY = sheet.offsetY ?? -8;
-  const x = Math.round(effect.x + (effect.facing || 1) * offsetX);
-  const y = Math.round(effect.y + offsetY);
+  const x = Math.round(anchor ? anchor.x : effect.x + (effect.facing || 1) * offsetX);
+  const y = Math.round(anchor ? anchor.y : effect.y + offsetY);
 
   ctx.save();
   ctx.globalAlpha = Math.max(ctx.globalAlpha, 0.85);
@@ -295,6 +443,32 @@ function drawReferenceEffect(ctx, effect, referenceManifest, images, alpha) {
   }
   ctx.restore();
   return true;
+}
+
+/* ---------- Debug overlays ---------- */
+
+function drawHitboxes(ctx, snapshot) {
+  ctx.save();
+  ctx.lineWidth = 2;
+  for (const f of snapshot.fighters) {
+    if (f.stocks <= 0) continue;
+    ctx.strokeStyle = "rgba(114, 221, 247, .9)";
+    ctx.strokeRect(Math.round(f.x - f.w / 2), Math.round(f.y), f.w, f.h);
+  }
+  for (const effect of snapshot.effects || []) {
+    if (effect.type !== "attack" || !effect.hitbox) continue;
+    ctx.strokeStyle = "rgba(239, 71, 111, .9)";
+    ctx.fillStyle = "rgba(239, 71, 111, .15)";
+    ctx.fillRect(effect.hitbox.x, effect.hitbox.y, effect.hitbox.w, effect.hitbox.h);
+    ctx.strokeRect(effect.hitbox.x, effect.hitbox.y, effect.hitbox.w, effect.hitbox.h);
+    if (effect.variantLabel) {
+      ctx.font = "bold 11px ui-sans-serif, system-ui";
+      ctx.textAlign = "center";
+      ctx.fillStyle = "rgba(248, 250, 252, .95)";
+      ctx.fillText(`${effect.variantLabel} ${effect.ability?.name || ""}`, effect.hitbox.x + effect.hitbox.w / 2, effect.hitbox.y - 6);
+    }
+  }
+  ctx.restore();
 }
 
 function drawDim(ctx, canvas) {

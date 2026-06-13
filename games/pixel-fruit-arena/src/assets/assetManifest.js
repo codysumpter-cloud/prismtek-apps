@@ -74,6 +74,7 @@ export const STAGE_ART = {
 const effectRoot = "assets/effects/elemental-vfx";
 
 export const VFX_SHEETS = {
+  flameFireball: { src: `${effectRoot}/flame-fireball.png`, frameWidth: 74, frameHeight: 52, frames: 12, columns: 12, fps: 24, scale: 1.6, offsetX: 76, offsetY: -8 },
   firebolt: { src: `${effectRoot}/firebolt.png`, frameWidth: 48, frameHeight: 48, frames: 11, columns: 11, fps: 20, scale: 2.05, offsetX: 76, offsetY: -8 },
   fireBreathHit: { src: `${effectRoot}/fire-breath-hit.png`, frameWidth: 48, frameHeight: 48, frames: 5, columns: 5, fps: 18, scale: 2.1, offsetX: 44, offsetY: -10 },
   fireExplosion: { src: `${effectRoot}/fire-explosion.png`, frameWidth: 48, frameHeight: 48, frames: 18, columns: 18, fps: 26, scale: 2.35, offsetX: 42, offsetY: -8 },
@@ -101,7 +102,7 @@ export const VFX_SHEETS = {
 };
 
 export const ABILITY_VFX = {
-  fireball: "firebolt",
+  fireball: "flameFireball",
   flame_dash: "smearHorizontal",
   burning_uppercut: "fireExplosion",
   ice_spike: "iceHit",
