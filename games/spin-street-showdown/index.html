@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Spin Street Showdown</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="game-root">
+    <main class="shell">
+      <section class="game-wrap">
+        <canvas id="game" width="960" height="540" aria-label="Spin Street Showdown game canvas"></canvas>
+        <div class="hud">
+          <div><strong id="round">Round 1</strong><span id="mode">Street Bracket</span></div>
+          <div class="stats">
+            <span>Cash <b id="cash">$0</b></span>
+            <span>HP <b id="hp">100</b></span>
+            <span>Charge <b id="charge">0%</b></span>
+          </div>
+        </div>
+        <div id="panel" class="panel">
+          <h1>Spin Street Showdown</h1>
+          <p>Build a four-slot battle top, bank cash, buy parts, and clear the street circuit.</p>
+          <button id="start">Start Run</button>
+        </div>
+      </section>
+      <aside class="bench">
+        <h2>Parts Bench</h2>
+        <div id="parts"></div>
+        <h2>Shop</h2>
+        <div id="shop"></div>
+        <p class="note">Controls: mouse or touch to steer. Hold left click to charge and ram for a burst. Keyboard: WASD/Arrows, Space charge.</p>
+      </aside>
+    </main>
+  </div>
+  <script type="module">
+    import { createArcadeGame } from "../_shared/prismtek-arcade/arcade-core.js";
+    window.__prismtekArcadeRuntime = createArcadeGame;
+  </script>
+  <script src="game.js"></script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "name": "@prismtek/spin-street-showdown",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Spin Street Showdown - original customizable battle-top arcade roguelite prototype.",
+  "scripts": {
+    "dev": "python3 -m http.server 4173",
+    "test": "node ../_shared/prismtek-arcade/smoke.mjs .",
+    "test:ps": "powershell -ExecutionPolicy Bypass -File ../_shared/prismtek-arcade/smoke.ps1 .",
+    "build": "npm test"
+  },
+  "keywords": [
+    "game",
+    "arcade",
+    "battle-top",
+    "prismtek"
+  ],
+  "license": "UNLICENSED"
+}
