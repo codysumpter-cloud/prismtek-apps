@@ -8,6 +8,7 @@ const ui = {
   charge: document.getElementById("charge"),
   panel: document.getElementById("panel"),
   start: document.getElementById("start"),
+  pvp: document.getElementById("pvp"),
   parts: document.getElementById("parts"),
   shop: document.getElementById("shop")
 };
@@ -59,6 +60,7 @@ const ARENA = {
 const pointer = { x: 480, y: 270, down: false };
 const keys = new Set();
 let state;
+let keyPressed = new Set();
 
 function buildCatalogue() {
   const all = {};
@@ -101,42 +103,58 @@ function describeStats(stats) {
   return bits.slice(0, 3).join(", ");
 }
 
-function freshRun() {
+function freshRun(mode = "cpu") {
   const starter = Object.fromEntries(slots.map(slot => [slot, catalogue[slot][0]]));
+  const p2Starter = {
+    ring: catalogue.ring[12],
+    core: catalogue.core[10],
+    driver: catalogue.driver[14],
+    chip: catalogue.chip[11]
+  };
   state = {
     running: true,
+    mode,
     round: 1,
     cash: 80,
     streak: 0,
     equipped: starter,
+    p2Equipped: p2Starter,
     owned: new Set(Object.values(starter).map(p => p.id)),
     shop: [],
     pickups: [],
     sparks: [],
+    beasts: [],
     rivals: [],
     shake: 0,
     slowmo: 0,
     message: "Claim the street circuit.",
-    player: topEntity(240, 270, true)
+    player: topEntity(240, 270, "p1"),
+    player2: mode === "pvp" ? topEntity(720, 270, "p2") : null
   };
-  spawnRound();
+  if (mode === "pvp") setupPvp();
+  else spawnRound();
   rollShop();
-  updateStats(true);
+  updateStats(true, state.player, state.equipped);
+  if (state.player2) updateStats(true, state.player2, state.p2Equipped);
   ui.panel.style.display = "none";
 }
 
-function topEntity(x, y, player, rank = 1) {
+function topEntity(x, y, role, rank = 1) {
+  const player = role === "p1" || role === "p2";
   return {
     x, y, vx: 0, vy: 0, r: player ? 23 : 21 + rank,
-    hp: 100, maxHp: 100, charge: 0, spin: 0, player, rank,
-    color: player ? "#54e0ff" : `hsl(${25 + rank * 38}, 95%, 60%)`,
-    cooldown: 0
+    hp: 100, maxHp: 100, charge: 0, beast: 0, spin: 0, player, role, rank,
+    color: role === "p2" ? "#ffcf4d" : player ? "#54e0ff" : `hsl(${25 + rank * 38}, 95%, 60%)`,
+    cooldown: 0,
+    moveCd: 0,
+    guard: 0,
+    launch: 1
   };
 }
 
-function equippedStats() {
+function equippedStats(loadout = state.equipped) {
   const base = { speed: 1.68, mass: 1, damage: 7.5, grip: 0.982, charge: 0.75, hp: 108 };
-  for (const part of Object.values(state.equipped)) {
+  for (const part of Object.values(loadout)) {
     for (const [key, value] of Object.entries(part.stats)) base[key] += value;
   }
   base.speed = Math.max(1.05, base.speed);
@@ -146,27 +164,36 @@ function equippedStats() {
   return base;
 }
 
-function updateStats(heal) {
-  const s = equippedStats();
-  state.player.maxHp = Math.round(s.hp);
-  if (heal) state.player.hp = state.player.maxHp;
-  state.player.r = 20 + Math.min(8, s.mass * 3);
+function updateStats(heal, top = state.player, loadout = state.equipped) {
+  const s = equippedStats(loadout);
+  top.maxHp = Math.round(s.hp);
+  if (heal) top.hp = top.maxHp;
+  top.r = 20 + Math.min(8, s.mass * 3);
 }
 
 function spawnRound() {
   state.rivals = [];
   const count = state.round % 4 === 0 ? 2 : 1;
   for (let i = 0; i < count; i++) {
-    const rival = topEntity(680 + i * 70, 220 + i * 95, false, state.round);
+    const rival = topEntity(680 + i * 70, 220 + i * 95, "cpu", state.round);
     rival.maxHp = 72 + state.round * 18 + i * 20;
     rival.hp = rival.maxHp;
     rival.vx = -1.5 - state.round * 0.08;
     state.rivals.push(rival);
   }
   state.pickups = [
-    { x: 480, y: 150, kind: "cash", ttl: 999 },
-    { x: 475, y: 392, kind: "repair", ttl: 999 }
+    { x: 480, y: 150, kind: "cash", ttl: 560 },
+    { x: 475, y: 392, kind: "repair", ttl: 560 }
   ];
+}
+
+function setupPvp() {
+  state.rivals = [state.player2];
+  state.pickups = [];
+  state.cash = 0;
+  state.message = "Local PvP: best blade wins.";
+  state.player.x = 250; state.player.y = 270;
+  state.player2.x = 710; state.player2.y = 270;
 }
 
 function rollShop() {
@@ -209,7 +236,7 @@ ui.shop.addEventListener("click", e => {
     state.owned.add(item.id);
   }
   state.equipped[item.slot] = item;
-  updateStats(false);
+  updateStats(false, state.player, state.equipped);
   renderBench();
   flashMessage(`${item.name} equipped.`);
 });
@@ -222,37 +249,55 @@ function flashMessage(text) {
 function update() {
   if (!state?.running) return draw();
   const p = state.player;
-  const s = equippedStats();
-  steerPlayer(p, s);
+  const s = equippedStats(state.equipped);
+  steerPlayer(p, s, "p1");
   if (p.charge > 0.96) pulse(p.x, p.y, "#f6f1de", 18);
-  state.rivals.forEach((r, i) => steerRival(r, p, i));
+  if (state.mode === "pvp" && state.player2) {
+    steerPlayer(state.player2, equippedStats(state.p2Equipped), "p2");
+  } else {
+    state.rivals.forEach((r, i) => steerRival(r, p, i));
+  }
+  updateBeasts();
   [p, ...state.rivals].forEach(physics);
-  state.rivals.forEach(r => collide(p, r, s));
+  state.rivals.forEach(r => collide(p, r, s, equippedStats(r.role === "p2" ? state.p2Equipped : rivalLoadout(r.rank))));
   for (let i = 0; i < state.rivals.length; i++) {
     for (let j = i + 1; j < state.rivals.length; j++) collideNpc(state.rivals[i], state.rivals[j]);
   }
-  collectPickups();
-  state.rivals = state.rivals.filter(r => r.hp > 0);
+  if (state.mode !== "pvp") collectPickups();
+  state.rivals = state.mode === "pvp" ? state.rivals : state.rivals.filter(r => r.hp > 0);
   state.pickups.forEach(pu => pu.ttl--);
   state.pickups = state.pickups.filter(pu => pu.ttl > 0);
   state.sparks = state.sparks.filter(sp => --sp.life > 0);
   state.shake *= 0.86;
   state.slowmo *= 0.9;
-  if (state.rivals.length === 0) winRound();
-  if (p.hp <= 0) endRun(false);
+  if (state.mode === "pvp") {
+    if (p.hp <= 0 || state.player2.hp <= 0) endRun(p.hp > state.player2.hp, p.hp > state.player2.hp ? "P1 wins the dome." : "P2 wins the dome.");
+  } else {
+    if (state.rivals.length === 0) winRound();
+    if (p.hp <= 0) endRun(false);
+  }
   draw();
+  keyPressed.clear();
 }
 
-function steerPlayer(p, s) {
-  const ax = (keys.has("ArrowRight") || keys.has("d") ? 1 : 0) - (keys.has("ArrowLeft") || keys.has("a") ? 1 : 0);
-  const ay = (keys.has("ArrowDown") || keys.has("s") ? 1 : 0) - (keys.has("ArrowUp") || keys.has("w") ? 1 : 0);
-  let dx = pointer.x - p.x;
-  let dy = pointer.y - p.y;
+function steerPlayer(p, s, scheme) {
+  const p2 = scheme === "p2";
+  const ax = (keys.has(p2 ? "l" : "arrowright") || (!p2 && keys.has("d")) ? 1 : 0) - (keys.has(p2 ? "j" : "arrowleft") || (!p2 && keys.has("a")) ? 1 : 0);
+  const ay = (keys.has(p2 ? "k" : "arrowdown") || (!p2 && keys.has("s")) ? 1 : 0) - (keys.has(p2 ? "i" : "arrowup") || (!p2 && keys.has("w")) ? 1 : 0);
+  let dx = p2 ? ax : pointer.x - p.x;
+  let dy = p2 ? ay : pointer.y - p.y;
   if (ax || ay) { dx = ax; dy = ay; }
   const len = Math.hypot(dx, dy) || 1;
-  p.vx += (dx / len) * s.speed * 0.2;
-  p.vy += (dy / len) * s.speed * 0.2;
-  if (pointer.down || keys.has(" ")) p.charge = Math.min(1, p.charge + 0.012 + s.charge * 0.012);
+  p.vx += (dx / len) * s.speed * 0.2 * p.launch;
+  p.vy += (dy / len) * s.speed * 0.2 * p.launch;
+  p.launch = Math.max(1, p.launch * 0.992);
+  if ((p2 ? keys.has("u") : pointer.down || keys.has(" ")) && p.charge < 1) p.charge = Math.min(1, p.charge + 0.012 + s.charge * 0.012);
+  p.moveCd = Math.max(0, p.moveCd - 1);
+  p.guard = Math.max(0, p.guard - 1);
+  const moveKey = p2 ? "o" : "shift";
+  const beastKey = p2 ? "p" : "e";
+  if (keyPressed.has(moveKey) && p.moveCd <= 0) useBladeMove(p, dx / len, dy / len, s);
+  if (keyPressed.has(beastKey) && p.beast >= 100) summonBitBeast(p, p2 ? state.p2Equipped : state.equipped);
 }
 
 function steerRival(r, p, i) {
@@ -309,7 +354,7 @@ function applyDomePhysics(o) {
   pulse(o.x, o.y, "#ffd34e", 8);
 }
 
-function collide(a, b, s) {
+function collide(a, b, s, bStats = { mass: 1, damage: 7.5 }) {
   const dx = b.x - a.x;
   const dy = b.y - a.y;
   const d = Math.hypot(dx, dy);
@@ -323,9 +368,12 @@ function collide(a, b, s) {
   const speed = Math.hypot(a.vx - b.vx, a.vy - b.vy);
   const perfectBurst = a.charge > 0.82 && speed > 2.4;
   const burst = a.charge > 0.2 ? 1 + a.charge * 2.2 : 1;
+  const guarded = b.guard > 0 ? 0.42 : 1;
   const hit = (speed + s.damage) * burst;
-  b.hp -= hit * 0.18;
-  a.hp -= Math.max(0.08, speed * 0.03 + b.rank * 0.02);
+  b.hp -= hit * 0.2 * guarded;
+  a.hp -= Math.max(0.06, (speed * 0.026 + (b.rank || 1) * 0.015) * (a.guard > 0 ? 0.45 : 1));
+  a.beast = Math.min(100, a.beast + hit * 0.55);
+  b.beast = Math.min(100, b.beast + (speed + bStats.damage) * 0.26);
   a.vx -= nx * (1.1 + s.mass) * burst;
   a.vy -= ny * (1.1 + s.mass) * burst;
   b.vx += nx * (2.0 + s.mass * 1.15) * burst;
@@ -337,6 +385,64 @@ function collide(a, b, s) {
   }
   state.shake = Math.min(15, hit * 0.13);
   pulse((a.x + b.x) / 2, (a.y + b.y) / 2, perfectBurst ? "#ffffff" : "#ffd34e", perfectBurst ? 22 : 12);
+}
+
+function useBladeMove(p, dx, dy, s) {
+  const speed = Math.hypot(p.vx, p.vy);
+  if (speed > 5.5) {
+    p.guard = 34;
+    p.moveCd = 78;
+    flashMessage(`${p.role === "p2" ? "P2" : "P1"} guard break stance.`);
+    pulse(p.x, p.y, "#6cc4ff", 18);
+    return;
+  }
+  p.vx += dx * (7.2 + s.speed * 2.2);
+  p.vy += dy * (7.2 + s.speed * 2.2);
+  p.charge = Math.min(1, p.charge + 0.24);
+  p.moveCd = 92;
+  flashMessage(`${p.role === "p2" ? "P2" : "P1"} strike dash!`);
+  pulse(p.x, p.y, "#ffffff", 24);
+}
+
+function summonBitBeast(p, loadout) {
+  const beastNames = ["Dragoon", "Dranzer", "Draciel", "Driger", "Wolborg", "Trypio"];
+  const chip = partIndex(loadout.chip);
+  const beast = {
+    owner: p,
+    x: p.x,
+    y: p.y,
+    r: 40,
+    ttl: 120,
+    color: loadout.chip.color,
+    name: beastNames[chip % beastNames.length],
+    angle: 0
+  };
+  p.beast = 0;
+  p.charge = Math.min(1, p.charge + 0.35);
+  state.beasts.push(beast);
+  flashMessage(`${p.role === "p2" ? "P2" : "P1"} calls ${beast.name}!`);
+  pulse(p.x, p.y, loadout.chip.color, 36);
+}
+
+function updateBeasts() {
+  for (const beast of state.beasts) {
+    beast.ttl--;
+    beast.angle += 0.16;
+    beast.x = beast.owner.x + Math.cos(beast.angle) * 62;
+    beast.y = beast.owner.y + Math.sin(beast.angle * 1.4) * 42;
+    for (const target of [state.player, ...state.rivals]) {
+      if (!target || target === beast.owner || target.hp <= 0) continue;
+      const dx = target.x - beast.x;
+      const dy = target.y - beast.y;
+      const d = Math.hypot(dx, dy) || 1;
+      if (d < beast.r + target.r) {
+        target.hp -= 0.5;
+        target.vx += (dx / d) * 0.35;
+        target.vy += (dy / d) * 0.35;
+      }
+    }
+  }
+  state.beasts = state.beasts.filter(beast => beast.ttl > 0);
 }
 
 function collideNpc(a, b) {
@@ -380,15 +486,17 @@ function winRound() {
   flashMessage("Round clear. Shop refreshed.");
 }
 
-function endRun(won) {
+function endRun(won, message) {
   state.running = false;
-  ui.panel.innerHTML = `<h1>${won ? "Street Circuit King" : "Top Busted"}</h1><p>${won ? `You cleared 12 rounds with ${state.owned.size} parts owned.` : `You reached round ${state.round}. Buy smarter, burst cleaner.`}</p><button id="again">Play Again</button>`;
+  const title = state.mode === "pvp" ? "Match Decided" : won ? "Dome Champion" : "Top Busted";
+  ui.panel.innerHTML = `<h1>${title}</h1><p>${message || (won ? `You cleared 12 rounds with ${state.owned.size} parts owned.` : `You reached round ${state.round}. Win with moves, bursts, and Bit Beasts.`)}</p><div class="panel-actions"><button id="again">CPU Circuit</button><button id="again-pvp">Local PvP</button></div>`;
   ui.panel.style.display = "grid";
-  document.getElementById("again").onclick = freshRun;
+  document.getElementById("again").onclick = () => freshRun("cpu");
+  document.getElementById("again-pvp").onclick = () => freshRun("pvp");
 }
 
 function drawTop(o) {
-  const loadout = o.player ? state.equipped : rivalLoadout(o.rank);
+  const loadout = o.role === "p2" ? state.p2Equipped : o.player ? state.equipped : rivalLoadout(o.rank);
   const ring = loadout.ring.color;
   const core = loadout.core.color;
   const driver = loadout.driver.color;
@@ -422,6 +530,13 @@ function drawTop(o) {
     ctx.fill();
     ctx.restore();
   }
+  for (let i = 0; i < toothCount; i++) {
+    ctx.save();
+    ctx.rotate((Math.PI * 2 * (i + 0.5)) / toothCount);
+    ctx.fillStyle = "#f6f1decc";
+    ctx.fillRect(o.r * 0.72, -1, bladeLength * 0.65, 2);
+    ctx.restore();
+  }
 
   const rim = ctx.createRadialGradient(0, 0, o.r * 0.2, 0, 0, o.r + 2);
   rim.addColorStop(0, lighten(ring, 0.3));
@@ -449,6 +564,17 @@ function drawTop(o) {
   ctx.stroke();
 
   drawPolygon(0, 0, o.r * 0.62, coreSides, core, darken(core, 0.42), o.spin * 0.2);
+  ctx.strokeStyle = "#05050a";
+  ctx.lineWidth = 2;
+  for (let i = 0; i < coreSides; i++) {
+    ctx.save();
+    ctx.rotate((Math.PI * 2 * i) / coreSides);
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(o.r * 0.55, 0);
+    ctx.stroke();
+    ctx.restore();
+  }
 
   ctx.strokeStyle = driver;
   ctx.lineWidth = 3;
@@ -488,6 +614,36 @@ function drawTop(o) {
   ctx.restore();
 
   drawTrail(o, driver);
+}
+
+function drawBeast(beast) {
+  ctx.save();
+  ctx.translate(beast.x, beast.y);
+  ctx.globalAlpha = Math.min(0.9, beast.ttl / 35);
+  ctx.strokeStyle = beast.color;
+  ctx.fillStyle = `${beast.color}33`;
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.arc(0, 0, beast.r, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+  ctx.rotate(beast.angle);
+  ctx.fillStyle = beast.color;
+  ctx.beginPath();
+  ctx.moveTo(0, -beast.r);
+  ctx.lineTo(14, -10);
+  ctx.lineTo(beast.r, 0);
+  ctx.lineTo(10, 12);
+  ctx.lineTo(0, beast.r);
+  ctx.lineTo(-10, 12);
+  ctx.lineTo(-beast.r, 0);
+  ctx.lineTo(-14, -10);
+  ctx.closePath();
+  ctx.fill();
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(-12, -8, 7, 7);
+  ctx.fillRect(5, -8, 7, 7);
+  ctx.restore();
 }
 
 function rivalLoadout(rank) {
@@ -564,6 +720,7 @@ function draw() {
   state.pickups.forEach(drawPickup);
   state.rivals.forEach(drawTop);
   drawTop(state.player);
+  state.beasts.forEach(drawBeast);
   state.sparks.forEach(sp => {
     sp.x += sp.vx; sp.y += sp.vy; sp.vx *= 0.95; sp.vy *= 0.95;
     ctx.fillStyle = sp.color;
@@ -571,6 +728,7 @@ function draw() {
   });
   ctx.restore();
   ui.round.textContent = `Round ${state.round}/12`;
+  if (state.mode === "pvp") ui.round.textContent = "Local PvP";
   ui.cash.textContent = `$${state.cash}`;
   ui.hp.textContent = Math.max(0, Math.ceil(state.player.hp));
   ui.charge.textContent = `${Math.round(state.player.charge * 100)}%`;
@@ -643,6 +801,15 @@ function drawBars() {
   });
   ctx.fillStyle = "#ffd34e";
   ctx.fillRect(58, 82, 190 * state.player.charge, 7);
+  ctx.fillStyle = "#8f6bff";
+  ctx.fillRect(58, 92, 190 * (state.player.beast / 100), 6);
+  if (state.mode === "pvp" && state.player2) {
+    ctx.fillStyle = "#140d16"; ctx.fillRect(710, 82, 190, 18);
+    ctx.fillStyle = "#55e6a5"; ctx.fillRect(710, 82, 190 * Math.max(0, state.player2.hp / state.player2.maxHp), 18);
+    ctx.strokeStyle = "#f6f1de"; ctx.strokeRect(710, 82, 190, 18);
+    ctx.fillStyle = "#ffd34e"; ctx.fillRect(710, 106, 190 * state.player2.charge, 7);
+    ctx.fillStyle = "#8f6bff"; ctx.fillRect(710, 116, 190 * (state.player2.beast / 100), 6);
+  }
 }
 
 function drawPickup(pu) {
@@ -663,8 +830,13 @@ canvas.addEventListener("pointermove", e => {
 });
 canvas.addEventListener("pointerdown", () => pointer.down = true);
 canvas.addEventListener("pointerup", () => pointer.down = false);
-addEventListener("keydown", e => keys.add(e.key));
-addEventListener("keyup", e => keys.delete(e.key));
-ui.start.onclick = freshRun;
-freshRun();
+addEventListener("keydown", e => {
+  const key = e.key === "Shift" ? "shift" : e.key.toLowerCase();
+  keys.add(key);
+  keyPressed.add(key);
+});
+addEventListener("keyup", e => keys.delete(e.key === "Shift" ? "shift" : e.key.toLowerCase()));
+ui.start.onclick = () => freshRun("cpu");
+ui.pvp.onclick = () => freshRun("pvp");
+freshRun("cpu");
 setInterval(update, 1000 / 60);
