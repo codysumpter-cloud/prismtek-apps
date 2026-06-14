@@ -6,7 +6,9 @@ import { spawn } from 'node:child_process';
 import crypto from 'node:crypto';
 import { mkdir, readFile } from 'node:fs/promises';
 import { fileURLToPath, pathToFileURL } from 'url';
-import admin from 'firebase-admin';
+import { cert, initializeApp } from 'firebase-admin/app';
+import { getAuth } from 'firebase-admin/auth';
+import { getFirestore } from 'firebase-admin/firestore';
 import { AppFactory } from '@prismtek/app-factory';
 import {
   BUDDY_VISUAL_STATES,
@@ -44,12 +46,12 @@ let db: any;
 let auth: any;
 try {
   if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-    admin.initializeApp({
-      credential: admin.credential.cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)),
+    initializeApp({
+      credential: cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)),
       databaseURL: `https://${firebaseConfig.projectId}.firebaseio.com`
     });
-    db = admin.firestore();
-    auth = admin.auth();
+    db = getFirestore();
+    auth = getAuth();
   } else {
     throw new Error('No Firebase credentials');
   }
