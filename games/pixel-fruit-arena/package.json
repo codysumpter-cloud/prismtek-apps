@@ -7,6 +7,10 @@
   "scripts": {
     "build": "node tools/build.mjs",
     "test": "node tools/test.mjs",
+    "validate:dist": "node tools/validate_dist.mjs",
+    "package:zip": "npm run build && npm run validate:dist && node tools/package_zip.mjs",
+    "validate:dist:ps": "powershell -ExecutionPolicy Bypass -File tools/validate_dist.ps1",
+    "package:zip:ps": "powershell -ExecutionPolicy Bypass -File tools/package_zip.ps1",
     "validate:assets": "python tools/validate_sprites.py assets/characters/prismtek_placeholder_character.json",
     "import:shipoffools-fruits": "node tools/import_shipoffools_fruits.mjs",
     "build:ps": "powershell -ExecutionPolicy Bypass -File tools/build.ps1",

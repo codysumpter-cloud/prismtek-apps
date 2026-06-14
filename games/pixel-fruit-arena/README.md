@@ -2,6 +2,8 @@
 
 Pixel Fruit Arena is a Prismtek platform-fighting MVP. Players create an original fighter, equip modular fruit powers, and battle locally with stocks, knockback, ring-outs, and awakening meters.
 
+Current honest label: **verified local web/browser MVP with a locally verified ZIP packaging path; not yet a fully verified cross-platform downloadable game.**
+
 ## Quick Start
 
 The game is plain HTML/JS/CSS with no install step. Because it uses ES modules, serve it over HTTP instead of relying on `file://` browser behavior.
@@ -44,13 +46,22 @@ http://localhost:4173/?referenceAssets=true
 
 Those files are copied under `assets/reference/onepiece-test/runtime/`, which is git-ignored and removed from release builds.
 
-## Validate
+## Build the web version
+
+From `games/pixel-fruit-arena/`:
 
 ```bash
 npm test
 npm run build
-python tools/validate_sprites.py assets/characters/prismtek_placeholder_character.json
+npm run validate:dist
 ```
+
+What this proves:
+
+- Runtime smoke tests pass in Node.
+- `dist/` exists and includes the static web app shell.
+- `dist/assets/reference` is not present.
+- No `.gif` files leak into release output.
 
 Windows fallback from the repo root:
 
@@ -58,11 +69,54 @@ Windows fallback from the repo root:
 powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\test.ps1
 powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\validate_sprites.ps1 games\pixel-fruit-arena\assets\characters\prismtek_placeholder_character.json
 powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\build.ps1
+powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\validate_dist.ps1
 ```
 
-`tools/test.mjs` imports the runtime modules and smoke-tests all six fruit attacks, PWA shell metadata, 2-player match creation, combat events, ring-outs, match completion, and release guards. `tools/test.ps1` runs the same runtime smoke test when Node.js is available.
+`tools/test.mjs` imports the runtime modules and smoke-tests fruit attacks, PWA shell metadata, 2-player match creation, combat events, ring-outs, match completion, and release guards. `tools/test.ps1` runs the same runtime smoke test when Node.js is available.
 
 Manual QA steps live in [`docs/LOCAL_QA_CHECKLIST.md`](docs/LOCAL_QA_CHECKLIST.md).
+
+## Create a downloadable ZIP
+
+From `games/pixel-fruit-arena/`:
+
+```bash
+npm run package:zip
+```
+
+The package script runs:
+
+1. `npm run build`
+2. `npm run validate:dist`
+3. `node tools/package_zip.mjs`
+
+Expected local artifact path:
+
+```text
+artifacts/pixel-fruit-arena-web.zip
+```
+
+The ZIP contains the contents of `dist/` at the archive root, including `index.html`. The `artifacts/` folder is git-ignored; do not claim a public downloadable release exists until this ZIP is attached to a GitHub release, uploaded to itch.io, or otherwise published with a receipt.
+
+PowerShell-only fallback from the repo root:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\package_zip.ps1
+```
+
+## Platform readiness
+
+Full details live in [`docs/PLATFORM_READINESS.md`](docs/PLATFORM_READINESS.md).
+
+| Platform | Status | Evidence / gap |
+| --- | --- | --- |
+| Web browser | Verified | Local browser QA has passed for the web MVP; the game runs over HTTP, starts `Fight CPU`, accepts keyboard input, and renders fighters/stage/VFX. |
+| Windows | Partially verified | PowerShell helpers exist for test/build/serve, but no native Windows package or fresh Windows ZIP runtime receipt exists. |
+| macOS | Unverified | No macOS runtime, package, or browser/device receipt exists. |
+| Linux / Steam Deck | Unverified | No Linux/Steam Deck runtime, package, controller, or device receipt exists. |
+| RGDS Android mode | Unverified | No Android WebView/browser-on-RGDS runtime receipt, APK, or RGDS Android control receipt exists. |
+| RGDS Linux mode | Unverified | No RGDS Linux runtime, PortMaster-style package, or device receipt exists. |
+| itch.io / downloadable ZIP | Partially verified | ZIP packaging flow is scripted and has a local Windows artifact receipt; public upload/download verification is still required. |
 
 ## Controls
 
@@ -122,6 +176,8 @@ Reference assets are development-only. `USE_REFERENCE_TEST_ASSETS=true` is allow
 - Reference assets (`assets/reference/`) are dev-only, git-ignored, and excluded from release builds.
 - Combat balance is a first pass and intentionally rough.
 - CPU opponents use simple placeholder behavior.
+- Native Windows, macOS, Linux, Steam Deck, RGDS Android, and RGDS Linux packages are not implemented yet.
+- itch.io/downloadable status is not verified until a real ZIP/release/upload receipt exists.
 
 ## Adding Fruits
 
