@@ -52,7 +52,7 @@ This is a runnable browser import path. It is not yet a packaged itch.io, deskto
 
 ## Latest local validation receipt
 
-Date: June 13, 2026
+Date: June 14, 2026
 
 Environment: Windows PowerShell in a real `prismtek-apps` checkout, with standalone `node`, `npm`, and Python unavailable on PATH.
 
