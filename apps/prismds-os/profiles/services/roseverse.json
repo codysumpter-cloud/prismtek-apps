@@ -1,0 +1,17 @@
+{
+  "id": "roseverse",
+  "name": "Roseverse",
+  "aliases": ["rverse"],
+  "kind": "community-service-profile",
+  "status": "unverified-placeholder",
+  "officialWebsite": null,
+  "source": null,
+  "targets": ["3ds", "wii-u", "web", "emulator-support-varies"],
+  "rgdsRole": "document-and-link-after-verification",
+  "autoInstall": false,
+  "notes": [
+    "Public source and install details were not verified during this pass.",
+    "Pretendo credits rverse for Miiverse information sharing, but this profile does not assume Roseverse and rverse are the same project.",
+    "Do not auto-install or modify device networking from this profile."
+  ]
+}

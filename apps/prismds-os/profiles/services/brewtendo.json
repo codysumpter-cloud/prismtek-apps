@@ -1,0 +1,16 @@
+{
+  "id": "brewtendo",
+  "name": "Brewtendo",
+  "kind": "community-service-profile",
+  "status": "unverified-placeholder",
+  "officialWebsite": null,
+  "source": null,
+  "targets": ["3ds", "emulator-support-varies"],
+  "rgdsRole": "document-and-link-after-verification",
+  "autoInstall": false,
+  "notes": [
+    "Public source and install details were not verified during this pass.",
+    "PrismDS keeps this as an optional placeholder profile until an official link is provided.",
+    "Do not auto-install or modify device networking from this profile."
+  ]
+}

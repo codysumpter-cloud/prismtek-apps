@@ -1,0 +1,14 @@
+{
+  "name": "@prismtek/flappy-pixel",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "First-class Prismtek Arcade import of Flappy Pixel.",
+  "scripts": {
+    "dev": "python3 -m http.server 4173",
+    "test": "node ../_shared/prismtek-arcade/smoke.mjs .",
+    "test:ps": "powershell -ExecutionPolicy Bypass -File ../_shared/prismtek-arcade/smoke.ps1 .",
+    "build": "npm test"
+  },
+  "license": "UNLICENSED"
+}
