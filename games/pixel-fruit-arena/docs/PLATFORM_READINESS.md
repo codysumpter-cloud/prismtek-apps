@@ -70,7 +70,7 @@ Results:
 - Sprite validation passed for `assets/characters/prismtek_placeholder_character.json`.
 - `dist/` validation passed with 85 files, no `assets/reference`, and no `.gif` leaks.
 - `artifacts/pixel-fruit-arena-web.zip` was created with 87 entries and `index.html` at the archive root.
-- ZIP SHA-256: `6A0E85D4E663A6412D7F6EFFCC3B2D20C7D0D4C12A9A0D4F86DBD648AEEE2B8C`
+- ZIP SHA-256 for the final local artifact generated on June 14, 2026: `E75E403EA645DD731BD1E7B7D9F536E8BB1564B2ED70535F01B6D24CBA043FDE`
 - `git diff --check` exited successfully. It reported line-ending warnings for touched text files, but no whitespace errors.
 
 ## Manual/device verification checklist
