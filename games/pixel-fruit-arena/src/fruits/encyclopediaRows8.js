@@ -1,0 +1,1 @@
+export default `garment,Garment,common,utility,instant_outfits;doorway,Doorway,rare,space,doors_through_walls;riftroom,Riftroom,legendary,space,room_based_spatial_cuts;pawpush,Pawpush,legendary,force,repel_anything;barrier,Barrier,rare,defense,invisible_barriers`;

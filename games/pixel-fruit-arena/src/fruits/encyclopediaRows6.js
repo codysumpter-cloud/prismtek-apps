@@ -1,0 +1,1 @@
+export default `nineflare,Nineflare,mythic,beast,nine_tailed_fox_illusion;sandworm,Sandworm,mythic,beast,burrowing;oxcharge,Oxcharge,common,beast,bison_charge;falconwing,Falconwing,rare,beast,fast_flight;serpentcoil,Serpentcoil,rare,beast,constricting_grabs`;

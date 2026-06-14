@@ -1,3 +1,4 @@
+import { PRISMTEK_ENCYCLOPEDIA_FRUITS } from "./prismtekFruitEncyclopedia.js";
 import { SHIP_OF_FOOLS_FRUITS } from "./generatedShipOfFoolsFruits.js";
 
 const CORE_FRUITS = {
@@ -77,6 +78,7 @@ const CORE_FRUITS = {
 
 export const FRUITS = {
   ...CORE_FRUITS,
+  ...PRISMTEK_ENCYCLOPEDIA_FRUITS,
   ...SHIP_OF_FOOLS_FRUITS
 };
 

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="32" viewBox="0 0 128 32" shape-rendering="crispEdges">
+  <title>Prismtek Basic Female four-frame character sheet</title>
+  <defs><g id="f"><rect x="11" y="2" width="10" height="6" fill="#3b233b"/><rect x="12" y="7" width="9" height="8" fill="#d8a17c"/><rect x="14" y="10" width="2" height="2" fill="#101018"/><rect x="19" y="10" width="2" height="2" fill="#101018"/><rect x="9" y="15" width="15" height="10" fill="#8f2d56"/><rect x="11" y="25" width="4" height="5" fill="#512d6d"/><rect x="19" y="25" width="4" height="5" fill="#512d6d"/><rect x="7" y="17" width="3" height="6" fill="#d8a17c"/><rect x="23" y="17" width="3" height="6" fill="#d8a17c"/><rect x="10" y="14" width="13" height="2" fill="#ffd166"/></g></defs>
+  <use href="#f" x="0" y="0"/><use href="#f" x="32" y="-1"/><use href="#f" x="64" y="0"/><use href="#f" x="96" y="1"/>
+</svg>

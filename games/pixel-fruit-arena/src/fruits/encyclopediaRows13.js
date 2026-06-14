@@ -1,0 +1,1 @@
+export default `tonweight,Tonweight,rare,body,weight_shift;springcoil,Springcoil,rare,body,spring_legs;bladebloom,Bladebloom,rare,body,blade_body;spikehide,Spikehide,common,body,body_quills;flowerhand,Flowerhand,legendary,body,extra_limbs`;

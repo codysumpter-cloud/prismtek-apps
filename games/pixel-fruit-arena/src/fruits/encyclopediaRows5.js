@@ -1,0 +1,1 @@
+export default `mammothguard,Mammothguard,legendary,beast,massive_bulk;spinosurge,Spinosurge,legendary,beast,dinosaur_durability;pterasky,Pterasky,legendary,beast,high_speed_flight;brachioshell,Brachioshell,legendary,beast,long_range_neck_attacks;opalkirin,Opalkirin,mythic,beast,guardian_wolf_deity`;

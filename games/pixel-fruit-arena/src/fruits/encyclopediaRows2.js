@@ -1,0 +1,1 @@
+export default `fallstar,Fallstar,starter,force,gravity_pressure;glint,Glint,rare,elemental,light_beams;quakecore,Quakecore,legendary,force,shockwaves;venomdrop,Venomdrop,rare,hazard,poison_clouds;sandwake,Sandwake,rare,elemental,sand_body`;

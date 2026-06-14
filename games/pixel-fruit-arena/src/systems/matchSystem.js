@@ -30,7 +30,10 @@ export function createMatch({ stage, players, fruits, training = false }) {
         if (f.slowTime <= 0) f.slowFactor = 1;
         if (training && f.dummy) {
           if (f.hitstun > 0) f.lastHitAt = elapsed;
-          if (f.damage > 0 && elapsed - (f.lastHitAt || 0) > 3) f.damage = 0;
+          if (f.damage > 0 && elapsed - (f.lastHitAt || 0) > 3) {
+            f.damage = 0;
+            f.health = f.maxHealth;
+          }
         }
       }
       for (const action of actions.filter((a) => a.type === "attack")) {
@@ -70,6 +73,7 @@ function resolveInput(f, actions, fighters) {
     aim: own.find((a) => a.type === "aim")?.value || 0,
     jump: own.some((a) => a.type === "jump"),
     dodge: own.some((a) => a.type === "dodge"),
+    haki: own.some((a) => a.type === "haki"),
     awaken: own.some((a) => a.type === "awaken")
   };
   if (f.ai && !f.dummy) {
@@ -80,8 +84,8 @@ function resolveInput(f, actions, fighters) {
       input.move = Math.abs(dx) > 48 ? Math.sign(dx) : 0;
       input.jump = (target.y + 24 < f.y || !f.grounded && f.y > 380) && Math.random() < 0.06;
       input.dodge = Math.abs(dx) < 48 && Math.random() < 0.01;
+      input.haki = (Math.abs(dx) < 96 || target.damage > 80) && f.haki >= 22 && Math.random() < 0.025;
       input.awaken = f.awakening >= 100 && Math.random() < 0.04;
-      // CPUs occasionally use directional attack variants too.
       if (Math.random() < 0.35) input.aim = target.y + 30 < f.y ? -1 : target.y > f.y + 60 ? 1 : 0;
       if (Math.abs(dx) < 120 && Math.abs(target.y - f.y) < 90 && Math.random() < 0.05) {
         actions.push({ slot: f.slot, type: "attack", index: Math.floor(Math.random() * 3) });

@@ -1,0 +1,1 @@
+export default `glowage,Glowage,legendary,age,age_shifting;castlebody,Castlebody,rare,body,fortress_body;musicnote,Musicnote,rare,sound,sound_slashes;silence,Silence,rare,sound,silent_zones;markmark,Markmark,rare,targeting,lock_on_projectiles`;

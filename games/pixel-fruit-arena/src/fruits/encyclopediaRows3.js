@@ -1,0 +1,1 @@
+export default `smog,Smog,common,elemental,smoke_body;magmaheart,Magmaheart,legendary,elemental,lava_punches;snowdrift,Snowdrift,common,elemental,snow_form;swampmire,Swampmire,rare,body,bottomless_storage;flarebird,Flarebird,mythic,beast,phoenix_flight`;
