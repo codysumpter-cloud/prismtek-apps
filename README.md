@@ -4,9 +4,12 @@
 
 [<kbd>⬇ Download Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip)
 [<kbd>⬇ GitHub Releases</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/releases)
-[<kbd>▶ Open Pixel Fruit Arena</kbd>](games/pixel-fruit-arena/)
-[<kbd>▶ Open TamerNet Battle Sandbox</kbd>](games/tamernet-battle-sandbox/)
-[<kbd>🕹 Arcade migration tracker</kbd>](docs/games/prismtek-arcade-cross-platform-migration.md)
+[<kbd>▶ Pixel Fruit Arena</kbd>](games/pixel-fruit-arena/)
+[<kbd>▶ TamerNet Battle Sandbox</kbd>](games/tamernet-battle-sandbox/)
+[<kbd>▶ Spin Street Showdown</kbd>](games/spin-street-showdown/)
+[<kbd>🕹 Arcade feel guide</kbd>](docs/games/prismtek-arcade-feel.md)
+[<kbd>📥 Arcade migration queue</kbd>](docs/games/prismtek-site-arcade-migration-queue.md)
+[<kbd>✅ Platform tracker</kbd>](docs/games/three-game-platform-readiness.md)
 
 Prismtek-apps is the runnable software workspace for Prismtek products: mobile apps, desktop apps, web apps, games, tools, services, demos, and shipped product surfaces.
 
@@ -14,39 +17,81 @@ This is **not** a single SwiftUI repository. SwiftUI is one implementation techn
 
 This is **not** the KnowledgeVault, the Buddy runtime, or the Buddy governance layer.
 
+## Prismtek Arcade direction
+
+Every game in `games/` should feel like part of the same arcade line: low-resource, highly available, instantly replayable, readable in seconds, and built around rank, rewards, rematches, receipts, and public clout.
+
+Shared design source of truth: [`docs/games/prismtek-arcade-feel.md`](docs/games/prismtek-arcade-feel.md).
+
+| Shared arcade pillar | Meaning |
+| --- | --- |
+| Fast to start | Browser/static-first where practical; no login required for local play. |
+| Readable immediately | Clear silhouettes, inputs, hit effects, and win/loss states. |
+| Skill over bloat | Short matches, instant rematches, mastery through timing and positioning. |
+| Low-resource by design | Canvas/static ZIP/small assets before heavy engines or large downloads. |
+| Clout loop | Ranks, titles, badges, trails, plaques, trophies, win cards, and leaderboard-ready receipts. |
+| Original Prismtek identity | No shipped reference/test assets or copied franchise content. |
+
+## Games
+
+### Active `prismtek-apps` games
+
+These game folders currently exist under `games/` and are part of this repo branch.
+
+| Game | Path | Status | Shared feel target | Run locally |
+| --- | --- | --- | --- | --- |
+| Pixel Fruit Arena | [`games/pixel-fruit-arena/`](games/pixel-fruit-arena/) | Playable browser/PWA MVP; web ZIP path exists; DS source exists; public release artifacts pending. | Local platform-fighter matches with character identity, readable powers, ring-outs, awakening, rank rewards, and match receipts. | `cd games/pixel-fruit-arena && npm test && npm run build && npm run package:zip` |
+| TamerNet Battle Sandbox | [`games/tamernet-battle-sandbox/`](games/tamernet-battle-sandbox/) | Playable browser prototype; smoke test and web ZIP path exist; DS source exists; public release artifacts pending. | Quick creature command battles with readable roles, alpha encounters, PvP-ready duel rules, rank rewards, and match receipts. | `cd games/tamernet-battle-sandbox && npm test && npm run package:zip` |
+| Spin Street Showdown | [`games/spin-street-showdown/`](games/spin-street-showdown/) | Playable browser prototype; upgraded physics/graphics pass, smoke tests, web ZIP path, and DS source exist; public release artifacts pending. | Short retro PvP dome clashes with launch skill, rim pressure, burst timing, Spirit Surge, visible rank, and clout rewards. | `cd games/spin-street-showdown && npm test && npm run package:zip` |
+
+### Prismtek-site arcade migration queue
+
+These arcade games are source-confirmed in `codysumpter-cloud/prismtek-site` and are queued to become first-class `games/*` projects here. They are intentionally listed as queued until their source is actually migrated.
+
+Full queue tracker: [`docs/games/prismtek-site-arcade-migration-queue.md`](docs/games/prismtek-site-arcade-migration-queue.md).
+
+| Source game | Source ID | Target path | Migration status | Shared feel target |
+| --- | --- | --- | --- | --- |
+| Flappy Pixel | `flappy-pixel` | `games/flappy-pixel/` | Queued | One-button reflex survival match with score/rank clout. |
+| Crossy Pixel | `crossy-pixel` | `games/crossy-pixel/` | Queued | Lane-crossing dodge/run match with streak and distance clout. |
+| Pixel Snake | `pixel-snake` | `games/pixel-snake/` | Queued | Classic route-control score match with speed/rank rewards. |
+| Neon Brick Breaker | `neon-brick-breaker` | `games/neon-brick-breaker/` | Queued | Paddle/brick clear match with combo, accuracy, and score clout. |
+| Pixel Stacker | `pixel-stacker` | `games/pixel-stacker/` | Queued | Timing/stacking precision match with height, streak, and badge rewards. |
+
+### Game buttons
+
+| Game | Open | README | DS source | Arcade design |
+| --- | --- | --- | --- | --- |
+| Pixel Fruit Arena | [<kbd>▶ Open</kbd>](games/pixel-fruit-arena/) | [README](games/pixel-fruit-arena/README.md) | [DS source](games/pixel-fruit-arena/ds-homebrew/) | [Shared feel](docs/games/prismtek-arcade-feel.md) |
+| TamerNet Battle Sandbox | [<kbd>▶ Open</kbd>](games/tamernet-battle-sandbox/) | [README](games/tamernet-battle-sandbox/README.md) | [DS source](games/tamernet-battle-sandbox/ds-homebrew/) | [Shared feel](docs/games/prismtek-arcade-feel.md) |
+| Spin Street Showdown | [<kbd>▶ Open</kbd>](games/spin-street-showdown/) | [README](games/spin-street-showdown/README.md) | [DS source](games/spin-street-showdown/ds-homebrew/) | [PvP loop](games/spin-street-showdown/docs/ARCADE_PVP_LOOP.md) / [Shared feel](docs/games/prismtek-arcade-feel.md) |
+
+Queued Prismtek-site arcade games should **not** get open buttons until their target `games/<slug>/` folders exist.
+
+### Shared game release rules
+
+- Do not claim a public download exists until the artifact is attached to GitHub Releases, itch.io, or another verifiable release surface.
+- Do not claim a DS binary exists until a `.nds` file is actually built and attached or tested.
+- Do not claim RGDS, Steam Deck, Windows, macOS, or Linux verification until there is a real device/runtime receipt.
+- Do not ship reference/test assets.
+- Keep game loops playable offline/local first.
+
 ## Download buttons
 
 | Product | Buttons | Status |
 | --- | --- | --- |
-| Pixel Fruit Arena | [<kbd>▶ Open</kbd>](games/pixel-fruit-arena/) [<kbd>README</kbd>](games/pixel-fruit-arena/README.md) [<kbd>⬇ Download ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Playable browser/PWA MVP; packaged release artifact pending. |
-| TamerNet Battle Sandbox | [<kbd>▶ Open</kbd>](games/tamernet-battle-sandbox/) [<kbd>README</kbd>](games/tamernet-battle-sandbox/README.md) [<kbd>⬇ Download ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Playable browser prototype; packaged release artifact pending. |
+| Pixel Fruit Arena | [<kbd>▶ Open</kbd>](games/pixel-fruit-arena/) [<kbd>README</kbd>](games/pixel-fruit-arena/README.md) [<kbd>DS source</kbd>](games/pixel-fruit-arena/ds-homebrew/) [<kbd>⬇ Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Playable browser/PWA MVP; web ZIP path exists; DS source exists; public release artifacts pending. |
+| TamerNet Battle Sandbox | [<kbd>▶ Open</kbd>](games/tamernet-battle-sandbox/) [<kbd>README</kbd>](games/tamernet-battle-sandbox/README.md) [<kbd>DS source</kbd>](games/tamernet-battle-sandbox/ds-homebrew/) [<kbd>⬇ Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Playable browser prototype; web ZIP path exists; DS source exists; public release artifacts pending. |
+| Spin Street Showdown | [<kbd>▶ Open</kbd>](games/spin-street-showdown/) [<kbd>README</kbd>](games/spin-street-showdown/README.md) [<kbd>DS source</kbd>](games/spin-street-showdown/ds-homebrew/) [<kbd>⬇ Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Playable browser prototype; web ZIP path exists; DS source exists; public release artifacts pending. |
 | BeMore iOS native | [<kbd>Open source</kbd>](apps/bemore-ios-native/) [<kbd>README</kbd>](apps/bemore-ios-native/README.md) [<kbd>TestFlight runbook</kbd>](apps/bemore-ios-native/ADMIN_TESTFLIGHT_RUNBOOK.md) | Native iOS app source; public signed download link pending. |
-| BeMore Agent Platform iOS | [<kbd>Open source</kbd>](apps/bemoreagent-platform-ios/) [<kbd>⬇ Download ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | iOS platform/admin source; signed artifact pending. |
-| BeMore macOS native | [<kbd>Open source</kbd>](apps/bemore-macos-native/) [<kbd>⬇ Download ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | macOS app source; packaged app download pending. |
-| BeMore desktop/web shell | [<kbd>Open source</kbd>](apps/bemore-macos/) [<kbd>⬇ Download ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Desktop/web shell source; installer pending. |
-| BeMore web | [<kbd>Open source</kbd>](apps/web/) [<kbd>⬇ Download ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Web app source; hosted link pending. |
-| PrismDS for RGDS | [<kbd>Open source</kbd>](apps/prismds-os/) [<kbd>⬇ Download ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | RGDS launcher/userland source; OS image/download pending. |
-| BeMore CLI | [<kbd>Open source</kbd>](apps/bemore-cli/) [<kbd>⬇ Download ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | CLI source; standalone binary pending. |
-| Product API | [<kbd>Open source</kbd>](apps/api/) [<kbd>⬇ Download ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Service source; deployment artifact depends on environment. |
-| Buddy chat integration | [<kbd>Open source</kbd>](integrations/buddy-chat/) [<kbd>⬇ Download ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Integration source; deployment artifact depends on environment. |
-
-## Download, play, and run
-
-> Release packaging is still being standardized. Until a project has a packaged release artifact, the table links to the best current playable/runnable source path and the exact local run instructions.
-
-| Product | Type | Status | Download / open | Run locally |
-| --- | --- | --- | --- | --- |
-| Pixel Fruit Arena | Browser game / PWA MVP | Playable local multiplayer MVP; web/PWA package path exists; release artifact must be built from source today. | [<kbd>▶ Open</kbd>](games/pixel-fruit-arena/) [<kbd>README</kbd>](games/pixel-fruit-arena/README.md) [<kbd>⬇ Download ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | `cd games/pixel-fruit-arena && npm test && npm run build` then serve `dist/`, or `npx serve -l 4173 .` for dev. |
-| TamerNet Battle Sandbox | Browser game prototype | Playable local browser prototype; no packaged release artifact yet. | [<kbd>▶ Open</kbd>](games/tamernet-battle-sandbox/) [<kbd>README</kbd>](games/tamernet-battle-sandbox/README.md) [<kbd>⬇ Download ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | `cd games/tamernet-battle-sandbox && python3 -m http.server 8080`, then open `http://localhost:8080`. |
-| BeMore iOS native | iOS app | Native SwiftUI iPhone shell with Buddy care/training/collection, provider settings, local persistence, and a stubbed local-runtime boundary until packaged runtime/model libraries are wired. | [<kbd>Open source</kbd>](apps/bemore-ios-native/) [<kbd>README</kbd>](apps/bemore-ios-native/README.md) [<kbd>TestFlight runbook</kbd>](apps/bemore-ios-native/ADMIN_TESTFLIGHT_RUNBOOK.md) | `cd apps/bemore-ios-native && xcodegen generate && open BeMoreAgent.xcodeproj`. |
-| BeMore Agent Platform iOS | iOS app | Platform/admin-capable iOS surface; build/release path is repo source today unless a signed build is distributed through Apple tooling. | [<kbd>Open source</kbd>](apps/bemoreagent-platform-ios/) [<kbd>⬇ Download ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Open the project from Xcode after inspecting the app folder. |
-| BeMore macOS native | macOS app | Native macOS app surface; packaged download link is not published in this README yet. | [<kbd>Open source</kbd>](apps/bemore-macos-native/) [<kbd>⬇ Download ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Open/build the native macOS project from Xcode. |
-| BeMore desktop/web shell | Desktop-style web/local shell | Desktop/web shell source is present; packaged installer is not published in this README yet. | [<kbd>Open source</kbd>](apps/bemore-macos/) [<kbd>⬇ Download ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Install workspace deps, then use the app-specific package scripts. |
-| BeMore web | Web app | Browser product surface source is present; hosted production URL is not published in this README yet. | [<kbd>Open source</kbd>](apps/web/) [<kbd>⬇ Download ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Install workspace deps, then use the app-specific package scripts. |
-| PrismDS for RGDS | RGDS launcher/userland product | Source exists for the RGDS launcher/userland direction; not a boot image, flasher, or downloadable OS image yet. | [<kbd>Open source</kbd>](apps/prismds-os/) [<kbd>⬇ Download ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Inspect the app folder and package only through the documented project scripts. |
-| BeMore CLI | Developer program | Developer CLI source; no standalone binary release link yet. | [<kbd>Open source</kbd>](apps/bemore-cli/) [<kbd>⬇ Download ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Install workspace deps, then use the CLI package scripts. |
-| Product API | Service program | Service source; deploy/run artifact depends on environment configuration. | [<kbd>Open source</kbd>](apps/api/) [<kbd>⬇ Download ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Install workspace deps, then use the service package scripts. |
-| Buddy chat integration | Service/integration program | Integration server source; deploy/run artifact depends on environment configuration. | [<kbd>Open source</kbd>](integrations/buddy-chat/) [<kbd>⬇ Download ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Install workspace deps, then use the integration package scripts. |
+| BeMore Agent Platform iOS | [<kbd>Open source</kbd>](apps/bemoreagent-platform-ios/) [<kbd>⬇ Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | iOS platform/admin source; signed artifact pending. |
+| BeMore macOS native | [<kbd>Open source</kbd>](apps/bemore-macos-native/) [<kbd>⬇ Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | macOS app source; packaged app download pending. |
+| BeMore desktop/web shell | [<kbd>Open source</kbd>](apps/bemore-macos/) [<kbd>⬇ Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Desktop/web shell source; installer pending. |
+| BeMore web | [<kbd>Open source</kbd>](apps/web/) [<kbd>⬇ Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Web app source; hosted link pending. |
+| PrismDS for RGDS | [<kbd>Open source</kbd>](apps/prismds-os/) [<kbd>⬇ Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | RGDS launcher/userland source; OS image/download pending. |
+| BeMore CLI | [<kbd>Open source</kbd>](apps/bemore-cli/) [<kbd>⬇ Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | CLI source; standalone binary pending. |
+| Product API | [<kbd>Open source</kbd>](apps/api/) [<kbd>⬇ Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Service source; deployment artifact depends on environment. |
+| Buddy chat integration | [<kbd>Open source</kbd>](integrations/buddy-chat/) [<kbd>⬇ Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Integration source; deployment artifact depends on environment. |
 
 ## What is actually downloadable today?
 
@@ -59,7 +104,7 @@ This is **not** the KnowledgeVault, the Buddy runtime, or the Buddy governance l
   cd prismtek-apps
   ```
 
-- **Packaged releases:** use GitHub Releases once product artifacts are attached there. Do not claim a product has a downloadable installer, app bundle, ROM image, or hosted build until that artifact exists.
+- **Packaged releases:** use GitHub Releases once product artifacts are attached there. Do not claim a product has a downloadable installer, app bundle, ROM image, DS binary, or hosted build until that artifact exists.
 
 ## Quick start
 
@@ -78,75 +123,18 @@ npm run build
 
 Some projects are intentionally dependency-free browser prototypes and should be run from their own folders. See the product table above.
 
-## Games
-
-### Pixel Fruit Arena
-
-[<kbd>▶ Open Pixel Fruit Arena</kbd>](games/pixel-fruit-arena/)
-[<kbd>⬇ Download Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip)
-
-Pixel Fruit Arena is a local multiplayer pixel-art platform fighting MVP. It has a character creator, fruit powers, stocks, knockback, ring-outs, awakening, keyboard controls, controller support through the browser Gamepad API, and PWA metadata.
-
-Run from `games/pixel-fruit-arena/`:
-
-```bash
-npx serve -l 4173 .
-# or
-python -m http.server 4173
-```
-
-Build and validate:
-
-```bash
-cd games/pixel-fruit-arena
-npm test
-npm run build
-```
-
-Known limits: local multiplayer only, placeholder original art, browser-dependent controller mapping, rough first-pass combat balance, and simple CPU behavior.
-
-### TamerNet Battle Sandbox
-
-[<kbd>▶ Open TamerNet Battle Sandbox</kbd>](games/tamernet-battle-sandbox/)
-[<kbd>⬇ Download Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip)
-
-TamerNet Battle Sandbox is a playable browser prototype for creature MMO battle direction. It uses original placeholder creatures and no external franchise assets.
-
-Run from `games/tamernet-battle-sandbox/`:
-
-```bash
-python3 -m http.server 8080
-```
-
-Then open:
-
-```text
-http://localhost:8080
-```
-
-Known limits: no server authority, multiplayer, PvP duel mode, marketplace, breeding, economy, legendary custody, or BYO-file importer yet.
-
-### Incoming Prismtek arcade migration
-
-[<kbd>Open migration tracker</kbd>](docs/games/prismtek-arcade-cross-platform-migration.md)
-[<kbd>Open GitHub issue #154</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/issues/154)
-
-Verified incoming games from `prismtek-site`:
-
-- Flappy Pixel
-- Crossy Pixel
-- Pixel Snake
-- Neon Brick Breaker
-- Pixel Stacker
-
-These are not listed as playable from `prismtek-apps` until their `games/<slug>/` folders exist and builds are validated.
-
 ## Products
 
 | Product | Category | Current path | Role |
 | --- | --- | --- | --- |
-| Pixel Fruit Arena | Game | `games/pixel-fruit-arena/` | Playable browser/PWA platform-fighting MVP |
-| TamerNet Battle Sandbox | Game prototype | `games/tamernet-battle-sandbox/` | Playable browser creature-battle sandbox |
+| Pixel Fruit Arena | Game | `games/pixel-fruit-arena/` | Playable browser/PWA platform-fighting MVP plus DS source |
+| TamerNet Battle Sandbox | Game prototype | `games/tamernet-battle-sandbox/` | Playable browser creature prototype plus DS source |
+| Spin Street Showdown | Game prototype | `games/spin-street-showdown/` | Playable browser arcade prototype plus DS source |
+| Flappy Pixel | Queued game migration | `games/flappy-pixel/` | Prismtek-site arcade game queued for migration |
+| Crossy Pixel | Queued game migration | `games/crossy-pixel/` | Prismtek-site arcade game queued for migration |
+| Pixel Snake | Queued game migration | `games/pixel-snake/` | Prismtek-site arcade game queued for migration |
+| Neon Brick Breaker | Queued game migration | `games/neon-brick-breaker/` | Prismtek-site arcade game queued for migration |
+| Pixel Stacker | Queued game migration | `games/pixel-stacker/` | Prismtek-site arcade game queued for migration |
 | BeMore iOS native | Mobile app | `apps/bemore-ios-native/` | Native iOS Buddy/operator app |
 | BeMore Agent Platform iOS | Mobile app | `apps/bemoreagent-platform-ios/` | iOS platform/admin-capable app |
 | BeMore macOS native | Desktop app | `apps/bemore-macos-native/` | Native macOS app |
@@ -192,6 +180,9 @@ Start here:
 - [`docs/architecture/path-ownership.md`](docs/architecture/path-ownership.md)
 - [`docs/PLATFORM_TEST_MATRIX.md`](docs/PLATFORM_TEST_MATRIX.md)
 - [`docs/games/prismtek-arcade-cross-platform-migration.md`](docs/games/prismtek-arcade-cross-platform-migration.md)
+- [`docs/games/three-game-platform-readiness.md`](docs/games/three-game-platform-readiness.md)
+- [`docs/games/prismtek-arcade-feel.md`](docs/games/prismtek-arcade-feel.md)
+- [`docs/games/prismtek-site-arcade-migration-queue.md`](docs/games/prismtek-site-arcade-migration-queue.md)
 
 These documents are the source of truth for staged repo reorganization.
 
@@ -209,11 +200,12 @@ These documents are the source of truth for staged repo reorganization.
 
 1. Add governance docs and README framing. No product moves.
 2. Move browser-playable game prototypes into the games workspace.
-3. Move `apps/bemore-cli` to `tools/cli/bemore-cli`.
-4. Move `apps/api` to `services/api` and `integrations/buddy-chat` to `services/buddy-chat`.
-5. Decide final ownership for `apps/prismds-os` after packaging review.
-6. Move Apple projects last, one product at a time.
-7. Quarantine root/generated legacy material only after reference scans.
+3. Migrate Prismtek-site arcade games into `games/*` one at a time using [`docs/games/prismtek-site-arcade-migration-queue.md`](docs/games/prismtek-site-arcade-migration-queue.md).
+4. Move `apps/bemore-cli` to `tools/cli/bemore-cli`.
+5. Move `apps/api` to `services/api` and `integrations/buddy-chat` to `services/buddy-chat`.
+6. Decide final ownership for `apps/prismds-os` after packaging review.
+7. Move Apple projects last, one product at a time.
+8. Quarantine root/generated legacy material only after reference scans.
 
 ## Apple development
 
@@ -241,8 +233,9 @@ xcodebuild -project BeMoreAgent.xcodeproj -scheme BeMoreAgent -sdk iphonesimulat
 - Do not treat SwiftUI as the repository default.
 - Do not bury games, services, or web apps under Apple assumptions.
 - Do not claim download links exist unless the artifact or source path exists.
-- Do not claim RGDS/OS images, app installers, or signed builds exist until they are packaged and attached.
+- Do not claim RGDS/OS images, app installers, DS binaries, or signed builds exist until they are packaged and attached.
 - Do not ship reference/test assets as release assets.
+- Do not list queued game migrations as active open buttons until their target folders exist.
 - Do not extract shared packages until reuse is proven.
 - Do not delete or quarantine root artifacts until reference scans prove they are unused.
 

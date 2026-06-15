@@ -2,7 +2,7 @@
 
 Pixel Fruit Arena is a Prismtek platform-fighting MVP. Players create an original fighter, equip modular fruit powers, and battle locally with stocks, knockback, ring-outs, and awakening meters.
 
-Current honest label: **verified local web/browser MVP with a locally verified ZIP packaging path; not yet a fully verified cross-platform downloadable game.**
+Current honest label: **verified local web/browser MVP with a locally verified ZIP packaging path and DS source receipt; not yet a fully verified cross-platform downloadable game.**
 
 ## Quick Start
 
@@ -15,36 +15,13 @@ npx serve -l 4173 .        # Node
 python -m http.server 4173 # Python
 ```
 
-PowerShell-only fallback from the repo root:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\serve.ps1
-```
-
 Then open:
 
 ```text
 http://localhost:4173
 ```
 
-Add `-Port 4174` if 4173 is busy, or `-Dist` to serve the release build from `dist/` after running `tools/build.ps1`.
-
 Use `Fight CPU` from the main menu for the fastest playable match. Local 2P, 3P, and 4P setup remains available from the same menu.
-
-For local fan/dev testing with the One Piece reference GIFs in your Downloads folder:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\install_local_onepiece_reference_assets.ps1
-powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\serve.ps1
-```
-
-Then open:
-
-```text
-http://localhost:4173/?referenceAssets=true
-```
-
-Those files are copied under `assets/reference/onepiece-test/runtime/`, which is git-ignored and removed from release builds.
 
 ## Build the web version
 
@@ -63,17 +40,6 @@ What this proves:
 - `dist/assets/reference` is not present.
 - No `.gif` files leak into release output.
 
-Windows fallback from the repo root:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\test.ps1
-powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\validate_sprites.ps1 games\pixel-fruit-arena\assets\characters\prismtek_placeholder_character.json
-powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\build.ps1
-powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\validate_dist.ps1
-```
-
-`tools/test.mjs` imports the runtime modules and smoke-tests fruit attacks, PWA shell metadata, 2-player match creation, combat events, ring-outs, match completion, and release guards. `tools/test.ps1` runs the same runtime smoke test when Node.js is available.
-
 Manual QA steps live in [`docs/LOCAL_QA_CHECKLIST.md`](docs/LOCAL_QA_CHECKLIST.md).
 
 ## Create a downloadable ZIP
@@ -84,12 +50,6 @@ From `games/pixel-fruit-arena/`:
 npm run package:zip
 ```
 
-The package script runs:
-
-1. `npm run build`
-2. `npm run validate:dist`
-3. `node tools/package_zip.mjs`
-
 Expected local artifact path:
 
 ```text
@@ -98,11 +58,22 @@ artifacts/pixel-fruit-arena-web.zip
 
 The ZIP contains the contents of `dist/` at the archive root, including `index.html`. The `artifacts/` folder is git-ignored; do not claim a public downloadable release exists until this ZIP is attached to a GitHub release, uploaded to itch.io, or otherwise published with a receipt.
 
-PowerShell-only fallback from the repo root:
+## Nintendo DS source
 
-```powershell
-powershell -ExecutionPolicy Bypass -File games\pixel-fruit-arena\tools\package_zip.ps1
+A compact DS source layout lives in [`ds-homebrew/`](ds-homebrew/).
+
+```bash
+cd ds-homebrew
+make
 ```
+
+Expected local DS output:
+
+```text
+pixel_fruit_arena_ds.nds
+```
+
+CI validates the DS source receipt. The `.nds` output still needs a devkitPro/libnds build and device or emulator receipt.
 
 ## Platform readiness
 
@@ -111,16 +82,17 @@ Full details live in [`docs/PLATFORM_READINESS.md`](docs/PLATFORM_READINESS.md).
 | Platform | Status | Evidence / gap |
 | --- | --- | --- |
 | Web browser | Verified | Local browser QA has passed for the web MVP; the game runs over HTTP, starts `Fight CPU`, accepts keyboard input, and renders fighters/stage/VFX. |
+| Downloadable ZIP / itch.io | Partially verified | ZIP packaging flow is scripted and has a local artifact path; public upload/download verification is still required. |
 | Windows | Partially verified | PowerShell helpers exist for test/build/serve, but no native Windows package or fresh Windows ZIP runtime receipt exists. |
 | macOS | Unverified | No macOS runtime, package, or browser/device receipt exists. |
 | Linux / Steam Deck | Unverified | No Linux/Steam Deck runtime, package, controller, or device receipt exists. |
 | RGDS Android mode | Unverified | No Android WebView/browser-on-RGDS runtime receipt, APK, or RGDS Android control receipt exists. |
 | RGDS Linux mode | Unverified | No RGDS Linux runtime, PortMaster-style package, or device receipt exists. |
-| itch.io / downloadable ZIP | Partially verified | ZIP packaging flow is scripted and has a local Windows artifact receipt; public upload/download verification is still required. |
+| Nintendo DS | Partially verified | DS source layout exists and is statically validated; `.nds` build/device receipt is still required. |
 
 ## Controls
 
-P1 keyboard: arrows to move and jump, `/` attack, `.` special 1, `,` special 2, right Shift dodge, Enter awaken.
+P1 keyboard: arrows to move and jump, `/` move, `.` special 1, `,` special 2, right Shift dodge, Enter awaken.
 
 P2 keyboard: WASD to move and jump, F/G/H abilities, left Shift dodge, T awaken.
 
@@ -128,18 +100,7 @@ Controllers: left stick move, face buttons jump and abilities, shoulder dodge an
 
 ## Character Creator
 
-Character identity is independent from fruit powers. Profiles persist locally as:
-
-```json
-{
-  "name": "",
-  "appearance": {},
-  "owned_fruits": [],
-  "equipped_fruit": ""
-}
-```
-
-Players can edit name, body sprite, hair style, combat style, hair color, skin tone, outfit colors, and accessory colors. Combat style is independent from fruit powers and currently supports Duelist, Brawler, Striker, Ranger, Guardian, and Trickster.
+Character identity is independent from fruit powers. Players can edit name, body sprite, hair style, combat style, hair color, skin tone, outfit colors, and accessory colors. Combat style is independent from fruit powers and currently supports Duelist, Brawler, Striker, Ranger, Guardian, and Trickster.
 
 ## Fruit System
 
@@ -155,15 +116,7 @@ Match setup supports 2, 3, or 4 players. Local keyboard and controller input sha
 
 ## Asset Pipeline
 
-Playable runtime art is loaded from locally available free pixel-art packs with credit/license notes under `assets/licenses`. Elemental attack VFX from the user's Downloads packs live under `assets/effects/elemental-vfx` with a license verification note. Verify those pack licenses before public release. The shipped runtime does not use the One Piece reference GIFs.
-
-Reference GIF tooling lives in `tools/`:
-
-```bash
-python tools/extract_gif_frames.py path/to/reference.gif --out assets/reference/onepiece-test --animation walk
-python tools/generate_animation_manifest.py assets/reference/onepiece-test/walk --animation walk --fps 12 --loop
-python tools/validate_sprites.py assets/characters/prismtek_placeholder_character.json
-```
+Playable runtime art is loaded from locally available free pixel-art packs with credit/license notes under `assets/licenses`. Elemental VFX from user-provided packs live under `assets/effects/elemental-vfx` with a license verification note. Verify those pack licenses before public release. The shipped runtime does not use the One Piece reference GIFs.
 
 Reference assets are development-only. `USE_REFERENCE_TEST_ASSETS=true` is allowed for local testing only. Release builds remove `assets/reference` from `dist` and fail if any `.gif` remains in the release artifact.
 
@@ -173,10 +126,10 @@ Reference assets are development-only. `USE_REFERENCE_TEST_ASSETS=true` is allow
 - All character/stage art is placeholder pixel art, not final production art.
 - Downloaded elemental VFX packs are wired for local playability; confirm their licenses before any public release.
 - Controller support depends on the browser's Gamepad API; button numbering may vary by pad and browser.
-- Reference assets (`assets/reference/`) are dev-only, git-ignored, and excluded from release builds.
 - Combat balance is a first pass and intentionally rough.
 - CPU opponents use simple placeholder behavior.
 - Native Windows, macOS, Linux, Steam Deck, RGDS Android, and RGDS Linux packages are not implemented yet.
+- Nintendo DS source exists, but the `.nds` output is not build-verified yet.
 - itch.io/downloadable status is not verified until a real ZIP/release/upload receipt exists.
 
 ## Adding Fruits
