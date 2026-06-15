@@ -6,7 +6,7 @@
   "description": "Spin Street Showdown arcade prototype.",
   "scripts": {
     "dev": "python3 -m http.server 4173",
-    "test": "node ../_shared/prismtek-arcade/smoke.mjs .",
+    "test": "node ../_shared/prismtek-arcade/smoke.mjs . && node tools/quality-smoke.mjs",
     "test:ps": "powershell -ExecutionPolicy Bypass -File ../_shared/prismtek-arcade/smoke.ps1 .",
     "build": "npm test",
     "package:zip": "npm run build && node ../_shared/prismtek-arcade/package-static.mjs ."
