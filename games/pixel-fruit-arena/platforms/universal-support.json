@@ -1,0 +1,63 @@
+{
+  "gameId": "pixel-fruit-arena",
+  "displayName": "Pixel Fruit Arena",
+  "statusPolicy": "docs/games/universal-game-platform-standard.md",
+  "inputs": {
+    "keyboard": {
+      "required": true,
+      "status": "Partially verified",
+      "notes": "Browser MVP supports keyboard gameplay; full platform receipts still required."
+    },
+    "mouse": {
+      "required": true,
+      "status": "Required",
+      "notes": "Menus and pointer/touch equivalent paths must remain supported."
+    },
+    "controller": {
+      "required": true,
+      "status": "Required",
+      "notes": "Gamepad mappings must support full match play and menus."
+    },
+    "touch": {
+      "required": true,
+      "status": "Configured",
+      "notes": "Android dual-screen config exists; touch receipt pending."
+    }
+  },
+  "platforms": {
+    "webBrowser": { "required": true, "status": "Verified", "artifact": "browser source/build path" },
+    "windows": { "required": true, "status": "Partially verified", "artifact": "web ZIP or desktop wrapper pending receipt" },
+    "macos": { "required": true, "status": "Required", "artifact": "web ZIP or desktop wrapper pending receipt" },
+    "linux": { "required": true, "status": "Required", "artifact": "web ZIP, AppImage, or Linux wrapper pending receipt" },
+    "ios": { "required": true, "status": "Required", "artifact": "PWA/native wrapper pending receipt" },
+    "android": { "required": true, "status": "Configured", "artifact": "android dual-screen config present; APK pending" },
+    "rgdsAndroid": { "required": true, "status": "Configured", "artifact": "Android/RGDS path documented; device receipt pending" },
+    "rgdsLinux": { "required": true, "status": "Required", "artifact": "Linux/browser launcher receipt pending" },
+    "roblox": { "required": true, "status": "Required", "artifact": "Roblox project/adapter pending" }
+  },
+  "requiredReceipts": [
+    "keyboard full match",
+    "mouse menu/UI and any pointer gameplay",
+    "controller full match",
+    "touch full match/menu flow",
+    "Windows launch",
+    "macOS launch",
+    "iOS launch",
+    "Android launch",
+    "Linux launch",
+    "RGDS Android launch",
+    "RGDS Linux launch",
+    "Roblox Studio/client play-test"
+  ],
+  "knownGaps": [
+    "No committed Android APK artifact yet.",
+    "No committed iOS/PWA device receipt yet.",
+    "No committed RGDS device receipts yet.",
+    "No committed Roblox implementation yet."
+  ],
+  "nextActions": [
+    "Add explicit controller mapping receipt.",
+    "Build Android APK through shared shell contract.",
+    "Create Roblox parity map and Rojo/place starter."
+  ]
+}
