@@ -14,7 +14,10 @@
     "dev": "turbo run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
-    "clean": "turbo run clean"
+    "clean": "turbo run clean",
+    "porting-kits:download": "node tools/porting-kits/verify-porting-kits.mjs && bash tools/porting-kits/download-porting-kits.sh",
+    "porting-kits:download:ps": "pwsh tools/porting-kits/download-porting-kits.ps1",
+    "porting-kits:verify": "node tools/porting-kits/verify-porting-kits.mjs"
   },
   "dependencies": {
     "@google/genai": "^2.8.0",
