@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { validateDualScreenGameConfig } from '../../packages/prismtek-dual-screen-runtime/src/index.js';
 
-const repoRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..', '..');
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const repoRoot = path.resolve(__dirname, '..', '..');
 const configPaths = [
   'games/pixel-fruit-arena/platforms/android-dual-screen.json',
   'games/tamernet-battle-sandbox/platforms/android-dual-screen.json',
