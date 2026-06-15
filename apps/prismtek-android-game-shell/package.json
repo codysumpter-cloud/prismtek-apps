@@ -1,0 +1,15 @@
+{
+  "name": "@prismtek/android-game-shell",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared Android wrapper contract for Prismtek dual-screen game APKs.",
+  "scripts": {
+    "validate:dual-screen": "node ../../tools/dual-screen/validate-dual-screen-configs.mjs",
+    "smoke:dual-screen": "node ../../tools/dual-screen/smoke-dual-screen-runtime.mjs"
+  },
+  "dependencies": {
+    "@prismtek/dual-screen-runtime": "file:../../packages/prismtek-dual-screen-runtime"
+  },
+  "license": "UNLICENSED"
+}
