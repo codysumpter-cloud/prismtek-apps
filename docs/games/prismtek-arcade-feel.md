@@ -6,13 +6,27 @@ This guide keeps every game in `games/` pointed at the same product feel without
 
 Prismtek Arcade games should feel like low-resource, highly available, replayable match games with fast readability, instant rematches, visible progression, and old-arcade clout.
 
-## Current games
+## Active `prismtek-apps` games
 
 | Game | Path | Arcade role | Shared feel target |
 | --- | --- | --- | --- |
 | Pixel Fruit Arena | `games/pixel-fruit-arena/` | Platform fighter | Fast readable local fights, expressive powers, ring-outs, awakening, match receipts, rank rewards. |
 | TamerNet Battle Sandbox | `games/tamernet-battle-sandbox/` | Creature battle sandbox | Quick command battles, readable creature roles, alpha encounters, PvP-ready duel rules, reward receipts. |
 | Spin Street Showdown | `games/spin-street-showdown/` | Spinning-top battle arcade | Short dome clashes, launch skill, rim pressure, burst timing, Spirit Surge, visible ranked clout. |
+
+## Prismtek-site arcade migration queue
+
+These games are source-confirmed in `codysumpter-cloud/prismtek-site` and should inherit the same arcade feel when migrated into `prismtek-apps`.
+
+Queue tracker: [`docs/games/prismtek-site-arcade-migration-queue.md`](prismtek-site-arcade-migration-queue.md).
+
+| Game | Source ID | Target path | Arcade role | Shared feel target |
+| --- | --- | --- | --- | --- |
+| Flappy Pixel | `flappy-pixel` | `games/flappy-pixel/` | One-button reflex arcade | Fast restarts, clean obstacle reads, score/rank clout. |
+| Crossy Pixel | `crossy-pixel` | `games/crossy-pixel/` | Lane-dodge arcade | Readable hazards, streak pressure, distance/rank clout. |
+| Pixel Snake | `pixel-snake` | `games/pixel-snake/` | Route-control arcade | Tight movement, speed mastery, score/rank clout. |
+| Neon Brick Breaker | `neon-brick-breaker` | `games/neon-brick-breaker/` | Paddle/combo arcade | Clean rebounds, combo streaks, accuracy/rank clout. |
+| Pixel Stacker | `pixel-stacker` | `games/pixel-stacker/` | Precision timing arcade | One-more-try stacking, height streaks, badge clout. |
 
 ## Shared pillars
 
@@ -84,6 +98,7 @@ Each game should aim for this minimum release feel:
 - Local match can be completed without a backend.
 - Visual effects communicate hits and rewards without tanking performance.
 - DS/RGDS/Steam Deck/mobile claims stay **Unverified** until there is a real build and device receipt.
+- Queued Prismtek-site arcade games stay queued until their target `games/<slug>/` folders exist.
 
 ## What not to do
 
@@ -93,6 +108,7 @@ Each game should aim for this minimum release feel:
 - Do not ship dev/reference assets.
 - Do not make rewards pay-to-win.
 - Do not add online ranked until local match feel and match receipts are stable.
+- Do not list queued Prismtek-site arcade games as active open buttons.
 
 ## Near-term roadmap for all games
 
