@@ -8,6 +8,7 @@
 [<kbd>▶ TamerNet Battle Sandbox</kbd>](games/tamernet-battle-sandbox/)
 [<kbd>▶ Spin Street Showdown</kbd>](games/spin-street-showdown/)
 [<kbd>🕹 Arcade feel guide</kbd>](docs/games/prismtek-arcade-feel.md)
+[<kbd>🧰 Porting kits</kbd>](docs/porting-kits/)
 [<kbd>📥 Arcade migration queue</kbd>](docs/games/prismtek-site-arcade-migration-queue.md)
 [<kbd>✅ Platform tracker</kbd>](docs/games/three-game-platform-readiness.md)
 
@@ -83,6 +84,7 @@ Queued Prismtek-site arcade games should **not** get open buttons until their ta
 | Pixel Fruit Arena | [<kbd>▶ Open</kbd>](games/pixel-fruit-arena/) [<kbd>README</kbd>](games/pixel-fruit-arena/README.md) [<kbd>DS source</kbd>](games/pixel-fruit-arena/ds-homebrew/) [<kbd>⬇ Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Playable browser/PWA MVP; web ZIP path exists; DS source exists; public release artifacts pending. |
 | TamerNet Battle Sandbox | [<kbd>▶ Open</kbd>](games/tamernet-battle-sandbox/) [<kbd>README</kbd>](games/tamernet-battle-sandbox/README.md) [<kbd>DS source</kbd>](games/tamernet-battle-sandbox/ds-homebrew/) [<kbd>⬇ Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Playable browser prototype; web ZIP path exists; DS source exists; public release artifacts pending. |
 | Spin Street Showdown | [<kbd>▶ Open</kbd>](games/spin-street-showdown/) [<kbd>README</kbd>](games/spin-street-showdown/README.md) [<kbd>DS source</kbd>](games/spin-street-showdown/ds-homebrew/) [<kbd>⬇ Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Playable browser prototype; web ZIP path exists; DS source exists; public release artifacts pending. |
+| Porting kits | [<kbd>🧰 Open docs</kbd>](docs/porting-kits/) [<kbd>Manifest</kbd>](tools/porting-kits/porting-kits.manifest.json) | Setup manifests, downloader scripts, and instructions for web/itch, desktop, Android/RGDS, and DS homebrew. Third-party installers download locally and are not committed. |
 | BeMore iOS native | [<kbd>Open source</kbd>](apps/bemore-ios-native/) [<kbd>README</kbd>](apps/bemore-ios-native/README.md) [<kbd>TestFlight runbook</kbd>](apps/bemore-ios-native/ADMIN_TESTFLIGHT_RUNBOOK.md) | Native iOS app source; public signed download link pending. |
 | BeMore Agent Platform iOS | [<kbd>Open source</kbd>](apps/bemoreagent-platform-ios/) [<kbd>⬇ Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | iOS platform/admin source; signed artifact pending. |
 | BeMore macOS native | [<kbd>Open source</kbd>](apps/bemore-macos-native/) [<kbd>⬇ Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | macOS app source; packaged app download pending. |
@@ -104,6 +106,7 @@ Queued Prismtek-site arcade games should **not** get open buttons until their ta
   cd prismtek-apps
   ```
 
+- **Porting-kit local downloads:** run `npm run porting-kits:download` after cloning. Files are stored in `.porting-kits/` and are intentionally not committed.
 - **Packaged releases:** use GitHub Releases once product artifacts are attached there. Do not claim a product has a downloadable installer, app bundle, ROM image, DS binary, or hosted build until that artifact exists.
 
 ## Quick start
@@ -121,124 +124,9 @@ npm run lint
 npm run build
 ```
 
-Some projects are intentionally dependency-free browser prototypes and should be run from their own folders. See the product table above.
-
-## Products
-
-| Product | Category | Current path | Role |
-| --- | --- | --- | --- |
-| Pixel Fruit Arena | Game | `games/pixel-fruit-arena/` | Playable browser/PWA platform-fighting MVP plus DS source |
-| TamerNet Battle Sandbox | Game prototype | `games/tamernet-battle-sandbox/` | Playable browser creature prototype plus DS source |
-| Spin Street Showdown | Game prototype | `games/spin-street-showdown/` | Playable browser arcade prototype plus DS source |
-| Flappy Pixel | Queued game migration | `games/flappy-pixel/` | Prismtek-site arcade game queued for migration |
-| Crossy Pixel | Queued game migration | `games/crossy-pixel/` | Prismtek-site arcade game queued for migration |
-| Pixel Snake | Queued game migration | `games/pixel-snake/` | Prismtek-site arcade game queued for migration |
-| Neon Brick Breaker | Queued game migration | `games/neon-brick-breaker/` | Prismtek-site arcade game queued for migration |
-| Pixel Stacker | Queued game migration | `games/pixel-stacker/` | Prismtek-site arcade game queued for migration |
-| BeMore iOS native | Mobile app | `apps/bemore-ios-native/` | Native iOS Buddy/operator app |
-| BeMore Agent Platform iOS | Mobile app | `apps/bemoreagent-platform-ios/` | iOS platform/admin-capable app |
-| BeMore macOS native | Desktop app | `apps/bemore-macos-native/` | Native macOS app |
-| BeMore desktop/web shell | Desktop/web app | `apps/bemore-macos/` | Desktop-style web app/local shell |
-| BeMore web | Web app | `apps/web/` | Browser product surface |
-| PrismDS for RGDS | Launcher/userland product | `apps/prismds-os/` | RGDS launcher/userland product |
-| BeMore CLI | Developer tool | `apps/bemore-cli/` | Developer CLI |
-| Product API | Service | `apps/api/` | Product API service |
-| Buddy chat integration | Service/integration | `integrations/buddy-chat/` | Buddy chat integration server |
-| Shared packages | Shared code | `packages/*` | Reused product/service code |
-
-## Repository model
-
-```text
-repo root = Prismtek runnable software workspace
-```
-
-Target layout:
-
-```text
-apps/
-  mobile/
-  desktop/
-  web/
-  admin/
-
-games/
-services/
-packages/
-tools/
-docs/
-legacy/
-```
-
-Current code is being moved in stages so existing builds keep working.
-
-## Architecture docs
-
-Start here:
-
-- [`docs/architecture/repository-audit.md`](docs/architecture/repository-audit.md)
-- [`docs/architecture/monorepo-target-map.md`](docs/architecture/monorepo-target-map.md)
-- [`docs/architecture/path-ownership.md`](docs/architecture/path-ownership.md)
-- [`docs/PLATFORM_TEST_MATRIX.md`](docs/PLATFORM_TEST_MATRIX.md)
-- [`docs/games/prismtek-arcade-cross-platform-migration.md`](docs/games/prismtek-arcade-cross-platform-migration.md)
-- [`docs/games/three-game-platform-readiness.md`](docs/games/three-game-platform-readiness.md)
-- [`docs/games/prismtek-arcade-feel.md`](docs/games/prismtek-arcade-feel.md)
-- [`docs/games/prismtek-site-arcade-migration-queue.md`](docs/games/prismtek-site-arcade-migration-queue.md)
-
-These documents are the source of truth for staged repo reorganization.
-
-## Repo boundaries
-
-| Repo | Owns |
-| --- | --- |
-| `Prismtek-apps` | Runnable software workspace and shipped/product surfaces. |
-| `KnowledgeVault` | Memory, brain, long-lived notes, graph records, and agent-readable knowledge. |
-| `buddy-agent` | Runtime/operator implementation. |
-| `buddy-brain` | Orchestration, governance, policy, planning, and coordination. |
-| `omni-buddy` | Raspberry Pi/local multimodal Buddy hardware runtime. |
-
-## Migration order
-
-1. Add governance docs and README framing. No product moves.
-2. Move browser-playable game prototypes into the games workspace.
-3. Migrate Prismtek-site arcade games into `games/*` one at a time using [`docs/games/prismtek-site-arcade-migration-queue.md`](docs/games/prismtek-site-arcade-migration-queue.md).
-4. Move `apps/bemore-cli` to `tools/cli/bemore-cli`.
-5. Move `apps/api` to `services/api` and `integrations/buddy-chat` to `services/buddy-chat`.
-6. Decide final ownership for `apps/prismds-os` after packaging review.
-7. Move Apple projects last, one product at a time.
-8. Quarantine root/generated legacy material only after reference scans.
-
-## Apple development
-
-Apple projects are intentionally left in their current paths until dedicated migration PRs update Xcode, XcodeGen, signing, and CI references.
-
-For the current BeMore iOS native app:
+Prepare local porting-kit sources:
 
 ```bash
-cd apps/bemore-ios-native
-xcodegen generate
-open BeMoreAgent.xcodeproj
+npm run porting-kits:verify
+npm run porting-kits:download
 ```
-
-Build example:
-
-```bash
-cd apps/bemore-ios-native
-xcodegen generate
-xcodebuild -project BeMoreAgent.xcodeproj -scheme BeMoreAgent -sdk iphonesimulator build
-```
-
-## Safety rules
-
-- Do not bulk-move Xcode projects.
-- Do not treat SwiftUI as the repository default.
-- Do not bury games, services, or web apps under Apple assumptions.
-- Do not claim download links exist unless the artifact or source path exists.
-- Do not claim RGDS/OS images, app installers, DS binaries, or signed builds exist until they are packaged and attached.
-- Do not ship reference/test assets as release assets.
-- Do not list queued game migrations as active open buttons until their target folders exist.
-- Do not extract shared packages until reuse is proven.
-- Do not delete or quarantine root artifacts until reference scans prove they are unused.
-
-## License
-
-Apache-2.0. See `LICENSE`.
