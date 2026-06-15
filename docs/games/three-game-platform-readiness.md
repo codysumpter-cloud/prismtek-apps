@@ -10,11 +10,11 @@ Status values: **Verified**, **Partially verified**, **Unverified**, **Missing**
 
 ## Active `prismtek-apps` games
 
-| Game | Web browser | Web ZIP | Windows | macOS | Linux / Steam Deck | RGDS Android | RGDS Linux | Nintendo DS source | Shared arcade feel |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Pixel Fruit Arena | Verified | Partially verified | Partially verified | Unverified | Unverified | Unverified | Unverified | Partially verified | Platform-fighter matches with readable powers, ring-outs, awakening, progression, and result summaries. |
-| TamerNet Battle Sandbox | Verified | Partially verified | Partially verified | Unverified | Unverified | Unverified | Unverified | Partially verified | Creature command battles with readable roles, alpha encounters, PvP-ready rules, progression, and result summaries. |
-| Spin Street Showdown | Verified | Partially verified | Partially verified | Unverified | Unverified | Unverified | Unverified | Partially verified | Retro PvP dome clashes with launch skill, rim pressure, burst timing, Spirit Surge, rank, and cosmetic rewards. |
+| Game | Path | Web browser | Web ZIP | Windows | macOS | Linux / Steam Deck | RGDS Android | RGDS Linux | Nintendo DS source | Shared arcade feel |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Pixel Fruit Arena | `games/pixel-fruit-arena` | Verified | Partially verified | Partially verified | Unverified | Unverified | Unverified | Unverified | Partially verified | Platform-fighter matches with readable powers, ring-outs, awakening, progression, and result summaries. |
+| TamerNet Battle Sandbox | `games/tamernet-battle-sandbox` | Verified | Partially verified | Partially verified | Unverified | Unverified | Unverified | Unverified | Partially verified | Creature command battles with readable roles, alpha encounters, PvP-ready rules, progression, and result summaries. |
+| Spin Street Showdown | `games/spin-street-showdown` | Verified | Partially verified | Partially verified | Unverified | Unverified | Unverified | Unverified | Partially verified | Retro PvP dome clashes with launch skill, rim pressure, burst timing, Spirit Surge, rank, and cosmetic rewards. |
 
 ## Prismtek-site arcade migration queue
 
