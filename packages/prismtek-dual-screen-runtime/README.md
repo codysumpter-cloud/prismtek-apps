@@ -1,8 +1,8 @@
-# `@prismtek/dual-screen-runtime`
+# Prismtek dual-screen runtime
 
-Shared runtime helpers for Prismtek games that need a two-pane handheld layout.
+Shared source helpers for Prismtek games that need a two-pane handheld layout.
 
-This package does not build an APK by itself. It gives browser games one display contract so Capacitor, Tauri, or native shells can mount the game consistently.
+This folder does not build an APK by itself and intentionally does not declare a workspace package yet. Keeping it as source-only avoids `package-lock.json` churn until the Android shell becomes a real buildable app. The root validation scripts import it directly from `src/index.js`.
 
 ## Supported modes
 
@@ -16,8 +16,10 @@ This package does not build an APK by itself. It gives browser games one display
 
 ## Basic usage
 
+For repo-local scripts/tests, import the source module directly:
+
 ```js
-import { createDualScreenRuntime } from '@prismtek/dual-screen-runtime';
+import { createDualScreenRuntime } from '../../packages/prismtek-dual-screen-runtime/src/index.js';
 
 const runtime = createDualScreenRuntime({
   root: document.documentElement,
@@ -27,6 +29,8 @@ const runtime = createDualScreenRuntime({
 const layout = runtime.update();
 console.log(layout.mode, layout.top, layout.bottom);
 ```
+
+When a real Android shell package lands, it can either bundle this source or promote the folder back to a workspace package with a matching lockfile update.
 
 The runtime writes CSS variables to the root element:
 
