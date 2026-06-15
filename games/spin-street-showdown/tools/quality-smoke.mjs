@@ -1,8 +1,11 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const root = path.resolve(__dirname, "..");
 const game = readFileSync(path.join(root, "game.js"), "utf8");
 const css = readFileSync(path.join(root, "style.css"), "utf8");
 const readme = readFileSync(path.join(root, "README.md"), "utf8");
