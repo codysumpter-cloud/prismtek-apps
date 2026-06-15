@@ -6,9 +6,12 @@ Prismtek games should reach Android/RGDS through the smallest reliable path firs
 
 1. stable browser build
 2. self-contained web ZIP/PWA
-3. Android wrapper only after the web artifact is clean
-4. RGDS Android test
-5. RGDS Linux/browser/launcher test
+3. dual-screen config validation for active games
+4. Android wrapper only after the web artifact is clean
+5. RGDS Android test
+6. RGDS Linux/browser/launcher test
+
+See [`android-dual-screen-apk.md`](android-dual-screen-apk.md) for the shared two-pane Android APK process.
 
 ## Android paths
 
@@ -60,6 +63,21 @@ Required local tools:
 ```bash
 rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
 ```
+
+## Shared two-pane Android runtime
+
+The repeatable path for the active games is:
+
+```bash
+npm run dual-screen:validate
+npm run dual-screen:smoke
+```
+
+Then use:
+
+- `packages/prismtek-dual-screen-runtime/` for layout computation and CSS variables
+- `apps/prismtek-android-game-shell/` for the Android wrapper contract
+- `games/<game>/platforms/android-dual-screen.json` for each game's top/bottom pane mapping
 
 ## RGDS Android mode
 
