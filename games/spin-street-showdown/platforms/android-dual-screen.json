@@ -1,0 +1,8 @@
+{
+  "gameId": "spin-street-showdown",
+  "displayName": "Spin Street Showdown",
+  "entrypoint": "../index.html",
+  "preferredLayout": "stacked-ds",
+  "touch": "primary",
+  "notes": ["Android display support is configured; APK and device receipts are pending."]
+}
