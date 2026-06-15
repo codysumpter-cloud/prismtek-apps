@@ -1,0 +1,12 @@
+{
+  "name": "prismwilds-echo-dominion",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "python3 -m http.server 8080",
+    "test": "node tools/smoke-test.mjs",
+    "build": "node tools/smoke-test.mjs",
+    "package:zip": "node tools/package-zip.mjs"
+  }
+}
