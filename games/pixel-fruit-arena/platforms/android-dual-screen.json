@@ -1,0 +1,40 @@
+{
+  "gameId": "pixel-fruit-arena",
+  "displayName": "Pixel Fruit Arena",
+  "androidPackage": "dev.prismtek.pixelfruitarena",
+  "entrypoint": "games/pixel-fruit-arena/index.html",
+  "artifactSource": "games/pixel-fruit-arena/dist",
+  "displayModes": ["single", "stacked-ds", "foldable-ds", "external-display", "rgds-dual"],
+  "screens": {
+    "top": {
+      "role": "platform-fighter arena viewport",
+      "selectors": ["#game", "#gameWrap"],
+      "notes": [
+        "Keep the fight canvas, fighters, projectiles, hit effects, ring-outs, and camera on the top pane.",
+        "Do not place required touch controls over the fight canvas in dual-screen mode."
+      ]
+    },
+    "bottom": {
+      "role": "match HUD, fruit powers, awakening meter, pause, and rematch controls",
+      "selectors": ["#hud", "#menu", "#deviceStatus"],
+      "notes": [
+        "Use the bottom pane for damage/stock readouts, move cards, power cooldowns, and match receipts.",
+        "Touch controls are allowed here but keyboard/controller mappings must remain primary for RGDS-style play."
+      ]
+    }
+  },
+  "controls": {
+    "primary": "keyboard/controller",
+    "touch": "bottom-pane menu and optional move buttons",
+    "notes": ["One full local match must be playable without touchscreen-only actions."]
+  },
+  "verification": {
+    "requiredReceipts": [
+      "single-screen Android fallback launches",
+      "stacked-ds layout shows arena above HUD",
+      "foldable or simulated segment layout keeps arena and controls separated",
+      "RGDS Android mode device receipt before marking verified",
+      "one full match reaches win/loss/rematch state"
+    ]
+  }
+}
