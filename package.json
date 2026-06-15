@@ -12,10 +12,12 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "clean": "turbo run clean",
+    "porting-kits:download": "node scripts/download-porting-kits.mjs",
     "porting-kits:verify": "node tools/porting-kits/verify-porting-kits.mjs",
     "dual-screen:validate": "node tools/dual-screen/validate-dual-screen-configs.mjs",
     "dual-screen:smoke": "node tools/dual-screen/smoke-dual-screen-runtime.mjs",
-    "platforms:validate": "npm run porting-kits:verify && npm run dual-screen:validate && npm run dual-screen:smoke"
+    "platforms:validate": "npm run porting-kits:verify && npm run dual-screen:validate && npm run dual-screen:smoke",
+    "games:validate-support": "node games/_shared/prismtek-arcade/validate-game-roster.mjs"
   },
   "dependencies": {
     "@google/genai": "^2.8.0",
