@@ -9,6 +9,7 @@
 [<kbd>▶ Spin Street Showdown</kbd>](games/spin-street-showdown/)
 [<kbd>🕹 Arcade feel guide</kbd>](docs/games/prismtek-arcade-feel.md)
 [<kbd>🧰 Porting kits</kbd>](docs/porting-kits/)
+[<kbd>📱 Android dual-screen APKs</kbd>](docs/porting-kits/android-dual-screen-apk.md)
 [<kbd>📥 Arcade migration queue</kbd>](docs/games/prismtek-site-arcade-migration-queue.md)
 [<kbd>✅ Platform tracker</kbd>](docs/games/three-game-platform-readiness.md)
 
@@ -41,9 +42,9 @@ These game folders currently exist under `games/` and are part of this repo bran
 
 | Game | Path | Status | Shared feel target | Run locally |
 | --- | --- | --- | --- | --- |
-| Pixel Fruit Arena | [`games/pixel-fruit-arena/`](games/pixel-fruit-arena/) | Playable browser/PWA MVP; web ZIP path exists; DS source exists; public release artifacts pending. | Local platform-fighter matches with character identity, readable powers, ring-outs, awakening, rank rewards, and match receipts. | `cd games/pixel-fruit-arena && npm test && npm run build && npm run package:zip` |
-| TamerNet Battle Sandbox | [`games/tamernet-battle-sandbox/`](games/tamernet-battle-sandbox/) | Playable browser prototype; smoke test and web ZIP path exist; DS source exists; public release artifacts pending. | Quick creature command battles with readable roles, alpha encounters, PvP-ready duel rules, rank rewards, and match receipts. | `cd games/tamernet-battle-sandbox && npm test && npm run package:zip` |
-| Spin Street Showdown | [`games/spin-street-showdown/`](games/spin-street-showdown/) | Playable browser prototype; upgraded physics/graphics pass, smoke tests, web ZIP path, and DS source exist; public release artifacts pending. | Short retro PvP dome clashes with launch skill, rim pressure, burst timing, Spirit Surge, visible rank, and clout rewards. | `cd games/spin-street-showdown && npm test && npm run package:zip` |
+| Pixel Fruit Arena | [`games/pixel-fruit-arena/`](games/pixel-fruit-arena/) | Playable browser/PWA MVP; web ZIP path exists; DS source exists; Android dual-screen config exists; public release artifacts pending. | Local platform-fighter matches with character identity, readable powers, ring-outs, awakening, rank rewards, and match receipts. | `cd games/pixel-fruit-arena && npm test && npm run build && npm run package:zip` |
+| TamerNet Battle Sandbox | [`games/tamernet-battle-sandbox/`](games/tamernet-battle-sandbox/) | Playable browser prototype; smoke test and web ZIP path exist; DS source exists; Android dual-screen config exists; public release artifacts pending. | Quick creature command battles with readable roles, alpha encounters, PvP-ready duel rules, rank rewards, and match receipts. | `cd games/tamernet-battle-sandbox && npm test && npm run package:zip` |
+| Spin Street Showdown | [`games/spin-street-showdown/`](games/spin-street-showdown/) | Playable browser prototype; upgraded physics/graphics pass, smoke tests, web ZIP path, DS source, and Android dual-screen config exist; public release artifacts pending. | Short retro PvP dome clashes with launch skill, rim pressure, burst timing, Spirit Surge, visible rank, and clout rewards. | `cd games/spin-street-showdown && npm test && npm run package:zip` |
 
 ### Prismtek-site arcade migration queue
 
@@ -61,11 +62,11 @@ Full queue tracker: [`docs/games/prismtek-site-arcade-migration-queue.md`](docs/
 
 ### Game buttons
 
-| Game | Open | README | DS source | Arcade design |
-| --- | --- | --- | --- | --- |
-| Pixel Fruit Arena | [<kbd>▶ Open</kbd>](games/pixel-fruit-arena/) | [README](games/pixel-fruit-arena/README.md) | [DS source](games/pixel-fruit-arena/ds-homebrew/) | [Shared feel](docs/games/prismtek-arcade-feel.md) |
-| TamerNet Battle Sandbox | [<kbd>▶ Open</kbd>](games/tamernet-battle-sandbox/) | [README](games/tamernet-battle-sandbox/README.md) | [DS source](games/tamernet-battle-sandbox/ds-homebrew/) | [Shared feel](docs/games/prismtek-arcade-feel.md) |
-| Spin Street Showdown | [<kbd>▶ Open</kbd>](games/spin-street-showdown/) | [README](games/spin-street-showdown/README.md) | [DS source](games/spin-street-showdown/ds-homebrew/) | [PvP loop](games/spin-street-showdown/docs/ARCADE_PVP_LOOP.md) / [Shared feel](docs/games/prismtek-arcade-feel.md) |
+| Game | Open | README | DS source | Android dual-screen | Arcade design |
+| --- | --- | --- | --- | --- | --- |
+| Pixel Fruit Arena | [<kbd>▶ Open</kbd>](games/pixel-fruit-arena/) | [README](games/pixel-fruit-arena/README.md) | [DS source](games/pixel-fruit-arena/ds-homebrew/) | [Config](games/pixel-fruit-arena/platforms/android-dual-screen.json) | [Shared feel](docs/games/prismtek-arcade-feel.md) |
+| TamerNet Battle Sandbox | [<kbd>▶ Open</kbd>](games/tamernet-battle-sandbox/) | [README](games/tamernet-battle-sandbox/README.md) | [DS source](games/tamernet-battle-sandbox/ds-homebrew/) | [Config](games/tamernet-battle-sandbox/platforms/android-dual-screen.json) | [Shared feel](docs/games/prismtek-arcade-feel.md) |
+| Spin Street Showdown | [<kbd>▶ Open</kbd>](games/spin-street-showdown/) | [README](games/spin-street-showdown/README.md) | [DS source](games/spin-street-showdown/ds-homebrew/) | [Config](games/spin-street-showdown/platforms/android-dual-screen.json) | [PvP loop](games/spin-street-showdown/docs/ARCADE_PVP_LOOP.md) / [Shared feel](docs/games/prismtek-arcade-feel.md) |
 
 Queued Prismtek-site arcade games should **not** get open buttons until their target `games/<slug>/` folders exist.
 
@@ -81,10 +82,10 @@ Queued Prismtek-site arcade games should **not** get open buttons until their ta
 
 | Product | Buttons | Status |
 | --- | --- | --- |
-| Pixel Fruit Arena | [<kbd>▶ Open</kbd>](games/pixel-fruit-arena/) [<kbd>README</kbd>](games/pixel-fruit-arena/README.md) [<kbd>DS source</kbd>](games/pixel-fruit-arena/ds-homebrew/) [<kbd>⬇ Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Playable browser/PWA MVP; web ZIP path exists; DS source exists; public release artifacts pending. |
-| TamerNet Battle Sandbox | [<kbd>▶ Open</kbd>](games/tamernet-battle-sandbox/) [<kbd>README</kbd>](games/tamernet-battle-sandbox/README.md) [<kbd>DS source</kbd>](games/tamernet-battle-sandbox/ds-homebrew/) [<kbd>⬇ Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Playable browser prototype; web ZIP path exists; DS source exists; public release artifacts pending. |
-| Spin Street Showdown | [<kbd>▶ Open</kbd>](games/spin-street-showdown/) [<kbd>README</kbd>](games/spin-street-showdown/README.md) [<kbd>DS source</kbd>](games/spin-street-showdown/ds-homebrew/) [<kbd>⬇ Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Playable browser prototype; web ZIP path exists; DS source exists; public release artifacts pending. |
-| Porting kits | [<kbd>🧰 Open docs</kbd>](docs/porting-kits/) [<kbd>Manifest</kbd>](tools/porting-kits/porting-kits.manifest.json) | Setup manifests, downloader scripts, and instructions for web/itch, desktop, Android/RGDS, and DS homebrew. Third-party installers download locally and are not committed. |
+| Pixel Fruit Arena | [<kbd>▶ Open</kbd>](games/pixel-fruit-arena/) [<kbd>README</kbd>](games/pixel-fruit-arena/README.md) [<kbd>DS source</kbd>](games/pixel-fruit-arena/ds-homebrew/) [<kbd>Android dual-screen config</kbd>](games/pixel-fruit-arena/platforms/android-dual-screen.json) [<kbd>⬇ Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Playable browser/PWA MVP; web ZIP path exists; DS source exists; Android dual-screen config exists; public release artifacts pending. |
+| TamerNet Battle Sandbox | [<kbd>▶ Open</kbd>](games/tamernet-battle-sandbox/) [<kbd>README</kbd>](games/tamernet-battle-sandbox/README.md) [<kbd>DS source</kbd>](games/tamernet-battle-sandbox/ds-homebrew/) [<kbd>Android dual-screen config</kbd>](games/tamernet-battle-sandbox/platforms/android-dual-screen.json) [<kbd>⬇ Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Playable browser prototype; web ZIP path exists; DS source exists; Android dual-screen config exists; public release artifacts pending. |
+| Spin Street Showdown | [<kbd>▶ Open</kbd>](games/spin-street-showdown/) [<kbd>README</kbd>](games/spin-street-showdown/README.md) [<kbd>DS source</kbd>](games/spin-street-showdown/ds-homebrew/) [<kbd>Android dual-screen config</kbd>](games/spin-street-showdown/platforms/android-dual-screen.json) [<kbd>⬇ Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Playable browser prototype; web ZIP path exists; DS source exists; Android dual-screen config exists; public release artifacts pending. |
+| Porting kits | [<kbd>🧰 Open docs</kbd>](docs/porting-kits/) [<kbd>Android dual-screen APKs</kbd>](docs/porting-kits/android-dual-screen-apk.md) [<kbd>Manifest</kbd>](tools/porting-kits/porting-kits.manifest.json) | Setup manifests, downloader scripts, and instructions for web/itch, desktop, Android/RGDS, Android dual-screen APKs, and DS homebrew. Third-party installers download locally and are not committed. |
 | BeMore iOS native | [<kbd>Open source</kbd>](apps/bemore-ios-native/) [<kbd>README</kbd>](apps/bemore-ios-native/README.md) [<kbd>TestFlight runbook</kbd>](apps/bemore-ios-native/ADMIN_TESTFLIGHT_RUNBOOK.md) | Native iOS app source; public signed download link pending. |
 | BeMore Agent Platform iOS | [<kbd>Open source</kbd>](apps/bemoreagent-platform-ios/) [<kbd>⬇ Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | iOS platform/admin source; signed artifact pending. |
 | BeMore macOS native | [<kbd>Open source</kbd>](apps/bemore-macos-native/) [<kbd>⬇ Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | macOS app source; packaged app download pending. |
@@ -107,7 +108,7 @@ Queued Prismtek-site arcade games should **not** get open buttons until their ta
   ```
 
 - **Porting-kit local downloads:** run `npm run porting-kits:download` after cloning. Files are stored in `.porting-kits/` and are intentionally not committed.
-- **Packaged releases:** use GitHub Releases once product artifacts are attached there. Do not claim a product has a downloadable installer, app bundle, ROM image, DS binary, or hosted build until that artifact exists.
+- **Packaged releases:** use GitHub Releases once product artifacts are attached there. Do not claim a product has a downloadable installer, app bundle, ROM image, DS binary, APK, or hosted build until that artifact exists.
 
 ## Quick start
 
@@ -129,4 +130,6 @@ Prepare local porting-kit sources:
 ```bash
 npm run porting-kits:verify
 npm run porting-kits:download
+npm run dual-screen:validate
+npm run dual-screen:smoke
 ```
