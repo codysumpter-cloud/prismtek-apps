@@ -1,0 +1,8 @@
+{
+  "gameId": "tamernet-battle-sandbox",
+  "displayName": "TamerNet Battle Sandbox",
+  "entrypoint": "../index.html",
+  "preferredLayout": "stacked-ds",
+  "touch": "secondary",
+  "notes": ["Android dual-screen support is configured; APK/device receipts are pending."]
+}

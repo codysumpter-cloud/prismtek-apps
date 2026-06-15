@@ -1,0 +1,41 @@
+{
+  "name": "prismtek-porting-kits",
+  "version": 1,
+  "downloadRoot": ".porting-kits",
+  "policy": {
+    "commitDownloadedFiles": false,
+    "allowCommercialRoms": false,
+    "allowConsoleBios": false,
+    "allowProprietarySdks": false
+  },
+  "kits": [
+    {
+      "id": "web-itch",
+      "target": "Web browser and itch.io ZIP",
+      "status": "manual-install-required",
+      "requiredFor": ["web ZIP releases", "itch.io uploads"],
+      "verifyCommands": ["node -v", "npm -v", "butler -V"]
+    },
+    {
+      "id": "desktop-tauri",
+      "target": "Windows, macOS, Linux, Steam Deck",
+      "status": "manual-install-required",
+      "requiredFor": ["desktop wrappers", "installers"],
+      "verifyCommands": ["node -v", "npm -v", "rustc -V", "cargo -V"]
+    },
+    {
+      "id": "android-rgds",
+      "target": "Android and RGDS Android mode",
+      "status": "manual-install-required",
+      "requiredFor": ["APK builds", "RGDS Android testing"],
+      "verifyCommands": ["adb version", "node -v", "npm -v"]
+    },
+    {
+      "id": "nintendo-ds-libnds",
+      "target": "Nintendo DS homebrew",
+      "status": "manual-install-required",
+      "requiredFor": ["*.nds builds", "games/*/ds-homebrew"],
+      "verifyCommands": ["make --version", "arm-none-eabi-gcc --version"]
+    }
+  ]
+}

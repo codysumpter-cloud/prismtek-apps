@@ -4,17 +4,18 @@
   "version": "0.0.0",
   "type": "module",
   "packageManager": "npm@10.8.2",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
+  "workspaces": ["apps/*", "packages/*"],
   "scripts": {
     "postinstall": "npm rebuild @tailwindcss/oxide || true",
     "prepare": "husky install",
     "dev": "turbo run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
-    "clean": "turbo run clean"
+    "clean": "turbo run clean",
+    "porting-kits:verify": "node tools/porting-kits/verify-porting-kits.mjs",
+    "dual-screen:validate": "node tools/dual-screen/validate-dual-screen-configs.mjs",
+    "dual-screen:smoke": "node tools/dual-screen/smoke-dual-screen-runtime.mjs",
+    "platforms:validate": "npm run porting-kits:verify && npm run dual-screen:validate && npm run dual-screen:smoke"
   },
   "dependencies": {
     "@google/genai": "^2.8.0",
