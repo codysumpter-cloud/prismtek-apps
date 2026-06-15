@@ -1,19 +1,19 @@
 {
-  "$schema": "../../docs/porting-kits/android-dual-screen-game.schema.json",
+  "$schema": "../../../docs/porting-kits/android-dual-screen-registry.schema.json",
   "games": [
     {
       "gameId": "pixel-fruit-arena",
-      "config": "../../games/pixel-fruit-arena/platforms/android-dual-screen.json",
+      "config": "../../../games/pixel-fruit-arena/platforms/android-dual-screen.json",
       "defaultDisplayMode": "stacked-ds"
     },
     {
       "gameId": "tamernet-battle-sandbox",
-      "config": "../../games/tamernet-battle-sandbox/platforms/android-dual-screen.json",
+      "config": "../../../games/tamernet-battle-sandbox/platforms/android-dual-screen.json",
       "defaultDisplayMode": "stacked-ds"
     },
     {
       "gameId": "spin-street-showdown",
-      "config": "../../games/spin-street-showdown/platforms/android-dual-screen.json",
+      "config": "../../../games/spin-street-showdown/platforms/android-dual-screen.json",
       "defaultDisplayMode": "stacked-ds"
     }
   ]
