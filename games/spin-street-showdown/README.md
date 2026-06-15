@@ -1,6 +1,6 @@
 # Spin Street Showdown
 
-An original customizable spinning-top arcade prototype.
+An original customizable spinning-top arcade prototype. The current web build now targets a higher-quality battle-top feel: richer graphics, stronger dome physics, clearer impacts, and deeper build-driven mechanics.
 
 ## Play on PC
 
@@ -29,32 +29,41 @@ A public downloadable release still needs a GitHub Release or itch.io receipt.
 ## Controls
 
 - Mouse or touch: steer toward the pointer
-- Hold left click: charge
-- Release into an opponent: burst hit
+- Hold left click or Space: charge burst
+- Shift: strike dash at lower speed, counter guard at high speed/charge
+- E: Spirit Surge when the purple meter is full
 - WASD or arrow keys: steer
-- Space: charge
+
+## Competitive Controls
+
+P1: WASD or arrows steer, Space charges, Shift strike dash/counter guard, E Spirit Surge.
+
+PvP P2: IJKL steers, U charges, O strike dash/counter guard, P Spirit Surge.
 
 ## Current Features
 
 - Twelve-round single-player street circuit
 - Local PvP mode for head-to-head dome matches
-- Oval dome arena with curved rim rebounds and center-pull bowl physics
-- Four customizable slots: Attack Ring, Weight Core, Driver Tip, Spirit Chip
+- Oval dome arena with center-pull bowl physics, rim pressure, rail grind, rail crash damage, and skid marks
+- Improved collision mechanics using relative velocity, mass, grip, tangential bite, burst timing, guard mitigation, stagger, and stability loss
+- Build-driven top feel across Attack Ring, Weight Core, Driver Tip, and Spirit Chip
 - 64 original parts per slot, 256 total parts in the catalogue
-- Part-driven top visuals with teeth, cores, driver trails, chip marks, rarity halos, and rival loadouts
-- Physics-ish top collisions, wall chip damage, charge timing, burst actions, strike dash, guard stance, and Bit Beast summons
-- Cash rewards between rounds
-- Part shop with speed, mass, damage, grip, HP, and charge modifiers
+- Premium canvas graphics: layered dome lighting, animated rings, radial highlights, rendered teeth, cores, driver fins, chip gems, rarity glow, trails, sparks, shockwaves, floating impact text, and screen shake
+- Spirit Surge meter with original spirit avatars and knockback pressure
+- CPU rivals that orbit, bait, rush, and recover from the rim instead of just drifting forward
+- Cash, repair, and overdrive pickups between clashes
+- Part shop with speed, mass, damage, grip, HP, charge, and stability modifiers
 - Responsive canvas layout for PC and handheld browser devices
-- Browser smoke test and local ZIP packaging path
+- Browser smoke test, quality smoke test, and local ZIP packaging path
 
-## Competitive Controls
+## Design target
 
-P1: WASD or arrows steer, Space charges, Shift uses strike dash or guard stance, E summons Bit Beast when the purple meter is full.
+The game should compete with polished battle-top games by making every clash readable and skillful:
 
-PvP P2: IJKL steers, U charges, O uses strike dash or guard stance, P summons Bit Beast.
-
-Moves are designed to matter even without pickups: strike dash creates a deliberate attack vector, guard stance reduces incoming impact when already moving fast, and Bit Beasts add a high-meter pressure tool.
+- **Graphics:** tops should look layered, collectible, and distinct by build.
+- **Mechanics:** charge, guard, dash, stability, and Spirit Surge should create real decisions.
+- **Physics:** mass, grip, rim angle, and tangential contact should change outcomes.
+- **Feel:** impacts should pop with sparks, shockwaves, hit text, and camera shake without becoming unreadable.
 
 ## Nintendo DS source
 
@@ -77,7 +86,7 @@ CI validates the DS source receipt. The `.nds` output still needs a devkitPro/li
 
 | Platform | Status | Evidence / gap |
 | --- | --- | --- |
-| Web browser | Verified | Browser entrypoint and shared arcade smoke test are present. |
+| Web browser | Verified | Browser entrypoint, upgraded runtime, shared arcade smoke test, and quality smoke test are present. |
 | Downloadable ZIP / itch.io | Partially verified | `npm run package:zip` creates a local web ZIP path; public upload receipt is still required. |
 | Windows | Partially verified | Browser source and ZIP script exist; Windows runtime receipt is still required. |
 | macOS | Unverified | No macOS runtime receipt yet. |
