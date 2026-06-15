@@ -26,7 +26,7 @@ window.PrismtekDisplay = {
 };
 ```
 
-Game code should use `@prismtek/dual-screen-runtime` to compute/apply layout variables rather than hardcoding a device.
+Game code should use the source helpers in `packages/prismtek-dual-screen-runtime/src/index.js` to compute/apply layout variables rather than hardcoding a device. The runtime is intentionally source-only in this PR so dependency installation does not require a lockfile update before the Android shell becomes a buildable app.
 
 ## Repeatable build flow
 
@@ -36,9 +36,10 @@ From the repo root:
 
 ```bash
 npm run dual-screen:validate
+npm run dual-screen:smoke
 ```
 
-This ensures each active game has a valid config.
+This ensures each active game has a valid config and the shared layout helper still computes single, stacked, native, and CSS-variable outputs.
 
 ### 2. Build the web game
 
@@ -94,7 +95,7 @@ The payload should be generated from the best available source, in this order:
 
 Use Capacitor first for a fast wrapper, then graduate to a native Kotlin/Tauri wrapper if needed.
 
-Capacitor starter shape:
+Capacitor starter shape after the wrapper package exists:
 
 ```bash
 cd apps/prismtek-android-game-shell
