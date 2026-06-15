@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prismtek.dev/schemas/android-dual-screen-game.schema.json",
+  "title": "Prismtek Android dual-screen game config",
+  "type": "object",
+  "required": ["gameId", "displayName", "androidPackage", "entrypoint", "displayModes", "screens", "verification"],
+  "additionalProperties": true,
+  "properties": {
+    "gameId": { "type": "string", "minLength": 1 },
+    "displayName": { "type": "string", "minLength": 1 },
+    "androidPackage": { "type": "string", "minLength": 1 },
+    "entrypoint": { "type": "string", "minLength": 1 },
+    "artifactSource": { "type": "string" },
+    "displayModes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "enum": ["single", "stacked-ds", "foldable-ds", "external-display", "rgds-dual"]
+      }
+    },
+    "screens": {
+      "type": "object",
+      "required": ["top", "bottom"],
+      "properties": {
+        "top": { "$ref": "#/$defs/screen" },
+        "bottom": { "$ref": "#/$defs/screen" }
+      }
+    },
+    "controls": { "type": "object" },
+    "verification": {
+      "type": "object",
+      "required": ["requiredReceipts"],
+      "properties": {
+        "requiredReceipts": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "screen": {
+      "type": "object",
+      "required": ["role"],
+      "properties": {
+        "role": { "type": "string", "minLength": 1 },
+        "selectors": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "notes": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}
