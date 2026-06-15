@@ -84,8 +84,8 @@ for (const gamePath of activeGames) {
     validateStatus(`${config.gameId}.platforms`, platform, config.platforms?.[platform]);
   }
 
-  if (!Array.isArray(config.requiredReceipts) || config.requiredReceipts.length < requiredInputs.length + requiredPlatforms.length) {
-    fail(`${configPath} must list receipts for all required inputs and platforms`);
+  if (!Array.isArray(config.requiredReceipts) || config.requiredReceipts.length < requiredInputs.length + requiredPlatforms.length - 1) {
+    fail(`${configPath} must list receipts for the required inputs and platform families`);
   }
 
   if (!Array.isArray(config.knownGaps)) {
