@@ -1,0 +1,47 @@
+{
+  "gameId": "tamernet-battle-sandbox",
+  "displayName": "TamerNet Battle Sandbox",
+  "statusPolicy": "docs/games/universal-game-platform-standard.md",
+  "inputs": {
+    "keyboard": { "required": true, "status": "Partially verified" },
+    "mouse": { "required": true, "status": "Required" },
+    "controller": { "required": true, "status": "Required" },
+    "touch": { "required": true, "status": "Configured" }
+  },
+  "platforms": {
+    "webBrowser": { "required": true, "status": "Verified" },
+    "windows": { "required": true, "status": "Partially verified" },
+    "macos": { "required": true, "status": "Required" },
+    "linux": { "required": true, "status": "Required" },
+    "ios": { "required": true, "status": "Required" },
+    "android": { "required": true, "status": "Configured" },
+    "rgdsAndroid": { "required": true, "status": "Configured" },
+    "rgdsLinux": { "required": true, "status": "Required" },
+    "roblox": { "required": true, "status": "Required" }
+  },
+  "requiredReceipts": [
+    "keyboard",
+    "mouse",
+    "controller",
+    "touch",
+    "Windows",
+    "macOS",
+    "iOS",
+    "Android",
+    "Linux",
+    "RGDS Android",
+    "RGDS Linux",
+    "Roblox"
+  ],
+  "knownGaps": [
+    "Android APK artifact pending.",
+    "iOS receipt pending.",
+    "RGDS receipts pending.",
+    "Roblox implementation pending."
+  ],
+  "nextActions": [
+    "Add input mapping receipts.",
+    "Build Android APK through shared shell contract.",
+    "Create Roblox adapter starter."
+  ]
+}
