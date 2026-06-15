@@ -1,0 +1,8 @@
+{
+  "gameId": "pixel-fruit-arena",
+  "displayName": "Pixel Fruit Arena",
+  "entrypoint": "../index.html",
+  "preferredLayout": "stacked-ds",
+  "touch": "primary",
+  "notes": ["Android dual-screen support is configured; APK/device receipts are pending."]
+}
