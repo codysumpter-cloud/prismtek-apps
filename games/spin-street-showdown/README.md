@@ -1,6 +1,6 @@
 # Spin Street Showdown
 
-An original customizable spinning-top arcade prototype. The current web build now targets a higher-quality battle-top feel: richer graphics, stronger dome physics, clearer impacts, deeper build-driven mechanics, RPM-first combat, short rounds, driver-tip attack patterns, stadium pitch physics, and a more polished arena presentation.
+An original customizable spinning-top arcade prototype. The current web build now targets a higher-quality battle-top feel: richer graphics, stronger dome physics, clearer impacts, deeper build-driven mechanics, RPM-first combat, short rounds, driver-tip attack patterns, stadium pitch physics, drastic part archetypes, interchangeable Bit Beasts, and a more polished arena presentation.
 
 ## Play on PC
 
@@ -31,19 +31,28 @@ A public downloadable release still needs a GitHub Release or itch.io receipt.
 - Mouse or touch: steer toward the pointer, with movement biased by the equipped driver tip
 - Hold left click or Space: charge burst
 - Shift: strike dash at lower speed, counter guard at high speed/charge
-- E: Spirit Surge when the purple meter is full
+- E: trigger the equipped Bit Beast ability when the purple meter is full
 - WASD or arrow keys: steer
 
 ## Competitive Controls
 
-P1: WASD or arrows steer, Space charges, Shift strike dash/counter guard, E Spirit Surge.
+P1: WASD or arrows steer, Space charges, Shift strike dash/counter guard, E Bit Beast.
 
-PvP P2: IJKL steers, U charges, O strike dash/counter guard, P Spirit Surge.
+PvP P2: IJKL steers, U charge, O strike dash/counter guard, P Bit Beast.
 
 ## Current Features
 
 - Twelve-round single-player street circuit
 - Local PvP mode for head-to-head dome matches
+- Three primary build styles: **Attack**, **Defense**, and **Stamina**
+- Drastic archetype multipliers so parts alter damage, speed, mass, HP, stability, charge, grip, RPM max, and RPM drain
+- Attack builds hit harder, charge faster, and take sharper lines, but burn RPM and stability faster
+- Defense builds are heavier, harder to knock away, and better at guard/rim survival, but have slower steering commitment
+- Stamina builds have larger RPM pools, lower RPM drain, stronger orbit play, and better late-round timeout pressure
+- Interchangeable Bit Beast slot replacing the old generic Spirit Chip role
+- Each Bit Beast has a passive and a usable ability
+- Bit Beast examples: Astral Lynx, Chrome Wyvern, Vault Turtle, Pulse Raven, Comet Wolf, Neon Kirin, Grav Bull, and Volt Jackal
+- PvP diversity loadouts so P1 and P2 start with meaningfully different archetypes instead of mirrored builds
 - 40-second match clock with timeout decisions based on RPM, HP, and stability control
 - RPM meter that drains over time, during charging, during dash commitments, and from bad collisions
 - Low RPM wobble pressure that makes movement less stable before a top is fully outspun
@@ -53,16 +62,39 @@ PvP P2: IJKL steers, U charges, O strike dash/counter guard, P Spirit Surge.
 - Driver personalities: Drift orbits, Needle anchors, Skate rides the rail, Switch cuts direction, Sprint commits outward, Spiral hunts in a corkscrew, Chrome holds heavy lines, and Dash favors sharp angles
 - Improved collision mechanics using relative velocity, mass, grip, tangential bite, burst timing, guard mitigation, stagger, stability loss, RPM drain, and perfect-angle hits
 - Large slash arcs, sparks, shockwaves, floating hit text, and screen shake on major clashes
-- Build-driven top feel across Attack Ring, Weight Core, Driver Tip, and Spirit Chip
+- Build-driven top feel across Attack Ring, Weight Core, Driver Tip, and Bit Beast
 - 64 original parts per slot, 256 total parts in the catalogue
 - Premium canvas graphics: layered dome lighting, animated rings, radial highlights, rendered teeth, cores, driver fins, chip gems, rarity glow, trails, sparks, shockwaves, floating impact text, and screen shake
 - Upgraded arena presentation shell: neon background, glass HUD, scanline overlay, rounded cabinet frame, cinematic panel lighting, and premium bench/shop cards
-- Spirit Surge meter with original spirit avatars and knockback pressure
 - CPU rivals that orbit, bait, rush, and recover from the rim instead of just drifting forward
 - Cash, repair, and overdrive pickups between clashes
-- Part shop with speed, mass, damage, grip, HP, charge, and stability modifiers
+- Part shop with speed, mass, damage, grip, HP, charge, stability, style, Bit Beast passive, and Bit Beast active modifiers
 - Responsive canvas layout for PC and handheld browser devices
 - Browser smoke test, quality smoke test, RPM combat smoke test, and local ZIP packaging path
+
+## Build system
+
+Spin Street Showdown now treats each part as a PvP identity choice rather than a tiny stat bump.
+
+| Slot | Main purpose | Examples of playstyle impact |
+| --- | --- | --- |
+| Attack Ring | Contact threat and clash angle | Higher damage, sharper bite, bigger perfect-angle rewards. |
+| Weight Core | Defense, mass, and survivability | More HP, more stability, stronger guard/rim survival. |
+| Driver Tip | Movement pattern | Orbit, anchor, rail-skate, sprint, spiral, heavy-line, or dash-angle steering. |
+| Bit Beast | Passive + usable ability | Pounce, cyclone, shell, siphon, rush, regen, anchor, or feint abilities. |
+
+## Bit Beast examples
+
+| Bit Beast | Style | Usable ability | Passive identity |
+| --- | --- | --- | --- |
+| Astral Lynx | Attack | Pounce Burst | Angle hits build extra Spirit and bite harder. |
+| Chrome Wyvern | Defense | Iron Cyclone | Guard spin reduces knockback and RPM loss. |
+| Vault Turtle | Defense | Shell Lock | Rail crashes cost less HP and stability. |
+| Pulse Raven | Stamina | Tempo Siphon | Orbiting the dome preserves more RPM. |
+| Comet Wolf | Attack | Meteor Rush | Dash impacts get higher launch and hit sparks. |
+| Neon Kirin | Stamina | Regen Current | Low RPM wobble recovers faster. |
+| Grav Bull | Defense | Anchor Drop | Mass advantage matters more in clashes. |
+| Volt Jackal | Attack | Spark Feint | Direction changes and dash timing create feints. |
 
 ## Slayblade clip lessons applied
 
@@ -97,7 +129,7 @@ Spin Street Showdown should feel closer to a polished downloadable battle arena 
 The game should compete with polished battle-top games by making every clash readable and skillful:
 
 - **Graphics:** tops should look layered, collectible, and distinct by build.
-- **Mechanics:** RPM, charge, guard, dash, stability, driver tip attack patterns, and Spirit Surge should create real decisions.
+- **Mechanics:** Attack, Defense, Stamina, RPM, charge, guard, dash, stability, driver tip attack patterns, Bit Beast actives/passives, and Spirit Surge timing should create real decisions.
 - **Physics:** mass, grip, stadium pitch, uphill/downhill speed exchange, rim angle, tangential contact, and perfect-angle impact timing should change outcomes.
 - **Feel:** impacts should pop with slash arcs, sparks, shockwaves, hit text, and camera shake without becoming unreadable.
 
