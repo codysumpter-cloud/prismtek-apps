@@ -8,6 +8,7 @@
 [<kbd>▶ TamerNet Battle Sandbox</kbd>](games/tamernet-battle-sandbox/)
 [<kbd>▶ Spin Street Showdown</kbd>](games/spin-street-showdown/)
 [<kbd>🕹 Arcade feel guide</kbd>](docs/games/prismtek-arcade-feel.md)
+[<kbd>📥 Arcade migration queue</kbd>](docs/games/prismtek-site-arcade-migration-queue.md)
 [<kbd>✅ Platform tracker</kbd>](docs/games/three-game-platform-readiness.md)
 
 Prismtek-apps is the runnable software workspace for Prismtek products: mobile apps, desktop apps, web apps, games, tools, services, demos, and shipped product surfaces.
@@ -33,13 +34,29 @@ Shared design source of truth: [`docs/games/prismtek-arcade-feel.md`](docs/games
 
 ## Games
 
-All current Prismtek game folders are listed here.
+### Active `prismtek-apps` games
+
+These game folders currently exist under `games/` and are part of this repo branch.
 
 | Game | Path | Status | Shared feel target | Run locally |
 | --- | --- | --- | --- | --- |
 | Pixel Fruit Arena | [`games/pixel-fruit-arena/`](games/pixel-fruit-arena/) | Playable browser/PWA MVP; web ZIP path exists; DS source exists; public release artifacts pending. | Local platform-fighter matches with character identity, readable powers, ring-outs, awakening, rank rewards, and match receipts. | `cd games/pixel-fruit-arena && npm test && npm run build && npm run package:zip` |
 | TamerNet Battle Sandbox | [`games/tamernet-battle-sandbox/`](games/tamernet-battle-sandbox/) | Playable browser prototype; smoke test and web ZIP path exist; DS source exists; public release artifacts pending. | Quick creature command battles with readable roles, alpha encounters, PvP-ready duel rules, rank rewards, and match receipts. | `cd games/tamernet-battle-sandbox && npm test && npm run package:zip` |
 | Spin Street Showdown | [`games/spin-street-showdown/`](games/spin-street-showdown/) | Playable browser prototype; upgraded physics/graphics pass, smoke tests, web ZIP path, and DS source exist; public release artifacts pending. | Short retro PvP dome clashes with launch skill, rim pressure, burst timing, Spirit Surge, visible rank, and clout rewards. | `cd games/spin-street-showdown && npm test && npm run package:zip` |
+
+### Prismtek-site arcade migration queue
+
+These arcade games are source-confirmed in `codysumpter-cloud/prismtek-site` and are queued to become first-class `games/*` projects here. They are intentionally listed as queued until their source is actually migrated.
+
+Full queue tracker: [`docs/games/prismtek-site-arcade-migration-queue.md`](docs/games/prismtek-site-arcade-migration-queue.md).
+
+| Source game | Source ID | Target path | Migration status | Shared feel target |
+| --- | --- | --- | --- | --- |
+| Flappy Pixel | `flappy-pixel` | `games/flappy-pixel/` | Queued | One-button reflex survival match with score/rank clout. |
+| Crossy Pixel | `crossy-pixel` | `games/crossy-pixel/` | Queued | Lane-crossing dodge/run match with streak and distance clout. |
+| Pixel Snake | `pixel-snake` | `games/pixel-snake/` | Queued | Classic route-control score match with speed/rank rewards. |
+| Neon Brick Breaker | `neon-brick-breaker` | `games/neon-brick-breaker/` | Queued | Paddle/brick clear match with combo, accuracy, and score clout. |
+| Pixel Stacker | `pixel-stacker` | `games/pixel-stacker/` | Queued | Timing/stacking precision match with height, streak, and badge rewards. |
 
 ### Game buttons
 
@@ -48,6 +65,8 @@ All current Prismtek game folders are listed here.
 | Pixel Fruit Arena | [<kbd>▶ Open</kbd>](games/pixel-fruit-arena/) | [README](games/pixel-fruit-arena/README.md) | [DS source](games/pixel-fruit-arena/ds-homebrew/) | [Shared feel](docs/games/prismtek-arcade-feel.md) |
 | TamerNet Battle Sandbox | [<kbd>▶ Open</kbd>](games/tamernet-battle-sandbox/) | [README](games/tamernet-battle-sandbox/README.md) | [DS source](games/tamernet-battle-sandbox/ds-homebrew/) | [Shared feel](docs/games/prismtek-arcade-feel.md) |
 | Spin Street Showdown | [<kbd>▶ Open</kbd>](games/spin-street-showdown/) | [README](games/spin-street-showdown/README.md) | [DS source](games/spin-street-showdown/ds-homebrew/) | [PvP loop](games/spin-street-showdown/docs/ARCADE_PVP_LOOP.md) / [Shared feel](docs/games/prismtek-arcade-feel.md) |
+
+Queued Prismtek-site arcade games should **not** get open buttons until their target `games/<slug>/` folders exist.
 
 ### Shared game release rules
 
@@ -111,6 +130,11 @@ Some projects are intentionally dependency-free browser prototypes and should be
 | Pixel Fruit Arena | Game | `games/pixel-fruit-arena/` | Playable browser/PWA platform-fighting MVP plus DS source |
 | TamerNet Battle Sandbox | Game prototype | `games/tamernet-battle-sandbox/` | Playable browser creature prototype plus DS source |
 | Spin Street Showdown | Game prototype | `games/spin-street-showdown/` | Playable browser arcade prototype plus DS source |
+| Flappy Pixel | Queued game migration | `games/flappy-pixel/` | Prismtek-site arcade game queued for migration |
+| Crossy Pixel | Queued game migration | `games/crossy-pixel/` | Prismtek-site arcade game queued for migration |
+| Pixel Snake | Queued game migration | `games/pixel-snake/` | Prismtek-site arcade game queued for migration |
+| Neon Brick Breaker | Queued game migration | `games/neon-brick-breaker/` | Prismtek-site arcade game queued for migration |
+| Pixel Stacker | Queued game migration | `games/pixel-stacker/` | Prismtek-site arcade game queued for migration |
 | BeMore iOS native | Mobile app | `apps/bemore-ios-native/` | Native iOS Buddy/operator app |
 | BeMore Agent Platform iOS | Mobile app | `apps/bemoreagent-platform-ios/` | iOS platform/admin-capable app |
 | BeMore macOS native | Desktop app | `apps/bemore-macos-native/` | Native macOS app |
@@ -158,6 +182,7 @@ Start here:
 - [`docs/games/prismtek-arcade-cross-platform-migration.md`](docs/games/prismtek-arcade-cross-platform-migration.md)
 - [`docs/games/three-game-platform-readiness.md`](docs/games/three-game-platform-readiness.md)
 - [`docs/games/prismtek-arcade-feel.md`](docs/games/prismtek-arcade-feel.md)
+- [`docs/games/prismtek-site-arcade-migration-queue.md`](docs/games/prismtek-site-arcade-migration-queue.md)
 
 These documents are the source of truth for staged repo reorganization.
 
@@ -175,11 +200,12 @@ These documents are the source of truth for staged repo reorganization.
 
 1. Add governance docs and README framing. No product moves.
 2. Move browser-playable game prototypes into the games workspace.
-3. Move `apps/bemore-cli` to `tools/cli/bemore-cli`.
-4. Move `apps/api` to `services/api` and `integrations/buddy-chat` to `services/buddy-chat`.
-5. Decide final ownership for `apps/prismds-os` after packaging review.
-6. Move Apple projects last, one product at a time.
-7. Quarantine root/generated legacy material only after reference scans.
+3. Migrate Prismtek-site arcade games into `games/*` one at a time using [`docs/games/prismtek-site-arcade-migration-queue.md`](docs/games/prismtek-site-arcade-migration-queue.md).
+4. Move `apps/bemore-cli` to `tools/cli/bemore-cli`.
+5. Move `apps/api` to `services/api` and `integrations/buddy-chat` to `services/buddy-chat`.
+6. Decide final ownership for `apps/prismds-os` after packaging review.
+7. Move Apple projects last, one product at a time.
+8. Quarantine root/generated legacy material only after reference scans.
 
 ## Apple development
 
@@ -209,6 +235,7 @@ xcodebuild -project BeMoreAgent.xcodeproj -scheme BeMoreAgent -sdk iphonesimulat
 - Do not claim download links exist unless the artifact or source path exists.
 - Do not claim RGDS/OS images, app installers, DS binaries, or signed builds exist until they are packaged and attached.
 - Do not ship reference/test assets as release assets.
+- Do not list queued game migrations as active open buttons until their target folders exist.
 - Do not extract shared packages until reuse is proven.
 - Do not delete or quarantine root artifacts until reference scans prove they are unused.
 
