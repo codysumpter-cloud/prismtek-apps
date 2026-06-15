@@ -14,7 +14,14 @@
     "dev": "turbo run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
-    "clean": "turbo run clean"
+    "clean": "turbo run clean",
+    "porting-kits:download": "node tools/porting-kits/verify-porting-kits.mjs && bash tools/porting-kits/download-porting-kits.sh",
+    "porting-kits:download:ps": "pwsh tools/porting-kits/download-porting-kits.ps1",
+    "porting-kits:verify": "node tools/porting-kits/verify-porting-kits.mjs",
+    "dual-screen:validate": "node tools/dual-screen/validate-dual-screen-configs.mjs",
+    "dual-screen:smoke": "node tools/dual-screen/smoke-dual-screen-runtime.mjs",
+    "games:validate-support": "node tools/games/validate-universal-game-support.mjs",
+    "platforms:validate": "npm run porting-kits:verify && npm run dual-screen:validate && npm run dual-screen:smoke && npm run games:validate-support"
   },
   "dependencies": {
     "@google/genai": "^2.8.0",
