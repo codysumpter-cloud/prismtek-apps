@@ -1,0 +1,40 @@
+{
+  "gameId": "tamernet-battle-sandbox",
+  "displayName": "TamerNet Battle Sandbox",
+  "androidPackage": "dev.prismtek.tamernetbattle",
+  "entrypoint": "games/tamernet-battle-sandbox/index.html",
+  "artifactSource": "games/tamernet-battle-sandbox",
+  "displayModes": ["single", "stacked-ds", "foldable-ds", "external-display", "rgds-dual"],
+  "screens": {
+    "top": {
+      "role": "battlefield and creature combat viewport",
+      "selectors": ["#game", ".canvas-wrap"],
+      "notes": [
+        "Keep trainer movement, creature combat, alpha telegraphs, captures, and active hitboxes on the top pane.",
+        "The top pane should stay readable even when the bottom pane is full of command data."
+      ]
+    },
+    "bottom": {
+      "role": "creature commands, party state, capture prompt, combat log, and pause controls",
+      "selectors": [".panel", "#log"],
+      "notes": [
+        "Use the bottom pane for command buttons, cooldowns, party/active creature state, capture prompts, and combat log.",
+        "Do not require touch-only creature commands; keyboard/controller bindings must stay active."
+      ]
+    }
+  },
+  "controls": {
+    "primary": "keyboard/controller",
+    "touch": "bottom-pane command cards and party controls",
+    "notes": ["One full alpha or standard battle loop must be playable without touchscreen-only actions."]
+  },
+  "verification": {
+    "requiredReceipts": [
+      "single-screen Android fallback launches",
+      "stacked-ds layout shows battlefield above command panel",
+      "foldable or simulated segment layout keeps battle and commands separated",
+      "RGDS Android mode device receipt before marking verified",
+      "one full battle reaches victory, loss, capture, or reset state"
+    ]
+  }
+}
