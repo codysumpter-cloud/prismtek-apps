@@ -7,16 +7,50 @@
   const DOWNHILL_BOOST = 0.115;
   const TANGENTIAL_KEEP = 0.018;
 
+  const BIT_BEASTS = [
+    { name: "Astral Lynx", style: "attack", active: "Pounce Burst", passive: "Angle hits build extra Spirit and bite harder.", color: "#ef476f" },
+    { name: "Chrome Wyvern", style: "defense", active: "Iron Cyclone", passive: "Guard spin reduces knockback and RPM loss.", color: "#8f6bff" },
+    { name: "Vault Turtle", style: "defense", active: "Shell Lock", passive: "Rail crashes cost less HP and stability.", color: "#06d6a0" },
+    { name: "Pulse Raven", style: "stamina", active: "Tempo Siphon", passive: "Orbiting the dome preserves more RPM.", color: "#ffd166" },
+    { name: "Comet Wolf", style: "attack", active: "Meteor Rush", passive: "Dash impacts get higher launch and hit sparks.", color: "#ff8750" },
+    { name: "Neon Kirin", style: "stamina", active: "Regen Current", passive: "Low RPM wobble recovers faster.", color: "#54e0ff" },
+    { name: "Grav Bull", style: "defense", active: "Anchor Drop", passive: "Mass advantage matters more in clashes.", color: "#bba7ff" },
+    { name: "Volt Jackal", style: "attack", active: "Spark Feint", passive: "Switching direction briefly boosts control.", color: "#ffe66d" }
+  ];
+
   const originalFreshRun = freshRun;
   const originalTopEntity = topEntity;
+  const originalEquippedStats = equippedStats;
+  const originalUpdateStats = updateStats;
   const originalUpdate = update;
   const originalPhysics = physics;
   const originalSteerPlayer = steerPlayer;
   const originalResolveTopCollision = resolveTopCollision;
   const originalUseBladeMove = useBladeMove;
+  const originalSummonSpiritSurge = summonSpiritSurge;
   const originalWinRound = winRound;
   const originalEndRun = endRun;
   const originalDraw = draw;
+
+  installPartIdentitySystem();
+
+  equippedStats = function upgradedEquippedStats(loadout = state.equipped) {
+    const stats = originalEquippedStats(loadout);
+    return applyArchetypeMultipliers(stats, loadout);
+  };
+
+  updateStats = function upgradedUpdateStats(heal, top = state.player, loadout = state.equipped) {
+    originalUpdateStats(heal, top, loadout);
+    const stats = equippedStats(loadout);
+    top.maxRpm = Math.round(stats.rpmMax);
+    top.rpm = heal ? top.maxRpm : clamp(top.rpm ?? top.maxRpm, 0, top.maxRpm);
+    top.style = stats.primaryStyle;
+    top.attackStyle = stats.attackStyle;
+    top.defenseStyle = stats.defenseStyle;
+    top.staminaStyle = stats.staminaStyle;
+    top.maxHp = Math.round(stats.hp);
+    top.r = 18 + Math.min(13, stats.mass * 3.45);
+  };
 
   ui.rpm = document.getElementById("rpm");
   ui.timer = document.getElementById("timer");
@@ -29,7 +63,9 @@
 
   freshRun = function upgradedFreshRun(mode = "cpu") {
     originalFreshRun(mode);
+    installPvpDiversityLoadouts(mode);
     seedMatchState();
+    renderBench();
   };
 
   update = function upgradedUpdate(dt = 1) {
@@ -46,12 +82,15 @@
     originalSteerPlayer(top, stats, scheme, dt);
     seedRPM(top);
     const p2 = scheme === "p2";
+    const loadout = p2 ? state.p2Equipped : state.equipped;
     const chargeHeld = p2 ? keys.has("u") : pointer.down || keys.has(" ");
-    if (chargeHeld) drainRPM(top, (0.08 + stats.charge * 0.02) * dt, "charge");
-    applyDriverPatternControl(top, stats, p2 ? state.p2Equipped : state.equipped, scheme, dt);
+    if (chargeHeld) drainRPM(top, (0.08 + stats.charge * 0.02) * stats.rpmDrain * dt, "charge");
+    applyDriverPatternControl(top, stats, loadout, scheme, dt);
+    applyBitBeastPassive(top, stats, loadout, dt);
     if (top.rpm < LOW_RPM) {
-      top.vx *= 0.985;
-      top.vy *= 0.985;
+      const recovery = bitBeast(loadout).name === "Neon Kirin" ? 0.993 : 0.985;
+      top.vx *= recovery;
+      top.vy *= recovery;
       top.tilt = Math.min(1.1, top.tilt + 0.004 * dt);
     }
   };
@@ -64,7 +103,7 @@
     const speed = Math.hypot(top.vx, top.vy);
     const wobblePenalty = 1 - clamp(top.stability / Math.max(0.5, stats.stability), 0, 1);
     const slope = domeKinematics(top).slope;
-    drainRPM(top, seconds * (1.05 + speed * 0.07 + top.tilt * 0.32 + wobblePenalty * 1.7 + slope * 0.55), "spin");
+    drainRPM(top, seconds * (1.05 + speed * 0.07 + top.tilt * 0.32 + wobblePenalty * 1.7 + slope * 0.55) * stats.rpmDrain, "spin");
     const rpmPct = top.rpm / top.maxRpm;
     top.spinRate = clamp(top.spinRate * (0.94 + rpmPct * 0.06), 0.035, 0.92);
     if (rpmPct < 0.22 && Math.random() < 0.06 * dt) {
@@ -96,9 +135,15 @@
 
     originalResolveTopCollision(a, b, aStats, bStats, dt, npcOnly);
 
+    const beastA = bitBeast(loadoutForActor(a));
+    const beastB = bitBeast(loadoutForActor(b));
     const rpmHit = 1.8 + impactSpeed * 0.34 + Math.max(0, edgePressure - 0.72) * 7;
-    drainRPM(a, rpmHit * (a.guard > 0 ? 0.52 : 1), "clash");
-    drainRPM(b, rpmHit * (b.guard > 0 ? 0.52 : 1), "clash");
+    const aGuard = a.guard > 0 && beastA.name === "Chrome Wyvern" ? 0.36 : a.guard > 0 ? 0.52 : 1;
+    const bGuard = b.guard > 0 && beastB.name === "Chrome Wyvern" ? 0.36 : b.guard > 0 ? 0.52 : 1;
+    drainRPM(a, rpmHit * aGuard * aStats.rpmDrain, "clash");
+    drainRPM(b, rpmHit * bGuard * bStats.rpmDrain, "clash");
+    if (perfectAngle && beastA.name === "Astral Lynx") a.spirit = Math.min(100, a.spirit + 10);
+    if (perfectAngle && beastB.name === "Astral Lynx") b.spirit = Math.min(100, b.spirit + 10);
     createSlashArc(impactX, impactY, Math.atan2(dy, dx), color, perfectAngle ? 34 : 22, perfectAngle ? 38 : 24);
     if (perfectAngle) {
       state.flash = Math.max(state.flash, 0.9);
@@ -112,7 +157,7 @@
   useBladeMove = function upgradedUseBladeMove(top, dx, dy, stats) {
     seedRPM(top);
     const speed = Math.hypot(top.vx, top.vy);
-    const cost = speed > 6.2 || top.charge > 0.7 ? 5 : 12;
+    const cost = (speed > 6.2 || top.charge > 0.7 ? 5 : 12) * stats.rpmDrain;
     if (top.rpm < cost + 4) {
       floatingText("LOW RPM", top.x, top.y - 38, "#ffd34e", 30);
       top.moveCd = Math.max(top.moveCd, 18);
@@ -120,6 +165,18 @@
     }
     drainRPM(top, cost, "dash");
     originalUseBladeMove(top, dx, dy, stats);
+  };
+
+  summonSpiritSurge = function upgradedSummonSpiritSurge(top, loadout) {
+    const beast = bitBeast(loadout);
+    top.spirit = 0;
+    top.charge = Math.min(1, top.charge + 0.36 + (beast.style === "attack" ? 0.08 : 0));
+    top.stability = Math.min(actorStats(top).stability, top.stability + (beast.style === "defense" ? 0.38 : 0.22));
+    const surge = { owner: top, x: top.x, y: top.y, r: 40 + rarityScore[loadout.chip.rarity] * 5, ttl: 150 + (beast.style === "stamina" ? 36 : 0), color: beast.color || loadout.chip.color, name: beast.name, angle: 0, pulse: 0, beast };
+    state.spiritSurges.push(surge);
+    applyBitBeastActive(top, loadout, beast);
+    flashMessage(`${top.role === "p2" ? "P2" : "P1"} Bit Beast: ${beast.name} — ${beast.active}.`);
+    createImpact(top.x, top.y, surge.color, 42, 32);
   };
 
   winRound = function upgradedWinRound() {
@@ -147,6 +204,116 @@
     drawSlopeVectorDebug();
   };
 
+  function installPartIdentitySystem() {
+    SLOT_DEFS.chip.label = "Bit Beast";
+    for (const slot of slots) {
+      for (const part of catalogue[slot]) {
+        const index = partIndex(part);
+        const weights = partStyleWeights(slot, part, index);
+        part.styleWeights = weights;
+        part.primaryStyle = primaryStyle(weights);
+        if (slot === "chip") {
+          const beast = BIT_BEASTS[index % BIT_BEASTS.length];
+          part.bitBeast = { ...beast };
+          const suffix = suffixes[Math.floor(index / BIT_BEASTS.length) % suffixes.length];
+          part.name = `${beast.name} ${suffix}`;
+          part.color = beast.color;
+          part.desc = `${beast.style.toUpperCase()} Bit Beast · Active: ${beast.active} · Passive: ${beast.passive}`;
+        } else {
+          part.desc = `${part.primaryStyle.toUpperCase()} style · ${part.desc}`;
+        }
+      }
+    }
+  }
+
+  function partStyleWeights(slot, part, index) {
+    const cycle = index % 6;
+    const attack = slot === "ring" ? 3.2 : slot === "driver" ? 1.25 : slot === "chip" ? 1.55 : 0.7;
+    const defense = slot === "core" ? 3.25 : slot === "ring" ? 0.9 : slot === "chip" ? 1.25 : 0.75;
+    const stamina = slot === "driver" ? 2.8 : slot === "core" ? 1.35 : slot === "chip" ? 1.8 : 0.85;
+    return {
+      attack: attack + (cycle === 0 || cycle === 3 ? 1.35 : 0) + rarityScore[part.rarity] * 0.42,
+      defense: defense + (cycle === 1 || cycle === 4 ? 1.35 : 0) + rarityScore[part.rarity] * 0.42,
+      stamina: stamina + (cycle === 2 || cycle === 5 ? 1.35 : 0) + rarityScore[part.rarity] * 0.42
+    };
+  }
+
+  function applyArchetypeMultipliers(stats, loadout) {
+    const profile = buildStyleProfile(loadout);
+    const a = profile.attack;
+    const d = profile.defense;
+    const s = profile.stamina;
+    stats.damage = clamp(stats.damage * (1 + a * 0.42 - d * 0.05), 4.8, 36);
+    stats.speed = clamp(stats.speed * (1 + a * 0.14 + s * 0.1 - d * 0.08), 0.75, 4.2);
+    stats.mass = clamp(stats.mass * (1 + d * 0.34 + a * 0.08 - s * 0.06), 0.48, 5.4);
+    stats.hp = clamp(stats.hp * (1 + d * 0.46 + s * 0.12 - a * 0.08), 62, 330);
+    stats.stability = clamp(stats.stability * (1 + d * 0.36 + s * 0.24 - a * 0.08), 0.34, 3.4);
+    stats.charge = clamp(stats.charge * (1 + a * 0.18 + s * 0.24), 0.32, 3.4);
+    stats.grip = clamp(stats.grip + d * 0.006 + s * 0.012 - a * 0.006, 0.92, 1.006);
+    stats.rpmMax = clamp(RPM_MAX + s * 46 + d * 18 - a * 8, 78, 172);
+    stats.rpmDrain = clamp(1 + a * 0.12 + d * 0.02 - s * 0.28, 0.58, 1.38);
+    stats.attackStyle = a;
+    stats.defenseStyle = d;
+    stats.staminaStyle = s;
+    stats.primaryStyle = primaryStyle({ attack: a, defense: d, stamina: s });
+    return stats;
+  }
+
+  function buildStyleProfile(loadout) {
+    const total = { attack: 0, defense: 0, stamina: 0 };
+    for (const part of Object.values(loadout || {})) {
+      const weights = part.styleWeights || partStyleWeights(part.slot, part, partIndex(part));
+      total.attack += weights.attack;
+      total.defense += weights.defense;
+      total.stamina += weights.stamina;
+    }
+    const sum = Math.max(1, total.attack + total.defense + total.stamina);
+    return { attack: total.attack / sum, defense: total.defense / sum, stamina: total.stamina / sum };
+  }
+
+  function primaryStyle(weights) {
+    return Object.entries(weights).sort((a, b) => b[1] - a[1])[0][0];
+  }
+
+  function bitBeast(loadout) {
+    return loadout?.chip?.bitBeast || BIT_BEASTS[0];
+  }
+
+  function loadoutForActor(actor) {
+    if (!actor) return state.equipped;
+    if (actor.role === "p1") return state.equipped;
+    if (actor.role === "p2") return state.p2Equipped;
+    return rivalLoadout(actor.rank);
+  }
+
+  function installPvpDiversityLoadouts(mode) {
+    if (mode !== "pvp" || !state.player2) return;
+    state.equipped = { ring: catalogue.ring[24], core: catalogue.core[8], driver: catalogue.driver[5], chip: catalogue.chip[4] };
+    state.p2Equipped = { ring: catalogue.ring[9], core: catalogue.core[38], driver: catalogue.driver[17], chip: catalogue.chip[18] };
+    updateStats(true, state.player, state.equipped);
+    updateStats(true, state.player2, state.p2Equipped);
+  }
+
+  function applyBitBeastPassive(top, stats, loadout, dt) {
+    const beast = bitBeast(loadout);
+    const k = domeKinematics(top);
+    if (beast.name === "Pulse Raven" && Math.abs(k.tangentialSpeed) > 3.2) top.rpm = Math.min(top.maxRpm, top.rpm + 0.018 * dt);
+    if (beast.name === "Vault Turtle" && k.dome > 0.88) top.hp = Math.min(top.maxHp, top.hp + 0.006 * dt);
+    if (beast.name === "Grav Bull" && Math.hypot(top.vx, top.vy) < 4.4) top.stability = Math.min(stats.stability, top.stability + 0.003 * dt);
+    if (beast.name === "Volt Jackal" && top.moveCd > 0 && Math.random() < 0.015 * dt) createSparkBurst(top.x, top.y, beast.color, 1, 4);
+  }
+
+  function applyBitBeastActive(top, loadout, beast) {
+    if (beast.name === "Astral Lynx") { top.vx *= 1.35; top.vy *= 1.35; top.charge = 1; }
+    if (beast.name === "Chrome Wyvern") { top.guard = 95; top.stability = Math.min(actorStats(top).stability, top.stability + 0.7); }
+    if (beast.name === "Vault Turtle") { top.hp = Math.min(top.maxHp, top.hp + 38); top.guard = 70; }
+    if (beast.name === "Pulse Raven") { top.rpm = Math.min(top.maxRpm, top.rpm + 32); top.spirit = Math.min(40, top.spirit + 12); }
+    if (beast.name === "Comet Wolf") { const k = domeKinematics(top); top.vx += k.radialX * 8 + k.tangentX * 6; top.vy += k.radialY * 8 + k.tangentY * 6; top.charge = 1; }
+    if (beast.name === "Neon Kirin") { top.rpm = Math.min(top.maxRpm, top.rpm + 22); top.hp = Math.min(top.maxHp, top.hp + 18); top.stability = Math.min(actorStats(top).stability, top.stability + 0.34); }
+    if (beast.name === "Grav Bull") { const k = domeKinematics(top); top.vx -= k.radialX * 9; top.vy -= k.radialY * 9; top.guard = 54; }
+    if (beast.name === "Volt Jackal") { top.moveCd = 0; top.charge = Math.min(1, top.charge + 0.55); }
+  }
+
   function applyDomePitchPhysics(top, stats, dt) {
     const k = domeKinematics(top);
     const slope = k.slope;
@@ -164,7 +331,7 @@
       const slow = Math.min(uphill * UPHILL_DRAG * slope * dt, uphill * 0.42);
       top.vx -= k.radialX * slow;
       top.vy -= k.radialY * slow;
-      drainRPM(top, slow * 0.42, "uphill");
+      drainRPM(top, slow * 0.42 * stats.rpmDrain, "uphill");
       if (slope > 0.5 && uphill > 2.5 && Math.random() < 0.025 * dt) floatingText("CLIMB", top.x, top.y - 35, topColor(top), 18);
     }
 
@@ -238,7 +405,7 @@
 
     const len = Math.hypot(patternX, patternY) || 1;
     const rpmScale = clamp((top.rpm ?? RPM_MAX) / RPM_MAX, 0.25, 1);
-    const control = 0.035 * stats.speed * rpmScale;
+    const control = 0.035 * stats.speed * rpmScale * (1 + stats.attackStyle * 0.18 + stats.staminaStyle * 0.12);
     top.vx += (patternX / len) * control * dt;
     top.vy += (patternY / len) * control * dt;
 
@@ -292,7 +459,8 @@
 
   function seedRPM(top) {
     if (!top) return;
-    top.maxRpm = top.maxRpm || RPM_MAX;
+    const stats = actorStats(top);
+    top.maxRpm = Math.round(stats.rpmMax || top.maxRpm || RPM_MAX);
     top.rpm = typeof top.rpm === "number" ? clamp(top.rpm, 0, top.maxRpm) : top.maxRpm;
   }
 
@@ -363,7 +531,7 @@
   }
 
   function drawRPMMeter() {
-    const pct = clamp((state.player.rpm ?? RPM_MAX) / RPM_MAX, 0, 1);
+    const pct = clamp((state.player.rpm ?? RPM_MAX) / state.player.maxRpm, 0, 1);
     const x = 310, y = 492, w = 340, h = 24;
     ctx.save();
     ctx.fillStyle = "#080812cc";
@@ -380,7 +548,7 @@
     ctx.fillStyle = "#f6f1de";
     ctx.font = "800 13px system-ui, sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText(`RPM ${Math.round(pct * 100)}%`, x + w / 2, y + 17);
+    ctx.fillText(`${state.player.style?.toUpperCase?.() || "HYBRID"} RPM ${Math.round(pct * 100)}%`, x + w / 2, y + 17);
     ctx.restore();
   }
 
