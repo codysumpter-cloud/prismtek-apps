@@ -2,7 +2,7 @@
 
 Shared Android wrapper plan for Prismtek browser games that need repeatable APK packaging and two-pane handheld layouts.
 
-This folder is intentionally a shell contract first. The game-specific source of truth lives in each game's `platforms/android-dual-screen.json` file, while `@prismtek/dual-screen-runtime` provides the web runtime helpers.
+This folder is intentionally a shell contract first. It does not declare a workspace package yet, so repo dependency install stays stable until the Android shell becomes a real buildable app. The game-specific source of truth lives in each game's `platforms/android-dual-screen.json` file, while `packages/prismtek-dual-screen-runtime/src/index.js` provides the source helpers.
 
 ## Games covered now
 
@@ -34,6 +34,7 @@ The game should:
 
 ```bash
 npm run dual-screen:validate
+npm run dual-screen:smoke
 npm run porting-kits:verify
 
 cd games/pixel-fruit-arena
@@ -59,7 +60,7 @@ window.PrismtekDisplay = {
 ## Next implementation steps
 
 1. Add a minimal Capacitor wrapper package here.
-2. Add a script that copies `games/<game>/dist` or static files into `android/app/src/main/assets/games/<game-id>/`.
+2. Add a staging script that copies each game artifact into Android app assets.
 3. Add a native bridge that computes `PrismtekDisplay` from Android window/display data.
 4. Build debug APKs for the three active games.
 5. Test single-screen Android, tall stacked mode, and RGDS Android mode.
