@@ -1,6 +1,6 @@
-# Prismtek-site Arcade Migration Queue
+# Prismtek-site Arcade Migration Receipt
 
-This queue tracks arcade games that exist in `codysumpter-cloud/prismtek-site` and still need to be migrated into `codysumpter-cloud/prismtek-apps` as first-class `games/*` projects.
+This document records the Prismtek-site arcade games that were migrated into `codysumpter-cloud/prismtek-apps` as first-class `games/*` projects.
 
 Source evidence in `prismtek-site`:
 
@@ -9,44 +9,33 @@ Source evidence in `prismtek-site`:
 - `src/arcade/shared.ts` owns the shared arcade types/state.
 - `src/data/game-catalog.js` and `functions/lib/arcade-shared.js` appear in the older/shared arcade data surface.
 
-## Queue
+## Migrated games
 
 | Source game | Source ID | Target path | Migration status | Intended Prismtek Arcade role |
 | --- | --- | --- | --- | --- |
-| Flappy Pixel | `flappy-pixel` | `games/flappy-pixel/` | Queued | One-button reflex survival match with score/rank clout. |
-| Crossy Pixel | `crossy-pixel` | `games/crossy-pixel/` | Queued | Lane-crossing dodge/run match with streak and distance clout. |
-| Pixel Snake | `pixel-snake` | `games/pixel-snake/` | Queued | Classic route-control score match with speed/rank rewards. |
-| Neon Brick Breaker | `neon-brick-breaker` | `games/neon-brick-breaker/` | Queued | Paddle/brick clear match with combo, accuracy, and score clout. |
-| Pixel Stacker | `pixel-stacker` | `games/pixel-stacker/` | Queued | Timing/stacking precision match with height, streak, and badge rewards. |
+| Flappy Pixel | `flappy-pixel` | `games/flappy-pixel/` | Migrated | One-button reflex survival match with score/rank clout. |
+| Crossy Pixel | `crossy-pixel` | `games/crossy-pixel/` | Migrated | Lane-crossing dodge/run match with streak and distance clout. |
+| Pixel Snake | `pixel-snake` | `games/pixel-snake/` | Migrated | Classic route-control score match with speed/rank rewards. |
+| Neon Brick Breaker | `neon-brick-breaker` | `games/neon-brick-breaker/` | Migrated | Paddle/brick clear match with combo, accuracy, and score clout. |
+| Pixel Stacker | `pixel-stacker` | `games/pixel-stacker/` | Migrated | Timing/stacking precision match with height, streak, and badge rewards. |
 
-## Target migration contract
+## Migration contract status
 
-Each migrated arcade game should land with:
+Each migrated arcade game now has:
 
 1. `games/<slug>/README.md`
 2. `games/<slug>/package.json`
 3. Browser-playable entrypoint
 4. Shared static ZIP packaging path
-5. Smoke test
-6. Honest platform matrix entry
+5. Smoke test through `games/_shared/prismtek-arcade/smoke.mjs`
+6. Platform matrix entry
 7. Shared Prismtek Arcade feel alignment
-8. Local-first profile/match-result direction where it fits
 
-## Migration order
+## Remaining hardening
 
-Recommended order:
+These games are active Prismtek-apps games now, but they still need release-level receipts before being called fully shipped:
 
-1. `games/pixel-snake/` — smallest classic arcade loop and easiest smoke-test target.
-2. `games/flappy-pixel/` — simple one-button skill loop.
-3. `games/neon-brick-breaker/` — stronger score/combo loop.
-4. `games/crossy-pixel/` — lane/object spawning and collision timing.
-5. `games/pixel-stacker/` — precision timing and stack-state persistence.
-
-## Release honesty
-
-These games are **not** current `prismtek-apps/games/*` projects until their source is actually migrated. Until then:
-
-- Do not add direct `games/<slug>/` open buttons.
-- Do not claim downloadable ZIPs exist.
-- Do not claim DS/RGDS/Steam Deck/device support.
-- Do list them as queued source-confirmed arcade migrations.
+- Attach web ZIP artifacts to GitHub Releases or itch.io.
+- Device-test browser ZIPs on Windows, macOS, Linux, Steam Deck, RGDS Android mode, and RGDS Linux mode.
+- Decide whether each should receive a separate Nintendo DS homebrew source port.
+- Add local arcade profile, rank progression, match history, result JSON, and share-card UI where it fits the game loop.
