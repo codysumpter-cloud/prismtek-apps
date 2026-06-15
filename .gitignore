@@ -8,3 +8,9 @@ coverage/
 .env*
 !.env.example
 apps/bemore-ios-native/BundledModels/
+
+# Nintendo DS homebrew build outputs
+*.nds
+*.elf
+*.map
+*.o
