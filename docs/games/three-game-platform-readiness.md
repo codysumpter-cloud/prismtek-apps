@@ -6,6 +6,8 @@ Shared arcade feel guide: [`docs/games/prismtek-arcade-feel.md`](prismtek-arcade
 
 Prismtek-site migration queue: [`docs/games/prismtek-site-arcade-migration-queue.md`](prismtek-site-arcade-migration-queue.md).
 
+Porting kit setup: [`docs/porting-kits/README.md`](../porting-kits/README.md).
+
 Status values: **Verified**, **Partially verified**, **Unverified**, **Missing**, **Queued**.
 
 ## Active `prismtek-apps` games
@@ -37,6 +39,7 @@ These games are source-confirmed in `codysumpter-cloud/prismtek-site`, but their
 - CI validates browser game receipts and DS source receipts for all three active games.
 - The root README lists every active current game folder and points to the shared Prismtek Arcade feel guide.
 - The root README and queue docs now track five source-confirmed Prismtek-site arcade games still queued for migration.
+- Porting-kit setup docs and downloader manifests now live under `docs/porting-kits/` and `tools/porting-kits/`.
 
 ## Shared release target
 
@@ -53,6 +56,7 @@ Each game should grow toward the same low-resource arcade product shape:
 
 ## Remaining receipts before full release
 
+- Run `npm run porting-kits:verify` and `npm run porting-kits:download` on a local machine to stage third-party setup archives outside git.
 - Build DS outputs on a machine with devkitPro/libnds installed.
 - Publish web ZIP artifacts through GitHub Releases or itch.io.
 - Test each downloadable game on Windows, macOS, Linux, Steam Deck, RGDS Android mode, and RGDS Linux mode.
