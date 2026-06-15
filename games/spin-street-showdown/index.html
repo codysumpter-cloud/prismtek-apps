@@ -14,14 +14,16 @@
         <div class="hud">
           <div><strong id="round">Round 1</strong><span id="mode">Street Bracket</span></div>
           <div class="stats">
-            <span>Cash <b id="cash">$0</b></span>
+            <span>Time <b id="timer">40s</b></span>
+            <span>RPM <b id="rpm">100%</b></span>
             <span>HP <b id="hp">100</b></span>
             <span>Charge <b id="charge">0%</b></span>
+            <span>Cash <b id="cash">$0</b></span>
           </div>
         </div>
         <div id="panel" class="panel">
           <h1>Spin Street Showdown</h1>
-          <p>Launch, clash, call your Bit Beast, and win the dome.</p>
+          <p>Launch, clash, trigger Spirit Surge, and win the dome before your RPM dies.</p>
           <div class="panel-actions">
             <button id="start">CPU Circuit</button>
             <button id="pvp">Local PvP</button>
@@ -33,7 +35,7 @@
         <div id="parts"></div>
         <h2>Shop</h2>
         <div id="shop"></div>
-        <p class="note">P1: WASD/Arrows steer, Space charge, Shift strike dash, E Bit Beast. PvP P2: IJKL steer, U charge, O strike dash, P Bit Beast.</p>
+        <p class="note">P1: WASD/Arrows steer, Space charge, Shift strike dash/counter guard, E Spirit Surge. PvP P2: IJKL steer, U charge, O strike dash/counter guard, P Spirit Surge.</p>
       </aside>
     </main>
   </div>
@@ -42,5 +44,6 @@
     window.__prismtekArcadeRuntime = createArcadeGame;
   </script>
   <script src="game.js"></script>
+  <script src="physics-first-upgrade.js"></script>
 </body>
 </html>
