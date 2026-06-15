@@ -2,6 +2,10 @@
   const ROUND_SECONDS = 40;
   const RPM_MAX = 100;
   const LOW_RPM = 22;
+  const GRAVITY_PULL = 0.18;
+  const UPHILL_DRAG = 0.075;
+  const DOWNHILL_BOOST = 0.115;
+  const TANGENTIAL_KEEP = 0.018;
 
   const originalFreshRun = freshRun;
   const originalTopEntity = topEntity;
@@ -44,6 +48,7 @@
     const p2 = scheme === "p2";
     const chargeHeld = p2 ? keys.has("u") : pointer.down || keys.has(" ");
     if (chargeHeld) drainRPM(top, (0.08 + stats.charge * 0.02) * dt, "charge");
+    applyDriverPatternControl(top, stats, p2 ? state.p2Equipped : state.equipped, scheme, dt);
     if (top.rpm < LOW_RPM) {
       top.vx *= 0.985;
       top.vy *= 0.985;
@@ -54,10 +59,12 @@
   physics = function upgradedPhysics(top, stats, dt) {
     originalPhysics(top, stats, dt);
     seedRPM(top);
+    applyDomePitchPhysics(top, stats, dt);
     const seconds = dt / 60;
     const speed = Math.hypot(top.vx, top.vy);
     const wobblePenalty = 1 - clamp(top.stability / Math.max(0.5, stats.stability), 0, 1);
-    drainRPM(top, seconds * (1.15 + speed * 0.09 + top.tilt * 0.35 + wobblePenalty * 1.8), "spin");
+    const slope = domeKinematics(top).slope;
+    drainRPM(top, seconds * (1.05 + speed * 0.07 + top.tilt * 0.32 + wobblePenalty * 1.7 + slope * 0.55), "spin");
     const rpmPct = top.rpm / top.maxRpm;
     top.spinRate = clamp(top.spinRate * (0.94 + rpmPct * 0.06), 0.035, 0.92);
     if (rpmPct < 0.22 && Math.random() < 0.06 * dt) {
@@ -137,7 +144,144 @@
     drawSlashArcs();
     drawRPMMeter();
     drawRoundClock();
+    drawSlopeVectorDebug();
   };
+
+  function applyDomePitchPhysics(top, stats, dt) {
+    const k = domeKinematics(top);
+    const slope = k.slope;
+    if (slope <= 0.01) return;
+
+    const uphill = Math.max(0, k.radialSpeed);
+    const downhill = Math.max(0, -k.radialSpeed);
+    const wall = clamp((k.dome - 0.48) / 0.52, 0, 1);
+    const gravity = GRAVITY_PULL * slope * wall;
+
+    top.vx -= k.radialX * gravity * dt;
+    top.vy -= k.radialY * gravity * dt;
+
+    if (uphill > 0) {
+      const slow = Math.min(uphill * UPHILL_DRAG * slope * dt, uphill * 0.42);
+      top.vx -= k.radialX * slow;
+      top.vy -= k.radialY * slow;
+      drainRPM(top, slow * 0.42, "uphill");
+      if (slope > 0.5 && uphill > 2.5 && Math.random() < 0.025 * dt) floatingText("CLIMB", top.x, top.y - 35, topColor(top), 18);
+    }
+
+    if (downhill > 0) {
+      const boost = Math.min(3.8, downhill * DOWNHILL_BOOST * slope * dt + gravity * 0.9 * dt);
+      top.vx -= k.radialX * boost;
+      top.vy -= k.radialY * boost;
+      top.stability = Math.max(0.18, top.stability - boost * 0.004);
+      if (slope > 0.5 && downhill > 2.4 && Math.random() < 0.028 * dt) floatingText("DROP SPEED", top.x, top.y - 35, topColor(top), 18);
+    }
+
+    const tangentKeep = 1 + TANGENTIAL_KEEP * slope * stats.grip * dt;
+    const maxTangential = 14 + stats.speed * 4 + stats.grip * 3;
+    const currentTangential = clamp(k.tangentialSpeed * tangentKeep, -maxTangential, maxTangential);
+    const radialAfter = top.vx * k.radialX + top.vy * k.radialY;
+    top.vx = k.radialX * radialAfter + k.tangentX * currentTangential;
+    top.vy = k.radialY * radialAfter + k.tangentY * currentTangential;
+  }
+
+  function applyDriverPatternControl(top, stats, loadout, scheme, dt) {
+    if (!loadout?.driver) return;
+    const driver = loadout.driver.name.split(" ")[0];
+    const k = domeKinematics(top);
+    const intent = playerIntentVector(top, scheme);
+    const aimX = intent.x;
+    const aimY = intent.y;
+    let patternX = aimX;
+    let patternY = aimY;
+    let label = driver.toUpperCase();
+    const t = performance.now() / 1000 + partIndex(loadout.driver) * 0.37;
+
+    if (driver === "Drift") {
+      patternX = aimX * 0.55 + k.tangentX * 0.8;
+      patternY = aimY * 0.55 + k.tangentY * 0.8;
+      label = "DRIFT LINE";
+    } else if (driver === "Needle") {
+      patternX = aimX * 0.82 - k.radialX * 0.22;
+      patternY = aimY * 0.82 - k.radialY * 0.22;
+      top.stability = Math.min(actorStats(top).stability, top.stability + 0.0025 * dt);
+      label = "ANCHOR LINE";
+    } else if (driver === "Skate") {
+      const sign = k.tangentialSpeed >= 0 ? 1 : -1;
+      patternX = aimX * 0.35 + k.tangentX * sign * 1.1;
+      patternY = aimY * 0.35 + k.tangentY * sign * 1.1;
+      label = "RAIL SKATE";
+    } else if (driver === "Switch") {
+      const swap = Math.sin(t * 2.4) > 0 ? 1 : -1;
+      patternX = aimX * 0.62 + k.tangentX * swap * 0.62 - k.radialX * 0.16;
+      patternY = aimY * 0.62 + k.tangentY * swap * 0.62 - k.radialY * 0.16;
+      label = "SWITCH CUT";
+    } else if (driver === "Sprint") {
+      patternX = aimX * 1.25 + k.radialX * 0.26;
+      patternY = aimY * 1.25 + k.radialY * 0.26;
+      label = "SPRINT COMMIT";
+    } else if (driver === "Spiral") {
+      const swirl = Math.sin(t * 5.2);
+      patternX = aimX * 0.62 + k.tangentX * swirl * 0.9 - k.radialX * 0.18;
+      patternY = aimY * 0.62 + k.tangentY * swirl * 0.9 - k.radialY * 0.18;
+      label = "SPIRAL HUNT";
+    } else if (driver === "Chrome") {
+      patternX = aimX * 0.72 - k.radialX * 0.34;
+      patternY = aimY * 0.72 - k.radialY * 0.34;
+      top.vx *= 0.998;
+      top.vy *= 0.998;
+      label = "HEAVY LINE";
+    } else if (driver === "Dash") {
+      patternX = aimX * 1.18 + k.tangentX * 0.28;
+      patternY = aimY * 1.18 + k.tangentY * 0.28;
+      label = "DASH ANGLE";
+    }
+
+    const len = Math.hypot(patternX, patternY) || 1;
+    const rpmScale = clamp((top.rpm ?? RPM_MAX) / RPM_MAX, 0.25, 1);
+    const control = 0.035 * stats.speed * rpmScale;
+    top.vx += (patternX / len) * control * dt;
+    top.vy += (patternY / len) * control * dt;
+
+    if (state.matchClock && Math.ceil(state.matchClock) % 9 === 0 && Math.random() < 0.006 * dt) {
+      floatingText(label, top.x, top.y - 48, loadout.driver.color, 22);
+    }
+  }
+
+  function domeKinematics(top) {
+    const dx = top.x - ARENA.cx;
+    const dy = top.y - ARENA.cy;
+    const nx = dx / ARENA.rx;
+    const ny = dy / ARENA.ry;
+    const dome = Math.hypot(nx, ny) || 0.001;
+    const radialX = (nx / dome) / ARENA.rx;
+    const radialY = (ny / dome) / ARENA.ry;
+    const radialLen = Math.hypot(radialX, radialY) || 1;
+    const rx = radialX / radialLen;
+    const ry = radialY / radialLen;
+    const tx = -ry;
+    const ty = rx;
+    return {
+      dome,
+      slope: clamp((dome - 0.25) / 0.75, 0, 1),
+      radialX: rx,
+      radialY: ry,
+      tangentX: tx,
+      tangentY: ty,
+      radialSpeed: top.vx * rx + top.vy * ry,
+      tangentialSpeed: top.vx * tx + top.vy * ty
+    };
+  }
+
+  function playerIntentVector(top, scheme) {
+    const p2 = scheme === "p2";
+    const ax = (keys.has(p2 ? "l" : "arrowright") || (!p2 && keys.has("d")) ? 1 : 0) - (keys.has(p2 ? "j" : "arrowleft") || (!p2 && keys.has("a")) ? 1 : 0);
+    const ay = (keys.has(p2 ? "k" : "arrowdown") || (!p2 && keys.has("s")) ? 1 : 0) - (keys.has(p2 ? "i" : "arrowup") || (!p2 && keys.has("w")) ? 1 : 0);
+    let dx = p2 ? ax : pointer.x - top.x;
+    let dy = p2 ? ay : pointer.y - top.y;
+    if (!p2 && (ax || ay)) { dx = ax; dy = ay; }
+    const len = Math.hypot(dx, dy) || 1;
+    return { x: dx / len, y: dy / len };
+  }
 
   function seedMatchState() {
     state.matchClock = ROUND_SECONDS;
@@ -249,6 +393,21 @@
     ctx.fillText(`${time}`, ARENA.cx, 56);
     ctx.font = "700 10px system-ui, sans-serif";
     ctx.fillText("SECONDS", ARENA.cx, 72);
+    ctx.restore();
+  }
+
+  function drawSlopeVectorDebug() {
+    if (!state?.player) return;
+    const k = domeKinematics(state.player);
+    if (k.slope < 0.5) return;
+    ctx.save();
+    ctx.globalAlpha = 0.28;
+    ctx.strokeStyle = state.player.rpm < LOW_RPM ? "#ef476f" : "#54e0ff";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(state.player.x, state.player.y);
+    ctx.lineTo(state.player.x - k.radialX * 42 * k.slope, state.player.y - k.radialY * 42 * k.slope);
+    ctx.stroke();
     ctx.restore();
   }
 
