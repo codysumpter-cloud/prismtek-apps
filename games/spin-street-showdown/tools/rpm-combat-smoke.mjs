@@ -20,10 +20,14 @@ for (const token of ["ROUND_SECONDS", "RPM_MAX", "drainRPM", "resolveTimedRound"
 }
 
 for (const token of ["applyDomePitchPhysics", "domeKinematics", "radialSpeed", "tangentialSpeed", "UPHILL_DRAG", "DOWNHILL_BOOST", "applyDriverPatternControl", "playerIntentVector"]) {
-  assert.ok(upgrade.includes(token), `physics-first-upgrade.js should include dome/pattern token ${token}`);
+  assert.ok(upgrade.includes(token), `physics-first-upgrade.js should include dome or pattern token ${token}`);
 }
 
-for (const token of ["RPM", "40-second", "timeout", "slash", "pitch", "driver tip"]) {
+for (const token of ["BIT_BEASTS", "applyArchetypeMultipliers", "buildStyleProfile", "defenseStyle", "staminaStyle", "applyBitBeastPassive", "applyBitBeastActive", "installPvpDiversityLoadouts"]) {
+  assert.ok(upgrade.includes(token), `physics-first-upgrade.js should include build diversity token ${token}`);
+}
+
+for (const token of ["RPM", "40-second", "timeout", "slash", "pitch", "driver tip", "Defense", "Stamina", "Bit Beast", "passive", "usable ability"]) {
   assert.match(readme, new RegExp(token, "i"), `README should document ${token}`);
 }
 
