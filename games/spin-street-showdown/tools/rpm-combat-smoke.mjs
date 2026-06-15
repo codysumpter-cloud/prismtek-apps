@@ -1,11 +1,15 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
 const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
 const html = readFileSync(path.join(root, "index.html"), "utf8");
-const upgrade = readFileSync(path.join(root, "physics-first-upgrade.js"), "utf8");
+const upgradePath = path.join(root, "physics-first-upgrade.js");
+const upgrade = readFileSync(upgradePath, "utf8");
 const readme = readFileSync(path.join(root, "README.md"), "utf8");
+
+execFileSync(process.execPath, ["--check", upgradePath], { stdio: "inherit" });
 
 for (const token of ["rpm", "timer", "physics-first-upgrade.js", "Spirit Surge"]) {
   assert.ok(html.includes(token), `index.html should include ${token}`);
