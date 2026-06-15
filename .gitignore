@@ -9,6 +9,10 @@ coverage/
 !.env.example
 apps/bemore-ios-native/BundledModels/
 
+# Local porting kit downloads and installer caches
+.porting-kits/
+tools/porting-kits/downloads/
+
 # Nintendo DS homebrew build outputs
 *.nds
 *.elf
