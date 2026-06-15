@@ -61,6 +61,20 @@ PvP P2: IJKL steers, U charges, O strike dash/counter guard, P Spirit Surge.
 - Responsive canvas layout for PC and handheld browser devices
 - Browser smoke test, quality smoke test, RPM combat smoke test, and local ZIP packaging path
 
+## Slayblade clip lessons applied
+
+The design takeaway from the Slayblade reference is **juice plus clarity**, not copying assets or lore.
+
+Applied in this build:
+
+- simple readable dome combat
+- 40-second arcade match pressure
+- bottom-center RPM meter as the obvious stamina/momentum resource
+- RPM drain from time, charge, dash, rail pressure, and collisions
+- timeout wins based on RPM control instead of only HP
+- perfect-angle clash feedback with large slash arcs
+- strong hit feedback through sparks, shockwaves, shake, floating callouts, and skid marks
+
 ## Visual quality target
 
 Spin Street Showdown should feel closer to a polished downloadable battle arena than a flat browser demo. The benchmark is not copied assets or copied lore; it is presentation quality:
