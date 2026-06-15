@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "root": ".prismtek-tools",
+  "policy": {
+    "commitDownloadedTools": false,
+    "commitGeneratedBuildOutputs": false,
+    "allowConsoleBios": false,
+    "allowCommercialRoms": false,
+    "allowProprietarySdks": false,
+    "preferOfficialSources": true
+  },
+  "toolchains": [
+    {
+      "id": "node",
+      "status": "implemented",
+      "cachePath": ".prismtek-tools/node-v${nodeVersion}",
+      "purpose": "Repo-local Node.js, npm, and npx for builds and validation.",
+      "verify": [".prismtek-tools/bin/node", ".prismtek-tools/bin/npm"]
+    },
+    {
+      "id": "npm-cache",
+      "status": "implemented",
+      "cachePath": ".prismtek-tools/npm-cache",
+      "purpose": "Repo-local npm cache configured by .npmrc.",
+      "verify": [".prismtek-tools/npm-cache"]
+    },
+    {
+      "id": "nds-devkitpro",
+      "status": "scaffolded",
+      "cachePath": ".prismtek-tools/devkitpro",
+      "purpose": "Nintendo DS homebrew toolchain location for devkitARM, libnds, grit, ndstool, maxmod, and make wrappers.",
+      "verify": [".prismtek-tools/devkitpro/env.sh", ".prismtek-tools/devkitpro/env.ps1"],
+      "notes": [
+        "The repo owns env and verification hooks, but does not commit compiler binaries.",
+        "Use only official devkitPro/devkitARM/libnds sources. Do not add Nintendo SDKs, BIOS files, or commercial ROMs."
+      ]
+    },
+    {
+      "id": "itch-butler",
+      "status": "scaffolded",
+      "cachePath": ".prismtek-tools/butler",
+      "purpose": "itch.io Butler publishing tool cache for web ZIP release uploads.",
+      "verify": [".prismtek-tools/butler/README.md"]
+    },
+    {
+      "id": "android-rgds",
+      "status": "scaffolded",
+      "cachePath": ".prismtek-tools/android",
+      "purpose": "Android/RGDS Android SDK, platform tools, adb, and APK wrapper cache.",
+      "verify": [".prismtek-tools/android/README.md"]
+    },
+    {
+      "id": "jdk",
+      "status": "scaffolded",
+      "cachePath": ".prismtek-tools/jdk",
+      "purpose": "Repo-local Java runtime/build tool location for Android packaging.",
+      "verify": [".prismtek-tools/jdk/README.md"]
+    },
+    {
+      "id": "rust-tauri",
+      "status": "scaffolded",
+      "cachePath": ".prismtek-tools/rust",
+      "purpose": "Repo-local Rust/Cargo homes for desktop/Tauri packaging.",
+      "env": {
+        "RUSTUP_HOME": ".prismtek-tools/rust/rustup",
+        "CARGO_HOME": ".prismtek-tools/rust/cargo"
+      },
+      "verify": [".prismtek-tools/rust/env.sh", ".prismtek-tools/rust/env.ps1"]
+    },
+    {
+      "id": "media-tools",
+      "status": "scaffolded",
+      "cachePath": ".prismtek-tools/media",
+      "purpose": "Image/audio/map conversion tools such as ImageMagick, ffmpeg, Tiled helpers, and sprite export wrappers.",
+      "verify": [".prismtek-tools/media/README.md"]
+    }
+  ]
+}
