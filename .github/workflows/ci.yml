@@ -46,6 +46,11 @@ jobs:
           test -f games/pixel-fruit-arena/package.json
           test -f games/tamernet-battle-sandbox/package.json
           test -f games/spin-street-showdown/package.json
+          test -f games/flappy-pixel/package.json
+          test -f games/crossy-pixel/package.json
+          test -f games/pixel-snake/package.json
+          test -f games/neon-brick-breaker/package.json
+          test -f games/pixel-stacker/package.json
           test -f packages/core/package.json
           test -f packages/app-factory/package.json
           test -f packages/sandbox/package.json
@@ -83,6 +88,14 @@ jobs:
             games/pixel-fruit-arena \
             games/tamernet-battle-sandbox \
             games/spin-street-showdown
+
+      - name: Validate Prismtek-site arcade imports
+        run: |
+          npm --prefix games/flappy-pixel test
+          npm --prefix games/crossy-pixel test
+          npm --prefix games/pixel-snake test
+          npm --prefix games/neon-brick-breaker test
+          npm --prefix games/pixel-stacker test
 
       - name: Validate Buddy Chat app
         run: node integrations/buddy-chat/scripts/validate.mjs
