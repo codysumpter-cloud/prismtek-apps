@@ -35,5 +35,6 @@ for (const token of [
 assert.match(readme, /physics/i, "README should describe upgraded physics");
 assert.match(readme, /graphics/i, "README should describe upgraded graphics");
 assert.match(readme, /Spirit Surge/i, "README should document Spirit Surge mechanics");
+assert.match(readme, /visual quality target/i, "README should document the visual quality target");
 
 console.log("Spin Street quality smoke passed.");
