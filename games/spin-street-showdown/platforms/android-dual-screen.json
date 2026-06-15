@@ -1,0 +1,40 @@
+{
+  "gameId": "spin-street-showdown",
+  "displayName": "Spin Street Showdown",
+  "androidPackage": "dev.prismtek.spinstreetshowdown",
+  "entrypoint": "games/spin-street-showdown/index.html",
+  "artifactSource": "games/spin-street-showdown",
+  "displayModes": ["single", "stacked-ds", "foldable-ds", "external-display", "rgds-dual"],
+  "screens": {
+    "top": {
+      "role": "spin dome arena viewport",
+      "selectors": ["#game", ".game-wrap"],
+      "notes": [
+        "Keep the dome, tops, launch vectors, clashes, trails, rim pressure, and effects on the top pane.",
+        "The top pane should not be blocked by parts-bench or shop UI in dual-screen mode."
+      ]
+    },
+    "bottom": {
+      "role": "parts bench, shop, mode select, rank state, and match HUD",
+      "selectors": [".hud", "#panel", ".bench"],
+      "notes": [
+        "Use the bottom pane for parts tuning, shop actions, mode selection, HP, charge, cash, and match receipts.",
+        "Touch tuning is allowed here, but PvP controls must remain keyboard and controller friendly."
+      ]
+    }
+  },
+  "controls": {
+    "primary": "keyboard/controller",
+    "touch": "bottom-pane mode, shop, and parts tuning controls",
+    "notes": ["One full CPU or local PvP round must be playable without touchscreen-only actions."]
+  },
+  "verification": {
+    "requiredReceipts": [
+      "single-screen Android fallback launches",
+      "stacked-ds layout shows dome above parts/HUD panel",
+      "foldable or simulated segment layout keeps arena and tuning separated",
+      "RGDS Android mode device receipt before marking verified",
+      "one full round reaches win/loss/rematch or shop state"
+    ]
+  }
+}
