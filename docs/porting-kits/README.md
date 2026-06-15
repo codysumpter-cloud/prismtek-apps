@@ -14,6 +14,7 @@ The repo should keep **manifests, downloader scripts, setup receipts, and instru
 | macOS desktop | Tauri wrapper around existing web build | Setup documented; packaging/signing pending per game | [`desktop-tauri.md`](desktop-tauri.md) |
 | Linux / Steam Deck | Tauri/AppImage or static ZIP/browser | Setup documented; device receipts pending | [`desktop-tauri.md`](desktop-tauri.md) |
 | Android / RGDS Android mode | Capacitor or Tauri Android wrapper | Setup documented; APK receipts pending | [`android-rgds.md`](android-rgds.md) |
+| Android dual-screen APK mode | Shared game configs + dual-screen runtime + Android wrapper | Configured for the three active games; APK receipts pending | [`android-dual-screen-apk.md`](android-dual-screen-apk.md) |
 | RGDS Linux mode | Static browser build, launcher, or Linux package | Setup documented; device receipts pending | [`android-rgds.md`](android-rgds.md) |
 | Nintendo DS homebrew | devkitPro/libnds first, DS Game Maker optional | DS source exists for active games; `.nds` receipts pending | [`nintendo-ds.md`](nintendo-ds.md) |
 
@@ -24,6 +25,8 @@ From the repo root:
 ```bash
 npm run porting-kits:download
 npm run porting-kits:verify
+npm run dual-screen:validate
+npm run dual-screen:smoke
 ```
 
 Or run the scripts directly:
@@ -32,6 +35,8 @@ Or run the scripts directly:
 node tools/porting-kits/verify-porting-kits.mjs
 bash tools/porting-kits/download-porting-kits.sh
 pwsh tools/porting-kits/download-porting-kits.ps1
+node tools/dual-screen/validate-dual-screen-configs.mjs
+node tools/dual-screen/smoke-dual-screen-runtime.mjs
 ```
 
 Downloaded third-party files go into `.porting-kits/`, which is gitignored.
@@ -48,9 +53,11 @@ Downloaded third-party files go into `.porting-kits/`, which is gitignored.
 
 1. Verify the existing browser game build.
 2. Generate a self-contained web ZIP.
-3. Wrap the same static build for desktop/mobile only after the web ZIP is stable.
-4. Build `.nds` outputs from each game's `ds-homebrew/` folder only on a local machine with devkitPro/libnds installed.
-5. Add receipts back to the relevant game docs after testing.
+3. Validate dual-screen configs for the active games.
+4. Wrap the same static build for desktop/mobile only after the web ZIP is stable.
+5. Build Android dual-screen APKs through the shared wrapper contract, not per-game forks.
+6. Build `.nds` outputs from each game's `ds-homebrew/` folder only on a local machine with devkitPro/libnds installed.
+7. Add receipts back to the relevant game docs after testing.
 
 ## Receipts to add after local setup
 
