@@ -1,0 +1,84 @@
+{
+  "note": "Curated repo-local asset candidates for Prismwilds. These are not blanket runtime approvals; each pack still needs extraction, license review, frame normalization, and style QA before public release.",
+  "creatures": [
+    {
+      "source": "../../game-assets/characters/dinoCharactersVersion1.1 (1).zip",
+      "intendedUse": "playable dinosaur-inspired base bodies and rare roaming NPC dinosaurs",
+      "status": "candidate"
+    },
+    {
+      "source": "../../game-assets/characters/Monster_Creatures_Fantasy(Version 1.3).zip",
+      "intendedUse": "wild fantasy creature variants and biome NPCs",
+      "status": "candidate"
+    },
+    {
+      "source": "../../game-assets/characters/Overworld Bear Sprites.zip",
+      "intendedUse": "large grazer or predator roaming NPC reference",
+      "status": "candidate"
+    },
+    {
+      "source": "../../game-assets/characters/ToxicFrog.zip",
+      "intendedUse": "toxic swamp creature body and animation source",
+      "status": "candidate"
+    },
+    {
+      "source": "../../game-assets/characters/Skullwolf.zip",
+      "intendedUse": "predator silhouette source",
+      "status": "candidate"
+    },
+    {
+      "source": "../../game-assets/tilesets-environment/TinyRanch_Animals.png",
+      "intendedUse": "feeder NPC animals after sprite normalization",
+      "status": "candidate"
+    }
+  ],
+  "world": [
+    {
+      "source": "../../game-assets/tilesets-environment/Trees+.png",
+      "intendedUse": "tree clusters, forest blockers, and shadow cover",
+      "status": "candidate"
+    },
+    {
+      "source": "../../game-assets/tilesets-environment/Surplus Trees.png",
+      "intendedUse": "dense forest cover and stealth silhouettes",
+      "status": "candidate"
+    },
+    {
+      "source": "../../game-assets/tilesets-environment/free-swamp-game-tileset-pixel-art.zip",
+      "intendedUse": "Reedwater Flats swamp terrain",
+      "status": "candidate"
+    },
+    {
+      "source": "../../game-assets/tilesets-environment/Free-Top-Down-Pixel-Art-Cave-Objects.zip",
+      "intendedUse": "Stoneback Caves props and blockers",
+      "status": "candidate"
+    },
+    {
+      "source": "../../game-assets/tilesets-environment/jungle-ruins_V3-2.png",
+      "intendedUse": "Heartwater Caldera ruins and ambush shadows",
+      "status": "candidate"
+    },
+    {
+      "source": "../../game-assets/tilesets-environment/water-example.tmx",
+      "intendedUse": "future tiled water layout reference",
+      "status": "candidate"
+    }
+  ],
+  "resources": [
+    {
+      "source": "../../game-assets/tilesets-environment/TinyRanch_Crops.png",
+      "intendedUse": "berries, vegetation, roots, and edible plant nodes",
+      "status": "candidate"
+    },
+    {
+      "source": "../../game-assets/props-items/Fruit+.png",
+      "intendedUse": "fruit and berry food icons",
+      "status": "candidate"
+    },
+    {
+      "source": "../../game-assets/props-items/Water+.png",
+      "intendedUse": "water UI and resource iconography",
+      "status": "candidate"
+    }
+  ]
+}
