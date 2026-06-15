@@ -1,0 +1,162 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "prismtek-porting-kits",
+  "version": 1,
+  "downloadRoot": ".porting-kits",
+  "policy": {
+    "commitDownloadedFiles": false,
+    "allowCommercialRoms": false,
+    "allowConsoleBios": false,
+    "allowProprietarySdks": false,
+    "notes": [
+      "This manifest tracks setup sources and locally downloadable helpers only.",
+      "Downloaded files belong in .porting-kits/ and must not be committed.",
+      "Manual installers are documented here but are not fetched automatically."
+    ]
+  },
+  "kits": [
+    {
+      "id": "nintendo-ds-libnds",
+      "target": "Nintendo DS homebrew",
+      "status": "manual-install-required",
+      "requiredFor": ["*.nds builds", "games/*/ds-homebrew"],
+      "sources": [
+        {
+          "id": "devkitpro-getting-started",
+          "kind": "documentation",
+          "url": "https://devkitpro.org/wiki/Getting_Started",
+          "automated": false,
+          "reason": "Install flow is OS-specific and should use official devkitPro instructions."
+        },
+        {
+          "id": "devkitpro-installer-releases",
+          "kind": "release-page",
+          "url": "https://github.com/devkitPro/installer/releases",
+          "automated": false,
+          "reason": "Use the correct installer for the local OS; do not vendor installer binaries."
+        }
+      ],
+      "verifyCommands": [
+        "make --version",
+        "arm-none-eabi-gcc --version"
+      ]
+    },
+    {
+      "id": "ds-game-maker-community-setup",
+      "target": "Nintendo DS homebrew beginner/legacy setup",
+      "status": "downloadable-review-required",
+      "requiredFor": ["optional DSGM experiments"],
+      "sources": [
+        {
+          "id": "dsgm-setup-repo-zip",
+          "kind": "zip",
+          "url": "https://github.com/DigitalDesignDude/DS-Game-Maker-5-Setup/archive/refs/heads/main.zip",
+          "destination": "nintendo-ds/DS-Game-Maker-5-Setup-main.zip",
+          "automated": true,
+          "reviewRequired": true
+        },
+        {
+          "id": "dsgm-resource-site",
+          "kind": "documentation",
+          "url": "https://digitaldesigndude.github.io/DSGM-Resource-Site/index.html",
+          "automated": false
+        }
+      ],
+      "verifyCommands": []
+    },
+    {
+      "id": "web-itch",
+      "target": "Web browser and itch.io ZIP",
+      "status": "manual-install-required",
+      "requiredFor": ["web ZIP releases", "itch.io uploads"],
+      "sources": [
+        {
+          "id": "nodejs-lts",
+          "kind": "installer-page",
+          "url": "https://nodejs.org/en/download",
+          "automated": false
+        },
+        {
+          "id": "itch-butler",
+          "kind": "installer-page",
+          "url": "https://itch.io/docs/butler/installing.html",
+          "automated": false
+        }
+      ],
+      "verifyCommands": [
+        "node -v",
+        "npm -v",
+        "butler -V"
+      ]
+    },
+    {
+      "id": "desktop-tauri",
+      "target": "Windows, macOS, Linux, Steam Deck",
+      "status": "manual-install-required",
+      "requiredFor": ["desktop wrappers", "installers", "AppImage/deb/rpm/dmg/msi bundles"],
+      "sources": [
+        {
+          "id": "tauri-prerequisites",
+          "kind": "documentation",
+          "url": "https://tauri.app/start/prerequisites/",
+          "automated": false
+        },
+        {
+          "id": "rustup",
+          "kind": "installer-page",
+          "url": "https://www.rust-lang.org/tools/install",
+          "automated": false
+        },
+        {
+          "id": "microsoft-cpp-build-tools",
+          "kind": "installer-page",
+          "url": "https://visualstudio.microsoft.com/visual-cpp-build-tools/",
+          "automated": false
+        },
+        {
+          "id": "webview2-runtime",
+          "kind": "installer-page",
+          "url": "https://developer.microsoft.com/en-us/microsoft-edge/webview2/",
+          "automated": false
+        }
+      ],
+      "verifyCommands": [
+        "node -v",
+        "npm -v",
+        "rustc -V",
+        "cargo -V"
+      ]
+    },
+    {
+      "id": "android-rgds",
+      "target": "Android, RGDS Android mode, RGDS Linux mode",
+      "status": "manual-install-required",
+      "requiredFor": ["APK builds", "RGDS Android testing", "RGDS Linux launcher receipts"],
+      "sources": [
+        {
+          "id": "android-studio",
+          "kind": "installer-page",
+          "url": "https://developer.android.com/studio",
+          "automated": false
+        },
+        {
+          "id": "capacitor-environment-setup",
+          "kind": "documentation",
+          "url": "https://capacitorjs.com/docs/getting-started/environment-setup",
+          "automated": false
+        },
+        {
+          "id": "tauri-mobile-prerequisites",
+          "kind": "documentation",
+          "url": "https://tauri.app/start/prerequisites/#configure-for-mobile-targets",
+          "automated": false
+        }
+      ],
+      "verifyCommands": [
+        "adb version",
+        "node -v",
+        "npm -v"
+      ]
+    }
+  ]
+}
