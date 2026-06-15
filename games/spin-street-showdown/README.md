@@ -1,6 +1,6 @@
 # Spin Street Showdown
 
-An original customizable spinning-top arcade prototype. The current web build now targets a higher-quality battle-top feel: richer graphics, stronger dome physics, clearer impacts, and deeper build-driven mechanics.
+An original customizable spinning-top arcade prototype. The current web build now targets a higher-quality battle-top feel: richer graphics, stronger dome physics, clearer impacts, deeper build-driven mechanics, and a more polished arena presentation.
 
 ## Play on PC
 
@@ -49,12 +49,25 @@ PvP P2: IJKL steers, U charges, O strike dash/counter guard, P Spirit Surge.
 - Build-driven top feel across Attack Ring, Weight Core, Driver Tip, and Spirit Chip
 - 64 original parts per slot, 256 total parts in the catalogue
 - Premium canvas graphics: layered dome lighting, animated rings, radial highlights, rendered teeth, cores, driver fins, chip gems, rarity glow, trails, sparks, shockwaves, floating impact text, and screen shake
+- Upgraded arena presentation shell: neon background, glass HUD, scanline overlay, rounded cabinet frame, cinematic panel lighting, and premium bench/shop cards
 - Spirit Surge meter with original spirit avatars and knockback pressure
 - CPU rivals that orbit, bait, rush, and recover from the rim instead of just drifting forward
 - Cash, repair, and overdrive pickups between clashes
 - Part shop with speed, mass, damage, grip, HP, charge, and stability modifiers
 - Responsive canvas layout for PC and handheld browser devices
 - Browser smoke test, quality smoke test, and local ZIP packaging path
+
+## Visual quality target
+
+Spin Street Showdown should feel closer to a polished downloadable battle arena than a flat browser demo. The benchmark is not copied assets or copied lore; it is presentation quality:
+
+- bold arena framing
+- readable top silhouettes
+- bright rim lighting
+- strong hit feedback
+- layered HUD treatment
+- collectible-looking parts
+- immediate rematch readability
 
 ## Design target
 
