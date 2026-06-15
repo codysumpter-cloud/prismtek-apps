@@ -66,6 +66,9 @@ jobs:
         if: runner.os == 'Linux'
         run: npm install --no-save @tailwindcss/oxide-linux-x64-gnu@4.3.0
 
+      - name: Validate Prismtek Arcade roster docs
+        run: node games/_shared/prismtek-arcade/validate-game-roster.mjs
+
       - name: Validate Pixel Fruit Arena
         run: |
           npm --prefix games/pixel-fruit-arena test
