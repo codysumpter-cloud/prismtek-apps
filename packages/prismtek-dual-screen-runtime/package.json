@@ -1,0 +1,23 @@
+{
+  "name": "@prismtek/dual-screen-runtime",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared Prismtek runtime helpers for DS-style Android dual-screen layouts.",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "types": "./src/index.d.ts",
+  "scripts": {
+    "test": "node ../../tools/dual-screen/validate-dual-screen-configs.mjs"
+  },
+  "keywords": [
+    "prismtek",
+    "android",
+    "dual-screen",
+    "foldable",
+    "rgds",
+    "game-runtime"
+  ],
+  "license": "UNLICENSED"
+}
