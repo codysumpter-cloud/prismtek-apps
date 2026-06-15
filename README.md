@@ -6,7 +6,8 @@
 [<kbd>⬇ GitHub Releases</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/releases)
 [<kbd>▶ Open Pixel Fruit Arena</kbd>](games/pixel-fruit-arena/)
 [<kbd>▶ Open TamerNet Battle Sandbox</kbd>](games/tamernet-battle-sandbox/)
-[<kbd>🕹 Arcade migration tracker</kbd>](docs/games/prismtek-arcade-cross-platform-migration.md)
+[<kbd>▶ Open Spin Street Showdown</kbd>](games/spin-street-showdown/)
+[<kbd>🕹 Three-game platform tracker</kbd>](docs/games/three-game-platform-readiness.md)
 
 Prismtek-apps is the runnable software workspace for Prismtek products: mobile apps, desktop apps, web apps, games, tools, services, demos, and shipped product surfaces.
 
@@ -18,8 +19,9 @@ This is **not** the KnowledgeVault, the Buddy runtime, or the Buddy governance l
 
 | Product | Buttons | Status |
 | --- | --- | --- |
-| Pixel Fruit Arena | [<kbd>▶ Open</kbd>](games/pixel-fruit-arena/) [<kbd>README</kbd>](games/pixel-fruit-arena/README.md) [<kbd>⬇ Download ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Playable browser/PWA MVP; packaged release artifact pending. |
-| TamerNet Battle Sandbox | [<kbd>▶ Open</kbd>](games/tamernet-battle-sandbox/) [<kbd>README</kbd>](games/tamernet-battle-sandbox/README.md) [<kbd>⬇ Download ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Playable browser prototype; packaged release artifact pending. |
+| Pixel Fruit Arena | [<kbd>▶ Open</kbd>](games/pixel-fruit-arena/) [<kbd>README</kbd>](games/pixel-fruit-arena/README.md) [<kbd>DS source</kbd>](games/pixel-fruit-arena/ds-homebrew/) [<kbd>⬇ Download ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Playable browser/PWA MVP; web ZIP path exists; DS source exists; public release artifacts pending. |
+| TamerNet Battle Sandbox | [<kbd>▶ Open</kbd>](games/tamernet-battle-sandbox/) [<kbd>README</kbd>](games/tamernet-battle-sandbox/README.md) [<kbd>DS source</kbd>](games/tamernet-battle-sandbox/ds-homebrew/) [<kbd>⬇ Download ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Playable browser prototype; web ZIP path exists; DS source exists; public release artifacts pending. |
+| Spin Street Showdown | [<kbd>▶ Open</kbd>](games/spin-street-showdown/) [<kbd>README</kbd>](games/spin-street-showdown/README.md) [<kbd>DS source</kbd>](games/spin-street-showdown/ds-homebrew/) [<kbd>⬇ Download ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Playable browser prototype; web ZIP path exists; DS source exists; public release artifacts pending. |
 | BeMore iOS native | [<kbd>Open source</kbd>](apps/bemore-ios-native/) [<kbd>README</kbd>](apps/bemore-ios-native/README.md) [<kbd>TestFlight runbook</kbd>](apps/bemore-ios-native/ADMIN_TESTFLIGHT_RUNBOOK.md) | Native iOS app source; public signed download link pending. |
 | BeMore Agent Platform iOS | [<kbd>Open source</kbd>](apps/bemoreagent-platform-ios/) [<kbd>⬇ Download ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | iOS platform/admin source; signed artifact pending. |
 | BeMore macOS native | [<kbd>Open source</kbd>](apps/bemore-macos-native/) [<kbd>⬇ Download ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | macOS app source; packaged app download pending. |
@@ -36,8 +38,9 @@ This is **not** the KnowledgeVault, the Buddy runtime, or the Buddy governance l
 
 | Product | Type | Status | Download / open | Run locally |
 | --- | --- | --- | --- | --- |
-| Pixel Fruit Arena | Browser game / PWA MVP | Playable local multiplayer MVP; web/PWA package path exists; release artifact must be built from source today. | [<kbd>▶ Open</kbd>](games/pixel-fruit-arena/) [<kbd>README</kbd>](games/pixel-fruit-arena/README.md) [<kbd>⬇ Download ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | `cd games/pixel-fruit-arena && npm test && npm run build` then serve `dist/`, or `npx serve -l 4173 .` for dev. |
-| TamerNet Battle Sandbox | Browser game prototype | Playable local browser prototype; no packaged release artifact yet. | [<kbd>▶ Open</kbd>](games/tamernet-battle-sandbox/) [<kbd>README</kbd>](games/tamernet-battle-sandbox/README.md) [<kbd>⬇ Download ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | `cd games/tamernet-battle-sandbox && python3 -m http.server 8080`, then open `http://localhost:8080`. |
+| Pixel Fruit Arena | Browser game / PWA MVP / DS source | Playable local multiplayer MVP; web/PWA package path exists; DS source exists; release artifact must be built from source today. | [<kbd>▶ Open</kbd>](games/pixel-fruit-arena/) [<kbd>README</kbd>](games/pixel-fruit-arena/README.md) [<kbd>DS source</kbd>](games/pixel-fruit-arena/ds-homebrew/) | `cd games/pixel-fruit-arena && npm test && npm run build && npm run package:zip`. DS: `cd ds-homebrew && make`. |
+| TamerNet Battle Sandbox | Browser game prototype / DS source | Playable local browser prototype; smoke test and web ZIP packaging path exist; DS source exists. | [<kbd>▶ Open</kbd>](games/tamernet-battle-sandbox/) [<kbd>README</kbd>](games/tamernet-battle-sandbox/README.md) [<kbd>DS source</kbd>](games/tamernet-battle-sandbox/ds-homebrew/) | `cd games/tamernet-battle-sandbox && npm test && npm run package:zip`. DS: `cd ds-homebrew && make`. |
+| Spin Street Showdown | Browser game prototype / DS source | Playable browser prototype; smoke test and web ZIP packaging path exist; DS source exists. | [<kbd>▶ Open</kbd>](games/spin-street-showdown/) [<kbd>README</kbd>](games/spin-street-showdown/README.md) [<kbd>DS source</kbd>](games/spin-street-showdown/ds-homebrew/) | `cd games/spin-street-showdown && npm test && npm run package:zip`. DS: `cd ds-homebrew && make`. |
 | BeMore iOS native | iOS app | Native SwiftUI iPhone shell with Buddy care/training/collection, provider settings, local persistence, and a stubbed local-runtime boundary until packaged runtime/model libraries are wired. | [<kbd>Open source</kbd>](apps/bemore-ios-native/) [<kbd>README</kbd>](apps/bemore-ios-native/README.md) [<kbd>TestFlight runbook</kbd>](apps/bemore-ios-native/ADMIN_TESTFLIGHT_RUNBOOK.md) | `cd apps/bemore-ios-native && xcodegen generate && open BeMoreAgent.xcodeproj`. |
 | BeMore Agent Platform iOS | iOS app | Platform/admin-capable iOS surface; build/release path is repo source today unless a signed build is distributed through Apple tooling. | [<kbd>Open source</kbd>](apps/bemoreagent-platform-ios/) [<kbd>⬇ Download ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Open the project from Xcode after inspecting the app folder. |
 | BeMore macOS native | macOS app | Native macOS app surface; packaged download link is not published in this README yet. | [<kbd>Open source</kbd>](apps/bemore-macos-native/) [<kbd>⬇ Download ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Open/build the native macOS project from Xcode. |
@@ -59,7 +62,7 @@ This is **not** the KnowledgeVault, the Buddy runtime, or the Buddy governance l
   cd prismtek-apps
   ```
 
-- **Packaged releases:** use GitHub Releases once product artifacts are attached there. Do not claim a product has a downloadable installer, app bundle, ROM image, or hosted build until that artifact exists.
+- **Packaged releases:** use GitHub Releases once product artifacts are attached there. Do not claim a product has a downloadable installer, app bundle, ROM image, DS binary, or hosted build until that artifact exists.
 
 ## Quick start
 
@@ -83,70 +86,38 @@ Some projects are intentionally dependency-free browser prototypes and should be
 ### Pixel Fruit Arena
 
 [<kbd>▶ Open Pixel Fruit Arena</kbd>](games/pixel-fruit-arena/)
-[<kbd>⬇ Download Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip)
+[<kbd>README</kbd>](games/pixel-fruit-arena/README.md)
+[<kbd>DS source</kbd>](games/pixel-fruit-arena/ds-homebrew/)
 
-Pixel Fruit Arena is a local multiplayer pixel-art platform fighting MVP. It has a character creator, fruit powers, stocks, knockback, ring-outs, awakening, keyboard controls, controller support through the browser Gamepad API, and PWA metadata.
-
-Run from `games/pixel-fruit-arena/`:
-
-```bash
-npx serve -l 4173 .
-# or
-python -m http.server 4173
-```
-
-Build and validate:
-
-```bash
-cd games/pixel-fruit-arena
-npm test
-npm run build
-```
-
-Known limits: local multiplayer only, placeholder original art, browser-dependent controller mapping, rough first-pass combat balance, and simple CPU behavior.
+Pixel Fruit Arena is a local multiplayer pixel-art platform fighting MVP. It has a character creator, fruit powers, stocks, knockback, ring-outs, awakening, keyboard controls, controller support through the browser Gamepad API, PWA metadata, web ZIP packaging, and compact DS source.
 
 ### TamerNet Battle Sandbox
 
 [<kbd>▶ Open TamerNet Battle Sandbox</kbd>](games/tamernet-battle-sandbox/)
-[<kbd>⬇ Download Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip)
+[<kbd>README</kbd>](games/tamernet-battle-sandbox/README.md)
+[<kbd>DS source</kbd>](games/tamernet-battle-sandbox/ds-homebrew/)
 
-TamerNet Battle Sandbox is a playable browser prototype for creature MMO battle direction. It uses original placeholder creatures and no external franchise assets.
+TamerNet Battle Sandbox is a playable browser prototype for creature MMO direction. It uses original placeholder creatures, has package scripts, has a browser smoke test, and now has compact DS source.
 
-Run from `games/tamernet-battle-sandbox/`:
+### Spin Street Showdown
 
-```bash
-python3 -m http.server 8080
-```
+[<kbd>▶ Open Spin Street Showdown</kbd>](games/spin-street-showdown/)
+[<kbd>README</kbd>](games/spin-street-showdown/README.md)
+[<kbd>DS source</kbd>](games/spin-street-showdown/ds-homebrew/)
 
-Then open:
+Spin Street Showdown is a playable browser prototype for customizable spinning-top arcade runs. It has local PvP, a 256-part catalogue, package scripts, a browser smoke test, and compact DS source.
 
-```text
-http://localhost:8080
-```
+### Three-game platform tracker
 
-Known limits: no server authority, multiplayer, PvP duel mode, marketplace, breeding, economy, legendary custody, or BYO-file importer yet.
-
-### Incoming Prismtek arcade migration
-
-[<kbd>Open migration tracker</kbd>](docs/games/prismtek-arcade-cross-platform-migration.md)
-[<kbd>Open GitHub issue #154</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/issues/154)
-
-Verified incoming games from `prismtek-site`:
-
-- Flappy Pixel
-- Crossy Pixel
-- Pixel Snake
-- Neon Brick Breaker
-- Pixel Stacker
-
-These are not listed as playable from `prismtek-apps` until their `games/<slug>/` folders exist and builds are validated.
+[<kbd>Open tracker</kbd>](docs/games/three-game-platform-readiness.md)
 
 ## Products
 
 | Product | Category | Current path | Role |
 | --- | --- | --- | --- |
-| Pixel Fruit Arena | Game | `games/pixel-fruit-arena/` | Playable browser/PWA platform-fighting MVP |
-| TamerNet Battle Sandbox | Game prototype | `games/tamernet-battle-sandbox/` | Playable browser creature-battle sandbox |
+| Pixel Fruit Arena | Game | `games/pixel-fruit-arena/` | Playable browser/PWA platform-fighting MVP plus DS source |
+| TamerNet Battle Sandbox | Game prototype | `games/tamernet-battle-sandbox/` | Playable browser creature prototype plus DS source |
+| Spin Street Showdown | Game prototype | `games/spin-street-showdown/` | Playable browser arcade prototype plus DS source |
 | BeMore iOS native | Mobile app | `apps/bemore-ios-native/` | Native iOS Buddy/operator app |
 | BeMore Agent Platform iOS | Mobile app | `apps/bemoreagent-platform-ios/` | iOS platform/admin-capable app |
 | BeMore macOS native | Desktop app | `apps/bemore-macos-native/` | Native macOS app |
@@ -192,6 +163,7 @@ Start here:
 - [`docs/architecture/path-ownership.md`](docs/architecture/path-ownership.md)
 - [`docs/PLATFORM_TEST_MATRIX.md`](docs/PLATFORM_TEST_MATRIX.md)
 - [`docs/games/prismtek-arcade-cross-platform-migration.md`](docs/games/prismtek-arcade-cross-platform-migration.md)
+- [`docs/games/three-game-platform-readiness.md`](docs/games/three-game-platform-readiness.md)
 
 These documents are the source of truth for staged repo reorganization.
 
@@ -241,7 +213,7 @@ xcodebuild -project BeMoreAgent.xcodeproj -scheme BeMoreAgent -sdk iphonesimulat
 - Do not treat SwiftUI as the repository default.
 - Do not bury games, services, or web apps under Apple assumptions.
 - Do not claim download links exist unless the artifact or source path exists.
-- Do not claim RGDS/OS images, app installers, or signed builds exist until they are packaged and attached.
+- Do not claim RGDS/OS images, app installers, DS binaries, or signed builds exist until they are packaged and attached.
 - Do not ship reference/test assets as release assets.
 - Do not extract shared packages until reuse is proven.
 - Do not delete or quarantine root artifacts until reference scans prove they are unused.
