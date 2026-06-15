@@ -1,6 +1,6 @@
 # Spin Street Showdown
 
-An original customizable spinning-top arcade prototype. The current web build now targets a higher-quality battle-top feel: richer graphics, stronger dome physics, clearer impacts, deeper build-driven mechanics, RPM-first combat, short rounds, and a more polished arena presentation.
+An original customizable spinning-top arcade prototype. The current web build now targets a higher-quality battle-top feel: richer graphics, stronger dome physics, clearer impacts, deeper build-driven mechanics, RPM-first combat, short rounds, driver-tip attack patterns, stadium pitch physics, and a more polished arena presentation.
 
 ## Play on PC
 
@@ -28,7 +28,7 @@ A public downloadable release still needs a GitHub Release or itch.io receipt.
 
 ## Controls
 
-- Mouse or touch: steer toward the pointer
+- Mouse or touch: steer toward the pointer, with movement biased by the equipped driver tip
 - Hold left click or Space: charge burst
 - Shift: strike dash at lower speed, counter guard at high speed/charge
 - E: Spirit Surge when the purple meter is full
@@ -48,6 +48,9 @@ PvP P2: IJKL steers, U charges, O strike dash/counter guard, P Spirit Surge.
 - RPM meter that drains over time, during charging, during dash commitments, and from bad collisions
 - Low RPM wobble pressure that makes movement less stable before a top is fully outspun
 - Oval dome arena with center-pull bowl physics, rim pressure, rail grind, rail crash damage, and skid marks
+- Stadium pitch physics: climbing the dome wall slows movement and drains RPM, dropping back down accelerates, and circular/tangential movement preserves speed
+- Driver tip attack patterns that change mouse/touch steering instead of making every top follow the cursor identically
+- Driver personalities: Drift orbits, Needle anchors, Skate rides the rail, Switch cuts direction, Sprint commits outward, Spiral hunts in a corkscrew, Chrome holds heavy lines, and Dash favors sharp angles
 - Improved collision mechanics using relative velocity, mass, grip, tangential bite, burst timing, guard mitigation, stagger, stability loss, RPM drain, and perfect-angle hits
 - Large slash arcs, sparks, shockwaves, floating hit text, and screen shake on major clashes
 - Build-driven top feel across Attack Ring, Weight Core, Driver Tip, and Spirit Chip
@@ -71,6 +74,8 @@ Applied in this build:
 - 40-second arcade match pressure
 - bottom-center RPM meter as the obvious stamina/momentum resource
 - RPM drain from time, charge, dash, rail pressure, and collisions
+- stadium pitch effects where climbing bleeds speed, dropping adds speed, and orbiting preserves speed
+- driver tip attack patterns that modify player intent and movement lines
 - timeout wins based on RPM control instead of only HP
 - perfect-angle clash feedback with large slash arcs
 - strong hit feedback through sparks, shockwaves, shake, floating callouts, and skid marks
@@ -92,8 +97,8 @@ Spin Street Showdown should feel closer to a polished downloadable battle arena 
 The game should compete with polished battle-top games by making every clash readable and skillful:
 
 - **Graphics:** tops should look layered, collectible, and distinct by build.
-- **Mechanics:** RPM, charge, guard, dash, stability, and Spirit Surge should create real decisions.
-- **Physics:** mass, grip, rim angle, tangential contact, and perfect-angle impact timing should change outcomes.
+- **Mechanics:** RPM, charge, guard, dash, stability, driver tip attack patterns, and Spirit Surge should create real decisions.
+- **Physics:** mass, grip, stadium pitch, uphill/downhill speed exchange, rim angle, tangential contact, and perfect-angle impact timing should change outcomes.
 - **Feel:** impacts should pop with slash arcs, sparks, shockwaves, hit text, and camera shake without becoming unreadable.
 
 ## Nintendo DS source
