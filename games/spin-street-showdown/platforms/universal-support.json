@@ -1,0 +1,24 @@
+{
+  "gameId": "spin-street-showdown",
+  "displayName": "Spin Street Showdown",
+  "inputs": {
+    "keyboard": { "required": true, "status": "Partially verified" },
+    "mouse": { "required": true, "status": "Required" },
+    "controller": { "required": true, "status": "Required" },
+    "touch": { "required": true, "status": "Configured" }
+  },
+  "platforms": {
+    "webBrowser": { "required": true, "status": "Verified" },
+    "windows": { "required": true, "status": "Partially verified" },
+    "macos": { "required": true, "status": "Required" },
+    "linux": { "required": true, "status": "Required" },
+    "ios": { "required": true, "status": "Required" },
+    "android": { "required": true, "status": "Configured" },
+    "rgdsAndroid": { "required": true, "status": "Configured" },
+    "rgdsLinux": { "required": true, "status": "Required" },
+    "roblox": { "required": true, "status": "Required" }
+  },
+  "requiredReceipts": ["keyboard", "mouse", "controller", "touch", "Windows", "macOS", "iOS", "Android", "Linux", "RGDS Android", "RGDS Linux", "Roblox"],
+  "knownGaps": ["APK pending", "iOS pending", "RGDS pending", "Roblox pending"],
+  "nextActions": ["Add receipts", "Build APK", "Create Roblox adapter"]
+}
