@@ -19,7 +19,11 @@ for (const token of ["ROUND_SECONDS", "RPM_MAX", "drainRPM", "resolveTimedRound"
   assert.ok(upgrade.includes(token), `physics-first-upgrade.js should include ${token}`);
 }
 
-for (const token of ["RPM", "40-second", "timeout", "slash"]) {
+for (const token of ["applyDomePitchPhysics", "domeKinematics", "radialSpeed", "tangentialSpeed", "UPHILL_DRAG", "DOWNHILL_BOOST", "applyDriverPatternControl", "playerIntentVector"]) {
+  assert.ok(upgrade.includes(token), `physics-first-upgrade.js should include dome/pattern token ${token}`);
+}
+
+for (const token of ["RPM", "40-second", "timeout", "slash", "pitch", "driver tip"]) {
   assert.match(readme, new RegExp(token, "i"), `README should document ${token}`);
 }
 
