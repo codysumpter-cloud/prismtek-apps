@@ -2,8 +2,11 @@ import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const root = path.resolve(__dirname, "..");
 const html = readFileSync(path.join(root, "index.html"), "utf8");
 const upgradePath = path.join(root, "physics-first-upgrade.js");
 const upgrade = readFileSync(upgradePath, "utf8");
