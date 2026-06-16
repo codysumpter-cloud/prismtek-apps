@@ -16,7 +16,15 @@
       "kind": "general-game-engine-adapter",
       "status": "contract-only",
       "targetPath": "experiments/godot-prismtek-spike/",
-      "supportedTargets": ["web", "windows", "macos", "linux", "android", "rgds-android", "rgds-linux"],
+      "supportedTargets": [
+        "web",
+        "windows",
+        "macos",
+        "linux",
+        "android",
+        "rgds-android",
+        "rgds-linux"
+      ],
       "licenseObserved": "MIT per upstream project materials",
       "pluginEntryPoints": {
         "intake": "tools/integrations/godot/intake.mjs",
@@ -27,7 +35,11 @@
         "manifestRequired": true,
         "licenseReviewRequired": true,
         "artifactReceiptRequired": true,
-        "forbiddenOutputs": ["external engine source", "external binaries", "unreviewed third-party assets"]
+        "forbiddenOutputs": [
+          "external engine source",
+          "external binaries",
+          "unreviewed third-party assets"
+        ]
       },
       "notes": "Use for broad 2D/3D prototype evaluation only until a concrete Prismtek-owned project adapter exists."
     },
@@ -39,7 +51,13 @@
       "kind": "web-game-framework-adapter",
       "status": "contract-only",
       "targetPath": "games/_shared/prismtek-arcade/engines/phaser/",
-      "supportedTargets": ["web", "itch-zip", "desktop-web-wrapper", "rgds-android-browser", "rgds-linux-browser"],
+      "supportedTargets": [
+        "web",
+        "itch-zip",
+        "desktop-web-wrapper",
+        "rgds-android-browser",
+        "rgds-linux-browser"
+      ],
       "licenseObserved": "MIT per upstream project materials",
       "pluginEntryPoints": {
         "intake": "tools/integrations/phaser/intake.mjs",
@@ -50,9 +68,80 @@
         "manifestRequired": true,
         "licenseReviewRequired": true,
         "artifactReceiptRequired": true,
-        "forbiddenOutputs": ["vendored npm cache", "unreviewed third-party assets", "generated files without receipt"]
+        "forbiddenOutputs": [
+          "vendored npm cache",
+          "unreviewed third-party assets",
+          "generated files without receipt"
+        ]
       },
       "notes": "Best first target for browser-first Prismtek arcade upgrades and reusable game-loop contracts."
+    },
+    {
+      "id": "gamemaker-html5-adapter",
+      "name": "GameMaker HTML5 Adapter",
+      "sourceReferenceId": "gamemaker-html5",
+      "url": "https://github.com/YoYoGames/GameMaker-HTML5.git",
+      "kind": "browser-game-export-adapter",
+      "status": "contract-only",
+      "targetPath": "experiments/gamemaker-html5-prismcade-adapter/",
+      "supportedTargets": [
+        "web",
+        "itch-zip",
+        "desktop-web-wrapper",
+        "gx-games-research",
+        "prismcade-import-research"
+      ],
+      "licenseObserved": "upstream license and runtime redistribution terms require exact review before vendoring or shipping",
+      "pluginEntryPoints": {
+        "intake": "tools/integrations/gamemaker-html5/intake.mjs",
+        "validate": "tools/integrations/gamemaker-html5/validate.mjs",
+        "export": "tools/integrations/gamemaker-html5/export.mjs"
+      },
+      "validation": {
+        "manifestRequired": true,
+        "licenseReviewRequired": true,
+        "artifactReceiptRequired": true,
+        "forbiddenOutputs": [
+          "vendored GameMaker runtime source",
+          "unchecked generated HTML5 exports",
+          "unreviewed marketplace assets",
+          "GameMaker IDE/runtime binaries"
+        ]
+      },
+      "notes": "Research adapter for wrapping GameMaker HTML5 exports in Prismcade play pages, leaderboards, profile shells, and challenge routes without copying upstream runtime code into shipped Prismtek paths."
+    },
+    {
+      "id": "gamemaker-cli-tooling-adapter",
+      "name": "GameMaker CLI Tooling Adapter",
+      "sourceReferenceId": "gamemaker-cli",
+      "url": "https://github.com/YoYoGames/gm-cli.git",
+      "kind": "game-project-tooling-adapter",
+      "status": "contract-only",
+      "targetPath": "tools/integrations/gamemaker-cli/",
+      "supportedTargets": [
+        "project-validation",
+        "html5-packaging-research",
+        "resource-editing-research",
+        "creator-import-research"
+      ],
+      "licenseObserved": "upstream license and downloaded tool/runtime terms require exact review before automation is enabled",
+      "pluginEntryPoints": {
+        "intake": "tools/integrations/gamemaker-cli/intake.mjs",
+        "validate": "tools/integrations/gamemaker-cli/validate.mjs",
+        "export": "tools/integrations/gamemaker-cli/export.mjs"
+      },
+      "validation": {
+        "manifestRequired": true,
+        "licenseReviewRequired": true,
+        "artifactReceiptRequired": true,
+        "forbiddenOutputs": [
+          "repo-committed GameMaker installs",
+          "downloaded runtimes without receipts",
+          "generated projects without manifest metadata",
+          "secrets or account tokens"
+        ]
+      },
+      "notes": "Future local developer adapter for validating, building, and packaging creator-owned GameMaker projects before Prismcade wrapping. Keep downloads repo-local and receipt-tracked."
     },
     {
       "id": "openbor-brawler-adapter",
@@ -62,7 +151,13 @@
       "kind": "brawler-engine-adapter",
       "status": "contract-only",
       "targetPath": "experiments/openbor-prismtek-brawler/",
-      "supportedTargets": ["windows", "linux", "android", "rgds-linux", "rgds-android"],
+      "supportedTargets": [
+        "windows",
+        "linux",
+        "android",
+        "rgds-linux",
+        "rgds-android"
+      ],
       "licenseObserved": "BSD-style / permissive family per upstream materials; exact bundled dependency review required",
       "pluginEntryPoints": {
         "intake": "tools/integrations/openbor/intake.mjs",
@@ -73,7 +168,11 @@
         "manifestRequired": true,
         "licenseReviewRequired": true,
         "artifactReceiptRequired": true,
-        "forbiddenOutputs": ["upstream game modules", "third-party sprites", "third-party audio"]
+        "forbiddenOutputs": [
+          "upstream game modules",
+          "third-party sprites",
+          "third-party audio"
+        ]
       },
       "notes": "Use for original Prismtek brawler mechanics only; do not copy existing OpenBOR game modules or assets."
     },
@@ -85,7 +184,10 @@
       "kind": "fighting-game-engine-adapter",
       "status": "contract-only",
       "targetPath": "experiments/castagne-pixel-fruit-spike/",
-      "supportedTargets": ["web-research", "desktop-research"],
+      "supportedTargets": [
+        "web-research",
+        "desktop-research"
+      ],
       "licenseObserved": "per upstream project materials; exact integration review required before vendoring",
       "pluginEntryPoints": {
         "intake": "tools/integrations/castagne/intake.mjs",
@@ -96,7 +198,11 @@
         "manifestRequired": true,
         "licenseReviewRequired": true,
         "artifactReceiptRequired": true,
-        "forbiddenOutputs": ["copied sample characters", "copied sample stages", "unreviewed engine exports"]
+        "forbiddenOutputs": [
+          "copied sample characters",
+          "copied sample stages",
+          "unreviewed engine exports"
+        ]
       },
       "notes": "Use to compare Pixel Fruit Arena combat architecture, input buffering, cancel rules, and move-data modeling."
     },
@@ -108,7 +214,12 @@
       "kind": "traditional-fighter-engine-adapter",
       "status": "contract-only",
       "targetPath": "experiments/ikemen-prismtek-fighter/",
-      "supportedTargets": ["windows", "linux", "macos", "rgds-linux"],
+      "supportedTargets": [
+        "windows",
+        "linux",
+        "macos",
+        "rgds-linux"
+      ],
       "licenseObserved": "MIT per upstream project materials; assets and content packs vary",
       "pluginEntryPoints": {
         "intake": "tools/integrations/ikemen-go/intake.mjs",
@@ -119,7 +230,11 @@
         "manifestRequired": true,
         "licenseReviewRequired": true,
         "artifactReceiptRequired": true,
-        "forbiddenOutputs": ["MUGEN content packs", "third-party characters", "third-party stages"]
+        "forbiddenOutputs": [
+          "MUGEN content packs",
+          "third-party characters",
+          "third-party stages"
+        ]
       },
       "notes": "Use for fighter-system research and original Prismtek roster/stage experiments only."
     },
@@ -131,7 +246,13 @@
       "kind": "handheld-arcade-engine-adapter",
       "status": "contract-only",
       "targetPath": "experiments/raylib-handheld-arcade-spike/",
-      "supportedTargets": ["windows", "macos", "linux", "rgds-linux", "desktop-native"],
+      "supportedTargets": [
+        "windows",
+        "macos",
+        "linux",
+        "rgds-linux",
+        "desktop-native"
+      ],
       "licenseObserved": "zlib/libpng per upstream project materials",
       "pluginEntryPoints": {
         "intake": "tools/integrations/raylib/intake.mjs",
@@ -142,7 +263,11 @@
         "manifestRequired": true,
         "licenseReviewRequired": true,
         "artifactReceiptRequired": true,
-        "forbiddenOutputs": ["unchecked compiled binaries", "untracked toolchain downloads", "third-party sample assets"]
+        "forbiddenOutputs": [
+          "unchecked compiled binaries",
+          "untracked toolchain downloads",
+          "third-party sample assets"
+        ]
       },
       "notes": "Use for lightweight native arcade and Linux handheld runtime experiments after toolchain receipts exist."
     }
