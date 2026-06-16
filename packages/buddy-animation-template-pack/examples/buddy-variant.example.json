@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "buddy-variant-v1",
+  "variantId": "buddy-grok-example",
+  "displayName": "Buddy Grok Example",
+  "description": "Example Buddy variant metadata for reusable Prismtek companion animations.",
+  "personalityTags": ["friendly", "chaotic-helper", "rpg-companion", "pixel-buddy"],
+  "visualProfile": {
+    "frameSize": 64,
+    "outline": "dark purple / near-black consistent pixel outline",
+    "palette": ["mint", "violet", "cream", "deep-purple", "gold"],
+    "silhouetteRules": [
+      "large readable head/face",
+      "small companion body",
+      "expressive eyes",
+      "consistent feet baseline",
+      "effects must not hide face for more than two frames"
+    ]
+  },
+  "gameplayProfile": {
+    "roles": ["companion", "cosmetic buddy", "lightweight RPG summon", "chat-avatar animation source"],
+    "attackStyle": "small magical melee/caster hybrid",
+    "suggestedStats": {
+      "stamina": 2,
+      "defense": 2,
+      "attack": 3,
+      "magic": 4,
+      "speed": 3
+    }
+  },
+  "animationManifest": "examples/buddy-animation-manifest.example.json",
+  "notes": "Use this as metadata for a generated variant, not as proof that binary images are present."
+}
