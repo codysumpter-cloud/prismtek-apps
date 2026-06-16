@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Reference-source classifications for Prismtek Pixel Forge creature and sprite tooling. These records are for clean-room design study and integration planning, not blind asset imports.",
+  "sources": [
+    {
+      "id": "fakemon-creator",
+      "name": "FakemonCreator",
+      "url": "https://github.com/Jerakin/FakemonCreator",
+      "classification": "schema-and-editor-flow-reference",
+      "status": "reference-only",
+      "licenseObserved": "MIT for the repository code; Pokemon-adjacent content and naming remain blocked for Prismtek shipping paths.",
+      "prismtekUse": "Study package creation UX, desktop editor flow, save/export mechanics, package validation expectations, and creature/move field organization for an original Prismtek creature creator.",
+      "allowed": [
+        "Study MIT-licensed editor architecture and package UX.",
+        "Translate generalized data-model ideas into original Prismtek schemas.",
+        "Use as a reference for import/export validation receipts and creator submission workflows."
+      ],
+      "blocked": [
+        "Do not copy Pokemon, Pokedex, Fakemon, Pokedex5E, or franchise-facing naming into Prismtek products.",
+        "Do not import Pokedex5E packages as shippable Prismtek content.",
+        "Do not include upstream screenshots, sample creatures, or franchise-like assets in shipped Prismtek paths.",
+        "Do not imply compatibility with official Pokemon products."
+      ],
+      "notes": "Best use is clean-room creature package UX: required fields, move links, package validation, export/import receipts."
+    },
+    {
+      "id": "pokengine-mongratis",
+      "name": "Pokengine Mongratis Collection",
+      "url": "https://pokengine.org/collections/107s7x9x/Mongratis?about",
+      "classification": "community-dex-and-license-model-reference",
+      "status": "reference-only-with-permission-check",
+      "licenseObserved": "The collection page says Mongratis mons are community donated and free to use on/off Pokengine for non-commercial fan games, while warning that other Pokengine dexes remain each creator's IP. Prismtek must still verify individual creator terms before any asset use.",
+      "prismtekUse": "Study community creature-dex organization, attribution norms, contribution loops, front/back/icon/overworld completion workflow, and explicit source-level rights labeling for Prismtek creature packs.",
+      "allowed": [
+        "Use as a policy reference for community-source contribution and attribution expectations.",
+        "Study how collections separate forms, icons, backs, overworlds, and metadata tabs.",
+        "Use only user-created assets with explicit creator permission and provenance receipts."
+      ],
+      "blocked": [
+        "Do not bulk-import Mongratis art into commercial Prismtek games without explicit compatible permission.",
+        "Do not use non-Mongratis Pokengine dex assets without creator permission.",
+        "Do not copy Pokemon-like naming, typing presentation, or franchise identity into Prismtek production content.",
+        "Do not treat collection-level fan-game permission as a blanket commercial license."
+      ],
+      "notes": "Best use is the contribution model: donated creatures, community completion tasks, attribution, and source-level rights fields."
+    }
+  ]
+}
