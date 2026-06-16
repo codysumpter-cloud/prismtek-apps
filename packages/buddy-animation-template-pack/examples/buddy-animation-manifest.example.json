@@ -1,0 +1,107 @@
+{
+  "schemaVersion": "buddy-animation-manifest-v1",
+  "variantId": "buddy-grok-example",
+  "displayName": "Buddy Grok Example",
+  "frame": {
+    "width": 64,
+    "height": 64,
+    "baselineY": 54,
+    "pivotX": 32,
+    "pivotY": 48
+  },
+  "sheet": {
+    "path": "variants/buddy-grok-example/buddy-grok-example-64.png",
+    "columns": 8,
+    "rows": 20,
+    "transparentBackground": true
+  },
+  "animations": [
+    {
+      "id": "idle",
+      "family": "idle",
+      "fps": 6,
+      "loop": true,
+      "frames": [
+        { "row": 0, "column": 0 },
+        { "row": 0, "column": 1 },
+        { "row": 0, "column": 2 },
+        { "row": 0, "column": 3 },
+        { "row": 0, "column": 4 },
+        { "row": 0, "column": 5 }
+      ],
+      "notes": "Subtle breathing loop."
+    },
+    {
+      "id": "walk",
+      "family": "movement",
+      "fps": 10,
+      "loop": true,
+      "frames": [
+        { "row": 2, "column": 0 },
+        { "row": 2, "column": 1 },
+        { "row": 2, "column": 2 },
+        { "row": 2, "column": 3 },
+        { "row": 2, "column": 4 },
+        { "row": 2, "column": 5 },
+        { "row": 2, "column": 6 },
+        { "row": 2, "column": 7 }
+      ]
+    },
+    {
+      "id": "melee_slash",
+      "family": "melee",
+      "fps": 12,
+      "loop": false,
+      "frames": [
+        { "row": 11, "column": 0, "tag": "anticipation" },
+        { "row": 11, "column": 1, "tag": "windup" },
+        { "row": 11, "column": 2, "tag": "active" },
+        { "row": 11, "column": 3, "tag": "active" },
+        { "row": 11, "column": 4, "tag": "impact" },
+        { "row": 11, "column": 5, "tag": "recovery" },
+        { "row": 11, "column": 6, "tag": "recovery" }
+      ],
+      "hitFrames": [2, 3, 4],
+      "notes": "Readable slash with hit spark."
+    },
+    {
+      "id": "magic_cast",
+      "family": "rpg-attack",
+      "fps": 10,
+      "loop": false,
+      "frames": [
+        { "row": 15, "column": 0, "tag": "focus" },
+        { "row": 15, "column": 1, "tag": "charge" },
+        { "row": 15, "column": 2, "tag": "charge" },
+        { "row": 15, "column": 3, "tag": "release" },
+        { "row": 15, "column": 4, "tag": "release" },
+        { "row": 15, "column": 5, "tag": "recovery" },
+        { "row": 15, "column": 6, "tag": "recovery" },
+        { "row": 15, "column": 7, "tag": "idle-return" }
+      ]
+    },
+    {
+      "id": "victory",
+      "family": "victory-defeat",
+      "fps": 8,
+      "loop": true,
+      "frames": [
+        { "row": 18, "column": 0 },
+        { "row": 18, "column": 1 },
+        { "row": 18, "column": 2 },
+        { "row": 18, "column": 3 },
+        { "row": 18, "column": 4 },
+        { "row": 18, "column": 5 },
+        { "row": 18, "column": 6 },
+        { "row": 18, "column": 7 }
+      ]
+    }
+  ],
+  "provenance": {
+    "source": "Prismtek Buddy animation template pack example",
+    "rights": "Original Prismtek template/example. Replace with real provenance for generated art.",
+    "createdBy": "Prismtek",
+    "generatedWith": "manual example",
+    "notes": "This JSON demonstrates the expected format; it does not claim a binary sheet exists yet."
+  }
+}

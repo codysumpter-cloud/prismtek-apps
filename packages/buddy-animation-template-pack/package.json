@@ -1,0 +1,18 @@
+{
+  "name": "@prismtek/buddy-animation-template-pack",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Reusable Buddy sprite animation template contracts, prompts, and examples for Prismtek game and agent companions.",
+  "type": "module",
+  "files": [
+    "README.md",
+    "metadata.json",
+    "reference",
+    "animation-contract",
+    "prompts",
+    "examples"
+  ],
+  "scripts": {
+    "validate": "node -e \"const fs=require('fs'); for (const p of ['metadata.json','animation-contract/animation-schema.json','examples/buddy-animation-manifest.example.json','examples/buddy-variant.example.json']) JSON.parse(fs.readFileSync(p,'utf8')); console.log('buddy animation template pack json ok')\""
+  }
+}
