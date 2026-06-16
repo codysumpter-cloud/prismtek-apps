@@ -12,6 +12,7 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "clean": "turbo run clean",
+    "workspace:doctor": "node tools/workspace/doctor.mjs",
     "porting-kits:download": "node scripts/download-porting-kits.mjs",
     "porting-kits:verify": "node tools/porting-kits/verify-porting-kits.mjs",
     "dual-screen:validate": "node tools/dual-screen/validate-dual-screen-configs.mjs",
