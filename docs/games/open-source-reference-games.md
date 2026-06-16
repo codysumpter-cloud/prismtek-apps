@@ -80,11 +80,19 @@ node tools/reference-games/import-reference-game.mjs terrariads
 
 Catalogs or websites that are not git repositories should be opened manually and recorded in the manifest.
 
-## Recommended next builds
+## Active experiment scaffolds
 
-- `experiments/castagne-pixel-fruit-spike/`
-- `experiments/ikemen-prismtek-fighter/`
-- `experiments/openbor-prismtek-brawler/`
+The first reference-to-product spikes now live under `experiments/`:
+
+| Experiment | Purpose | Status |
+| --- | --- | --- |
+| `experiments/openbor-prismtek-brawler/` | Evaluate OpenBOR for an original Prismtek arcade brawler path. | Scaffolded |
+| `experiments/castagne-pixel-fruit-spike/` | Evaluate Castagne for Pixel Fruit Arena combat architecture. | Scaffolded |
+| `experiments/ikemen-prismtek-fighter/` | Evaluate Ikemen GO for a traditional 2D Prismtek fighter path. | Scaffolded |
+| `experiments/fighting-engine-bakeoff/` | Compare current PFA combat, Castagne, and Ikemen GO. | Scaffolded |
+
+## Remaining recommended builds
+
 - `experiments/torcs-racing-ai/`
 - `tools/ds-homebrew-kit/templates/runner/`
 - `tools/ds-homebrew-kit/templates/tile-world/`
