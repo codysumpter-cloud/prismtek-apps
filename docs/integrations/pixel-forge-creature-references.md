@@ -2,7 +2,7 @@
 
 Status: **reference-only / clean-room translation required**
 
-These sources are useful for Prismtek Pixel Forge and future Prismtek creature games, but neither should be bulk-imported into production assets.
+These sources are useful for Prismtek Pixel Forge and future Prismtek creature games, but neither creature references nor editor references should be bulk-imported into production assets.
 
 ## Source: FakemonCreator
 
@@ -71,6 +71,103 @@ Blocked:
 - copying Pokemon-like identity or presentation,
 - shipping assets without creator/source/provenance receipts.
 
+## Source: Pix2D
+
+URL: `https://pix2d.com`
+
+Repository: `https://github.com/gritsenko/pix2d`
+
+Observed facts:
+
+- Pix2D presents itself as a free/open-source pixel art and sprite editor.
+- The website lists sprites, pixel art, animations, palette control, layers, onion skin, custom grids, text tools, mobile support, and browser use.
+- The GitHub README describes cross-platform support for Windows, Linux, Android, and Web.
+- The GitHub README says public APIs and the plugin system are under development.
+- The repository presents MIT licensing.
+
+### Safe Prismtek use
+
+Use this as a reference for:
+
+- mobile-first pixel editor UX,
+- local-first browser editing,
+- custom project file format design,
+- plugin architecture planning,
+- sprite and animation export expectations,
+- tablet/phone ergonomics for Pixel Forge.
+
+### Blocked Prismtek use
+
+Do not treat Pix2D as a vendored dependency yet.
+
+Blocked:
+
+- copying Pix2D branding, UI identity, website copy, or sample art,
+- depending on under-development plugin APIs as Prismtek contracts,
+- vendoring code without dependency and maintenance review,
+- committing telemetry or app-store secrets from any upstream build flow.
+
+## Source: Pixelorama
+
+URL: `https://pixelorama.org`
+
+Repository: `https://github.com/Orama-Interactive/Pixelorama`
+
+Observed facts:
+
+- Pixelorama describes itself as an open-source pixel art multitool.
+- Pixelorama supports frame-by-frame animation, onion skinning, frame tags, real-time drawing during playback, multi-layer projects, audio sync, spritesheet/GIF/video export, and importing from Aseprite, Photoshop, and Krita.
+- Pixelorama supports tilemap layers, custom user data, and command-line export automation.
+- The GitHub license is MIT.
+
+### Safe Prismtek use
+
+Use this as a reference for:
+
+- animation tags,
+- tilemap layer metadata,
+- custom user data,
+- CLI/bulk export workflows,
+- spritesheet/GIF/video export expectations,
+- Aseprite/Photoshop/Krita import interoperability.
+
+### Blocked Prismtek use
+
+Do not embed or fork Pixelorama into Prismtek without a separate maintenance decision.
+
+Blocked:
+
+- copying Pixelorama branding, screenshots, sample assets, or UI identity,
+- treating editor import compatibility as asset-rights compatibility,
+- shipping user projects without separate provenance and license receipts,
+- wholesale vendoring without dependency and release review.
+
+## Source: GitHub Pixel Art Tools Collection
+
+URL: `https://github.com/collections/pixel-art-tools`
+
+Observed facts:
+
+- GitHub's collection is a discovery index for pixel art apps/tools.
+- It lists projects such as Aseprite, Piskel, pixel-art-react, poxi, Data Pixels, pixel8, Goya, rx, Pixelorama, LibreSprite, Lospec pixel-editor, PixelCraft, PixiEditor, pixel-paint, Pixa.Pics, Pixed, and voidsprite.
+
+### Safe Prismtek use
+
+Use this as a discovery index for:
+
+- finding candidate editor patterns,
+- comparing browser/canvas implementations,
+- evaluating export formats,
+- identifying small focused tools worth separate review.
+
+### Blocked Prismtek use
+
+Blocked:
+
+- treating collection membership as a license grant,
+- bulk-copying collection projects,
+- skipping per-repo license/dependency/asset review.
+
 ## Translation into Prismtek Pixel Forge
 
 Pixel Forge should add a first-class creature pack schema later:
@@ -115,6 +212,39 @@ Recommended schema fields:
 - `evolutionOrGrowthPath`
 - `validationStatus`
 
+Pixel Forge should also add an editor-adapter schema later:
+
+```txt
+editor-adapter/
+  adapter.json
+  importers/
+    aseprite.json
+    pixelorama.json
+    pix2d.json
+  exporters/
+    spritesheet.json
+    gif-preview.json
+    tilemap.json
+```
+
+Recommended adapter fields:
+
+- `adapterId`
+- `sourceTool`
+- `sourceUrl`
+- `license`
+- `supportedImportFormats`
+- `supportedExportFormats`
+- `animationTagSupport`
+- `tilemapSupport`
+- `customUserDataSupport`
+- `cliSupport`
+- `mobileWorkflowNotes`
+- `blockedUse`
+- `validationStatus`
+
 ## Next implementation step
 
 Add a `packages/creature-pack-contract/` package that defines the JSON schema and validation helpers for original Prismtek creature packs. Pixel Forge can then generate or validate creature packs without relying on Pokemon/Fakemon naming or unsafe third-party asset assumptions.
+
+After that, add `packages/pixel-editor-adapter-contract/` so Pixel Forge can track safe import/export adapter contracts for Aseprite, Pixelorama, Pix2D, and browser-first editors without copying entire editor apps into the repo.
