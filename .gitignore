@@ -12,6 +12,10 @@ apps/bemore-ios-native/BundledModels/
 # Repo-local bootstrap toolchains
 .prismtek-tools/
 
+# Local-only external references and third-party checkouts
+.external/
+third_party/local/
+
 # Nintendo DS homebrew build outputs
 *.nds
 *.elf
