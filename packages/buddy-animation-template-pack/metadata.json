@@ -1,0 +1,71 @@
+{
+  "id": "prismtek-buddy-animation-template-pack",
+  "version": "0.1.0",
+  "name": "Prismtek Buddy Grok Animation Template Pack",
+  "owner": "Prismtek",
+  "repoPath": "packages/buddy-animation-template-pack",
+  "status": "source-contract-imported",
+  "binaryAssets": {
+    "status": "reserved-not-committed",
+    "reason": "The original ZIP archive and PNG bytes were not available to the execution environment. This package reserves canonical filenames and stores the reusable source contract directly in GitHub.",
+    "expectedReferenceFiles": [
+      "reference/Buddy_Full_Sprite_Sheet.png",
+      "reference/Buddy_Grok_Idle_Sprite_Sheet.png",
+      "reference/Buddy_Grok_Emote_Sprite_Sheet.png",
+      "reference/Buddy_Grok_Attack_Sprite_Sheet.png",
+      "reference/Buddy_Grok_RPG_Effects_Sprite_Sheet.png"
+    ]
+  },
+  "frameProfiles": {
+    "runtimeDefault": {
+      "frameWidth": 64,
+      "frameHeight": 64,
+      "style": "hard-edged pixel art",
+      "targets": ["web-canvas", "nds-style", "3ds-style", "rgds", "low-resource-mobile"]
+    },
+    "masterReference": {
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "style": "high-detail pixel reference sheet",
+      "targets": ["prompt-reference", "manual-cleanup", "downsample-source"]
+    }
+  },
+  "animationFamilies": [
+    "idle",
+    "movement",
+    "emote",
+    "melee",
+    "rpg-attack",
+    "status-effect",
+    "damage",
+    "victory-defeat"
+  ],
+  "requiredStates": [
+    "idle",
+    "blink",
+    "breathe",
+    "walk",
+    "run",
+    "jump",
+    "land",
+    "hurt",
+    "faint",
+    "wave",
+    "happy",
+    "shocked",
+    "thinking",
+    "charge",
+    "melee_slash",
+    "melee_jab",
+    "melee_spin",
+    "magic_cast",
+    "projectile_launch",
+    "status_effect",
+    "victory",
+    "defeat"
+  ],
+  "provenancePolicy": {
+    "allowed": ["original Prismtek assets", "user-owned Buddy assets", "clearly licensed open assets", "generated outputs with manifest provenance"],
+    "blocked": ["copied franchise sprites", "unlicensed commercial sprite sheets", "reference art shipped as production assets without provenance"]
+  }
+}
