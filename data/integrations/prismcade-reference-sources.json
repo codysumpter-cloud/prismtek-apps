@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Prismcade-specific external source classifications for creator-platform research. This file complements the broader reference registry and keeps IP-risky sources quarantined.",
+  "sources": [
+    {
+      "id": "gamemaker-html5",
+      "name": "GameMaker HTML5 Runtime",
+      "url": "https://github.com/YoYoGames/GameMaker-HTML5",
+      "classification": "adapter-target",
+      "status": "contract-only",
+      "prismcadeUse": "Research wrapping creator-owned GameMaker HTML5 exports in Prismcade play pages, leaderboards, and profile shells.",
+      "blocked": [
+        "Do not vendor runtime source into shipped Prismtek paths without license review.",
+        "Do not trust exported client code for ranked scores.",
+        "Do not ship sample or marketplace assets without provenance."
+      ]
+    },
+    {
+      "id": "gamemaker-cli",
+      "name": "GameMaker CLI",
+      "url": "https://github.com/YoYoGames/gm-cli",
+      "classification": "local-tooling-research",
+      "status": "contract-only",
+      "prismcadeUse": "Research local validation, packaging, and resource-editing workflows for creator-owned GameMaker projects.",
+      "blocked": [
+        "Do not commit downloaded runtime/toolchain files.",
+        "Do not store credentials or account tokens.",
+        "Do not enable automatic downloads without receipts."
+      ]
+    },
+    {
+      "id": "gatete-mario-engine-9",
+      "name": "Gatete Mario Engine 9",
+      "url": "https://github.com/GateteVerde/Gatete-Mario-Engine-9",
+      "classification": "mechanics-reference-only",
+      "status": "quarantined-reference",
+      "prismcadeUse": "Study generalized platformer controller, camera, tile, and GameMaker organization patterns only.",
+      "blocked": [
+        "Do not copy Mario assets, names, levels, sounds, UI, branding, or identity.",
+        "Do not ship as a Prismcade template.",
+        "Do not import into game-local shipped paths.",
+        "Do not skip an originality pass."
+      ]
+    }
+  ]
+}
