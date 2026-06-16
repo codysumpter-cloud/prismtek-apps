@@ -12,6 +12,9 @@
 [<kbd>▶ Pixel Snake</kbd>](games/pixel-snake/)
 [<kbd>▶ Neon Brick Breaker</kbd>](games/neon-brick-breaker/)
 [<kbd>▶ Pixel Stacker</kbd>](games/pixel-stacker/)
+[<kbd>🧪 Experiments</kbd>](experiments/)
+[<kbd>📚 Reference registry</kbd>](docs/games/open-source-reference-games.md)
+[<kbd>🎨 Asset policy</kbd>](docs/assets/asset-source-policy.md)
 [<kbd>🕹 Arcade feel guide</kbd>](docs/games/prismtek-arcade-feel.md)
 [<kbd>✅ Platform tracker</kbd>](docs/games/three-game-platform-readiness.md)
 
@@ -72,6 +75,26 @@ All active Prismtek game folders currently under `games/` are listed here.
 - Do not ship reference/test assets.
 - Keep game loops playable offline/local first.
 
+## Experiments and reference spikes
+
+Experiments are repo-visible research spikes that can graduate into games or tools only after validation. They may use local reference checkouts under `.external/`, but they do not ship third-party engines, modules, binaries, or assets unless provenance is recorded.
+
+| Experiment | Path | Purpose | Status |
+| --- | --- | --- | --- |
+| OpenBOR Prismtek Evaluation | [`experiments/openbor-prismtek-brawler/`](experiments/openbor-prismtek-brawler/) | Evaluate OpenBOR for an original Prismtek arcade brawler path. | Scaffolded |
+| Castagne Pixel Fruit Spike | [`experiments/castagne-pixel-fruit-spike/`](experiments/castagne-pixel-fruit-spike/) | Evaluate Castagne as a Pixel Fruit Arena combat architecture option. | Scaffolded |
+| Ikemen GO Prismtek Fighter Spike | [`experiments/ikemen-prismtek-fighter/`](experiments/ikemen-prismtek-fighter/) | Evaluate Ikemen GO for a traditional 2D Prismtek fighter path. | Scaffolded |
+| Fighting Engine Bakeoff | [`experiments/fighting-engine-bakeoff/`](experiments/fighting-engine-bakeoff/) | Compare current PFA combat, Castagne, and Ikemen GO. | Scaffolded |
+
+Reference-game and asset-source intake starts here:
+
+```bash
+npm run references:validate
+node tools/reference-games/import-reference-game.mjs openbor
+node tools/reference-games/import-reference-game.mjs castagne
+node tools/reference-games/import-reference-game.mjs ikemen-go
+```
+
 ## Download buttons
 
 | Product | Buttons | Status |
@@ -120,6 +143,7 @@ Run common checks:
 ```bash
 npm run lint
 npm run build
+npm run references:validate
 ```
 
 Some projects are intentionally dependency-free browser prototypes and should be run from their own folders. See the product table above.
@@ -136,6 +160,11 @@ Some projects are intentionally dependency-free browser prototypes and should be
 | Pixel Snake | Game | `games/pixel-snake/` | Prismtek-site arcade import |
 | Neon Brick Breaker | Game | `games/neon-brick-breaker/` | Prismtek-site arcade import |
 | Pixel Stacker | Game | `games/pixel-stacker/` | Prismtek-site arcade import |
+| OpenBOR Prismtek Evaluation | Experiment | `experiments/openbor-prismtek-brawler/` | Original brawler-engine spike using the reference registry workflow |
+| Castagne Pixel Fruit Spike | Experiment | `experiments/castagne-pixel-fruit-spike/` | Pixel Fruit Arena combat architecture evaluation |
+| Ikemen GO Prismtek Fighter Spike | Experiment | `experiments/ikemen-prismtek-fighter/` | Traditional 2D fighter engine evaluation |
+| Fighting Engine Bakeoff | Experiment | `experiments/fighting-engine-bakeoff/` | Comparison scorecard for current PFA, Castagne, and Ikemen GO |
+| Reference game registry | Research tooling | `data/reference-games/`, `tools/reference-games/`, `docs/games/open-source-reference-games.md` | External game/engine/asset-source registry and import validation |
 | BeMore iOS native | Mobile app | `apps/bemore-ios-native/` | Native iOS Buddy/operator app |
 | BeMore Agent Platform iOS | Mobile app | `apps/bemoreagent-platform-ios/` | iOS platform/admin-capable app |
 | BeMore macOS native | Desktop app | `apps/bemore-macos-native/` | Native macOS app |
@@ -163,6 +192,7 @@ apps/
   admin/
 
 games/
+experiments/
 services/
 packages/
 tools/
@@ -184,9 +214,14 @@ Start here:
 - [`docs/games/three-game-platform-readiness.md`](docs/games/three-game-platform-readiness.md)
 - [`docs/games/prismtek-arcade-feel.md`](docs/games/prismtek-arcade-feel.md)
 - [`docs/games/prismtek-site-arcade-migration-queue.md`](docs/games/prismtek-site-arcade-migration-queue.md)
+- [`docs/games/open-source-reference-games.md`](docs/games/open-source-reference-games.md)
+- [`docs/assets/asset-source-policy.md`](docs/assets/asset-source-policy.md)
+- [`experiments/README.md`](experiments/README.md)
+- [`experiments/openbor-prismtek-brawler/README.md`](experiments/openbor-prismtek-brawler/README.md)
+- [`experiments/fighting-engine-bakeoff/README.md`](experiments/fighting-engine-bakeoff/README.md)
 - [`games/spin-street-showdown/docs/SLAYBLADE_REFERENCE_NOTES.md`](games/spin-street-showdown/docs/SLAYBLADE_REFERENCE_NOTES.md)
 
-These documents are the source of truth for staged repo reorganization.
+These documents are the source of truth for staged repo reorganization, external reference intake, and experiment graduation.
 
 ## Repo boundaries
 
@@ -203,11 +238,12 @@ These documents are the source of truth for staged repo reorganization.
 1. Add governance docs and README framing. No product moves.
 2. Move browser-playable game prototypes into the games workspace.
 3. Keep Prismtek-site arcade imports active in `games/*` and harden them one game at a time.
-4. Move `apps/bemore-cli` to `tools/cli/bemore-cli`.
-5. Move `apps/api` to `services/api` and `integrations/buddy-chat` to `services/buddy-chat`.
-6. Decide final ownership for `apps/prismds-os` after packaging review.
-7. Move Apple projects last, one product at a time.
-8. Quarantine root/generated legacy material only after reference scans.
+4. Use `experiments/*` for engine spikes before graduating them into games or tools.
+5. Move `apps/bemore-cli` to `tools/cli/bemore-cli`.
+6. Move `apps/api` to `services/api` and `integrations/buddy-chat` to `services/buddy-chat`.
+7. Decide final ownership for `apps/prismds-os` after packaging review.
+8. Move Apple projects last, one product at a time.
+9. Quarantine root/generated legacy material only after reference scans.
 
 ## Apple development
 
@@ -237,6 +273,8 @@ xcodebuild -project BeMoreAgent.xcodeproj -scheme BeMoreAgent -sdk iphonesimulat
 - Do not claim download links exist unless the artifact or source path exists.
 - Do not claim RGDS/OS images, app installers, DS binaries, or signed builds exist until they are packaged and attached.
 - Do not ship reference/test assets as release assets.
+- Do not commit external reference checkouts from `.external/` or `third_party/local/`.
+- Do not copy third-party code, modules, binaries, assets, or audio into shipped paths without a provenance record.
 - Do not list arcade imports as public releases until each artifact exists.
 - Do not extract shared packages until reuse is proven.
 - Do not delete or quarantine root artifacts until reference scans prove they are unused.
