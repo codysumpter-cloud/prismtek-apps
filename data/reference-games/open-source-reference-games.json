@@ -1,9 +1,9 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "purpose": "Reference registry for external game engines, remakes, public game catalogs, and asset sources that may inform Prismtek-owned implementations.",
   "defaultPolicy": {
     "importPath": ".external/reference-games/",
-    "shipPolicy": "Do not ship external code, binaries, art, audio, or data from this registry until license and content ownership are reviewed for the exact files being used.",
+    "shipPolicy": "Do not ship external code, binaries, art, audio, fonts, models, or data from this registry until license and content ownership are reviewed for the exact files being used.",
     "preferredUse": "Use as local research references, then build original Prismtek code and assets."
   },
   "references": [
@@ -26,22 +26,283 @@
       "notes": "Use as discovery only; every listed project needs separate license and content review."
     },
     {
-      "id": "screaming-brain-studios",
-      "name": "Screaming Brain Studios",
-      "url": "https://screamingbrainstudios.com/",
-      "kind": "asset-source",
-      "licenseObserved": "CC0 / Public Domain stated by source site",
-      "status": "preferred-asset-source",
-      "notes": "Good candidate for original Prismtek assets after pack-level provenance is recorded."
+      "id": "godot",
+      "name": "Godot Engine",
+      "url": "https://github.com/godotengine/godot.git",
+      "kind": "general-game-engine-reference",
+      "licenseObserved": "MIT per upstream project materials",
+      "status": "candidate-engine-spike",
+      "notes": "Best broad open engine candidate for Prismtek 2D/3D prototypes, desktop, mobile, and RGDS Android/Linux experiments."
     },
     {
-      "id": "opengameart",
-      "name": "OpenGameArt",
-      "url": "https://opengameart.org/",
-      "kind": "asset-source",
-      "licenseObserved": "per-asset licensing",
-      "status": "asset-source-with-per-asset-review",
-      "notes": "Record exact asset page, author, license, attribution text, and derivative chain before committing files."
+      "id": "phaser",
+      "name": "Phaser",
+      "url": "https://github.com/phaserjs/phaser.git",
+      "kind": "web-game-framework-reference",
+      "licenseObserved": "MIT per upstream project materials",
+      "status": "preferred-web-engine-reference",
+      "notes": "Strong fit for Prismtek browser arcade upgrades and web-first game loops."
+    },
+    {
+      "id": "raylib",
+      "name": "raylib",
+      "url": "https://github.com/raysan5/raylib.git",
+      "kind": "handheld-arcade-engine-reference",
+      "licenseObserved": "zlib/libpng per upstream project materials",
+      "status": "candidate-handheld-engine-spike",
+      "notes": "Excellent low-resource C engine candidate for arcade, desktop, Linux handheld, and lightweight tool experiments."
+    },
+    {
+      "id": "bevy",
+      "name": "Bevy",
+      "url": "https://github.com/bevyengine/bevy.git",
+      "kind": "rust-ecs-engine-reference",
+      "licenseObserved": "MIT OR Apache-2.0 per upstream project materials",
+      "status": "research-engine-reference",
+      "notes": "Useful for ECS, simulation, AI, and future Rust-native Prismtek systems; treat as research until stability and platform fit are proven."
+    },
+    {
+      "id": "libgdx",
+      "name": "libGDX",
+      "url": "https://github.com/libgdx/libgdx.git",
+      "kind": "cross-platform-game-framework-reference",
+      "licenseObserved": "Apache-2.0 per upstream project materials",
+      "status": "candidate-handheld-engine-spike",
+      "notes": "Useful Java/Kotlin-adjacent reference for Android, desktop, and handheld runtime comparisons."
+    },
+    {
+      "id": "love2d",
+      "name": "LÖVE",
+      "url": "https://github.com/love2d/love.git",
+      "kind": "lua-arcade-framework-reference",
+      "licenseObserved": "zlib-style license for LÖVE core; bundled dependencies vary",
+      "status": "candidate-arcade-engine-spike",
+      "notes": "Good Lua framework for small arcade prototypes and handheld-style experiments."
+    },
+    {
+      "id": "haxeflixel",
+      "name": "HaxeFlixel",
+      "url": "https://github.com/HaxeFlixel/flixel.git",
+      "kind": "web-native-2d-engine-reference",
+      "licenseObserved": "MIT per upstream project materials",
+      "status": "candidate-web-native-2d-engine",
+      "notes": "Strong 2D pixel-game framework for browser/native builds and arcade-style prototypes."
+    },
+    {
+      "id": "monogame",
+      "name": "MonoGame",
+      "url": "https://github.com/MonoGame/MonoGame.git",
+      "kind": "csharp-game-framework-reference",
+      "licenseObserved": "Microsoft Public License per upstream project materials",
+      "status": "reference-engine",
+      "notes": "Useful C#/XNA-style reference for 2D/3D structure and desktop/mobile builds."
+    },
+    {
+      "id": "flame",
+      "name": "Flame",
+      "url": "https://github.com/flame-engine/flame.git",
+      "kind": "flutter-game-engine-reference",
+      "licenseObserved": "MIT per upstream project materials",
+      "status": "candidate-mobile-engine-spike",
+      "notes": "Good candidate for Flutter/mobile-first minigames and BeMore-adjacent game surfaces."
+    },
+    {
+      "id": "gdevelop",
+      "name": "GDevelop",
+      "url": "https://github.com/4ian/GDevelop.git",
+      "kind": "visual-game-tooling-reference",
+      "licenseObserved": "MIT per upstream project materials; service/editor assets may vary",
+      "status": "tooling-reference",
+      "notes": "Useful for visual/event-based game authoring research and rapid prototype workflows."
+    },
+    {
+      "id": "o3de",
+      "name": "Open 3D Engine",
+      "url": "https://github.com/o3de/o3de.git",
+      "kind": "large-3d-engine-reference",
+      "licenseObserved": "Apache-2.0 per upstream project materials",
+      "status": "research-engine-reference",
+      "notes": "Heavyweight 3D engine for long-term 3D/simulation research, not a first-choice arcade shipping path."
+    },
+    {
+      "id": "stride",
+      "name": "Stride",
+      "url": "https://github.com/stride3d/stride.git",
+      "kind": "csharp-3d-engine-reference",
+      "licenseObserved": "MIT per upstream project materials",
+      "status": "research-engine-reference",
+      "notes": "C# 2D/3D engine reference for desktop/mobile/VR exploration."
+    },
+    {
+      "id": "ogre",
+      "name": "OGRE",
+      "url": "https://github.com/OGRECave/ogre.git",
+      "kind": "rendering-engine-reference",
+      "licenseObserved": "MIT per upstream project materials",
+      "status": "rendering-reference",
+      "notes": "Rendering engine reference only; not a complete Prismtek game engine path by itself."
+    },
+    {
+      "id": "solarus",
+      "name": "Solarus",
+      "url": "https://gitlab.com/solarus-games/solarus",
+      "kind": "action-rpg-engine-reference",
+      "licenseObserved": "GPL family per upstream project materials; verify exact current terms before use",
+      "status": "reference-only",
+      "notes": "Useful for 2D action-RPG patterns; copyleft terms mean adoption must be intentional."
+    },
+    {
+      "id": "defold",
+      "name": "Defold",
+      "url": "https://github.com/defold/defold.git",
+      "kind": "source-available-engine-reference",
+      "licenseObserved": "custom/source-available terms per upstream project materials; verify before use",
+      "status": "caution-reference",
+      "notes": "Potentially useful for cross-platform 2D games, but treat as cautious reference until licensing and distribution terms are reviewed."
+    },
+    {
+      "id": "cocos2d-x",
+      "name": "Cocos2d-x",
+      "url": "https://github.com/cocos2d/cocos2d-x.git",
+      "kind": "cross-platform-2d-engine-reference",
+      "licenseObserved": "MIT per upstream project materials",
+      "status": "reference-engine",
+      "notes": "Mature C++ 2D engine reference for cross-platform architecture; evaluate before new adoption."
+    },
+    {
+      "id": "pixijs",
+      "name": "PixiJS",
+      "url": "https://github.com/pixijs/pixijs.git",
+      "kind": "web-rendering-framework-reference",
+      "licenseObserved": "MIT per upstream project materials",
+      "status": "preferred-web-rendering-reference",
+      "notes": "Strong browser rendering candidate for Prismtek arcade UI, effects, particles, and 2D scenes."
+    },
+    {
+      "id": "threejs",
+      "name": "three.js",
+      "url": "https://github.com/mrdoob/three.js.git",
+      "kind": "web-3d-rendering-reference",
+      "licenseObserved": "MIT per upstream project materials",
+      "status": "web-3d-reference",
+      "notes": "Useful for browser 3D experiments, product scenes, and lightweight 3D arcade prototypes."
+    },
+    {
+      "id": "babylonjs",
+      "name": "Babylon.js",
+      "url": "https://github.com/BabylonJS/Babylon.js.git",
+      "kind": "web-3d-engine-reference",
+      "licenseObserved": "Apache-2.0 per upstream project materials",
+      "status": "web-3d-reference",
+      "notes": "Useful for browser 3D, WebXR, and richer product/game visualization experiments."
+    },
+    {
+      "id": "playcanvas-engine",
+      "name": "PlayCanvas Engine",
+      "url": "https://github.com/playcanvas/engine.git",
+      "kind": "web-3d-engine-reference",
+      "licenseObserved": "MIT per upstream project materials",
+      "status": "web-3d-reference",
+      "notes": "Open web 3D engine reference; editor/cloud workflow should be reviewed separately."
+    },
+    {
+      "id": "panda3d",
+      "name": "Panda3D",
+      "url": "https://github.com/panda3d/panda3d.git",
+      "kind": "python-cpp-3d-engine-reference",
+      "licenseObserved": "BSD-style license per upstream project materials",
+      "status": "research-engine-reference",
+      "notes": "Useful for Python-friendly 3D simulations, tools, and AI/game research."
+    },
+    {
+      "id": "jmonkeyengine",
+      "name": "jMonkeyEngine",
+      "url": "https://github.com/jMonkeyEngine/jmonkeyengine.git",
+      "kind": "java-3d-engine-reference",
+      "licenseObserved": "BSD-style license per upstream project materials",
+      "status": "research-engine-reference",
+      "notes": "Java 3D engine reference for Android/desktop architecture comparisons."
+    },
+    {
+      "id": "urho3d",
+      "name": "Urho3D",
+      "url": "https://github.com/urho3d/Urho3D.git",
+      "kind": "lightweight-3d-engine-reference",
+      "licenseObserved": "MIT per upstream project materials",
+      "status": "research-engine-reference",
+      "notes": "Lightweight C++ 2D/3D engine reference for compact desktop/mobile experiments."
+    },
+    {
+      "id": "fyrox",
+      "name": "Fyrox",
+      "url": "https://github.com/FyroxEngine/Fyrox.git",
+      "kind": "rust-3d-engine-reference",
+      "licenseObserved": "MIT per upstream project materials",
+      "status": "research-engine-reference",
+      "notes": "Rust game engine reference for 2D/3D and editor-driven workflows."
+    },
+    {
+      "id": "macroquad",
+      "name": "macroquad",
+      "url": "https://github.com/not-fl3/macroquad.git",
+      "kind": "rust-arcade-framework-reference",
+      "licenseObserved": "MIT OR Apache-2.0 per upstream project materials",
+      "status": "candidate-arcade-engine-spike",
+      "notes": "Tiny Rust framework candidate for simple 2D arcade and handheld-style prototypes."
+    },
+    {
+      "id": "renpy",
+      "name": "Ren'Py",
+      "url": "https://github.com/renpy/renpy.git",
+      "kind": "visual-novel-engine-reference",
+      "licenseObserved": "MIT per upstream project materials; bundled dependencies vary",
+      "status": "reference-engine",
+      "notes": "Useful for narrative systems, dialogue-heavy game modes, and visual novel product experiments."
+    },
+    {
+      "id": "minetest",
+      "name": "Minetest / Luanti",
+      "url": "https://github.com/minetest/minetest.git",
+      "kind": "voxel-game-engine-reference",
+      "licenseObserved": "LGPL family per upstream project materials; games/assets vary separately",
+      "status": "research-engine-reference",
+      "notes": "Useful for voxel/world simulation and open-world survival reference; bundled games/assets require separate review."
+    },
+    {
+      "id": "openra",
+      "name": "OpenRA",
+      "url": "https://github.com/OpenRA/OpenRA.git",
+      "kind": "rts-engine-reference",
+      "licenseObserved": "GPL family per upstream project materials; original game assets not included for shipping reuse",
+      "status": "reference-only",
+      "notes": "Useful RTS architecture reference; avoid franchise assets and intentional copyleft adoption issues."
+    },
+    {
+      "id": "supertuxkart",
+      "name": "SuperTuxKart",
+      "url": "https://github.com/supertuxkart/stk-code.git",
+      "kind": "kart-racing-game-reference",
+      "licenseObserved": "GPL family for code; assets may vary",
+      "status": "reference-only",
+      "notes": "Useful kart/racing reference for future Prismtek racer ideas; do not vendor assets without review."
+    },
+    {
+      "id": "wesnoth",
+      "name": "The Battle for Wesnoth",
+      "url": "https://github.com/wesnoth/wesnoth.git",
+      "kind": "strategy-game-reference",
+      "licenseObserved": "GPL family per upstream project materials; assets may vary",
+      "status": "reference-only",
+      "notes": "Useful turn-based strategy architecture reference; adoption would require copyleft review."
+    },
+    {
+      "id": "veloren",
+      "name": "Veloren",
+      "url": "https://gitlab.com/veloren/veloren",
+      "kind": "open-world-rpg-reference",
+      "licenseObserved": "GPL family per upstream project materials; verify exact current terms before use",
+      "status": "reference-only",
+      "notes": "Useful open-world multiplayer RPG reference; do not vendor code/assets without intentional license review."
     },
     {
       "id": "trex-runner-ds",
@@ -105,6 +366,249 @@
       "licenseObserved": "GPL v2 source with some non-free artwork directories noted by project README",
       "status": "reference-only",
       "notes": "Useful for racing AI and simulation architecture; avoid vendoring bundled data/artwork."
+    },
+    {
+      "id": "screaming-brain-studios",
+      "name": "Screaming Brain Studios",
+      "url": "https://screamingbrainstudios.com/",
+      "kind": "asset-source",
+      "licenseObserved": "CC0 / Public Domain stated by source site",
+      "status": "preferred-asset-source",
+      "notes": "Good candidate for original Prismtek assets after pack-level provenance is recorded."
+    },
+    {
+      "id": "opengameart",
+      "name": "OpenGameArt",
+      "url": "https://opengameart.org/",
+      "kind": "asset-source",
+      "licenseObserved": "per-asset licensing",
+      "status": "asset-source-with-per-asset-review",
+      "notes": "Record exact asset page, author, license, attribution text, and derivative chain before committing files."
+    },
+    {
+      "id": "kenney",
+      "name": "Kenney Assets",
+      "url": "https://kenney.nl/assets",
+      "kind": "asset-source",
+      "licenseObserved": "CC0 stated by source site for many packs; verify each pack",
+      "status": "preferred-asset-source",
+      "notes": "High-value 2D/3D/UI/audio game asset source; record exact pack and license before committing."
+    },
+    {
+      "id": "itchio-game-assets",
+      "name": "itch.io Game Assets",
+      "url": "https://itch.io/game-assets",
+      "kind": "asset-marketplace-source",
+      "licenseObserved": "per-asset licensing",
+      "status": "asset-source-with-per-asset-review",
+      "notes": "Large source for pixel packs and UI kits; each page has its own license and author terms."
+    },
+    {
+      "id": "craftpix-freebies",
+      "name": "CraftPix Freebies",
+      "url": "https://craftpix.net/freebies/",
+      "kind": "asset-marketplace-source",
+      "licenseObserved": "per-pack licensing",
+      "status": "asset-source-with-per-pack-review",
+      "notes": "Useful for 2D characters, tiles, UI, and effects; verify commercial and attribution terms per pack."
+    },
+    {
+      "id": "gamedev-market",
+      "name": "GameDev Market",
+      "url": "https://www.gamedevmarket.net/",
+      "kind": "asset-marketplace-source",
+      "licenseObserved": "per-asset licensing",
+      "status": "asset-source-with-per-asset-review",
+      "notes": "Marketplace source; record license, receipt, and author terms before committing."
+    },
+    {
+      "id": "lospec",
+      "name": "Lospec",
+      "url": "https://lospec.com/",
+      "kind": "pixel-art-tooling-and-asset-source",
+      "licenseObserved": "per-resource licensing",
+      "status": "asset-source-with-per-resource-review",
+      "notes": "Useful for palettes, pixel-art references, and community resources; review each resource."
+    },
+    {
+      "id": "game-icons",
+      "name": "Game-icons.net",
+      "url": "https://game-icons.net/",
+      "kind": "icon-asset-source",
+      "licenseObserved": "CC BY 3.0 per source materials; verify current attribution requirements",
+      "status": "attribution-required-asset-source",
+      "notes": "Excellent icon source for UI and status effects; attribution records are required."
+    },
+    {
+      "id": "google-fonts",
+      "name": "Google Fonts",
+      "url": "https://fonts.google.com/",
+      "kind": "font-source",
+      "licenseObserved": "per-font licensing, commonly OFL or Apache-2.0",
+      "status": "font-source-with-per-font-review",
+      "notes": "Use for UI fonts after recording exact family, license, and source URL."
+    },
+    {
+      "id": "open-font-library",
+      "name": "Open Font Library",
+      "url": "https://fontlibrary.org/",
+      "kind": "font-source",
+      "licenseObserved": "per-font licensing",
+      "status": "font-source-with-per-font-review",
+      "notes": "Useful open font source; each font requires license and attribution review."
+    },
+    {
+      "id": "polyhaven",
+      "name": "Poly Haven",
+      "url": "https://polyhaven.com/",
+      "kind": "3d-texture-hdri-asset-source",
+      "licenseObserved": "CC0 stated by source site; verify asset page",
+      "status": "preferred-3d-asset-source",
+      "notes": "Useful for HDRIs, textures, and 3D models; record asset URL and license page before committing."
+    },
+    {
+      "id": "ambientcg",
+      "name": "ambientCG",
+      "url": "https://ambientcg.com/",
+      "kind": "texture-material-asset-source",
+      "licenseObserved": "CC0 stated by source site; verify asset page",
+      "status": "preferred-texture-source",
+      "notes": "Useful for textures/materials in 3D or stylized scenes; record source asset page."
+    },
+    {
+      "id": "quaternius",
+      "name": "Quaternius",
+      "url": "https://quaternius.com/",
+      "kind": "3d-model-asset-source",
+      "licenseObserved": "CC0/Public Domain style terms stated by source site; verify pack page",
+      "status": "preferred-3d-asset-source",
+      "notes": "Great for low-poly characters, creatures, vehicles, props, and game prototypes."
+    },
+    {
+      "id": "sketchfab",
+      "name": "Sketchfab",
+      "url": "https://sketchfab.com/",
+      "kind": "3d-model-marketplace-source",
+      "licenseObserved": "per-model licensing",
+      "status": "asset-source-with-per-model-review",
+      "notes": "Use only models with explicit compatible license and attribution records."
+    },
+    {
+      "id": "cgtrader-free-models",
+      "name": "CGTrader Free 3D Models",
+      "url": "https://www.cgtrader.com/free-3d-models",
+      "kind": "3d-model-marketplace-source",
+      "licenseObserved": "per-model licensing",
+      "status": "asset-source-with-per-model-review",
+      "notes": "Marketplace source; review every model license and redistribution terms."
+    },
+    {
+      "id": "freesound",
+      "name": "Freesound",
+      "url": "https://freesound.org/",
+      "kind": "audio-asset-source",
+      "licenseObserved": "per-sound licensing",
+      "status": "audio-source-with-per-asset-review",
+      "notes": "Useful for SFX; record exact sound URL, author, license, and attribution."
+    },
+    {
+      "id": "freepd",
+      "name": "FreePD",
+      "url": "https://freepd.com/",
+      "kind": "music-source",
+      "licenseObserved": "public-domain style source; verify track page",
+      "status": "preferred-music-source",
+      "notes": "Good for prototype background music after track-level provenance is recorded."
+    },
+    {
+      "id": "incompetech",
+      "name": "Incompetech",
+      "url": "https://incompetech.com/music/",
+      "kind": "music-source",
+      "licenseObserved": "license varies by track/download terms; often attribution required",
+      "status": "attribution-required-audio-source",
+      "notes": "Useful music source; capture track, author, license, and attribution exactly."
+    },
+    {
+      "id": "audionautix",
+      "name": "Audionautix",
+      "url": "https://audionautix.com/",
+      "kind": "music-source",
+      "licenseObserved": "license terms require review; attribution commonly required",
+      "status": "attribution-required-audio-source",
+      "notes": "Music source candidate; verify current terms and attribution before use."
+    },
+    {
+      "id": "zapsplat",
+      "name": "ZapSplat",
+      "url": "https://www.zapsplat.com/",
+      "kind": "audio-asset-source",
+      "licenseObserved": "source-specific license and account terms",
+      "status": "caution-audio-source",
+      "notes": "Useful SFX source but account, attribution, and redistribution terms must be reviewed before committing files."
+    },
+    {
+      "id": "sonniss-gdc",
+      "name": "Sonniss GDC Game Audio Bundles",
+      "url": "https://sonniss.com/gameaudiogdc",
+      "kind": "audio-bundle-source",
+      "licenseObserved": "bundle-specific license terms",
+      "status": "audio-source-with-bundle-review",
+      "notes": "High-value game audio bundles; store license text and provenance before committing any extracted sounds."
+    },
+    {
+      "id": "pixabay",
+      "name": "Pixabay",
+      "url": "https://pixabay.com/",
+      "kind": "media-asset-source",
+      "licenseObserved": "source-specific content license; verify media page",
+      "status": "asset-source-with-per-asset-review",
+      "notes": "Useful for photos, sounds, and music references; exact asset terms must be recorded."
+    },
+    {
+      "id": "mixkit",
+      "name": "Mixkit",
+      "url": "https://mixkit.co/",
+      "kind": "media-asset-source",
+      "licenseObserved": "source-specific licenses by category; verify asset page",
+      "status": "asset-source-with-per-asset-review",
+      "notes": "Useful for music, SFX, video, and template references; capture category license."
+    },
+    {
+      "id": "pexels",
+      "name": "Pexels",
+      "url": "https://www.pexels.com/",
+      "kind": "photo-video-source",
+      "licenseObserved": "source-specific media license; verify asset page",
+      "status": "media-source-with-per-asset-review",
+      "notes": "Use for mood/reference imagery or backgrounds only after reviewing the exact media page and model/property risks."
+    },
+    {
+      "id": "unsplash",
+      "name": "Unsplash",
+      "url": "https://unsplash.com/",
+      "kind": "photo-source",
+      "licenseObserved": "source-specific media license; verify asset page",
+      "status": "media-source-with-per-asset-review",
+      "notes": "Useful for reference/mood imagery; review exact terms and avoid implying model/property releases."
+    },
+    {
+      "id": "libre-game-assets",
+      "name": "LibreGameAssets / FreeGameDev assets",
+      "url": "https://libregamewiki.org/Free_Game_Resources",
+      "kind": "asset-catalog",
+      "licenseObserved": "catalog/discovery; linked resources vary",
+      "status": "reference-catalog",
+      "notes": "Use as discovery only; every linked source needs individual review."
+    },
+    {
+      "id": "liberated-pixel-cup",
+      "name": "Liberated Pixel Cup",
+      "url": "https://lpc.opengameart.org/",
+      "kind": "pixel-art-asset-set-reference",
+      "licenseObserved": "mixed copyleft/attribution terms; verify exact asset terms",
+      "status": "caution-asset-source",
+      "notes": "Useful style/reference source; share-alike/copyleft implications require careful review before use."
     }
   ]
 }
