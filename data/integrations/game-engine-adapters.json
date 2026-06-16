@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Integration contracts for using external game engines as research-backed adapters without vendoring third-party source, binaries, or assets into shipped Prismtek game paths.",
+  "defaultPolicy": {
+    "adapterRoot": "tools/integrations/",
+    "docsRoot": "docs/integrations/",
+    "shipPolicy": "Adapters may generate or transform Prismtek-owned project files, but must not copy external engine code, modules, binaries, art, audio, fonts, models, or data into shipped paths without explicit provenance and license review.",
+    "preferredUse": "Keep external engines as local developer dependencies or documented upstream references, then ship original Prismtek code and assets."
+  },
+  "adapters": [
+    {
+      "id": "godot-engine-adapter",
+      "name": "Godot Engine Adapter",
+      "sourceReferenceId": "godot",
+      "url": "https://github.com/godotengine/godot.git",
+      "kind": "general-game-engine-adapter",
+      "status": "contract-only",
+      "targetPath": "experiments/godot-prismtek-spike/",
+      "supportedTargets": ["web", "windows", "macos", "linux", "android", "rgds-android", "rgds-linux"],
+      "licenseObserved": "MIT per upstream project materials",
+      "pluginEntryPoints": {
+        "intake": "tools/integrations/godot/intake.mjs",
+        "validate": "tools/integrations/godot/validate.mjs",
+        "export": "tools/integrations/godot/export.mjs"
+      },
+      "validation": {
+        "manifestRequired": true,
+        "licenseReviewRequired": true,
+        "artifactReceiptRequired": true,
+        "forbiddenOutputs": ["external engine source", "external binaries", "unreviewed third-party assets"]
+      },
+      "notes": "Use for broad 2D/3D prototype evaluation only until a concrete Prismtek-owned project adapter exists."
+    },
+    {
+      "id": "phaser-web-adapter",
+      "name": "Phaser Web Adapter",
+      "sourceReferenceId": "phaser",
+      "url": "https://github.com/phaserjs/phaser.git",
+      "kind": "web-game-framework-adapter",
+      "status": "contract-only",
+      "targetPath": "games/_shared/prismtek-arcade/engines/phaser/",
+      "supportedTargets": ["web", "itch-zip", "desktop-web-wrapper", "rgds-android-browser", "rgds-linux-browser"],
+      "licenseObserved": "MIT per upstream project materials",
+      "pluginEntryPoints": {
+        "intake": "tools/integrations/phaser/intake.mjs",
+        "validate": "tools/integrations/phaser/validate.mjs",
+        "export": "tools/integrations/phaser/export.mjs"
+      },
+      "validation": {
+        "manifestRequired": true,
+        "licenseReviewRequired": true,
+        "artifactReceiptRequired": true,
+        "forbiddenOutputs": ["vendored npm cache", "unreviewed third-party assets", "generated files without receipt"]
+      },
+      "notes": "Best first target for browser-first Prismtek arcade upgrades and reusable game-loop contracts."
+    },
+    {
+      "id": "openbor-brawler-adapter",
+      "name": "OpenBOR Brawler Adapter",
+      "sourceReferenceId": "openbor",
+      "url": "https://github.com/DCurrent/openbor.git",
+      "kind": "brawler-engine-adapter",
+      "status": "contract-only",
+      "targetPath": "experiments/openbor-prismtek-brawler/",
+      "supportedTargets": ["windows", "linux", "android", "rgds-linux", "rgds-android"],
+      "licenseObserved": "BSD-style / permissive family per upstream materials; exact bundled dependency review required",
+      "pluginEntryPoints": {
+        "intake": "tools/integrations/openbor/intake.mjs",
+        "validate": "tools/integrations/openbor/validate.mjs",
+        "export": "tools/integrations/openbor/export.mjs"
+      },
+      "validation": {
+        "manifestRequired": true,
+        "licenseReviewRequired": true,
+        "artifactReceiptRequired": true,
+        "forbiddenOutputs": ["upstream game modules", "third-party sprites", "third-party audio"]
+      },
+      "notes": "Use for original Prismtek brawler mechanics only; do not copy existing OpenBOR game modules or assets."
+    },
+    {
+      "id": "castagne-fighter-adapter",
+      "name": "Castagne Fighter Adapter",
+      "sourceReferenceId": "castagne",
+      "url": "https://castagneengine.com/",
+      "kind": "fighting-game-engine-adapter",
+      "status": "contract-only",
+      "targetPath": "experiments/castagne-pixel-fruit-spike/",
+      "supportedTargets": ["web-research", "desktop-research"],
+      "licenseObserved": "per upstream project materials; exact integration review required before vendoring",
+      "pluginEntryPoints": {
+        "intake": "tools/integrations/castagne/intake.mjs",
+        "validate": "tools/integrations/castagne/validate.mjs",
+        "export": "tools/integrations/castagne/export.mjs"
+      },
+      "validation": {
+        "manifestRequired": true,
+        "licenseReviewRequired": true,
+        "artifactReceiptRequired": true,
+        "forbiddenOutputs": ["copied sample characters", "copied sample stages", "unreviewed engine exports"]
+      },
+      "notes": "Use to compare Pixel Fruit Arena combat architecture, input buffering, cancel rules, and move-data modeling."
+    },
+    {
+      "id": "ikemen-go-fighter-adapter",
+      "name": "Ikemen GO Fighter Adapter",
+      "sourceReferenceId": "ikemen-go",
+      "url": "https://github.com/ikemen-engine/Ikemen-GO.git",
+      "kind": "traditional-fighter-engine-adapter",
+      "status": "contract-only",
+      "targetPath": "experiments/ikemen-prismtek-fighter/",
+      "supportedTargets": ["windows", "linux", "macos", "rgds-linux"],
+      "licenseObserved": "MIT per upstream project materials; assets and content packs vary",
+      "pluginEntryPoints": {
+        "intake": "tools/integrations/ikemen-go/intake.mjs",
+        "validate": "tools/integrations/ikemen-go/validate.mjs",
+        "export": "tools/integrations/ikemen-go/export.mjs"
+      },
+      "validation": {
+        "manifestRequired": true,
+        "licenseReviewRequired": true,
+        "artifactReceiptRequired": true,
+        "forbiddenOutputs": ["MUGEN content packs", "third-party characters", "third-party stages"]
+      },
+      "notes": "Use for fighter-system research and original Prismtek roster/stage experiments only."
+    },
+    {
+      "id": "raylib-handheld-adapter",
+      "name": "raylib Handheld Adapter",
+      "sourceReferenceId": "raylib",
+      "url": "https://github.com/raysan5/raylib.git",
+      "kind": "handheld-arcade-engine-adapter",
+      "status": "contract-only",
+      "targetPath": "experiments/raylib-handheld-arcade-spike/",
+      "supportedTargets": ["windows", "macos", "linux", "rgds-linux", "desktop-native"],
+      "licenseObserved": "zlib/libpng per upstream project materials",
+      "pluginEntryPoints": {
+        "intake": "tools/integrations/raylib/intake.mjs",
+        "validate": "tools/integrations/raylib/validate.mjs",
+        "export": "tools/integrations/raylib/export.mjs"
+      },
+      "validation": {
+        "manifestRequired": true,
+        "licenseReviewRequired": true,
+        "artifactReceiptRequired": true,
+        "forbiddenOutputs": ["unchecked compiled binaries", "untracked toolchain downloads", "third-party sample assets"]
+      },
+      "notes": "Use for lightweight native arcade and Linux handheld runtime experiments after toolchain receipts exist."
+    }
+  ]
+}

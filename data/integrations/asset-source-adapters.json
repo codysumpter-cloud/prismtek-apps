@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Integration contracts for ingesting open/free asset sources into Prismtek projects with provenance, license review, and style-fit gates before any game can consume the files.",
+  "defaultPolicy": {
+    "adapterRoot": "tools/integrations/",
+    "docsRoot": "docs/integrations/",
+    "intakePath": "game-assets/intake/",
+    "shipPolicy": "Assets must not be shipped from intake folders. Promote only reviewed, attributed, style-approved derivatives into game-local asset folders.",
+    "preferredUse": "Record source, author, license, pack URL, allowed uses, required attribution, derivative edits, and target game before promotion."
+  },
+  "adapters": [
+    {
+      "id": "screaming-brain-studios-assets",
+      "name": "Screaming Brain Studios Asset Intake",
+      "sourceReferenceId": "screaming-brain-studios",
+      "url": "https://screamingbrainstudios.com/",
+      "kind": "asset-source-adapter",
+      "status": "contract-only",
+      "targetPath": "game-assets/intake/screaming-brain-studios/",
+      "supportedTargets": ["pixel-art", "tilesets", "textures", "game-prototypes"],
+      "licenseObserved": "CC0 / Public Domain stated by source site; pack-level confirmation still required",
+      "pluginEntryPoints": {
+        "intake": "tools/integrations/assets/screaming-brain-studios/intake.mjs",
+        "validate": "tools/integrations/assets/screaming-brain-studios/validate.mjs",
+        "promote": "tools/integrations/assets/screaming-brain-studios/promote.mjs"
+      },
+      "validation": {
+        "manifestRequired": true,
+        "licenseReviewRequired": true,
+        "artifactReceiptRequired": true,
+        "styleReviewRequired": true,
+        "forbiddenOutputs": ["unreviewed raw pack files in shipped game paths", "missing provenance", "missing derivative notes"]
+      },
+      "notes": "Preferred source for original-looking texture and tile experiments once each pack has a receipt."
+    },
+    {
+      "id": "opengameart-assets",
+      "name": "OpenGameArt Asset Intake",
+      "sourceReferenceId": "opengameart",
+      "url": "https://opengameart.org/",
+      "kind": "asset-source-adapter",
+      "status": "contract-only",
+      "targetPath": "game-assets/intake/opengameart/",
+      "supportedTargets": ["pixel-art", "sprites", "vfx", "audio", "tilesets", "ui"],
+      "licenseObserved": "per-asset licensing",
+      "pluginEntryPoints": {
+        "intake": "tools/integrations/assets/opengameart/intake.mjs",
+        "validate": "tools/integrations/assets/opengameart/validate.mjs",
+        "promote": "tools/integrations/assets/opengameart/promote.mjs"
+      },
+      "validation": {
+        "manifestRequired": true,
+        "licenseReviewRequired": true,
+        "artifactReceiptRequired": true,
+        "styleReviewRequired": true,
+        "attributionRequired": true,
+        "forbiddenOutputs": ["assets without exact page URL", "assets without author", "assets without license", "assets with incompatible license"]
+      },
+      "notes": "Use as a discovery source only until every individual asset page is reviewed and recorded."
+    },
+    {
+      "id": "local-uploaded-asset-packs",
+      "name": "Local Uploaded Asset Pack Intake",
+      "sourceReferenceId": "local-uploaded-asset-packs",
+      "url": "https://github.com/codysumpter-cloud/prismtek-apps/tree/main/game-assets",
+      "kind": "repo-local-asset-intake-adapter",
+      "status": "contract-only",
+      "targetPath": "game-assets/intake/local-uploads/",
+      "supportedTargets": ["pixel-art", "sprites", "tilesets", "ui", "vfx", "audio", "fonts"],
+      "licenseObserved": "unknown until each uploaded pack is traced to its source license",
+      "pluginEntryPoints": {
+        "intake": "tools/integrations/assets/local-uploads/intake.mjs",
+        "validate": "tools/integrations/assets/local-uploads/validate.mjs",
+        "promote": "tools/integrations/assets/local-uploads/promote.mjs"
+      },
+      "validation": {
+        "manifestRequired": true,
+        "licenseReviewRequired": true,
+        "artifactReceiptRequired": true,
+        "styleReviewRequired": true,
+        "forbiddenOutputs": ["archive files promoted directly to games", "fonts without license review", "unknown-origin assets"]
+      },
+      "notes": "Keeps user-uploaded packs useful without blindly mixing incompatible styles or unreviewed licenses into shipped games."
+    }
+  ]
+}
