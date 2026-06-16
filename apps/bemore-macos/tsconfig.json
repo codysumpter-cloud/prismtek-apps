@@ -5,6 +5,9 @@
     "paths": {
       "@/*": ["./src/*"]
     }
+    ,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true
   },
   "include": ["src", "vite.config.ts"],
   "exclude": ["dist", "node_modules"]
