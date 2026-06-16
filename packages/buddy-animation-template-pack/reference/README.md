@@ -1,22 +1,26 @@
 # Reference assets
 
-This folder is reserved for Buddy reference sheets used by Grok, ChatGPT, Codex, and manual pixel-art cleanup workflows.
+This folder stores Buddy reference sheets used by Grok, ChatGPT, Codex, and manual pixel-art cleanup workflows.
 
-The original `Prismtek_Buddy_Grok_Template_Pack.zip` archive was not available in this execution environment, so the binary PNG files are not committed in this import. The expected filenames are still locked down in `EXPECTED_FILES.md` so future sessions can drop the real images into the correct place without inventing new names.
+The available PNG files from `Prismtek_Buddy_Grok_Template_Pack.zip` are committed here. The ZIP included full, idle, and emote sheets plus idle and emote animation strips; it did not include the reserved attack or RPG effects sheets.
 
-## Add binary sheets later
+## Committed binary sheets
 
-When GitHub Desktop, VS Code, Codex with file upload, or a local terminal can access the images, add the PNG files here and commit them on this same package path.
+```text
+Buddy_Full_Sprite_Sheet.png
+Buddy_Grok_Idle_Sprite_Sheet.png
+Buddy_Grok_Emote_Sprite_Sheet.png
+Buddy_Grok_Idle_Animation_Strip.png
+Buddy_Grok_Emote_Animation_Strip.png
+```
 
-```bash
-git checkout chore/add-buddy-animation-template-pack
-mkdir -p packages/buddy-animation-template-pack/reference
-cp /path/to/Buddy_Full_Sprite_Sheet.png packages/buddy-animation-template-pack/reference/
-cp /path/to/Buddy_Grok_Idle_Sprite_Sheet.png packages/buddy-animation-template-pack/reference/
-cp /path/to/Buddy_Grok_Emote_Sprite_Sheet.png packages/buddy-animation-template-pack/reference/
-git add packages/buddy-animation-template-pack/reference/*.png
-git commit -m "Add Buddy animation reference sheets"
-git push
+## Reserved binary sheets
+
+Add these exact filenames when the missing source assets are available:
+
+```text
+Buddy_Grok_Attack_Sprite_Sheet.png
+Buddy_Grok_RPG_Effects_Sprite_Sheet.png
 ```
 
 ## Style lock

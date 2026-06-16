@@ -4,7 +4,7 @@ This package defines the reusable Buddy/Grok animation template format for Prism
 
 It exists so Grok, ChatGPT, Codex, and future Buddy workers can generate new Buddy variants and animation GIFs with the same frame layout, naming rules, animation states, and metadata contract.
 
-> Important: this commit stores the source template contract directly in the repo. The original ZIP archive and binary PNG sprite sheets were not available to the execution environment, so the binary `reference/*.png` files are reserved by name but not committed in this source-only import.
+> Important: this package stores the source template contract directly in the repo and now includes the available Buddy/Grok reference PNGs from `Prismtek_Buddy_Grok_Template_Pack.zip`. The ZIP did not include the reserved attack or RPG effects sheets, so those filenames remain reserved for a later asset drop.
 
 ## Target path
 
@@ -23,19 +23,26 @@ packages/buddy-animation-template-pack/
 - reusable ChatGPT/Codex handoff templates,
 - examples for melee, emotes, idle, movement, and RPG-style attacks.
 
-## Expected binary reference files
+## Binary reference files
 
-When the original image files are available, place them in `reference/` using these exact names:
+Committed from the ZIP:
 
 ```text
 reference/Buddy_Full_Sprite_Sheet.png
 reference/Buddy_Grok_Idle_Sprite_Sheet.png
 reference/Buddy_Grok_Emote_Sprite_Sheet.png
+reference/Buddy_Grok_Idle_Animation_Strip.png
+reference/Buddy_Grok_Emote_Animation_Strip.png
+```
+
+Still reserved for a later asset drop:
+
+```text
 reference/Buddy_Grok_Attack_Sprite_Sheet.png
 reference/Buddy_Grok_RPG_Effects_Sprite_Sheet.png
 ```
 
-The source contract in this package is designed to remain useful even before those binary files are added.
+The source contract in this package remains useful while the attack and RPG effects references are pending.
 
 ## Sprite size guidance
 
@@ -61,6 +68,11 @@ packages/buddy-animation-template-pack/
   reference/
     README.md
     EXPECTED_FILES.md
+    Buddy_Full_Sprite_Sheet.png
+    Buddy_Grok_Idle_Sprite_Sheet.png
+    Buddy_Grok_Emote_Sprite_Sheet.png
+    Buddy_Grok_Idle_Animation_Strip.png
+    Buddy_Grok_Emote_Animation_Strip.png
   animation-contract/
     BUDDY_ANIMATION_CONTRACT.md
     animation-schema.json
