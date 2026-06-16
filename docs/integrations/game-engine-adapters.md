@@ -22,10 +22,16 @@ The safe path is:
 | --- | --- | --- | --- | --- |
 | Godot Engine Adapter | Contract-only | Broad 2D/3D experiments across web, desktop, mobile, and RGDS targets. | Creature/world prototypes, 3D arena tests, dense map experiments. | Do not vendor Godot source or exports without explicit receipts. |
 | Phaser Web Adapter | Contract-only | Browser-first arcade loops and itch-style ZIP builds. | Prismtek arcade browser games and Pixel Fruit Arena web packaging. | Do not commit vendored npm caches or generated files without receipts. |
+| GameMaker HTML5 Adapter | Contract-only | Wrap creator-owned GameMaker HTML5 exports inside Prismcade play/profile/leaderboard shells. | Future GameMaker import/export research after manifest-only Prismcade MVP. | Do not vendor GameMaker runtime source or trust client-only ranked scores. |
+| GameMaker CLI Tooling Adapter | Contract-only | Local validation, packaging, and resource-editing research for GameMaker projects. | Dry-run project validation and receipt generation. | Do not commit downloaded toolchains, runtimes, tokens, or generated projects without receipts. |
 | OpenBOR Brawler Adapter | Contract-only | Original Prismtek beat-'em-up and brawler experiments. | Future original brawler/spin-off combat experiments. | Do not copy existing OpenBOR modules, sprites, or audio. |
 | Castagne Fighter Adapter | Contract-only | Pixel Fruit Arena combat architecture research. | Input buffering, cancel windows, move-data modeling, directional specials. | Do not copy sample characters, stages, or unreviewed engine exports. |
 | Ikemen GO Fighter Adapter | Contract-only | Traditional 2D fighter-system research. | Versus fighter experiments and roster/stage rule comparisons. | Do not copy MUGEN content packs, characters, or stages. |
 | raylib Handheld Adapter | Contract-only | Lightweight native arcade and Linux handheld experiments. | RGDS Linux/native arcade spikes and low-overhead tools. | Do not commit unchecked binaries or untracked toolchain downloads. |
+
+## Prismcade-specific notes
+
+GameMaker is useful for Prismcade, but it is **not** the first MVP path. Start Prismcade with safe manifest-only templates. Use GameMaker research later as an import/export bridge once Prismcade has creator game versions, public UGC play pages, version-aware leaderboards, asset provenance, and moderation.
 
 ## Candidate expansion queue
 
@@ -136,12 +142,12 @@ These contracts do not:
 
 ## Next implementation slice
 
-The next useful PR after this one should implement one tiny adapter plugin, probably Phaser or asset intake, because those can validate the contract without pretending native/3D toolchains are already solved.
+The next useful PR after this one should implement one tiny dry-run adapter plugin, probably Phaser or GameMaker CLI validation, because those can validate the contract without pretending native/3D toolchains are already solved.
 
 A good first plugin would:
 
 1. Read `data/integrations/game-engine-adapters.json`.
-2. Select `phaser-web-adapter`.
+2. Select one adapter.
 3. Verify required fields.
 4. Generate a receipt only.
 5. Refuse to write runtime files until a target game manifest exists.
