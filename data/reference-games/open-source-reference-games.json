@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Reference registry for external game engines, remakes, public game catalogs, and asset sources that may inform Prismtek-owned implementations.",
+  "defaultPolicy": {
+    "importPath": ".external/reference-games/",
+    "shipPolicy": "Do not ship external code, binaries, art, audio, or data from this registry until license and content ownership are reviewed for the exact files being used.",
+    "preferredUse": "Use as local research references, then build original Prismtek code and assets."
+  },
+  "references": [
+    {
+      "id": "awesome-game-remakes",
+      "name": "Awesome Game Remakes",
+      "url": "https://github.com/radek-sprta/awesome-game-remakes.git",
+      "kind": "catalog",
+      "licenseObserved": "CC BY-SA 4.0 for the list",
+      "status": "reference-catalog",
+      "notes": "Catalog says most games require original assets; each linked project must be reviewed separately."
+    },
+    {
+      "id": "osgameclones",
+      "name": "Open Source Game Clones",
+      "url": "https://osgameclones.com/",
+      "kind": "catalog",
+      "licenseObserved": "not reviewed in repo",
+      "status": "reference-catalog",
+      "notes": "Use as discovery only; every listed project needs separate license and content review."
+    },
+    {
+      "id": "screaming-brain-studios",
+      "name": "Screaming Brain Studios",
+      "url": "https://screamingbrainstudios.com/",
+      "kind": "asset-source",
+      "licenseObserved": "CC0 / Public Domain stated by source site",
+      "status": "preferred-asset-source",
+      "notes": "Good candidate for original Prismtek assets after pack-level provenance is recorded."
+    },
+    {
+      "id": "opengameart",
+      "name": "OpenGameArt",
+      "url": "https://opengameart.org/",
+      "kind": "asset-source",
+      "licenseObserved": "per-asset licensing",
+      "status": "asset-source-with-per-asset-review",
+      "notes": "Record exact asset page, author, license, attribution text, and derivative chain before committing files."
+    },
+    {
+      "id": "trex-runner-ds",
+      "name": "T-Rex Runner Game Nintendo DS",
+      "url": "https://github.com/Fewnity/T-Rex-Runner-Game-Nintendo-DS.git",
+      "kind": "ds-homebrew-reference",
+      "licenseObserved": "no license file found during review",
+      "status": "reference-only",
+      "notes": "Useful for devkitPro Nintendo DS structure; do not ship its code or assets without explicit permission."
+    },
+    {
+      "id": "terrariads",
+      "name": "TerrariaDS",
+      "url": "https://github.com/AzizBgBoss/TerrariaDS.git",
+      "kind": "ds-homebrew-reference",
+      "licenseObserved": "custom non-commercial license",
+      "status": "reference-only",
+      "notes": "Useful for tile world and survival mechanics; do not ship in commercial Prismtek distributions."
+    },
+    {
+      "id": "minicraft-ds-edition",
+      "name": "Minicraft DS Edition",
+      "url": "https://github.com/ArthurCose/Minicraft-DS-Edition.git",
+      "kind": "ds-homebrew-reference",
+      "licenseObserved": "no license file found during review",
+      "status": "reference-only",
+      "notes": "Useful for dual-screen survival UI patterns; do not ship its code or assets without explicit permission."
+    },
+    {
+      "id": "castagne",
+      "name": "Castagne Engine",
+      "url": "https://github.com/panthavma/castagne.git",
+      "kind": "fighting-engine-reference",
+      "licenseObserved": "MPL 2.0 for engine source per project materials; assets and docs vary by folder",
+      "status": "candidate-engine-spike",
+      "notes": "Evaluate for Pixel Fruit Arena combat architecture before adoption."
+    },
+    {
+      "id": "openbor",
+      "name": "OpenBOR",
+      "url": "https://github.com/DCurrent/openbor.git",
+      "kind": "brawler-engine-reference",
+      "licenseObserved": "BSD-style terms in LICENSE",
+      "status": "candidate-engine-spike",
+      "notes": "Good for original Prismtek side-scrolling brawler modules; community modules require separate review."
+    },
+    {
+      "id": "ikemen-go",
+      "name": "Ikemen GO",
+      "url": "https://github.com/ikemen-engine/Ikemen-GO.git",
+      "kind": "fighting-engine-reference",
+      "licenseObserved": "MIT engine; bundled screenpack assets and FFmpeg have separate terms",
+      "status": "candidate-engine-spike",
+      "notes": "Good for traditional 2D fighter experiments; MUGEN-format content must not be assumed safe."
+    },
+    {
+      "id": "torcs",
+      "name": "TORCS",
+      "url": "https://github.com/jeremybennett/torcs.git",
+      "kind": "racing-sim-reference",
+      "licenseObserved": "GPL v2 source with some non-free artwork directories noted by project README",
+      "status": "reference-only",
+      "notes": "Useful for racing AI and simulation architecture; avoid vendoring bundled data/artwork."
+    }
+  ]
+}

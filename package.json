@@ -17,7 +17,8 @@
     "dual-screen:validate": "node tools/dual-screen/validate-dual-screen-configs.mjs",
     "dual-screen:smoke": "node tools/dual-screen/smoke-dual-screen-runtime.mjs",
     "platforms:validate": "npm run porting-kits:verify && npm run dual-screen:validate && npm run dual-screen:smoke",
-    "games:validate-support": "node games/_shared/prismtek-arcade/validate-game-roster.mjs"
+    "games:validate-support": "node games/_shared/prismtek-arcade/validate-game-roster.mjs",
+    "references:validate": "node tools/reference-games/validate-reference-games.mjs"
   },
   "dependencies": {
     "@google/genai": "^2.8.0",
