@@ -19,6 +19,7 @@ packages/buddy-animation-template-pack/
 - DS/3DS/retro-friendly sizing guidance,
 - required buddy variant metadata,
 - reusable Grok prompt templates,
+- reusable PixelLab prompt templates,
 - reusable ChatGPT/Codex handoff templates,
 - examples for melee, emotes, idle, movement, and RPG-style attacks.
 
@@ -65,6 +66,7 @@ packages/buddy-animation-template-pack/
     animation-schema.json
   prompts/
     grok-animation-generation-prompt.md
+    pixellab-64-melee-jab-prompt.md
     chatgpt-storage-handoff-prompt.md
   examples/
     buddy-animation-manifest.example.json
@@ -74,6 +76,8 @@ packages/buddy-animation-template-pack/
 ## Usage
 
 Give `prompts/grok-animation-generation-prompt.md` to Grok along with one or more reference sheets. Grok should output a new sprite sheet and/or GIF that matches `animation-contract/animation-schema.json`.
+
+Give `prompts/pixellab-64-melee-jab-prompt.md` to PixelLab.ai when generating the game-ready 64x64 `melee_jab` animation strip. This prompt is intentionally stricter than the broad generation prompt so PixelLab preserves Buddy's small creature anatomy instead of adding humanoid punch arms.
 
 Give `prompts/chatgpt-storage-handoff-prompt.md` to a new ChatGPT/Codex session when the output needs to be stored back into this repository.
 
