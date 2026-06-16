@@ -158,12 +158,13 @@ The first reference-to-product spikes now live under `experiments/`:
 | `experiments/castagne-pixel-fruit-spike/` | Evaluate Castagne for Pixel Fruit Arena combat architecture. | Scaffolded |
 | `experiments/ikemen-prismtek-fighter/` | Evaluate Ikemen GO for a traditional 2D Prismtek fighter path. | Scaffolded |
 | `experiments/fighting-engine-bakeoff/` | Compare current PFA combat, Castagne, and Ikemen GO. | Scaffolded |
+| `experiments/phaser-arcade-upgrade/` | Evaluate Phaser as the first shared browser arcade upgrade path. | Scaffolded |
+| `experiments/pixijs-arcade-renderer/` | Evaluate PixiJS as a lighter renderer/effects layer for existing browser games. | Scaffolded |
 
 ## Remaining recommended builds
 
 - `experiments/godot-prismtek-prototype/`
 - `experiments/raylib-handheld-arcade/`
-- `experiments/phaser-arcade-upgrade/`
 - `experiments/torcs-racing-ai/`
 - `tools/ds-homebrew-kit/templates/runner/`
 - `tools/ds-homebrew-kit/templates/tile-world/`
