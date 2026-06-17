@@ -12,6 +12,8 @@
 [<kbd>▶ Pixel Snake</kbd>](games/pixel-snake/)
 [<kbd>▶ Neon Brick Breaker</kbd>](games/neon-brick-breaker/)
 [<kbd>▶ Pixel Stacker</kbd>](games/pixel-stacker/)
+[<kbd>▶ Prismwilds: Echo Dominion</kbd>](games/prismwilds-echo-dominion/)
+[<kbd>Prismcade contracts</kbd>](docs/integrations/gamemaker-html5-adapter.md)
 [<kbd>🧪 Experiments</kbd>](experiments/)
 [<kbd>📚 Reference registry</kbd>](docs/games/open-source-reference-games.md)
 [<kbd>🎨 Asset policy</kbd>](docs/assets/asset-source-policy.md)
@@ -53,6 +55,7 @@ All active Prismtek game folders currently under `games/` are listed here.
 | Pixel Snake | [`games/pixel-snake/`](games/pixel-snake/) | Prismtek-site arcade import; browser smoke test and web ZIP path exist; public release artifacts pending. | Classic route-control score match with speed/rank rewards. | `cd games/pixel-snake && npm test && npm run package:zip` |
 | Neon Brick Breaker | [`games/neon-brick-breaker/`](games/neon-brick-breaker/) | Prismtek-site arcade import; browser smoke test and web ZIP path exist; public release artifacts pending. | Paddle/brick clear match with combo, accuracy, and score clout. | `cd games/neon-brick-breaker && npm test && npm run package:zip` |
 | Pixel Stacker | [`games/pixel-stacker/`](games/pixel-stacker/) | Prismtek-site arcade import; browser smoke test and web ZIP path exist; public release artifacts pending. | Timing/stacking precision match with height, streak, and badge rewards. | `cd games/pixel-stacker && npm test && npm run package:zip` |
+| Prismwilds: Echo Dominion | [`games/prismwilds-echo-dominion/`](games/prismwilds-echo-dominion/) | Playable browser creature-survival prototype; smoke test and web ZIP path exist; public release artifacts pending. | Open-world dinosaur-inspired survival with resources, stealth, water, feeder NPCs, roaming dinosaurs, and local-first play. | `cd games/prismwilds-echo-dominion && npm test && npm run package:zip` |
 
 ### Game buttons
 
@@ -66,6 +69,7 @@ All active Prismtek game folders currently under `games/` are listed here.
 | Pixel Snake | [<kbd>▶ Open</kbd>](games/pixel-snake/) | [README](games/pixel-snake/README.md) | Missing | [Shared feel](docs/games/prismtek-arcade-feel.md) |
 | Neon Brick Breaker | [<kbd>▶ Open</kbd>](games/neon-brick-breaker/) | [README](games/neon-brick-breaker/README.md) | Missing | [Shared feel](docs/games/prismtek-arcade-feel.md) |
 | Pixel Stacker | [<kbd>▶ Open</kbd>](games/pixel-stacker/) | [README](games/pixel-stacker/README.md) | Missing | [Shared feel](docs/games/prismtek-arcade-feel.md) |
+| Prismwilds: Echo Dominion | [<kbd>▶ Open</kbd>](games/prismwilds-echo-dominion/) | [README](games/prismwilds-echo-dominion/README.md) | Missing | [Survival design](games/prismwilds-echo-dominion/README.md#survival-design) |
 
 ### Shared game release rules
 
@@ -107,6 +111,7 @@ node tools/reference-games/import-reference-game.mjs ikemen-go
 | Pixel Snake | [<kbd>▶ Open</kbd>](games/pixel-snake/) [<kbd>README</kbd>](games/pixel-snake/README.md) [<kbd>⬇ Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Browser arcade import; packaged release artifact pending. |
 | Neon Brick Breaker | [<kbd>▶ Open</kbd>](games/neon-brick-breaker/) [<kbd>README</kbd>](games/neon-brick-breaker/README.md) [<kbd>⬇ Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Browser arcade import; packaged release artifact pending. |
 | Pixel Stacker | [<kbd>▶ Open</kbd>](games/pixel-stacker/) [<kbd>README</kbd>](games/pixel-stacker/README.md) [<kbd>⬇ Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Browser arcade import; packaged release artifact pending. |
+| Prismwilds: Echo Dominion | [<kbd>▶ Open</kbd>](games/prismwilds-echo-dominion/) [<kbd>README</kbd>](games/prismwilds-echo-dominion/README.md) [<kbd>⬇ Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Browser creature-survival prototype; packaged release artifact pending. |
 | BeMore iOS native | [<kbd>Open source</kbd>](apps/bemore-ios-native/) [<kbd>README</kbd>](apps/bemore-ios-native/README.md) [<kbd>TestFlight runbook</kbd>](apps/bemore-ios-native/ADMIN_TESTFLIGHT_RUNBOOK.md) | Native iOS app source; public signed download link pending. |
 | BeMore Agent Platform iOS | [<kbd>Open source</kbd>](apps/bemoreagent-platform-ios/) [<kbd>⬇ Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | iOS platform/admin source; signed artifact pending. |
 | BeMore macOS native | [<kbd>Open source</kbd>](apps/bemore-macos-native/) [<kbd>⬇ Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | macOS app source; packaged app download pending. |
@@ -160,6 +165,8 @@ Some projects are intentionally dependency-free browser prototypes and should be
 | Pixel Snake | Game | `games/pixel-snake/` | Prismtek-site arcade import |
 | Neon Brick Breaker | Game | `games/neon-brick-breaker/` | Prismtek-site arcade import |
 | Pixel Stacker | Game | `games/pixel-stacker/` | Prismtek-site arcade import |
+| Prismwilds: Echo Dominion | Game prototype | `games/prismwilds-echo-dominion/` | Browser creature-survival prototype with local smoke test and web ZIP packager |
+| Prismcade GameMaker adapters | Integration contract | `docs/integrations/gamemaker-html5-adapter.md`, `docs/integrations/gamemaker-cli-tooling.md`, `data/integrations/prismcade-reference-sources.json` | Contract-only Prismcade import/wrapper research validated by `npm run integrations:validate` |
 | OpenBOR Prismtek Evaluation | Experiment | `experiments/openbor-prismtek-brawler/` | Original brawler-engine spike using the reference registry workflow |
 | Castagne Pixel Fruit Spike | Experiment | `experiments/castagne-pixel-fruit-spike/` | Pixel Fruit Arena combat architecture evaluation |
 | Ikemen GO Prismtek Fighter Spike | Experiment | `experiments/ikemen-prismtek-fighter/` | Traditional 2D fighter engine evaluation |
