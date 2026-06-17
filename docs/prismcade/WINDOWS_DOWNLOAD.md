@@ -17,4 +17,4 @@ Player flow:
 3. Double-click Prismcade.exe.
 4. Pick a game from the Prismcade catalog.
 
-The package builder is ready. Build the ZIP from Windows when cutting a player build.
+The package builder is ready.
