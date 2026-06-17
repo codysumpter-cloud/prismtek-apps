@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prismtek Pixel Forge</title>
+  <style>
+    :root{color-scheme:dark;--bg:#0b0714;--panel:#1b1130;--line:rgba(255,255,255,.15);--text:#fff9ff;--muted:#cabee7;--accent:#7cf7d4;--warn:#ffcb6b;--bad:#ff7a96;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 10% 0,rgba(124,247,212,.14),transparent 32rem),linear-gradient(180deg,#12091f,var(--bg));color:var(--text)}main{width:min(1180px,calc(100vw - 28px));margin:0 auto;padding:28px 0 64px}.hero,.panel{border:1px solid var(--line);background:rgba(27,17,48,.92);border-radius:24px;box-shadow:0 24px 80px rgba(0,0,0,.25)}.hero{padding:clamp(24px,4vw,48px);margin-bottom:18px}.eyebrow{color:var(--accent);font-weight:950;text-transform:uppercase;letter-spacing:.14em;font-size:.76rem}h1{margin:.2rem 0 1rem;font-size:clamp(2rem,6vw,4.6rem);line-height:.95;letter-spacing:-.06em}.lead{color:var(--muted);max-width:860px;line-height:1.7}.grid{display:grid;grid-template-columns:360px 1fr;gap:18px;align-items:start}@media(max-width:920px){.grid{grid-template-columns:1fr}}.panel{padding:18px}label{display:grid;gap:6px;color:var(--muted);font-size:.84rem;font-weight:750;margin-bottom:12px}input,textarea,button{border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.07);color:var(--text);padding:11px 12px;font:inherit}textarea{min-height:110px;resize:vertical}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.buttons{display:flex;flex-wrap:wrap;gap:10px}button{cursor:pointer;font-weight:900}button.primary{background:var(--accent);color:#08120f;border-color:transparent}.status{border:1px solid var(--line);border-radius:16px;padding:12px;color:var(--muted);white-space:pre-wrap;background:rgba(255,255,255,.06)}.status.good{color:#94ffb8;border-color:rgba(148,255,184,.4)}.status.bad{color:var(--bad);border-color:rgba(255,122,150,.4)}canvas{image-rendering:pixelated;image-rendering:crisp-edges;max-width:100%;border:1px solid var(--line);border-radius:16px;background:#000}.preview{display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));gap:10px;margin-top:12px}.card{border:1px solid var(--line);border-radius:14px;padding:8px;background:rgba(255,255,255,.05);color:var(--muted);font-size:.72rem;text-align:center}.card canvas{width:64px;height:64px;display:block;margin:0 auto 6px}.output{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.8rem;line-height:1.5;min-height:300px;width:100%;margin-top:12px}.tiny{color:var(--muted);font-size:.76rem;line-height:1.5}
+  </style>
+</head>
+<body>
+<main>
+  <section class="hero">
+    <div class="eyebrow">Prismtek Pixel Forge</div>
+    <h1>Pixel asset lab, not pixel mush.</h1>
+    <p class="lead">Validate sprite sheets, preview animation frames, build repo-ready manifests, and generate safe provider prompts for original Prismtek/Buddy game assets. Default target: crisp <strong>64×64</strong> runtime frames.</p>
+    <p class="tiny">Clean-room foundation. No copied PixelLab backend, no secrets, no third-party asset shipping.</p>
+  </section>
+
+  <section class="grid">
+    <aside class="panel">
+      <h2>Import + grid</h2>
+      <label>Sprite sheet image<input id="file" type="file" accept="image/png,image/webp,image/jpeg,image/gif"></label>
+      <div class="row"><label>Frame width<input id="fw" type="number" min="1" value="64"></label><label>Frame height<input id="fh" type="number" min="1" value="64"></label></div>
+      <div class="row"><label>Margin<input id="margin" type="number" min="0" value="0"></label><label>Spacing<input id="spacing" type="number" min="0" value="0"></label></div>
+      <label>Variant ID<input id="variant" value="buddy-pixel-forge-test"></label>
+      <label>Sheet path<input id="sheetPath" value="variants/buddy-pixel-forge-test/sheet.png"></label>
+      <div class="row"><label>Animation ID<input id="anim" value="idle"></label><label>FPS<input id="fps" type="number" min="1" max="30" value="8"></label></div>
+      <label>Frame indexes<input id="indexes" value="0,1,2,3"></label>
+      <label>Prompt subject<textarea id="subject">Original Prismtek Buddy helper creature with BMO-inspired friendliness, but not a copy of any existing character.</textarea></label>
+      <div class="buttons"><button class="primary" id="manifestBtn">Build manifest</button><button id="promptBtn">Build provider job</button><button id="downloadBtn" disabled>Download JSON</button></div>
+    </aside>
+
+    <section class="panel">
+      <h2>Preview + output</h2>
+      <div id="status" class="status">Upload a sprite sheet to begin.</div>
+      <p><canvas id="sheet" width="512" height="256"></canvas></p>
+      <div class="buttons"><button id="play" disabled>Play selected frames</button><button id="stop" disabled>Stop</button></div>
+      <p><canvas id="animCanvas" width="256" height="256"></canvas></p>
+      <div id="frames" class="preview"></div>
+      <textarea id="output" class="output" spellcheck="false" placeholder="Build a manifest or provider job..."></textarea>
+    </section>
+  </section>
+</main>
+<script>
+const $ = (id) => document.getElementById(id);
+const state = { image:null, fileName:'', grid:null, output:null, timer:null, cursor:0 };
+const els = ['file','fw','fh','margin','spacing','variant','sheetPath','anim','fps','indexes','subject','manifestBtn','promptBtn','downloadBtn','status','sheet','animCanvas','frames','output','play','stop'].reduce((acc,id)=>(acc[id]=$(id),acc),{});
+const sizes = [16,32,48,64,96,128];
+
+els.file.addEventListener('change', (event) => {
+  const file = event.target.files?.[0];
+  if (!file) return;
+  const image = new Image();
+  image.onload = () => { state.image = image; state.fileName = file.name; els.sheetPath.value = `variants/${slug(els.variant.value)}/${file.name}`; render(); };
+  image.src = URL.createObjectURL(file);
+});
+['fw','fh','margin','spacing','indexes','fps'].forEach((id)=>els[id].addEventListener('input',()=>state.image&&render()));
+els.manifestBtn.addEventListener('click',()=>setOutput(buildManifest()));
+els.promptBtn.addEventListener('click',()=>setOutput(buildProviderJob()));
+els.downloadBtn.addEventListener('click',downloadJson);
+els.play.addEventListener('click',play);
+els.stop.addEventListener('click',stop);
+
+function input(){return{imageWidth:state.image?.naturalWidth||0,imageHeight:state.image?.naturalHeight||0,frameWidth:num(els.fw.value,64),frameHeight:num(els.fh.value,64),margin:num(els.margin.value,0),spacing:num(els.spacing.value,0)}}
+function validate(g){const errors=[],warnings=[];const uw=g.imageWidth-g.margin*2,uh=g.imageHeight-g.margin*2;const columns=uw>0?Math.floor((uw+g.spacing)/(g.frameWidth+g.spacing)):0;const rows=uh>0?Math.floor((uh+g.spacing)/(g.frameHeight+g.spacing)):0;const usedW=columns*g.frameWidth+Math.max(0,columns-1)*g.spacing;const usedH=rows*g.frameHeight+Math.max(0,rows-1)*g.spacing;const leftoverX=uw-usedW,leftoverY=uh-usedH;if(g.imageWidth<=0||g.imageHeight<=0)errors.push('Upload an image first.');if(columns<=0)errors.push('No full columns fit.');if(rows<=0)errors.push('No full rows fit.');if(!sizes.includes(g.frameWidth)||!sizes.includes(g.frameHeight))warnings.push('64×64 is the default runtime target; 128×128 is source/master only.');if(leftoverX)warnings.push(`${leftoverX}px horizontal leftover.`);if(leftoverY)warnings.push(`${leftoverY}px vertical leftover.`);return{...g,ok:errors.length===0,columns,rows,frameCount:Math.max(0,columns*rows),leftoverX,leftoverY,errors,warnings}}
+function slice(g){const v=validate(g),frames=[];if(v.ok){for(let row=0;row<v.rows;row++){for(let column=0;column<v.columns;column++){frames.push({index:row*v.columns+column,row,column,x:v.margin+column*(v.frameWidth+v.spacing),y:v.margin+row*(v.frameHeight+v.spacing),width:v.frameWidth,height:v.frameHeight})}}}return{...v,frames}}
+function render(){state.grid=slice(input());drawSheet();drawFrames();status();els.play.disabled=!state.grid.ok;els.stop.disabled=!state.grid.ok}
+function drawSheet(){const c=els.sheet,ctx=c.getContext('2d');const scale=state.image?Math.min(1,900/state.image.naturalWidth):1;c.width=state.image?Math.max(1,Math.round(state.image.naturalWidth*scale)):512;c.height=state.image?Math.max(1,Math.round(state.image.naturalHeight*scale)):256;ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,c.width,c.height);if(!state.image)return;ctx.drawImage(state.image,0,0,c.width,c.height);if(!state.grid?.ok)return;ctx.strokeStyle='rgba(124,247,212,.85)';for(const f of state.grid.frames)ctx.strokeRect(f.x*scale,f.y*scale,f.width*scale,f.height*scale)}
+function drawFrames(){els.frames.innerHTML='';if(!state.grid?.ok||!state.image)return;for(const f of state.grid.frames.slice(0,64)){const card=document.createElement('div');card.className='card';const c=document.createElement('canvas');c.width=f.width;c.height=f.height;const ctx=c.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.drawImage(state.image,f.x,f.y,f.width,f.height,0,0,f.width,f.height);card.append(c,`#${f.index} r${f.row} c${f.column}`);els.frames.append(card)}}
+function status(){const g=state.grid;const lines=[`${state.fileName||'No file'} — ${g.imageWidth}×${g.imageHeight}`,`${g.columns} columns × ${g.rows} rows = ${g.frameCount} frames`,`Frame: ${g.frameWidth}×${g.frameHeight}`];if(g.errors.length)lines.push(`Errors:\n- ${g.errors.join('\n- ')}`);if(g.warnings.length)lines.push(`Warnings:\n- ${g.warnings.join('\n- ')}`);els.status.className=`status ${g.ok?'good':'bad'}`;els.status.textContent=lines.join('\n')}
+function selectedFrames(){return els.indexes.value.split(',').map(x=>num(x.trim(),-1)).filter(x=>x>=0).map(i=>state.grid?.frames.find(f=>f.index===i)).filter(Boolean)}
+function play(){stop();const fs=selectedFrames();if(!fs.length)return;const fps=Math.max(1,Math.min(30,num(els.fps.value,8)));state.cursor=0;drawAnim(fs[0]);state.timer=setInterval(()=>{state.cursor=(state.cursor+1)%fs.length;drawAnim(fs[state.cursor])},Math.round(1000/fps))}
+function stop(){if(state.timer)clearInterval(state.timer);state.timer=null}
+function drawAnim(f){const c=els.animCanvas,ctx=c.getContext('2d');const scale=Math.max(1,Math.floor(Math.min(c.width/f.width,c.height/f.height)));const w=f.width*scale,h=f.height*scale,x=Math.floor((c.width-w)/2),y=Math.floor((c.height-h)/2);ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,c.width,c.height);ctx.drawImage(state.image,f.x,f.y,f.width,f.height,x,y,w,h)}
+function buildManifest(){if(!state.grid)state.grid=slice(input());const fs=selectedFrames();return{schemaVersion:'prismtek-pixel-asset-manifest-v1',variantId:slug(els.variant.value),displayName:els.variant.value.trim()||'Pixel Forge Asset',target:'prismtek-runtime',frame:{width:state.grid.frameWidth,height:state.grid.frameHeight,baselineY:Math.max(0,state.grid.frameHeight-10),pivotX:Math.floor(state.grid.frameWidth/2),pivotY:Math.max(0,state.grid.frameHeight-16)},sheet:{path:els.sheetPath.value.trim()||state.fileName||'sprite-sheet.png',imageWidth:state.grid.imageWidth,imageHeight:state.grid.imageHeight,columns:state.grid.columns,rows:state.grid.rows,transparentBackground:true},animations:[{id:animName(els.anim.value),fps:Math.max(1,Math.min(30,num(els.fps.value,8))),loop:true,frames:fs.map((f,order)=>({...f,order,durationMs:Math.round(1000/Math.max(1,num(els.fps.value,8)))})),tags:['pixel-forge-foundation']}],provenance:{source:'user-provided-or-original-prismtek-asset',rights:'must-be-original-or-explicitly-licensed-before-shipping',createdBy:'prismtek-pixel-forge',notes:'Do not ship third-party reference art without license/provenance review.'},validation:{ok:state.grid.ok,errors:state.grid.errors,warnings:state.grid.warnings}}}
+function buildProviderJob(){const prompt=[`Create original Prismtek-owned pixel art for: ${els.subject.value.trim()||'Prismtek Buddy creature'}.`,`Frame size: ${num(els.fw.value,64)}x${num(els.fh.value,64)}px. Use transparent background.`,'Style: hard-edged readable pixel art, crisp silhouette, no blur, no antialiasing.','Palette: limited coherent palette with strong outline contrast.',`Required animation slots: ${animName(els.anim.value)}.`,'Keep feet/pivot aligned across frames unless a lunge/jump intentionally moves the body.','Do not copy franchise characters, copyrighted sprites, logos, UI, or recognizable third-party designs.','Return a sprite sheet plus a JSON manifest using prismtek-pixel-asset-manifest-v1.'].join('\n');return{schemaVersion:'prismtek-pixel-provider-job-v1',provider:'provider-neutral',mode:'prompt-to-sprite-sheet',prompt,negativePrompt:'blur, antialiasing, soft painterly shading, copyrighted character, logo, text watermark, mixed sprite sizes',output:{frameWidth:num(els.fw.value,64),frameHeight:num(els.fh.value,64),transparentBackground:true,manifestRequired:true},safety:{requireOriginalityPass:true,forbidThirdPartyAssetCopying:true,requireProvenance:true,noSecrets:true}}}
+function setOutput(value){state.output=value;els.output.value=JSON.stringify(value,null,2);els.downloadBtn.disabled=false}
+function downloadJson(){const blob=new Blob([JSON.stringify(state.output||buildManifest(),null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download=`${slug(els.variant.value||'pixel-forge-output')}.json`;link.click();URL.revokeObjectURL(url)}
+function animName(v){const raw=String(v||'').trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'').replace(/_{2,}/g,'_');return({faint:'ko',knockout:'ko',happy:'emote_happy',angry:'emote_angry',shocked:'emote_shocked',magic_cast:'cast',projectile_launch:'projectile',melee_jab:'melee_thrust'}[raw]||raw||'idle')}
+function slug(v){return String(v||'').trim().toLowerCase().replace(/[^a-z0-9-]+/g,'-').replace(/^-+|-+$/g,'').replace(/-{2,}/g,'-').slice(0,64)||'unnamed-asset'}
+function num(v,fallback){const n=Number.parseInt(String(v),10);return Number.isFinite(n)?n:fallback}
+</script>
+</body>
+</html>

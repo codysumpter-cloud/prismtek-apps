@@ -10,10 +10,12 @@ The key rule is simple: **integrate by contract first, never by blind copy.** Ex
 | --- | --- |
 | [`game-engine-adapters.md`](game-engine-adapters.md) | Human-readable registry for game-engine adapter contracts. |
 | [`asset-source-adapters.md`](asset-source-adapters.md) | Human-readable registry for asset-source intake contracts. |
+| [`prismtek-pixel-forge.md`](prismtek-pixel-forge.md) | Pixel Forge and PixelLab export/animation planning workflow. |
 | [`engine-plugin-contract.md`](engine-plugin-contract.md) | Required behavior for engine integration plugins. |
 | [`asset-intake-plugin-contract.md`](asset-intake-plugin-contract.md) | Required behavior for asset intake and promotion plugins. |
 | [`../../data/integrations/game-engine-adapters.json`](../../data/integrations/game-engine-adapters.json) | Machine-readable engine adapter manifest. |
 | [`../../data/integrations/asset-source-adapters.json`](../../data/integrations/asset-source-adapters.json) | Machine-readable asset adapter manifest. |
+| [`../../data/integrations/pixellab-character-export-registry.json`](../../data/integrations/pixellab-character-export-registry.json) | PixelLab character export snapshot for repeatable animation planning. |
 | [`../../tools/integrations/validate-integration-manifests.mjs`](../../tools/integrations/validate-integration-manifests.mjs) | Manifest validator used by `npm run integrations:validate`. |
 
 ## Why this exists

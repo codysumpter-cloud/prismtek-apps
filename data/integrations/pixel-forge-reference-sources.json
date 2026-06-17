@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Reference-source classifications for Prismtek Pixel Forge creature and sprite tooling. These records are for clean-room design study and integration planning, not blind asset imports.",
+  "sources": [
+    {
+      "id": "fakemon-creator",
+      "name": "FakemonCreator",
+      "url": "https://github.com/Jerakin/FakemonCreator",
+      "classification": "schema-and-editor-flow-reference",
+      "status": "reference-only",
+      "licenseObserved": "MIT for the repository code; Pokemon-adjacent content and naming remain blocked for Prismtek shipping paths.",
+      "prismtekUse": "Study package creation UX, desktop editor flow, save/export mechanics, package validation expectations, and creature/move field organization for an original Prismtek creature creator.",
+      "allowed": [
+        "Study MIT-licensed editor architecture and package UX.",
+        "Translate generalized data-model ideas into original Prismtek schemas.",
+        "Use as a reference for import/export validation receipts and creator submission workflows."
+      ],
+      "blocked": [
+        "Do not copy Pokemon, Pokedex, Fakemon, Pokedex5E, or franchise-facing naming into Prismtek products.",
+        "Do not import Pokedex5E packages as shippable Prismtek content.",
+        "Do not include upstream screenshots, sample creatures, or franchise-like assets in shipped Prismtek paths.",
+        "Do not imply compatibility with official Pokemon products."
+      ],
+      "notes": "Best use is clean-room creature package UX: required fields, move links, package validation, export/import receipts."
+    },
+    {
+      "id": "pokengine-mongratis",
+      "name": "Pokengine Mongratis Collection",
+      "url": "https://pokengine.org/collections/107s7x9x/Mongratis?about",
+      "classification": "community-dex-and-license-model-reference",
+      "status": "reference-only-with-permission-check",
+      "licenseObserved": "The collection page says Mongratis mons are community donated and free to use on/off Pokengine for non-commercial fan games, while warning that other Pokengine dexes remain each creator's IP. Prismtek must still verify individual creator terms before any asset use.",
+      "prismtekUse": "Study community creature-dex organization, attribution norms, contribution loops, front/back/icon/overworld completion workflow, and explicit source-level rights labeling for Prismtek creature packs.",
+      "allowed": [
+        "Use as a policy reference for community-source contribution and attribution expectations.",
+        "Study how collections separate forms, icons, backs, overworlds, and metadata tabs.",
+        "Use only user-created assets with explicit creator permission and provenance receipts."
+      ],
+      "blocked": [
+        "Do not bulk-import Mongratis art into commercial Prismtek games without explicit compatible permission.",
+        "Do not use non-Mongratis Pokengine dex assets without creator permission.",
+        "Do not copy Pokemon-like naming, typing presentation, or franchise identity into Prismtek production content.",
+        "Do not treat collection-level fan-game permission as a blanket commercial license."
+      ],
+      "notes": "Best use is the contribution model: donated creatures, community completion tasks, attribution, and source-level rights fields."
+    },
+    {
+      "id": "pix2d",
+      "name": "Pix2D",
+      "url": "https://pix2d.com",
+      "sourceRepositoryUrl": "https://github.com/gritsenko/pix2d",
+      "classification": "open-source-editor-and-plugin-reference",
+      "status": "reference-only-potential-integration-target",
+      "licenseObserved": "Website and repository present Pix2D as free/open source and MIT licensed. Review dependency licenses before vendoring code or building integrations.",
+      "prismtekUse": "Study mobile-friendly editor UX, plugin architecture direction, custom .pix2d project format, browser/mobile parity, and sprite/animation export workflows for Pixel Forge.",
+      "allowed": [
+        "Study editor UX patterns for desktop/tablet/mobile pixel creation.",
+        "Study MIT-licensed project and plugin architecture after dependency review.",
+        "Consider a future import/export adapter for .pix2d projects if the format is documented and stable.",
+        "Use as a reference for local-first browser editing and mobile workflows."
+      ],
+      "blocked": [
+        "Do not vendor Pix2D code or dependencies without license and maintenance review.",
+        "Do not copy Pix2D branding, UI identity, sample art, or website copy.",
+        "Do not rely on under-development plugin APIs as stable Prismtek contracts.",
+        "Do not commit crash-reporting credentials, telemetry DSNs, or app-store packaging secrets."
+      ],
+      "notes": "Best immediate use is a clean-room integration target: Pixel Forge should export/import neutral sprite manifests first, then optional .pix2d adapters later."
+    },
+    {
+      "id": "pixelorama",
+      "name": "Pixelorama",
+      "url": "https://pixelorama.org",
+      "sourceRepositoryUrl": "https://github.com/Orama-Interactive/Pixelorama",
+      "classification": "open-source-editor-export-reference",
+      "status": "reference-only-potential-cli-export-target",
+      "licenseObserved": "MIT License for Pixelorama code. Review any bundled assets/plugins separately before reuse.",
+      "prismtekUse": "Study animation frame tags, onion skinning, spritesheet/GIF/video export, tilemap layers, custom user data, command-line export automation, and Aseprite/Photoshop/Krita import compatibility.",
+      "allowed": [
+        "Study MIT-licensed source and export architecture.",
+        "Use as a reference for Pixel Forge animation tags, tilemap metadata, and CLI bulk export workflows.",
+        "Consider a future Pixelorama import/export adapter if Prismtek needs offline artist tooling.",
+        "Prefer manifest interoperability over embedding the editor in Prismtek apps."
+      ],
+      "blocked": [
+        "Do not vendor Pixelorama wholesale into Prismtek without maintenance and dependency review.",
+        "Do not copy Pixelorama branding, screenshots, sample assets, or UI identity.",
+        "Do not treat editor compatibility as asset-rights compatibility.",
+        "Do not ship user projects without separate provenance and license receipts."
+      ],
+      "notes": "Best immediate use is export workflow inspiration: frame tags, tilemap layers, user data, and CLI-based bulk exports map directly to Pixel Forge roadmap needs."
+    },
+    {
+      "id": "github-pixel-art-tools-collection",
+      "name": "GitHub Pixel Art Tools Collection",
+      "url": "https://github.com/collections/pixel-art-tools",
+      "classification": "discovery-index",
+      "status": "reference-only-index",
+      "licenseObserved": "Collection entries have independent licenses and maintenance status. Each repository must be reviewed separately before reuse.",
+      "prismtekUse": "Use as a discovery index for evaluating pixel editor patterns, React/canvas implementations, sprite exporters, tile tools, and lightweight drawing UIs.",
+      "allowed": [
+        "Use to identify candidate tools for review.",
+        "Record individual source reviews in this registry before any adapter or code reuse.",
+        "Compare UX patterns, export formats, and maintenance activity."
+      ],
+      "blocked": [
+        "Do not treat collection membership as a license grant.",
+        "Do not bulk-copy collection projects into Prismtek.",
+        "Do not skip per-repo license, dependency, and asset review."
+      ],
+      "notes": "Useful candidates called out by the collection include Aseprite, Piskel, Pixelorama, LibreSprite, Lospec pixel-editor, PixiEditor, and several browser-based editors."
+    }
+  ]
+}

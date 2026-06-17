@@ -1,0 +1,15 @@
+{
+  "name": "@prismtek/pixel-forge-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "MCP server exposing Prismtek Pixel Forge sprite-sheet validation, manifest, and prompt tools.",
+  "bin": {
+    "prismtek-pixel-forge-mcp": "./src/server.mjs"
+  },
+  "scripts": {
+    "start": "node src/server.mjs",
+    "smoke": "printf '%s\\n' '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/list\",\"params\":{}}' | node src/server.mjs"
+  },
+  "license": "UNLICENSED"
+}
