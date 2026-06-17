@@ -15,4 +15,8 @@
     "node_modules",
     "dist"
   ]
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 5e6ea9e (chore: update configuration files and workflows)

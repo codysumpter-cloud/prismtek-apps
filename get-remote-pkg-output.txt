@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿=== START 06/15/2026 11:08:22
 {
   "name": "prismtek-apps",
@@ -142,3 +143,149 @@ A  scripts/verify-porting-kits.mjs
 ?? validate-silent.vbs
 ?? wsl-npm.txt
 === END 06/15/2026 11:08:22
+=======
+﻿=== START 06/15/2026 11:08:22
+{
+  "name": "prismtek-apps",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "packageManager": "npm@10.8.2",
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "postinstall": "npm rebuild @tailwindcss/oxide || true",
+    "prepare": "husky install",
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "clean": "turbo run clean",
+    "porting-kits:verify": "node tools/porting-kits/verify-porting-kits.mjs",
+    "dual-screen:validate": "node tools/dual-screen/validate-dual-screen-configs.mjs",
+    "dual-screen:smoke": "node tools/dual-screen/smoke-dual-screen-runtime.mjs",
+    "platforms:validate": "npm run porting-kits:verify && npm run dual-screen:validate && npm run dual-screen:smoke"
+  },
+  "dependencies": {
+    "@google/genai": "^2.8.0",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.5.2",
+    "firebase": "^12.14.0",
+    "firebase-admin": "^14.0.0",
+    "jsonwebtoken": "^9.0.3",
+    "lucide-react": "^1.18.0",
+    "motion": "^12.40.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "@prismtek/buddy-core": "file:vendor/buddy-core-contracts"
+  },
+  "devDependencies": {
+    "husky": "^9.0.0",
+    "@types/bcryptjs": "^3.0.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^25.9.3",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "autoprefixer": "^10.5.0",
+    "tailwindcss": "^4.3.0",
+    "tsx": "^4.22.4",
+    "turbo": "^2.9.18",
+    "typescript": "~6.0.3",
+    "vite": "^8.0.16"
+  }
+}
+=== EXIT 0
+=== LOG
+73230d1 [codex] Add platform kit contracts (#164)
+28c6e4a [codex] Add Spin Street Bit Beast runtime (#163)
+257c5fa refile: move character sprites from misc/ to characters/
+8798940 Activate Prismtek-site arcade games and polish Spin Street (#160)
+c76a6ad Add porting kit workspace placeholder
+=== STATUS
+UU package.json
+A  scripts/download-porting-kits.mjs
+A  scripts/smoke-dual-screen.mjs
+A  scripts/validate-platforms.mjs
+A  scripts/verify-porting-kits.mjs
+?? addr-npm.txt
+?? commit-scripts-done.txt
+?? commit-scripts-output.txt
+?? commit-scripts.vbs
+?? diag-npm-done.txt
+?? diag-npm-output.txt
+?? diag-npm.vbs
+?? diag-output.txt
+?? diag-ran.txt
+?? diag.vbs
+?? do-commit-done.txt
+?? do-commit-output.txt
+?? do-commit.vbs
+?? find-npm-done.txt
+?? find-npm-output.txt
+?? find-npm.vbs
+?? find-npm2-done.txt
+?? find-npm2-output.txt
+?? find-npm2.vbs
+?? find-npm3-done.txt
+?? find-npm3-output.txt
+?? find-npm3.bat
+?? find-npm4.bat
+?? find-npm5-done.txt
+?? find-npm5-output.txt
+?? find-npm5.bat
+?? force-commit.bat
+?? force-commit.ps1
+?? get-remote-pkg.vbs
+?? git-push-done.txt
+?? git-push-output.txt
+?? git-push.vbs
+?? gitbash-npm.txt
+?? kill-and-commit.bat
+?? kill-and-commit.ps1
+?? nuke-and-commit.bat
+?? nuke-and-commit.ps1
+?? pop-and-commit.vbs
+?? pop-commit-done.txt
+?? pop-commit-output.txt
+?? pull-and-push.vbs
+?? pull-push-done.txt
+?? pull-push-now-done.txt
+?? pull-push-now-output.txt
+?? pull-push-now.vbs
+?? pull-push-output.txt
+?? pull-push2-done.txt
+?? pull-push2-output.txt
+?? pull-push2.vbs
+?? push-now-done.txt
+?? push-now-output.txt
+?? push-now.vbs
+?? pwsh-npm.txt
+?? read-output.vbs
+?? rebase-continue-done.txt
+?? rebase-continue-output.txt
+?? rebase-continue.vbs
+?? refile-commit-noverify.bat
+?? refile-sprites.bat
+?? refile-sprites.ps1
+?? run-silent.vbs
+?? run-validate.bat
+?? stash-pull-push-done.txt
+?? stash-pull-push-output.txt
+?? stash-pull-push.vbs
+?? stash-rebase-done.txt
+?? stash-rebase-output.txt
+?? stash-rebase-push.vbs
+?? validate-all-output.txt
+?? validate-all.bat
+?? validate-all.ps1
+?? validate-batch-done.txt
+?? validate-batch-done2.txt
+?? validate-result.txt
+?? validate-silent-done.txt
+?? validate-silent.vbs
+?? wsl-npm.txt
+=== END 06/15/2026 11:08:22
+>>>>>>> 5e6ea9e (chore: update configuration files and workflows)

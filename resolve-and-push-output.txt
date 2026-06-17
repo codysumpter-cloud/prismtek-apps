@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿=== START 06/15/2026 11:09:48
 add exit: 0
 M  package.json
@@ -114,3 +115,121 @@ ff58ed6 feat: add platform, porting-kit, dual-screen, and game-support validatio
 257c5fa refile: move character sprites from misc/ to characters/
 8798940 Activate Prismtek-site arcade games and polish Spin Street (#160)
 === END 06/15/2026 11:09:50
+=======
+﻿=== START 06/15/2026 11:09:48
+add exit: 0
+M  package.json
+A  scripts/download-porting-kits.mjs
+A  scripts/smoke-dual-screen.mjs
+A  scripts/validate-platforms.mjs
+A  scripts/verify-porting-kits.mjs
+?? addr-npm.txt
+?? commit-scripts-done.txt
+?? commit-scripts-output.txt
+?? commit-scripts.vbs
+?? diag-npm-done.txt
+?? diag-npm-output.txt
+?? diag-npm.vbs
+?? diag-output.txt
+?? diag-ran.txt
+?? diag.vbs
+?? do-commit-done.txt
+?? do-commit-output.txt
+?? do-commit.vbs
+?? find-npm-done.txt
+?? find-npm-output.txt
+?? find-npm.vbs
+?? find-npm2-done.txt
+?? find-npm2-output.txt
+?? find-npm2.vbs
+?? find-npm3-done.txt
+?? find-npm3-output.txt
+?? find-npm3.bat
+?? find-npm4.bat
+?? find-npm5-done.txt
+?? find-npm5-output.txt
+?? find-npm5.bat
+?? force-commit.bat
+?? force-commit.ps1
+?? get-remote-pkg-done.txt
+?? get-remote-pkg-output.txt
+?? get-remote-pkg.vbs
+?? git-push-done.txt
+?? git-push-output.txt
+?? git-push.vbs
+?? gitbash-npm.txt
+?? kill-and-commit.bat
+?? kill-and-commit.ps1
+?? nuke-and-commit.bat
+?? nuke-and-commit.ps1
+?? pop-and-commit.vbs
+?? pop-commit-done.txt
+?? pop-commit-output.txt
+?? pull-and-push.vbs
+?? pull-push-done.txt
+?? pull-push-now-done.txt
+?? pull-push-now-output.txt
+?? pull-push-now.vbs
+?? pull-push-output.txt
+?? pull-push2-done.txt
+?? pull-push2-output.txt
+?? pull-push2.vbs
+?? push-now-done.txt
+?? push-now-output.txt
+?? push-now.vbs
+?? pwsh-npm.txt
+?? read-output.vbs
+?? rebase-continue-done.txt
+?? rebase-continue-output.txt
+?? rebase-continue.vbs
+?? refile-commit-noverify.bat
+?? refile-sprites.bat
+?? refile-sprites.ps1
+?? resolve-and-push.vbs
+?? run-silent.vbs
+?? run-validate.bat
+?? stash-pull-push-done.txt
+?? stash-pull-push-output.txt
+?? stash-pull-push.vbs
+?? stash-rebase-done.txt
+?? stash-rebase-output.txt
+?? stash-rebase-push.vbs
+?? validate-all-output.txt
+?? validate-all.bat
+?? validate-all.ps1
+?? validate-batch-done.txt
+?? validate-batch-done2.txt
+?? validate-result.txt
+?? validate-silent-done.txt
+?? validate-silent.vbs
+?? wsl-npm.txt
+[detached HEAD ff58ed6] feat: add platform, porting-kit, dual-screen, and game-support validation scripts
+ 5 files changed, 172 insertions(+), 1 deletion(-)
+ create mode 100644 scripts/download-porting-kits.mjs
+ create mode 100644 scripts/smoke-dual-screen.mjs
+ create mode 100644 scripts/validate-platforms.mjs
+ create mode 100644 scripts/verify-porting-kits.mjs
+git : Successfully rebased and updated refs/heads/main.
+At line:1 char:259
++ ... tus --short 2>&1); $continueOut = (git rebase --continue 2>&1); $cont ...
++                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Successfully re...efs/heads/main.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+rebase-continue exit: 0
+git : To https://github.com/codysumpter-cloud/prismtek-apps.git
+At line:1 char:403
++ ... e-continue exit: ' + $continueExit; $pushOut = (git push 2>&1); $push ...
++                                                     ~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (To https://gith...ismtek-apps.git:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+   73230d1..ff58ed6  main -> main
+push exit: 0
+ff58ed6 feat: add platform, porting-kit, dual-screen, and game-support validation scripts
+73230d1 [codex] Add platform kit contracts (#164)
+28c6e4a [codex] Add Spin Street Bit Beast runtime (#163)
+257c5fa refile: move character sprites from misc/ to characters/
+8798940 Activate Prismtek-site arcade games and polish Spin Street (#160)
+=== END 06/15/2026 11:09:50
+>>>>>>> 5e6ea9e (chore: update configuration files and workflows)

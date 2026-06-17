@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 name: ci
 
 on:
@@ -129,3 +130,133 @@ jobs:
         with:
           name: ci-build-log
           path: build.log
+=======
+name: ci
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - feat/**
+      - fix/**
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Validate key files exist
+        run: |
+          test -f README.md
+          test -f package.json
+          test -f package-lock.json
+          test -f turbo.json
+          test -d apps
+          test -d games
+          test -d packages
+          test -f apps/web/package.json
+          test -f apps/api/package.json
+          test -f apps/bemore-macos/package.json
+          test -f apps/bemore-macos/server.ts
+          test -d apps/prismds-os
+          test -f apps/prismds-os/tools/prismds.mjs
+          test -f integrations/buddy-chat/package.json
+          test -f integrations/buddy-chat/src/server.mjs
+          test -f integrations/buddy-chat/scripts/validate.mjs
+          test -f games/pixel-fruit-arena/package.json
+          test -f games/tamernet-battle-sandbox/package.json
+          test -f games/spin-street-showdown/package.json
+          test -f games/flappy-pixel/package.json
+          test -f games/crossy-pixel/package.json
+          test -f games/pixel-snake/package.json
+          test -f games/neon-brick-breaker/package.json
+          test -f games/pixel-stacker/package.json
+          test -f packages/core/package.json
+          test -f packages/app-factory/package.json
+          test -f packages/sandbox/package.json
+          test -f packages/agent-protocol/package.json
+          test -f packages/workspace-core/package.json
+          test -f packages/receipts-core/package.json
+
+      - name: Validate PrismDS layer
+        run: |
+          node apps/prismds-os/tools/prismds.mjs check
+          node apps/prismds-os/tools/prismds.mjs build
+          bash -n apps/prismds-os/scripts/*.sh
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Linux Tailwind native binding
+        if: runner.os == 'Linux'
+        run: npm install --no-save @tailwindcss/oxide-linux-x64-gnu@4.3.0
+
+      - name: Validate Prismtek Arcade roster docs
+        run: node games/_shared/prismtek-arcade/validate-game-roster.mjs
+
+      - name: Validate Pixel Fruit Arena
+        run: |
+          npm --prefix games/pixel-fruit-arena test
+          python3 games/pixel-fruit-arena/tools/validate_sprites.py games/pixel-fruit-arena/assets/characters/prismtek_placeholder_character.json
+          npm --prefix games/pixel-fruit-arena run build
+
+      - name: Validate browser games and DS source receipts
+        run: |
+          npm --prefix games/tamernet-battle-sandbox test
+          npm --prefix games/spin-street-showdown test
+          node games/_shared/prismtek-arcade/validate-ds-homebrew.mjs \
+            games/pixel-fruit-arena \
+            games/tamernet-battle-sandbox \
+            games/spin-street-showdown
+
+      - name: Validate Prismtek-site arcade imports
+        run: |
+          npm --prefix games/flappy-pixel test
+          npm --prefix games/crossy-pixel test
+          npm --prefix games/pixel-snake test
+          npm --prefix games/neon-brick-breaker test
+          npm --prefix games/pixel-stacker test
+
+      - name: Validate Buddy Chat app
+        run: node integrations/buddy-chat/scripts/validate.mjs
+
+      - name: Typecheck web app
+        run: npm --workspace apps/web run lint
+
+      - name: Typecheck shared packages
+        run: |
+          npm --workspace packages/core run lint
+          npm --workspace packages/app-factory run lint
+          npm --workspace packages/sandbox run lint
+          npm --workspace packages/agent-protocol run lint
+          npm --workspace packages/workspace-core run lint
+          npm --workspace packages/receipts-core run lint
+
+      - name: Typecheck BeMore Mac app
+        run: npm --workspace apps/bemore-macos run lint
+
+      - name: Build repository
+        run: |
+          set -o pipefail
+          npm run build 2>&1 | tee build.log
+
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ci-build-log
+          path: build.log
+>>>>>>> 5e6ea9e (chore: update configuration files and workflows)

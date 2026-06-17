@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "editor.formatOnSave": true,
   "files.eol": "\n",
@@ -17,3 +18,16 @@
   },
   "typescript.tsdk": "node_modules/typescript/lib"
 }
+=======
+{
+  "mcp.servers": {
+    "pixellab": {
+      "url": "https://api.pixellab.ai/mcp",
+      "type": "http",
+      "headers": {
+        "Authorization": "Bearer 9469c6d1-c8d7-4429-b757-ad930059b288"
+      }
+    }
+  }
+}
+>>>>>>> 5e6ea9e (chore: update configuration files and workflows)

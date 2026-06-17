@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 === find-npm5 Mon 06/15/2026 10:45:04.67 === 
 --- where /r C:\Users\cody_ npm.cmd --- 
 C:\Users\cody_\AppData\Local\OpenAI\Codex\runtimes\cua_node\789504f803e82e2b\bin\npm.cmd
@@ -11,3 +12,18 @@ C:\Users\cody_\AppData\Local\OpenAI\Codex\bin\5b9024f90663758b\node.exe
 C:\Users\cody_\AppData\Local\OpenAI\Codex\runtimes\cua_node\789504f803e82e2b\bin\node.exe
 --- where /r C:\Program Files nodejs --- 
 INFO: Could not find files for the given pattern(s).
+=======
+=== find-npm5 Mon 06/15/2026 10:45:04.67 === 
+--- where /r C:\Users\cody_ npm.cmd --- 
+C:\Users\cody_\AppData\Local\OpenAI\Codex\runtimes\cua_node\789504f803e82e2b\bin\npm.cmd
+C:\Users\cody_\AppData\Local\OpenAI\Codex\runtimes\cua_node\789504f803e82e2b\bin\node_modules\corepack\shims\npm.cmd
+C:\Users\cody_\AppData\Local\OpenAI\Codex\runtimes\cua_node\789504f803e82e2b\bin\node_modules\corepack\shims\nodewin\npm.cmd
+C:\Users\cody_\AppData\Local\OpenAI\Codex\runtimes\cua_node\789504f803e82e2b\bin\node_modules\npm\bin\npm.cmd
+--- where /r C:\Users\cody_ node.exe --- 
+C:\Users\cody_\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe
+C:\Users\cody_\AppData\Local\OpenAI\Codex\bin\node.exe
+C:\Users\cody_\AppData\Local\OpenAI\Codex\bin\5b9024f90663758b\node.exe
+C:\Users\cody_\AppData\Local\OpenAI\Codex\runtimes\cua_node\789504f803e82e2b\bin\node.exe
+--- where /r C:\Program Files nodejs --- 
+INFO: Could not find files for the given pattern(s).
+>>>>>>> 5e6ea9e (chore: update configuration files and workflows)

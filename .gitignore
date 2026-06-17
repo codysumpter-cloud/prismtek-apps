@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 node_modules/
 build/
 dist/
@@ -21,3 +22,21 @@ third_party/local/
 *.elf
 *.map
 *.o
+=======
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.turbo/
+.env*
+!.env.example
+apps/bemore-ios-native/BundledModels/
+
+# Nintendo DS homebrew build outputs
+*.nds
+*.elf
+*.map
+*.o
+>>>>>>> 5e6ea9e (chore: update configuration files and workflows)

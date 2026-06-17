@@ -31,4 +31,8 @@
     "baseUrl": ".",
     "ignoreDeprecations": "6.0"
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 5e6ea9e (chore: update configuration files and workflows)

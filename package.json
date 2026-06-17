@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "name": "prismtek-apps",
   "private": true,
@@ -55,3 +56,59 @@
     "vite": "^8.0.16"
   }
 }
+=======
+{
+  "name": "prismtek-apps",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "packageManager": "npm@10.8.2",
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "postinstall": "npm rebuild @tailwindcss/oxide || true",
+    "prepare": "husky install",
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "clean": "turbo run clean",
+    "porting-kits:download": "node scripts/download-porting-kits.mjs",
+    "porting-kits:verify": "node tools/porting-kits/verify-porting-kits.mjs",
+    "dual-screen:validate": "node tools/dual-screen/validate-dual-screen-configs.mjs",
+    "dual-screen:smoke": "node tools/dual-screen/smoke-dual-screen-runtime.mjs",
+    "platforms:validate": "npm run porting-kits:verify && npm run dual-screen:validate && npm run dual-screen:smoke",
+    "games:validate-support": "node games/_shared/prismtek-arcade/validate-game-roster.mjs"
+  },
+  "dependencies": {
+    "@google/genai": "^2.8.0",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.5.2",
+    "firebase": "^12.14.0",
+    "firebase-admin": "^14.0.0",
+    "jsonwebtoken": "^9.0.3",
+    "lucide-react": "^1.18.0",
+    "motion": "^12.40.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "@prismtek/buddy-core": "file:vendor/buddy-core-contracts"
+  },
+  "devDependencies": {
+    "husky": "^9.0.0",
+    "@types/bcryptjs": "^3.0.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^25.9.3",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "autoprefixer": "^10.5.0",
+    "tailwindcss": "^4.3.0",
+    "tsx": "^4.22.4",
+    "turbo": "^2.9.18",
+    "typescript": "~6.0.3",
+    "vite": "^8.0.16"
+  }
+}
+>>>>>>> 5e6ea9e (chore: update configuration files and workflows)

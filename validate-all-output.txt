@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 === validate-all run Mon 06/15/2026 10:46:12.85 === 
 --- npm install --- 
 npm warn deprecated @types/bcryptjs@3.0.0: This is a stub types definition. bcryptjs provides its own type definitions, so you do not need this installed.
@@ -105,3 +106,112 @@ npm error   npm run
 npm error A complete log of this run can be found in: C:\Users\cody_\AppData\Local\npm-cache\_logs\2026-06-15T14_46_34_407Z-debug-0.log
 games:validate-support exit: 1 
 === DONE Mon 06/15/2026 10:46:34.46 === 
+=======
+=== validate-all run Mon 06/15/2026 10:46:12.85 === 
+--- npm install --- 
+npm warn deprecated @types/bcryptjs@3.0.0: This is a stub types definition. bcryptjs provides its own type definitions, so you do not need this installed.
+npm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+npm warn cleanup Failed to remove some directories [
+npm warn cleanup   [
+npm warn cleanup     '\\\\?\\C:\\Users\\cody_\\prismtek-push\\prismtek-apps\\node_modules\\protobufjs',
+npm warn cleanup     [Error: EBUSY: resource busy or locked, rmdir 'C:\Users\cody_\prismtek-push\prismtek-apps\node_modules\protobufjs'] {
+npm warn cleanup       errno: -4082,
+npm warn cleanup       code: 'EBUSY',
+npm warn cleanup       syscall: 'rmdir',
+npm warn cleanup       path: 'C:\\Users\\cody_\\prismtek-push\\prismtek-apps\\node_modules\\protobufjs'
+npm warn cleanup     }
+npm warn cleanup   ],
+npm warn cleanup   [
+npm warn cleanup     '\\\\?\\C:\\Users\\cody_\\prismtek-push\\prismtek-apps\\node_modules\\rimraf',
+npm warn cleanup     [Error: EPERM: operation not permitted, rmdir 'C:\Users\cody_\prismtek-push\prismtek-apps\node_modules\rimraf'] {
+npm warn cleanup       errno: -4048,
+npm warn cleanup       code: 'EPERM',
+npm warn cleanup       syscall: 'rmdir',
+npm warn cleanup       path: 'C:\\Users\\cody_\\prismtek-push\\prismtek-apps\\node_modules\\rimraf'
+npm warn cleanup     }
+npm warn cleanup   ],
+npm warn cleanup   [
+npm warn cleanup     '\\\\?\\C:\\Users\\cody_\\prismtek-push\\prismtek-apps\\node_modules',
+npm warn cleanup     [Error: EPERM: operation not permitted, rmdir 'C:\Users\cody_\prismtek-push\prismtek-apps\node_modules\google-gax\node_modules\@grpc\grpc-js\build\src'] {
+npm warn cleanup       errno: -4048,
+npm warn cleanup       code: 'EPERM',
+npm warn cleanup       syscall: 'rmdir',
+npm warn cleanup       path: 'C:\\Users\\cody_\\prismtek-push\\prismtek-apps\\node_modules\\google-gax\\node_modules\\@grpc\\grpc-js\\build\\src'
+npm warn cleanup     }
+npm warn cleanup   ],
+npm warn cleanup   [
+npm warn cleanup     '\\\\?\\C:\\Users\\cody_\\prismtek-push\\prismtek-apps\\node_modules\\@firebase',
+npm warn cleanup     [Error: EPERM: operation not permitted, rmdir 'C:\Users\cody_\prismtek-push\prismtek-apps\node_modules\@firebase\firestore\dist\intermediate\lite\firestore\test\unit'] {
+npm warn cleanup       errno: -4048,
+npm warn cleanup       code: 'EPERM',
+npm warn cleanup       syscall: 'rmdir',
+npm warn cleanup       path: 'C:\\Users\\cody_\\prismtek-push\\prismtek-apps\\node_modules\\@firebase\\firestore\\dist\\intermediate\\lite\\firestore\\test\\unit'
+npm warn cleanup     }
+npm warn cleanup   ],
+npm warn cleanup   [
+npm warn cleanup     '\\\\?\\C:\\Users\\cody_\\prismtek-push\\prismtek-apps\\node_modules\\@grpc',
+npm warn cleanup     [Error: EPERM: operation not permitted, rmdir 'C:\Users\cody_\prismtek-push\prismtek-apps\node_modules\@grpc'] {
+npm warn cleanup       errno: -4048,
+npm warn cleanup       code: 'EPERM',
+npm warn cleanup       syscall: 'rmdir',
+npm warn cleanup       path: 'C:\\Users\\cody_\\prismtek-push\\prismtek-apps\\node_modules\\@grpc'
+npm warn cleanup     }
+npm warn cleanup   ]
+npm warn cleanup ]
+npm error code 1
+npm error path C:\Users\cody_\prismtek-push\prismtek-apps\node_modules\esbuild
+npm error command failed
+npm error command C:\WINDOWS\system32\cmd.exe /d /s /c node install.js
+npm error 'node' is not recognized as an internal or external command,
+npm error operable program or batch file.
+npm notice
+npm notice New minor version of npm available! 11.9.0 -> 11.17.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.17.0
+npm notice To update run: npm install -g npm@11.17.0
+npm notice
+npm error A complete log of this run can be found in: C:\Users\cody_\AppData\Local\npm-cache\_logs\2026-06-15T14_46_14_197Z-debug-0.log
+npm install exit: 1 
+--- npm run porting-kits:download --- 
+npm error Missing script: "porting-kits:download"
+npm error
+npm error To see a list of scripts, run:
+npm error   npm run
+npm error A complete log of this run can be found in: C:\Users\cody_\AppData\Local\npm-cache\_logs\2026-06-15T14_46_33_408Z-debug-0.log
+porting-kits:download exit: 1 
+--- npm run platforms:validate --- 
+npm error Missing script: "platforms:validate"
+npm error
+npm error To see a list of scripts, run:
+npm error   npm run
+npm error A complete log of this run can be found in: C:\Users\cody_\AppData\Local\npm-cache\_logs\2026-06-15T14_46_33_641Z-debug-0.log
+platforms:validate exit: 1 
+--- npm run porting-kits:verify --- 
+npm error Missing script: "porting-kits:verify"
+npm error
+npm error To see a list of scripts, run:
+npm error   npm run
+npm error A complete log of this run can be found in: C:\Users\cody_\AppData\Local\npm-cache\_logs\2026-06-15T14_46_33_834Z-debug-0.log
+porting-kits:verify exit: 1 
+--- npm run dual-screen:validate --- 
+npm error Missing script: "dual-screen:validate"
+npm error
+npm error To see a list of scripts, run:
+npm error   npm run
+npm error A complete log of this run can be found in: C:\Users\cody_\AppData\Local\npm-cache\_logs\2026-06-15T14_46_34_024Z-debug-0.log
+dual-screen:validate exit: 1 
+--- npm run dual-screen:smoke --- 
+npm error Missing script: "dual-screen:smoke"
+npm error
+npm error To see a list of scripts, run:
+npm error   npm run
+npm error A complete log of this run can be found in: C:\Users\cody_\AppData\Local\npm-cache\_logs\2026-06-15T14_46_34_214Z-debug-0.log
+dual-screen:smoke exit: 1 
+--- npm run games:validate-support --- 
+npm error Missing script: "games:validate-support"
+npm error
+npm error To see a list of scripts, run:
+npm error   npm run
+npm error A complete log of this run can be found in: C:\Users\cody_\AppData\Local\npm-cache\_logs\2026-06-15T14_46_34_407Z-debug-0.log
+games:validate-support exit: 1 
+=== DONE Mon 06/15/2026 10:46:34.46 === 
+>>>>>>> 5e6ea9e (chore: update configuration files and workflows)
