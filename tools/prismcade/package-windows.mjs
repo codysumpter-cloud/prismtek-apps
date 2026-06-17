@@ -76,6 +76,26 @@ function shellEscapePowerShell(value) {
   return `'${String(value).replaceAll("'", "''")}'`;
 }
 
+function windowsSafeFileName(value) {
+  return String(value)
+    .replace(/[<>:"/\\|?*\x00-\x1f]/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 80) || "Game";
+}
+
+function launchPathForGame(game) {
+  let entrypoint = String(game.entrypoint || "").replaceAll("\\", "/");
+  if (entrypoint.endsWith("/index.html")) {
+    entrypoint = entrypoint.slice(0, -"/index.html".length);
+  } else if (entrypoint.endsWith("index.html")) {
+    entrypoint = entrypoint.slice(0, -"index.html".length);
+  }
+  if (!entrypoint.startsWith("/")) entrypoint = `/${entrypoint}`;
+  if (!entrypoint.endsWith("/")) entrypoint = `${entrypoint}/`;
+  return entrypoint;
+}
+
 function buildLauncherSource() {
   return String.raw`using System;
 using System.Collections.Generic;
@@ -105,7 +125,8 @@ class PrismcadeLauncher
         TcpListener listener = new TcpListener(IPAddress.Loopback, port);
         listener.Start();
 
-        string url = "http://127.0.0.1:" + port + "/apps/prismcade/";
+        string launchPath = ParseLaunchPath(args);
+        string url = "http://127.0.0.1:" + port + launchPath;
         Console.Title = "Prismcade";
         Console.WriteLine("Prismcade is running.");
         Console.WriteLine("Open: " + url);
@@ -133,6 +154,31 @@ class PrismcadeLauncher
             catch { }
         }
         throw new Exception("No open local port found.");
+    }
+
+    static string ParseLaunchPath(string[] args)
+    {
+        string launchPath = "/apps/prismcade/";
+        for (int i = 0; i < args.Length; i++)
+        {
+            string arg = args[i] ?? "";
+            if ((arg == "/open" || arg == "--open") && i + 1 < args.Length)
+            {
+                launchPath = args[i + 1];
+                i++;
+            }
+        }
+        return NormalizeLaunchPath(launchPath);
+    }
+
+    static string NormalizeLaunchPath(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return "/apps/prismcade/";
+        value = value.Trim().Replace('\\', '/');
+        if (value.Contains("..")) return "/apps/prismcade/";
+        if (!value.StartsWith("/")) value = "/" + value;
+        if (!value.Contains(".") && !value.EndsWith("/")) value += "/";
+        return value;
     }
 
     static void OpenBrowser(string url)
@@ -251,9 +297,27 @@ function writeLauncherFiles() {
   const sourcePath = path.join(packageRoot, "PrismcadeLauncher.cs");
   writeText(sourcePath, buildLauncherSource());
 
-  writeText(path.join(packageRoot, "Prismcade.cmd"), `@echo off\r\nsetlocal\r\ncd /d "%~dp0"\r\nif exist Prismcade.exe (\r\n  start "" "%~dp0Prismcade.exe"\r\n) else (\r\n  echo Prismcade.exe was not built.\r\n  echo Trying Python fallback at http://127.0.0.1:4173/apps/prismcade/\r\n  start "" http://127.0.0.1:4173/apps/prismcade/\r\n  python -m http.server 4173 -d www\r\n)\r\n`);
+  writeText(path.join(packageRoot, "Prismcade.cmd"), `@echo off\r\nsetlocal\r\ncd /d "%~dp0"\r\nif exist Prismcade.exe (\r\n  start "" "%~dp0Prismcade.exe" %*\r\n) else (\r\n  echo Prismcade.exe was not built.\r\n  echo Trying Python fallback at http://127.0.0.1:4173/apps/prismcade/\r\n  start "" http://127.0.0.1:4173/apps/prismcade/\r\n  python -m http.server 4173 -d www\r\n)\r\n`);
 
-  writeText(path.join(packageRoot, "README.txt"), `Prismcade Windows Package\r\n\r\n1. Extract the full ZIP.\r\n2. Double-click Prismcade.exe.\r\n3. Pick a game in the Prismcade catalog.\r\n\r\nIf Prismcade.exe is missing, double-click Prismcade.cmd.\r\nThe launcher starts a local-only server on 127.0.0.1 and opens the catalog in your browser.\r\nClose the Prismcade console window to stop it.\r\n`);
+  writeText(path.join(packageRoot, "README.txt"), `Prismcade Windows Package\r\n\r\n1. Extract the full ZIP.\r\n2. Double-click Prismcade.exe to open the catalog.\r\n3. Or double-click Pixel Fruit Arena.cmd to open Pixel Fruit Arena directly.\r\n\r\nMore direct game launchers live in the Launch Games folder.\r\n\r\nIf Prismcade.exe is missing, double-click Prismcade.cmd.\r\nThe launcher starts a local-only server on 127.0.0.1 and opens the catalog or selected game in your browser.\r\nClose the Prismcade console window to stop it.\r\n`);
+}
+
+function writeGameLauncher(file, launchPath, relativeExePath = "Prismcade.exe") {
+  writeText(file, `@echo off\r\nsetlocal\r\ncd /d "%~dp0"\r\nif exist "${relativeExePath}" (\r\n  start "" "%~dp0${relativeExePath}" /open "${launchPath}"\r\n) else (\r\n  echo Prismcade.exe was not found.\r\n  echo Open Prismcade.cmd first, then browse to http://127.0.0.1:4173${launchPath}\r\n  pause\r\n)\r\n`);
+}
+
+function writeGameLaunchers(games) {
+  const launchersRoot = path.join(packageRoot, "Launch Games");
+  ensureDir(launchersRoot);
+  for (const game of games) {
+    const launcherName = `${windowsSafeFileName(game.title)}.cmd`;
+    writeGameLauncher(path.join(launchersRoot, launcherName), launchPathForGame(game), "..\\Prismcade.exe");
+  }
+
+  const pixelFruit = games.find((game) => game.id === "pixel-fruit-arena");
+  if (pixelFruit) {
+    writeGameLauncher(path.join(packageRoot, "Pixel Fruit Arena.cmd"), launchPathForGame(pixelFruit));
+  }
 }
 
 function compileLauncher() {
@@ -315,6 +379,7 @@ function main() {
   }
 
   writeLauncherFiles();
+  writeGameLaunchers(games);
   const exeBuilt = compileLauncher();
   const zipBuilt = createZip();
 
@@ -324,6 +389,7 @@ function main() {
   }
   if (!existsSync(path.join(wwwRoot, "apps/prismcade/index.html"))) throw new Error("Packaged Prismcade catalog missing.");
   if (!existsSync(path.join(packageRoot, "Prismcade.cmd"))) throw new Error("Fallback launcher missing.");
+  if (!existsSync(path.join(packageRoot, "Pixel Fruit Arena.cmd"))) throw new Error("Pixel Fruit Arena direct launcher missing.");
 
   console.log("Prismcade Windows package staged:", packageRoot);
   console.log("Prismcade.exe:", exeBuilt ? "built" : "not built on this platform");

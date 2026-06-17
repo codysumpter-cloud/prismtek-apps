@@ -7,8 +7,8 @@ Static catalog/launcher prototype for the Prismcade platform loop.
 From the repo root on Windows:
 
 ```powershell
-npm run prismcade:validate:all
-npm run prismcade:package:windows
+npm.cmd run prismcade:validate:all
+npm.cmd run prismcade:package:windows
 ```
 
 Then extract:
@@ -24,6 +24,12 @@ Prismcade.exe
 ```
 
 The executable starts a local-only launcher and opens the Prismcade catalog with all manifest-listed games bundled under `www/`.
+
+To open Pixel Fruit Arena directly, double-click:
+
+```txt
+Pixel Fruit Arena.cmd
+```
 
 Full notes: [`docs/prismcade/WINDOWS_PACKAGE.md`](../../docs/prismcade/WINDOWS_PACKAGE.md).
 

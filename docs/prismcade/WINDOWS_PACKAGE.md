@@ -9,8 +9,8 @@ This package exists so players do not need to run a Python server or know repo p
 From the repo root:
 
 ```powershell
-npm run prismcade:validate:all
-npm run prismcade:package:windows
+npm.cmd run prismcade:validate:all
+npm.cmd run prismcade:package:windows
 ```
 
 Expected output:
@@ -26,6 +26,18 @@ Prismcade.exe
 ```
 
 The launcher starts a local-only web server on `127.0.0.1`, opens the Prismcade catalog, and serves all bundled games from the extracted `www/` folder.
+
+To open Pixel Fruit Arena directly, double-click:
+
+```txt
+Pixel Fruit Arena.cmd
+```
+
+Additional direct game launchers live in:
+
+```txt
+Launch Games/
+```
 
 If the executable was not compiled, use the fallback:
 
@@ -57,13 +69,13 @@ Development-only folders such as `node_modules`, `dist`, `artifacts`, and Pixel 
 
 1. Build or download `Prismcade-Windows.zip`.
 2. Extract the ZIP.
-3. Double-click `Prismcade.exe`.
-4. Pick a game from the Prismcade catalog.
+3. Double-click `Prismcade.exe` for the catalog, or `Pixel Fruit Arena.cmd` for Pixel Fruit Arena.
+4. Pick a game from the Prismcade catalog if you opened the catalog.
 5. Close the Prismcade console window when done.
 
 ## Future release automation
 
-A follow-up PR should add a GitHub Actions workflow or release job that runs `npm run prismcade:package:windows` on `windows-latest` and uploads `dist/prismcade-windows/Prismcade-Windows.zip` as a release artifact.
+A follow-up PR should add a GitHub Actions workflow or release job that runs `npm.cmd run prismcade:package:windows` on `windows-latest` and uploads `dist/prismcade-windows/Prismcade-Windows.zip` as a release artifact.
 
 ## Honest limitation
 
