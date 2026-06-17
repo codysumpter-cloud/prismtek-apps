@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 
 import { CHARACTER_SPRITES } from "../src/assets/assetManifest.js";
 import { COSMETICS, createCharacter } from "../src/characters/characterCreator.js";
+import { PRISMCADE_PLAYABLE_ROSTER, PRISMCADE_SPRITE_KEYS } from "../src/characters/prismcadeRoster.js";
 import { applyAttack, checkRingOut, variantFor, awakenedAbilityFor } from "../src/combat/combatSystem.js";
 import { FRUITS } from "../src/fruits/fruits.js";
 import { PRISMTEK_FRUIT_ENCYCLOPEDIA } from "../src/fruits/prismtekFruitEncyclopedia.js";
@@ -30,6 +31,11 @@ for (const fruit of Object.values(FRUITS)) {
 
 assert.ok(COSMETICS.spriteKeys.includes("male_basic"), "male body must be selectable");
 assert.ok(COSMETICS.spriteKeys.includes("female_basic"), "female body must be selectable");
+assert.ok(PRISMCADE_PLAYABLE_ROSTER.length >= 7, "Prismcade PixelLab roster needs Buddy plus humanoid source characters");
+for (const spriteKey of PRISMCADE_SPRITE_KEYS) {
+  assert.ok(COSMETICS.spriteKeys.includes(spriteKey), `${spriteKey} must be selectable`);
+  assert.ok(CHARACTER_SPRITES[spriteKey], `${spriteKey} must have a runtime sprite manifest`);
+}
 assert.ok(COSMETICS.hairStyles.length >= 8, "hair customization needs imported-style options");
 assert.ok(COSMETICS.clothingStyles.length >= 8, "clothing customization needs imported-style options");
 assert.ok(CHARACTER_SPRITES.male_basic?.customizable, "male sprite must be marked customizable");
@@ -43,10 +49,29 @@ for (const key of ["male_basic", "female_basic"]) {
     assert.ok(existsSync(path.join(root, sprite.animations[animation].src)), `missing ${key}/${animation} sprite sheet`);
   }
 }
+for (const character of PRISMCADE_PLAYABLE_ROSTER) {
+  const sprite = CHARACTER_SPRITES[character.spriteKey];
+  assert.equal(sprite.frameWidth, 64, `${character.spriteKey} should use Prismcade 64px frame width`);
+  assert.equal(sprite.frameHeight, 64, `${character.spriteKey} should use Prismcade 64px frame height`);
+  assert.equal(sprite.source.sourceVariantId, character.sourceVariantId, `${character.spriteKey} needs PixelLab source provenance`);
+  for (const animation of ["idle", "walk", "run", "jump", "fall", "attack", "special", "hurt", "knockout", "victory"]) {
+    assert.ok(sprite.animations[animation], `${character.spriteKey} missing ${animation} animation`);
+    assert.ok(existsSync(path.join(root, sprite.animations[animation].src)), `missing ${character.spriteKey}/${animation} sprite sheet`);
+  }
+}
 const male = createCharacter({ spriteKey: "male_basic", appearance: { hairStyle: "mohawk", clothingStyle: "armor" } });
 const female = createCharacter({ spriteKey: "female_basic", appearance: { hairStyle: "ponytail", clothingStyle: "skirt" } });
+const prismcadeFighter = createCharacter({
+  name: PRISMCADE_PLAYABLE_ROSTER[0].defaultFighter.name,
+  spriteKey: PRISMCADE_PLAYABLE_ROSTER[0].spriteKey,
+  combatStyle: PRISMCADE_PLAYABLE_ROSTER[0].defaultFighter.combatStyle,
+  appearance: PRISMCADE_PLAYABLE_ROSTER[0].defaultFighter.appearance,
+  ownedFruits: Object.keys(FRUITS),
+  equippedFruit: PRISMCADE_PLAYABLE_ROSTER[0].defaultFighter.fruitId
+});
 assert.equal(male.sprite_key, "male_basic");
 assert.equal(female.sprite_key, "female_basic");
+assert.equal(prismcadeFighter.sprite_key, PRISMCADE_PLAYABLE_ROSTER[0].spriteKey);
 assert.equal(male.appearance.clothingStyle, "armor");
 assert.equal(female.appearance.clothingStyle, "skirt");
 
@@ -96,6 +121,7 @@ assert.ok(manifest.display, "manifest needs display mode");
 const serviceWorker = await readFile(path.join(root, "sw.js"), "utf8");
 assert.match(serviceWorker, /CACHE_NAME/, "service worker needs a named cache");
 assert.match(serviceWorker, /prismtekFruitEncyclopedia/, "service worker must cache encyclopedia runtime modules");
+assert.match(serviceWorker, /prismcadeRoster/, "service worker must cache Prismcade roster module");
 assert.match(serviceWorker, /male-basic\.svg/, "service worker must cache male character sheet");
 assert.match(serviceWorker, /female-basic\.svg/, "service worker must cache female character sheet");
 assert.match(serviceWorker, /fetch/, "service worker needs fetch handling");
@@ -154,15 +180,15 @@ const match = createMatch({
   stage: SKY_RUINS,
   fruits: FRUITS,
   players: [
-    { slot: 0, character: createCharacter({ name: "P1", spriteKey: "male_basic", ownedFruits: Object.keys(FRUITS), equippedFruit: "flame" }), fruitId: "flame" },
-    { slot: 1, character: createCharacter({ name: "P2", spriteKey: "female_basic", ownedFruits: Object.keys(FRUITS), equippedFruit: "volt" }), fruitId: "volt" }
+    { slot: 0, character: createCharacter({ name: "P1", spriteKey: "prismcade_prismtek", ownedFruits: Object.keys(FRUITS), equippedFruit: "flame" }), fruitId: "flame" },
+    { slot: 1, character: createCharacter({ name: "P2", spriteKey: "prismcade_female_blue_hoodie", ownedFruits: Object.keys(FRUITS), equippedFruit: "volt" }), fruitId: "volt" }
   ]
 });
 
 let snapshot = match.snapshot();
 assert.equal(snapshot.fighters.length, 2, "2P match should create two fighters");
-assert.equal(snapshot.fighters[0].spriteKey, "male_basic", "male fighter should be playable");
-assert.equal(snapshot.fighters[1].spriteKey, "female_basic", "female fighter should be playable");
+assert.equal(snapshot.fighters[0].spriteKey, "prismcade_prismtek", "Prismtek fighter should be playable");
+assert.equal(snapshot.fighters[1].spriteKey, "prismcade_female_blue_hoodie", "Female Blue Hoodie fighter should be playable");
 snapshot.fighters[0].invulnerable = 0;
 snapshot.fighters[1].invulnerable = 0;
 snapshot.fighters[0].x = 300;
@@ -185,7 +211,7 @@ assert.equal(ringout.health, ringout.maxHealth, "ring-out should reset health");
 snapshot.fighters[1].stocks = 0;
 assert.equal(match.isComplete(), true, "match should complete when one fighter remains");
 
-console.log("Tests passed: character customization, fitted stage backgrounds, encyclopedia fruits, awakened moves, haki, health HUD data, directional modifiers, match combat, ring-outs, completion, release guard.");
+console.log("Tests passed: character customization, Prismcade PixelLab roster, fitted stage backgrounds, encyclopedia fruits, awakened moves, haki, health HUD data, directional modifiers, match combat, ring-outs, completion, release guard.");
 
 function createTestFighter(slot, fruitId, x, y) {
   return {

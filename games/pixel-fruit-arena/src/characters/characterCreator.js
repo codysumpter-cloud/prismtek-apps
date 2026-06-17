@@ -1,13 +1,15 @@
 import { bodyIds, clothingStyleIds, hairStyleIds } from "../assets/assetCatalog.js";
+import { PRISMCADE_CLOTHING_STYLES, PRISMCADE_HAIR_STYLES, PRISMCADE_ROSTER_PRESETS, PRISMCADE_SPRITE_KEYS } from "./prismcadeRoster.js";
 
 const FALLBACK_HAIR = ["crest", "bob", "spikes", "cap", "long", "ponytail", "mohawk", "hood"];
 const FALLBACK_CLOTHING = ["runner", "jacket", "hoodie", "armor", "robe", "skirt", "gi", "coat"];
 const FALLBACK_BODIES = ["male_basic", "female_basic", "pink", "owlet", "dude"];
+const unique = (values) => [...new Set(values.filter(Boolean))];
 
 export const COSMETICS = {
-  hairStyles: hairStyleIds(FALLBACK_HAIR),
-  clothingStyles: clothingStyleIds(FALLBACK_CLOTHING),
-  spriteKeys: bodyIds(FALLBACK_BODIES),
+  hairStyles: unique([...hairStyleIds(FALLBACK_HAIR), ...PRISMCADE_HAIR_STYLES]),
+  clothingStyles: unique([...clothingStyleIds(FALLBACK_CLOTHING), ...PRISMCADE_CLOTHING_STYLES]),
+  spriteKeys: unique([...bodyIds(FALLBACK_BODIES), ...PRISMCADE_SPRITE_KEYS]),
   combatStyles: ["duelist", "brawler", "striker", "ranger", "guardian", "trickster"],
   hairColors: ["#5ee7ff", "#f15bb5", "#f4c542", "#2dd36f", "#f7f7ff", "#1b1f3b", "#7f5539", "#ffafcc"],
   skinTones: ["#5b3926", "#8d563f", "#b97855", "#d8a17c", "#f1c6a8"],
@@ -17,7 +19,8 @@ export const COSMETICS = {
     { hairStyle: "crest", clothingStyle: "runner", hairColor: "#5ee7ff", skinTone: "#8d563f", outfitPrimary: "#26344f", outfitSecondary: "#f4c542", accessoryColor: "#ef476f" },
     { hairStyle: "spikes", clothingStyle: "jacket", hairColor: "#f4c542", skinTone: "#b97855", outfitPrimary: "#512d6d", outfitSecondary: "#72ddf7", accessoryColor: "#06d6a0" },
     { hairStyle: "bob", clothingStyle: "skirt", hairColor: "#f15bb5", skinTone: "#d8a17c", outfitPrimary: "#1f7a5c", outfitSecondary: "#f7f7ff", accessoryColor: "#ffd166" },
-    { hairStyle: "cap", clothingStyle: "hoodie", hairColor: "#2dd36f", skinTone: "#5b3926", outfitPrimary: "#8f2d56", outfitSecondary: "#28536b", accessoryColor: "#72ddf7" }
+    { hairStyle: "cap", clothingStyle: "hoodie", hairColor: "#2dd36f", skinTone: "#5b3926", outfitPrimary: "#8f2d56", outfitSecondary: "#28536b", accessoryColor: "#72ddf7" },
+    ...PRISMCADE_ROSTER_PRESETS
   ]
 };
 

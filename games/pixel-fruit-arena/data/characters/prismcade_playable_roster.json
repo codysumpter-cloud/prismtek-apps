@@ -1,0 +1,212 @@
+{
+  "schemaVersion": "pixel-fruit-arena-prismcade-playable-roster-v0",
+  "description": "Pixel Fruit Arena runtime roster promoted from Prismcade/Pixellab character sources. Entries are playable in the browser game and keep provenance back to the Prismcade character factory registry.",
+  "sourceRegistries": {
+    "pixellabCharacters": "data/integrations/pixellab-character-export-registry.json",
+    "prismcadeCharacterTemplates": "data/prismcade/character-template-registry.json",
+    "engineAdapters": "data/integrations/game-engine-adapters.json"
+  },
+  "runtimeRoot": "games/pixel-fruit-arena",
+  "engineAdapterDecision": {
+    "liveRuntime": "pixel-fruit-arena-browser-canvas",
+    "openbor": "reference-only-contract",
+    "mugen": "local-reference-only; do not import third-party content packs",
+    "ikemen": "reference-only-contract",
+    "notes": [
+      "OpenBOR is useful for future original brawler experiments, but Pixel Fruit Arena remains a browser platform fighter in this PR.",
+      "MUGEN downloads may contain third-party characters and stages, so they are not copied into Prismtek game paths.",
+      "Ikemen remains the safer future research target for original fighter-system experiments once an adapter emits receipts."
+    ]
+  },
+  "requiredRuntimeAnimations": ["idle", "walk", "run", "jump", "fall", "attack", "special", "hurt", "knockout", "victory"],
+  "characters": [
+    {
+      "id": "buddy",
+      "displayName": "Buddy",
+      "rosterClass": "mascot",
+      "sourceVariantId": "buddy",
+      "sourceRegistryPath": "data/integrations/pixellab-character-export-registry.json#characters/buddy",
+      "templateFamilyId": "buddy-core",
+      "spriteKey": "prismcade_buddy",
+      "runtimeManifest": "games/pixel-fruit-arena/assets/characters/prismcade-pixellab/prismcade_buddy/manifest.json",
+      "animationFidelity": "source-animation-normalized",
+      "playableStatus": "playable-runtime-ready-needs-polish-pass",
+      "defaultFighter": {
+        "name": "Buddy",
+        "fruitId": "volt",
+        "combatStyle": "trickster",
+        "appearance": {
+          "hairStyle": "antenna_nubs",
+          "clothingStyle": "buddy_shell",
+          "hairColor": "#72ddf7",
+          "skinTone": "#9ff3df",
+          "outfitPrimary": "#18b7a8",
+          "outfitSecondary": "#dffcf5",
+          "accessoryColor": "#ffd166"
+        }
+      }
+    },
+    {
+      "id": "prismtek",
+      "displayName": "Prismtek",
+      "rosterClass": "humanoid",
+      "sourceVariantId": "prismtek",
+      "sourceRegistryPath": "data/integrations/pixellab-character-export-registry.json#characters/prismtek",
+      "templateFamilyId": "prismtek-player",
+      "spriteKey": "prismcade_prismtek",
+      "runtimeManifest": "games/pixel-fruit-arena/assets/characters/prismcade-pixellab/prismcade_prismtek/manifest.json",
+      "animationFidelity": "source-animation-normalized",
+      "playableStatus": "playable-runtime-ready-needs-polish-pass",
+      "defaultFighter": {
+        "name": "Prismtek",
+        "fruitId": "flame",
+        "combatStyle": "duelist",
+        "appearance": {
+          "hairStyle": "low_taper",
+          "clothingStyle": "arcade_jacket",
+          "hairColor": "#1b1f3b",
+          "skinTone": "#b97855",
+          "outfitPrimary": "#28536b",
+          "outfitSecondary": "#72ddf7",
+          "accessoryColor": "#ffd166"
+        }
+      }
+    },
+    {
+      "id": "prismtek-jones",
+      "displayName": "Prismtek Jones",
+      "rosterClass": "humanoid",
+      "sourceVariantId": "prismtek-jones",
+      "sourceRegistryPath": "data/integrations/pixellab-character-export-registry.json#characters/prismtek-jones",
+      "templateFamilyId": "prismtek-player",
+      "spriteKey": "prismcade_prismtek_jones",
+      "runtimeManifest": "games/pixel-fruit-arena/assets/characters/prismcade-pixellab/prismcade_prismtek_jones/manifest.json",
+      "animationFidelity": "rotation-derived",
+      "playableStatus": "playable-runtime-ready-animation-jobs-needed",
+      "defaultFighter": {
+        "name": "Prismtek Jones",
+        "fruitId": "gravity",
+        "combatStyle": "guardian",
+        "appearance": {
+          "hairStyle": "normal_hair",
+          "clothingStyle": "jacket",
+          "hairColor": "#1b1f3b",
+          "skinTone": "#8d563f",
+          "outfitPrimary": "#26344f",
+          "outfitSecondary": "#ef476f",
+          "accessoryColor": "#72ddf7"
+        }
+      }
+    },
+    {
+      "id": "female-blue-hoodie",
+      "displayName": "Female Blue Hoodie",
+      "rosterClass": "humanoid",
+      "sourceVariantId": "female-character-blue-hoodie",
+      "sourceRegistryPath": "data/integrations/pixellab-character-export-registry.json#characters/female-character-blue-hoodie",
+      "templateFamilyId": "female-blue-hoodie-player",
+      "spriteKey": "prismcade_female_blue_hoodie",
+      "runtimeManifest": "games/pixel-fruit-arena/assets/characters/prismcade-pixellab/prismcade_female_blue_hoodie/manifest.json",
+      "animationFidelity": "rotation-derived",
+      "playableStatus": "playable-runtime-ready-animation-jobs-needed",
+      "defaultFighter": {
+        "name": "Blue Hoodie",
+        "fruitId": "frost",
+        "combatStyle": "ranger",
+        "appearance": {
+          "hairStyle": "ponytail",
+          "clothingStyle": "blue_hoodie",
+          "hairColor": "#7f5539",
+          "skinTone": "#f1c6a8",
+          "outfitPrimary": "#28536b",
+          "outfitSecondary": "#72ddf7",
+          "accessoryColor": "#f7f7ff"
+        }
+      }
+    },
+    {
+      "id": "ponytail-guy",
+      "displayName": "Ponytail Guy",
+      "rosterClass": "humanoid",
+      "sourceVariantId": "ponytail-guy",
+      "sourceRegistryPath": "data/integrations/pixellab-character-export-registry.json#characters/ponytail-guy",
+      "templateFamilyId": "ponytail-avatar",
+      "spriteKey": "prismcade_ponytail_guy",
+      "runtimeManifest": "games/pixel-fruit-arena/assets/characters/prismcade-pixellab/prismcade_ponytail_guy/manifest.json",
+      "animationFidelity": "rotation-derived",
+      "playableStatus": "playable-runtime-ready-animation-jobs-needed",
+      "defaultFighter": {
+        "name": "Ponytail Guy",
+        "fruitId": "rubber",
+        "combatStyle": "brawler",
+        "appearance": {
+          "hairStyle": "ponytail",
+          "clothingStyle": "coat",
+          "hairColor": "#1b1f3b",
+          "skinTone": "#d8a17c",
+          "outfitPrimary": "#512d6d",
+          "outfitSecondary": "#f4c542",
+          "accessoryColor": "#06d6a0"
+        }
+      }
+    },
+    {
+      "id": "prismtek-pixel-god",
+      "displayName": "Prismtek Pixel God",
+      "rosterClass": "humanoid",
+      "sourceVariantId": "prismtek-pixel-god",
+      "sourceRegistryPath": "data/integrations/pixellab-character-export-registry.json#characters/prismtek-pixel-god",
+      "templateFamilyId": "prismtek-player",
+      "spriteKey": "prismcade_prismtek_pixel_god",
+      "runtimeManifest": "games/pixel-fruit-arena/assets/characters/prismcade-pixellab/prismcade_prismtek_pixel_god/manifest.json",
+      "animationFidelity": "rotation-derived",
+      "playableStatus": "playable-runtime-ready-animation-jobs-needed",
+      "defaultFighter": {
+        "name": "Pixel God",
+        "fruitId": "shadow",
+        "combatStyle": "striker",
+        "appearance": {
+          "hairStyle": "pixel_crown",
+          "clothingStyle": "pixel_god",
+          "hairColor": "#f4c542",
+          "skinTone": "#d8a17c",
+          "outfitPrimary": "#111827",
+          "outfitSecondary": "#ffd166",
+          "accessoryColor": "#72ddf7"
+        }
+      }
+    },
+    {
+      "id": "prismbot-pixel-god",
+      "displayName": "PrismBot Pixel God",
+      "rosterClass": "humanoid",
+      "sourceVariantId": "prismbot-pixel-god",
+      "sourceRegistryPath": "data/integrations/pixellab-character-export-registry.json#characters/prismbot-pixel-god",
+      "templateFamilyId": "buddy-core",
+      "spriteKey": "prismcade_prismbot_pixel_god",
+      "runtimeManifest": "games/pixel-fruit-arena/assets/characters/prismcade-pixellab/prismcade_prismbot_pixel_god/manifest.json",
+      "animationFidelity": "rotation-derived",
+      "playableStatus": "playable-runtime-ready-animation-jobs-needed",
+      "defaultFighter": {
+        "name": "PrismBot",
+        "fruitId": "volt",
+        "combatStyle": "guardian",
+        "appearance": {
+          "hairStyle": "robot_glow",
+          "clothingStyle": "prismbot_armor",
+          "hairColor": "#72ddf7",
+          "skinTone": "#adb5bd",
+          "outfitPrimary": "#26344f",
+          "outfitSecondary": "#06d6a0",
+          "accessoryColor": "#ffd166"
+        }
+      }
+    }
+  ],
+  "sourceGroupsHeldBack": [
+    {
+      "sourceVariantId": "bmo-4dir-source-group",
+      "reason": "BMO remains a 4-direction source group. Preserve that format until a game mode or adapter explicitly supports cardinal-only fighters or a real 8-direction derivative is generated."
+    }
+  ]
+}

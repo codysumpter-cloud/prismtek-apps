@@ -1,0 +1,123 @@
+{
+    "schemaVersion":  "pixel-fruit-arena-prismcade-character-v0",
+    "id":  "prismcade_prismtek",
+    "displayName":  "Prismtek",
+    "sourceVariantId":  "prismtek",
+    "sourceCharacterId":  "ce607761-915c-46ca-9f9c-9eb51cbd30eb",
+    "sourceRegistry":  "data/integrations/pixellab-character-export-registry.json",
+    "sourcePacketName":  "prismcade_prismtek.zip",
+    "sourcePacketOrigin":  "pixellab-download-url",
+    "sourceDownloadUrl":  "https://api.pixellab.ai/mcp/characters/ce607761-915c-46ca-9f9c-9eb51cbd30eb/download",
+    "outputFrameSize":  {
+                            "height":  64,
+                            "width":  64
+                        },
+    "animationFidelity":  "source-animation-normalized",
+    "animations":  {
+                       "idle":  {
+                                    "src":  "assets/characters/prismcade-pixellab/prismcade_prismtek/idle_4.png",
+                                    "frames":  4,
+                                    "frameWidth":  64,
+                                    "frameHeight":  64,
+                                    "fps":  8,
+                                    "loop":  true,
+                                    "source":  "animations/Breathing_Idle/east",
+                                    "synthetic":  false
+                                },
+                       "walk":  {
+                                    "src":  "assets/characters/prismcade-pixellab/prismcade_prismtek/walk_4.png",
+                                    "frames":  4,
+                                    "frameWidth":  64,
+                                    "frameHeight":  64,
+                                    "fps":  8,
+                                    "loop":  true,
+                                    "source":  "animations/Walking/east",
+                                    "synthetic":  false
+                                },
+                       "run":  {
+                                   "src":  "assets/characters/prismcade-pixellab/prismcade_prismtek/run_4.png",
+                                   "frames":  4,
+                                   "frameWidth":  64,
+                                   "frameHeight":  64,
+                                   "fps":  8,
+                                   "loop":  true,
+                                   "source":  "animations/Running/east",
+                                   "synthetic":  false
+                               },
+                       "jump":  {
+                                    "src":  "assets/characters/prismcade-pixellab/prismcade_prismtek/jump_4.png",
+                                    "frames":  4,
+                                    "frameWidth":  64,
+                                    "frameHeight":  64,
+                                    "fps":  12,
+                                    "loop":  false,
+                                    "source":  "animations/Crouching/east",
+                                    "synthetic":  false
+                                },
+                       "fall":  {
+                                    "src":  "assets/characters/prismcade-pixellab/prismcade_prismtek/fall_4.png",
+                                    "frames":  4,
+                                    "frameWidth":  64,
+                                    "frameHeight":  64,
+                                    "fps":  12,
+                                    "loop":  false,
+                                    "source":  "animations/Crouching/east",
+                                    "synthetic":  false
+                                },
+                       "attack":  {
+                                      "src":  "assets/characters/prismcade-pixellab/prismcade_prismtek/attack_4.png",
+                                      "frames":  4,
+                                      "frameWidth":  64,
+                                      "frameHeight":  64,
+                                      "fps":  12,
+                                      "loop":  false,
+                                      "source":  "animations/Push_Object/east",
+                                      "synthetic":  false
+                                  },
+                       "special":  {
+                                       "src":  "assets/characters/prismcade-pixellab/prismcade_prismtek/special_4.png",
+                                       "frames":  4,
+                                       "frameWidth":  64,
+                                       "frameHeight":  64,
+                                       "fps":  12,
+                                       "loop":  false,
+                                       "source":  "animations/Pull_Object/east",
+                                       "synthetic":  false
+                                   },
+                       "hurt":  {
+                                    "src":  "assets/characters/prismcade-pixellab/prismcade_prismtek/hurt_4.png",
+                                    "frames":  4,
+                                    "frameWidth":  64,
+                                    "frameHeight":  64,
+                                    "fps":  12,
+                                    "loop":  false,
+                                    "source":  "animations/Crouching/east",
+                                    "synthetic":  false
+                                },
+                       "knockout":  {
+                                        "src":  "assets/characters/prismcade-pixellab/prismcade_prismtek/knockout_4.png",
+                                        "frames":  4,
+                                        "frameWidth":  64,
+                                        "frameHeight":  64,
+                                        "fps":  12,
+                                        "loop":  false,
+                                        "source":  "animations/Crouching/east",
+                                        "synthetic":  false
+                                    },
+                       "victory":  {
+                                       "src":  "assets/characters/prismcade-pixellab/prismcade_prismtek/victory_4.png",
+                                       "frames":  4,
+                                       "frameWidth":  64,
+                                       "frameHeight":  64,
+                                       "fps":  8,
+                                       "loop":  true,
+                                       "source":  "animations/Breathing_Idle/east",
+                                       "synthetic":  false
+                                   }
+                   },
+    "notes":  [
+                  "Raw PixelLab export packets are not committed.",
+                  "These runtime sheets are normalized 64x64 game-facing outputs for Pixel Fruit Arena.",
+                  "Rotation-derived animations are playable placeholders and should be replaced by curated PixelLab animation jobs when available."
+              ]
+}

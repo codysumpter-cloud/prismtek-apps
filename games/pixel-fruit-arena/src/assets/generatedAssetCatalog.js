@@ -18,6 +18,13 @@ export const GENERATED_ASSET_CATALOG = {
     bodies: [
       { id: "male_basic", label: "Basic Male", path: "assets/characters/prismtek-custom/male-basic.svg", kind: "character_body", slot: "body", customizable: true, frameWidth: 32, frameHeight: 32, frames: 4, tags: ["player", "customizable", "male"], ...approved },
       { id: "female_basic", label: "Basic Female", path: "assets/characters/prismtek-custom/female-basic.svg", kind: "character_body", slot: "body", customizable: true, frameWidth: 32, frameHeight: 32, frames: 4, tags: ["player", "customizable", "female"], ...approved },
+      { id: "prismcade_buddy", label: "Buddy", path: "assets/characters/prismcade-pixellab/prismcade_buddy/idle_4.png", kind: "character_body", slot: "body", customizable: false, frameWidth: 64, frameHeight: 64, frames: 4, tags: ["player", "pixellab", "prismcade", "buddy"], ...approved },
+      { id: "prismcade_prismtek", label: "Prismtek", path: "assets/characters/prismcade-pixellab/prismcade_prismtek/idle_4.png", kind: "character_body", slot: "body", customizable: false, frameWidth: 64, frameHeight: 64, frames: 4, tags: ["player", "pixellab", "prismcade", "humanoid"], ...approved },
+      { id: "prismcade_prismtek_jones", label: "Prismtek Jones", path: "assets/characters/prismcade-pixellab/prismcade_prismtek_jones/idle_4.png", kind: "character_body", slot: "body", customizable: false, frameWidth: 64, frameHeight: 64, frames: 4, tags: ["player", "pixellab", "prismcade", "humanoid"], ...approved },
+      { id: "prismcade_female_blue_hoodie", label: "Female Blue Hoodie", path: "assets/characters/prismcade-pixellab/prismcade_female_blue_hoodie/idle_4.png", kind: "character_body", slot: "body", customizable: false, frameWidth: 64, frameHeight: 64, frames: 4, tags: ["player", "pixellab", "prismcade", "humanoid"], ...approved },
+      { id: "prismcade_ponytail_guy", label: "Ponytail Guy", path: "assets/characters/prismcade-pixellab/prismcade_ponytail_guy/idle_4.png", kind: "character_body", slot: "body", customizable: false, frameWidth: 64, frameHeight: 64, frames: 4, tags: ["player", "pixellab", "prismcade", "humanoid"], ...approved },
+      { id: "prismcade_prismtek_pixel_god", label: "Prismtek Pixel God", path: "assets/characters/prismcade-pixellab/prismcade_prismtek_pixel_god/idle_4.png", kind: "character_body", slot: "body", customizable: false, frameWidth: 64, frameHeight: 64, frames: 4, tags: ["player", "pixellab", "prismcade", "humanoid"], ...approved },
+      { id: "prismcade_prismbot_pixel_god", label: "PrismBot Pixel God", path: "assets/characters/prismcade-pixellab/prismcade_prismbot_pixel_god/idle_4.png", kind: "character_body", slot: "body", customizable: false, frameWidth: 64, frameHeight: 64, frames: 4, tags: ["player", "pixellab", "prismcade", "humanoid"], ...approved },
       { id: "pink", label: "Prism Imp", path: "assets/characters/tiny-hero/pink/idle_4.png", kind: "character_body", slot: "body", customizable: false, frameWidth: 32, frameHeight: 32, tags: ["player", "tiny-hero"], ...approved },
       { id: "owlet", label: "Prism Owlet", path: "assets/characters/tiny-hero/owlet/idle_4.png", kind: "character_body", slot: "body", customizable: false, frameWidth: 32, frameHeight: 32, tags: ["player", "tiny-hero"], ...approved },
       { id: "dude", label: "Prism Dude", path: "assets/characters/tiny-hero/dude/idle_4.png", kind: "character_body", slot: "body", customizable: false, frameWidth: 32, frameHeight: 32, tags: ["player", "tiny-hero"], ...approved }
@@ -30,7 +37,12 @@ export const GENERATED_ASSET_CATALOG = {
       { id: "long", label: "Long", kind: "cosmetic_overlay", slot: "hair", tags: ["drawn-overlay"], ...approved },
       { id: "ponytail", label: "Ponytail", kind: "cosmetic_overlay", slot: "hair", tags: ["drawn-overlay"], ...approved },
       { id: "mohawk", label: "Mohawk", kind: "cosmetic_overlay", slot: "hair", tags: ["drawn-overlay"], ...approved },
-      { id: "hood", label: "Hood", kind: "cosmetic_overlay", slot: "hair", tags: ["drawn-overlay", "clothing"], ...approved }
+      { id: "hood", label: "Hood", kind: "cosmetic_overlay", slot: "hair", tags: ["drawn-overlay", "clothing"], ...approved },
+      { id: "normal_hair", label: "Normal Hair", kind: "cosmetic_overlay", slot: "hair", tags: ["drawn-overlay", "prismcade"], ...approved },
+      { id: "low_taper", label: "Low Taper", kind: "cosmetic_overlay", slot: "hair", tags: ["drawn-overlay", "prismcade"], ...approved },
+      { id: "antenna_nubs", label: "Antenna Nubs", kind: "cosmetic_overlay", slot: "hair", tags: ["drawn-overlay", "prismcade", "buddy"], ...approved },
+      { id: "pixel_crown", label: "Pixel Crown", kind: "cosmetic_overlay", slot: "hair", tags: ["drawn-overlay", "prismcade"], ...approved },
+      { id: "robot_glow", label: "Robot Glow", kind: "cosmetic_overlay", slot: "hair", tags: ["drawn-overlay", "prismcade"], ...approved }
     ],
     clothing: [
       { id: "runner", label: "Runner", kind: "cosmetic_overlay", slot: "top", tags: ["drawn-overlay"], ...approved },
@@ -40,7 +52,12 @@ export const GENERATED_ASSET_CATALOG = {
       { id: "robe", label: "Robe", kind: "cosmetic_overlay", slot: "top", tags: ["drawn-overlay"], ...approved },
       { id: "skirt", label: "Skirt", kind: "cosmetic_overlay", slot: "bottom", tags: ["drawn-overlay"], ...approved },
       { id: "gi", label: "Gi", kind: "cosmetic_overlay", slot: "top", tags: ["drawn-overlay"], ...approved },
-      { id: "coat", label: "Coat", kind: "cosmetic_overlay", slot: "top", tags: ["drawn-overlay"], ...approved }
+      { id: "coat", label: "Coat", kind: "cosmetic_overlay", slot: "top", tags: ["drawn-overlay"], ...approved },
+      { id: "blue_hoodie", label: "Blue Hoodie", kind: "cosmetic_overlay", slot: "top", tags: ["drawn-overlay", "prismcade"], ...approved },
+      { id: "arcade_jacket", label: "Arcade Jacket", kind: "cosmetic_overlay", slot: "top", tags: ["drawn-overlay", "prismcade"], ...approved },
+      { id: "buddy_shell", label: "Buddy Shell", kind: "cosmetic_overlay", slot: "top", tags: ["drawn-overlay", "prismcade", "buddy"], ...approved },
+      { id: "pixel_god", label: "Pixel God", kind: "cosmetic_overlay", slot: "top", tags: ["drawn-overlay", "prismcade"], ...approved },
+      { id: "prismbot_armor", label: "PrismBot Armor", kind: "cosmetic_overlay", slot: "top", tags: ["drawn-overlay", "prismcade"], ...approved }
     ],
     vfx: [
       { id: "firebolt", label: "Firebolt", path: "assets/effects/elemental-vfx/firebolt.png", kind: "vfx_sheet", family: "fire", tags: ["fire", "projectile"], ...approved },

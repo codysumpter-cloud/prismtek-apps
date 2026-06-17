@@ -1,7 +1,8 @@
+import { PRISMCADE_BODY_NAMES } from "../characters/prismcadeRoster.js";
 import { masteryFor } from "../fruits/fruits.js";
 import { DEVICE_LABELS } from "../multiplayer/input.js";
 
-const BODY_NAMES = { male_basic: "Male", female_basic: "Female", pink: "Imp", owlet: "Owlet", dude: "Dude" };
+const BODY_NAMES = { male_basic: "Male", female_basic: "Female", pink: "Imp", owlet: "Owlet", dude: "Dude", ...PRISMCADE_BODY_NAMES };
 
 export function fruitIcon(fruit, size = 26) {
   return `<svg class="fruit-icon" width="${size}" height="${size}" viewBox="0 0 16 16" aria-hidden="true" shape-rendering="crispEdges">

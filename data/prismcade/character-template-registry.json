@@ -1,0 +1,188 @@
+{
+  "schemaVersion": "prismcade-character-template-registry-v0",
+  "description": "Prismcade character template factory registry for turning reviewed Buddy/Prismtek/Female PixelLab assets into reusable game characters, clothing, hairstyles, derivatives, and animation packs.",
+  "sourceRegistry": "data/integrations/pixellab-character-export-registry.json",
+  "docs": {
+    "factory": "docs/prismcade/CHARACTER_FACTORY.md",
+    "pixelForge": "docs/integrations/prismtek-pixel-forge.md",
+    "assetPolicy": "docs/assets/asset-source-policy.md"
+  },
+  "runtimeSlices": [
+    {
+      "id": "pixel-fruit-arena-prismcade-roster",
+      "gameId": "pixel-fruit-arena",
+      "status": "playable-runtime-ready-needs-polish-pass",
+      "roster": "games/pixel-fruit-arena/data/characters/prismcade_playable_roster.json",
+      "runtimeModule": "games/pixel-fruit-arena/src/characters/prismcadeRoster.js",
+      "assetRoot": "games/pixel-fruit-arena/assets/characters/prismcade-pixellab",
+      "validator": "games/pixel-fruit-arena/tools/validate_prismcade_roster.mjs",
+      "notes": "Buddy and Prismtek use normalized PixelLab animation exports. Rotation-only sources are playable placeholders until polished animation jobs are available."
+    }
+  ],
+  "gameReadyTarget": {
+    "frameWidth": 64,
+    "frameHeight": 64,
+    "transparentBackground": true,
+    "style": "hard-edged Prismtek pixel art, no blur, no antialiasing, readable silhouettes",
+    "directions": [
+      "south",
+      "east",
+      "north",
+      "west",
+      "south-east",
+      "north-east",
+      "north-west",
+      "south-west"
+    ]
+  },
+  "canonicalSlots": [
+    "idle",
+    "walk",
+    "run",
+    "jump",
+    "fall",
+    "land",
+    "hurt",
+    "ko",
+    "melee_slash",
+    "melee_thrust",
+    "melee_spin",
+    "cast",
+    "projectile",
+    "impact",
+    "victory",
+    "defeat",
+    "emote_happy",
+    "emote_angry",
+    "emote_shocked",
+    "thinking"
+  ],
+  "templateFamilies": [
+    {
+      "id": "buddy-core",
+      "displayName": "Buddy Core Template",
+      "sourceVariantId": "buddy",
+      "sourceRegistryPath": "data/integrations/pixellab-character-export-registry.json#characters/buddy",
+      "status": "source-export-ready-needs-game-ready-curation",
+      "role": "mascot, helper, NPC companion, playable buddy",
+      "requiredSlots": ["idle", "walk", "run", "jump", "hurt", "melee_spin", "projectile", "victory", "defeat", "emote_happy", "thinking"],
+      "derivativePolicy": {
+        "mayCreateNewBuddys": true,
+        "mayCreateClothing": true,
+        "mayCreateHairstyles": true,
+        "mustPreserveIdentityNotes": [
+          "friendly Prismtek/Buddy silhouette",
+          "readable face at 64x64",
+          "original Prismtek-owned design language",
+          "no copied franchise references"
+        ]
+      },
+      "productionNeeds": [
+        "curate best loops from 103 observed animations",
+        "normalize names into canonical slots",
+        "downscale or rebuild to 64x64 game-ready sheets",
+        "create clothing overlays and hairstyle variants",
+        "export a shipping manifest per final Buddy"
+      ],
+      "targetGames": ["pixel-fruit-arena", "prismcade-creator", "future-buddy-platformers", "future-town-hub"]
+    },
+    {
+      "id": "prismtek-player",
+      "displayName": "Prismtek Player Template",
+      "sourceVariantId": "prismtek",
+      "sourceRegistryPath": "data/integrations/pixellab-character-export-registry.json#characters/prismtek",
+      "status": "source-export-ready-needs-polish",
+      "role": "primary player avatar, platform-fighter base, creator character base",
+      "requiredSlots": ["idle", "walk", "run", "jump", "fall", "land", "hurt", "melee_thrust", "melee_spin", "projectile", "victory", "defeat"],
+      "derivativePolicy": {
+        "mayCreateNewBuddys": false,
+        "mayCreateClothing": true,
+        "mayCreateHairstyles": true,
+        "mustPreserveIdentityNotes": [
+          "young male Prismtek avatar vibe",
+          "readable low-taper/dark-hair direction where used",
+          "64x64 chibi fighting readability"
+        ]
+      },
+      "productionNeeds": [
+        "retry or replace failed north-east fight stance if needed",
+        "curate 56 observed animations into canonical slots",
+        "make clothing/hoodie/jacket/pants layers",
+        "make hair variants including normal hair and low taper",
+        "export Pixel Fruit Arena-ready manifest"
+      ],
+      "targetGames": ["pixel-fruit-arena", "prismcade-creator", "future-platform-fighter-lite"]
+    },
+    {
+      "id": "female-blue-hoodie-player",
+      "displayName": "Female Blue Hoodie Player Template",
+      "sourceVariantId": "female-character-blue-hoodie",
+      "sourceRegistryPath": "data/integrations/pixellab-character-export-registry.json#characters/female-character-blue-hoodie",
+      "status": "source-export-ready-needs-animation-jobs",
+      "role": "female avatar base, clothing/hair template source",
+      "requiredSlots": ["idle", "walk", "run", "jump", "hurt", "melee_thrust", "projectile", "victory", "defeat", "emote_happy"],
+      "derivativePolicy": {
+        "mayCreateNewBuddys": false,
+        "mayCreateClothing": true,
+        "mayCreateHairstyles": true,
+        "mustPreserveIdentityNotes": [
+          "blue hoodie outfit source",
+          "clear feminine avatar base",
+          "avoid blushy/noisy face details at game scale"
+        ]
+      },
+      "productionNeeds": [
+        "queue reusable PixelLab template animation jobs",
+        "normalize to 64x64 frame target",
+        "extract hoodie/clothing palette variants",
+        "create hairstyle pack from the template"
+      ],
+      "targetGames": ["pixel-fruit-arena", "prismcade-creator", "future-creature-battle-lite"]
+    },
+    {
+      "id": "ponytail-avatar",
+      "displayName": "Ponytail Avatar Template",
+      "sourceVariantId": "ponytail-guy",
+      "sourceRegistryPath": "data/integrations/pixellab-character-export-registry.json#characters/ponytail-guy",
+      "status": "source-export-ready-needs-animation-jobs",
+      "role": "hairstyle reference and alternate avatar base",
+      "requiredSlots": ["idle", "walk", "run", "jump", "hurt", "melee_thrust", "victory", "defeat"],
+      "derivativePolicy": {
+        "mayCreateNewBuddys": false,
+        "mayCreateClothing": true,
+        "mayCreateHairstyles": true,
+        "mustPreserveIdentityNotes": [
+          "ponytail hair silhouette only when intentionally selected",
+          "do not leak ponytail into normal-hair/low-taper variants"
+        ]
+      },
+      "productionNeeds": [
+        "queue core animations",
+        "separate ponytail hairstyle into an optional hair template",
+        "make normal-hair alternative for non-ponytail variants"
+      ],
+      "targetGames": ["prismcade-creator", "future-avatar-shop"]
+    }
+  ],
+  "clothingSlots": [
+    { "id": "head", "displayName": "Head / face base", "layerOrder": 10, "required": true, "variantExamples": ["buddy-face", "prismtek-face", "female-face"] },
+    { "id": "hair", "displayName": "Hair", "layerOrder": 20, "required": false, "variantExamples": ["normal-hair", "low-taper", "ponytail", "messy-top", "hood-up"] },
+    { "id": "torso", "displayName": "Torso clothing", "layerOrder": 30, "required": true, "variantExamples": ["blue-hoodie", "teal-jumpsuit", "arcade-jacket", "buddy-shell"] },
+    { "id": "legs", "displayName": "Legwear", "layerOrder": 40, "required": true, "variantExamples": ["pants", "shorts", "jumpsuit-bottom"] },
+    { "id": "feet", "displayName": "Shoes / feet", "layerOrder": 50, "required": true, "variantExamples": ["dark-shoes", "sneakers", "buddy-feet"] },
+    { "id": "accessory", "displayName": "Accessory", "layerOrder": 60, "required": false, "variantExamples": ["glasses", "headset", "backpack", "badge"] }
+  ],
+  "factoryOutputs": [
+    { "type": "character-manifest", "pathPattern": "packages/game-assets/characters/{characterId}/character.json", "schemaVersion": "prismcade-character-manifest-v0" },
+    { "type": "animation-manifest", "pathPattern": "packages/game-assets/characters/{characterId}/animations/{slot}.json", "schemaVersion": "prismtek-pixel-asset-manifest-v1" },
+    { "type": "sprite-sheet", "pathPattern": "packages/game-assets/characters/{characterId}/sprites/{slot}.png", "notes": "Do not commit raw PixelLab packets. Commit only reviewed, normalized, license-safe game-ready exports." },
+    { "type": "provenance-receipt", "pathPattern": "packages/game-assets/characters/{characterId}/PROVENANCE.md", "notes": "Must include source registry entry, generation date, cleanup notes, and rights notes." }
+  ],
+  "readinessRules": [
+    "A character is not game-ready just because PixelLab says exportReady.",
+    "Game-ready requires 64x64 or explicitly approved target size, canonical animation manifest, provenance, and checked loops.",
+    "Buddy/Female/Prismtek source templates must be usable to generate clothing and hairstyle variants before Prismcade is considered creator-ready.",
+    "New Buddys must ship with built-in idle, walk, run, hurt, at least one action animation, victory/defeat, and one personality emote.",
+    "4-direction source groups must remain 4dir unless a separate 8dir derivative is generated."
+  ]
+}

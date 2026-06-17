@@ -1,0 +1,123 @@
+{
+    "schemaVersion":  "pixel-fruit-arena-prismcade-character-v0",
+    "id":  "prismcade_prismbot_pixel_god",
+    "displayName":  "PrismBot Pixel God",
+    "sourceVariantId":  "prismbot-pixel-god",
+    "sourceCharacterId":  "9ff7bf55-bc38-4e8f-acc7-aa1b7ce157e6",
+    "sourceRegistry":  "data/integrations/pixellab-character-export-registry.json",
+    "sourcePacketName":  "PrismBot_Pixel_God.zip",
+    "sourcePacketOrigin":  "local-downloads",
+    "sourceDownloadUrl":  "https://api.pixellab.ai/mcp/characters/9ff7bf55-bc38-4e8f-acc7-aa1b7ce157e6/download",
+    "outputFrameSize":  {
+                            "height":  64,
+                            "width":  64
+                        },
+    "animationFidelity":  "rotation-derived",
+    "animations":  {
+                       "idle":  {
+                                    "src":  "assets/characters/prismcade-pixellab/prismcade_prismbot_pixel_god/idle_4.png",
+                                    "frames":  4,
+                                    "frameWidth":  64,
+                                    "frameHeight":  64,
+                                    "fps":  8,
+                                    "loop":  true,
+                                    "source":  "rotations/east",
+                                    "synthetic":  true
+                                },
+                       "walk":  {
+                                    "src":  "assets/characters/prismcade-pixellab/prismcade_prismbot_pixel_god/walk_4.png",
+                                    "frames":  4,
+                                    "frameWidth":  64,
+                                    "frameHeight":  64,
+                                    "fps":  8,
+                                    "loop":  true,
+                                    "source":  "rotations/east",
+                                    "synthetic":  true
+                                },
+                       "run":  {
+                                   "src":  "assets/characters/prismcade-pixellab/prismcade_prismbot_pixel_god/run_4.png",
+                                   "frames":  4,
+                                   "frameWidth":  64,
+                                   "frameHeight":  64,
+                                   "fps":  8,
+                                   "loop":  true,
+                                   "source":  "rotations/east",
+                                   "synthetic":  true
+                               },
+                       "jump":  {
+                                    "src":  "assets/characters/prismcade-pixellab/prismcade_prismbot_pixel_god/jump_4.png",
+                                    "frames":  4,
+                                    "frameWidth":  64,
+                                    "frameHeight":  64,
+                                    "fps":  12,
+                                    "loop":  false,
+                                    "source":  "rotations/east",
+                                    "synthetic":  true
+                                },
+                       "fall":  {
+                                    "src":  "assets/characters/prismcade-pixellab/prismcade_prismbot_pixel_god/fall_4.png",
+                                    "frames":  4,
+                                    "frameWidth":  64,
+                                    "frameHeight":  64,
+                                    "fps":  12,
+                                    "loop":  false,
+                                    "source":  "rotations/east",
+                                    "synthetic":  true
+                                },
+                       "attack":  {
+                                      "src":  "assets/characters/prismcade-pixellab/prismcade_prismbot_pixel_god/attack_4.png",
+                                      "frames":  4,
+                                      "frameWidth":  64,
+                                      "frameHeight":  64,
+                                      "fps":  12,
+                                      "loop":  false,
+                                      "source":  "rotations/east",
+                                      "synthetic":  true
+                                  },
+                       "special":  {
+                                       "src":  "assets/characters/prismcade-pixellab/prismcade_prismbot_pixel_god/special_4.png",
+                                       "frames":  4,
+                                       "frameWidth":  64,
+                                       "frameHeight":  64,
+                                       "fps":  12,
+                                       "loop":  false,
+                                       "source":  "rotations/east",
+                                       "synthetic":  true
+                                   },
+                       "hurt":  {
+                                    "src":  "assets/characters/prismcade-pixellab/prismcade_prismbot_pixel_god/hurt_4.png",
+                                    "frames":  4,
+                                    "frameWidth":  64,
+                                    "frameHeight":  64,
+                                    "fps":  12,
+                                    "loop":  false,
+                                    "source":  "rotations/east",
+                                    "synthetic":  true
+                                },
+                       "knockout":  {
+                                        "src":  "assets/characters/prismcade-pixellab/prismcade_prismbot_pixel_god/knockout_4.png",
+                                        "frames":  4,
+                                        "frameWidth":  64,
+                                        "frameHeight":  64,
+                                        "fps":  12,
+                                        "loop":  false,
+                                        "source":  "rotations/east",
+                                        "synthetic":  true
+                                    },
+                       "victory":  {
+                                       "src":  "assets/characters/prismcade-pixellab/prismcade_prismbot_pixel_god/victory_4.png",
+                                       "frames":  4,
+                                       "frameWidth":  64,
+                                       "frameHeight":  64,
+                                       "fps":  8,
+                                       "loop":  true,
+                                       "source":  "rotations/east",
+                                       "synthetic":  true
+                                   }
+                   },
+    "notes":  [
+                  "Raw PixelLab export packets are not committed.",
+                  "These runtime sheets are normalized 64x64 game-facing outputs for Pixel Fruit Arena.",
+                  "Rotation-derived animations are playable placeholders and should be replaced by curated PixelLab animation jobs when available."
+              ]
+}

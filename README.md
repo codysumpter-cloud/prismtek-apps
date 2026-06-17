@@ -16,6 +16,7 @@
 [<kbd>Prismcade catalog</kbd>](apps/prismcade/)
 [<kbd>Prismcade creator</kbd>](apps/prismcade-creator/)
 [<kbd>Prismcade platform loop</kbd>](docs/prismcade/PRISMCADE_PLATFORM.md)
+[<kbd>Prismcade character factory</kbd>](docs/prismcade/CHARACTER_FACTORY.md)
 [<kbd>Prismcade contracts</kbd>](docs/integrations/gamemaker-html5-adapter.md)
 [<kbd>🧪 Experiments</kbd>](experiments/)
 [<kbd>📚 Reference registry</kbd>](docs/games/open-source-reference-games.md)
@@ -50,7 +51,7 @@ All active Prismtek game folders currently under `games/` are listed here.
 
 | Game | Path | Status | Shared feel target | Run locally |
 | --- | --- | --- | --- | --- |
-| Pixel Fruit Arena | [`games/pixel-fruit-arena/`](games/pixel-fruit-arena/) | Playable browser/PWA MVP; web ZIP path exists; DS source exists; public release artifacts pending. | Local platform-fighter matches with character identity, readable powers, ring-outs, awakening, rank rewards, and match receipts. | `cd games/pixel-fruit-arena && npm test && npm run build && npm run package:zip` |
+| Pixel Fruit Arena | [`games/pixel-fruit-arena/`](games/pixel-fruit-arena/) | Playable browser/PWA MVP with Prismcade/Pixellab roster; web ZIP path exists; DS source exists; public release artifacts pending. | Local platform-fighter matches with Buddy, Prismtek, Prismtek Jones, Female Blue Hoodie, Ponytail Guy, PixelGod variants, readable powers, ring-outs, awakening, rank rewards, and match receipts. | `cd games/pixel-fruit-arena && npm test && npm run validate:prismcade-roster && npm run package:zip` |
 | TamerNet Battle Sandbox | [`games/tamernet-battle-sandbox/`](games/tamernet-battle-sandbox/) | Playable browser prototype; smoke test and web ZIP path exist; DS source exists; public release artifacts pending. | Quick creature command battles with readable roles, alpha encounters, PvP-ready duel rules, rank rewards, and match receipts. | `cd games/tamernet-battle-sandbox && npm test && npm run package:zip` |
 | Spin Street Showdown | [`games/spin-street-showdown/`](games/spin-street-showdown/) | Playable browser prototype; upgraded physics/RPM/graphics pass, smoke tests, web ZIP path, and DS source exist; public release artifacts pending. | Short retro PvP dome clashes with launch skill, RPM control, rim pressure, burst timing, Spirit Surge, visible rank, and clout rewards. | `cd games/spin-street-showdown && npm test && npm run package:zip` |
 | Flappy Pixel | [`games/flappy-pixel/`](games/flappy-pixel/) | Prismtek-site arcade import; browser smoke test and web ZIP path exist; public release artifacts pending. | One-button reflex survival match with score/rank clout. | `cd games/flappy-pixel && npm test && npm run package:zip` |
@@ -106,7 +107,7 @@ node tools/reference-games/import-reference-game.mjs ikemen-go
 
 | Product | Buttons | Status |
 | --- | --- | --- |
-| Pixel Fruit Arena | [<kbd>▶ Open</kbd>](games/pixel-fruit-arena/) [<kbd>README</kbd>](games/pixel-fruit-arena/README.md) [<kbd>DS source</kbd>](games/pixel-fruit-arena/ds-homebrew/) [<kbd>⬇ Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Playable browser/PWA MVP; web ZIP path exists; DS source exists; public release artifacts pending. |
+| Pixel Fruit Arena | [<kbd>▶ Open</kbd>](games/pixel-fruit-arena/) [<kbd>README</kbd>](games/pixel-fruit-arena/README.md) [<kbd>Prismcade roster</kbd>](games/pixel-fruit-arena/docs/PRISMCADE_PLAYABLE_ROSTER.md) [<kbd>DS source</kbd>](games/pixel-fruit-arena/ds-homebrew/) [<kbd>⬇ Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Playable browser/PWA MVP with Prismcade/Pixellab roster; web ZIP path exists; DS source exists; public release artifacts pending. |
 | TamerNet Battle Sandbox | [<kbd>▶ Open</kbd>](games/tamernet-battle-sandbox/) [<kbd>README</kbd>](games/tamernet-battle-sandbox/README.md) [<kbd>DS source</kbd>](games/tamernet-battle-sandbox/ds-homebrew/) [<kbd>⬇ Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Playable browser prototype; web ZIP path exists; DS source exists; public release artifacts pending. |
 | Spin Street Showdown | [<kbd>▶ Open</kbd>](games/spin-street-showdown/) [<kbd>README</kbd>](games/spin-street-showdown/README.md) [<kbd>DS source</kbd>](games/spin-street-showdown/ds-homebrew/) [<kbd>⬇ Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Playable browser prototype; web ZIP path exists; DS source exists; public release artifacts pending. |
 | Flappy Pixel | [<kbd>▶ Open</kbd>](games/flappy-pixel/) [<kbd>README</kbd>](games/flappy-pixel/README.md) [<kbd>⬇ Source ZIP</kbd>](https://github.com/codysumpter-cloud/prismtek-apps/archive/refs/heads/main.zip) | Browser arcade import; packaged release artifact pending. |
@@ -151,7 +152,7 @@ Run common checks:
 ```bash
 npm run lint
 npm run build
-npm run prismcade:validate
+npm run prismcade:validate:all
 npm run games:validate-support
 npm run references:validate
 ```
@@ -162,7 +163,7 @@ Some projects are intentionally dependency-free browser prototypes and should be
 
 | Product | Category | Current path | Role |
 | --- | --- | --- | --- |
-| Pixel Fruit Arena | Game | `games/pixel-fruit-arena/` | Playable browser/PWA platform-fighting MVP plus DS source |
+| Pixel Fruit Arena | Game | `games/pixel-fruit-arena/` | Playable browser/PWA platform-fighting MVP with Prismcade/Pixellab roster and DS source |
 | TamerNet Battle Sandbox | Game prototype | `games/tamernet-battle-sandbox/` | Playable browser creature prototype plus DS source |
 | Spin Street Showdown | Game prototype | `games/spin-street-showdown/` | Playable browser arcade prototype plus DS source |
 | Flappy Pixel | Game | `games/flappy-pixel/` | Prismtek-site arcade import |
@@ -173,6 +174,7 @@ Some projects are intentionally dependency-free browser prototypes and should be
 | Prismwilds: Echo Dominion | Game prototype | `games/prismwilds-echo-dominion/` | Browser creature-survival prototype with local smoke test and web ZIP packager |
 | Prismcade catalog | Game platform app | `apps/prismcade/` | Static catalog/launcher for the Prismtek game roster driven by `data/prismcade/game-manifests.json` |
 | Prismcade creator MVP | Game creation tool | `apps/prismcade-creator/` | Manifest-first creator prototype for reusable Prismcade game templates and publishing metadata |
+| Prismcade character factory | Game asset workflow | `data/prismcade/character-template-registry.json`, `games/pixel-fruit-arena/data/characters/prismcade_playable_roster.json` | Repeatable PixelLab character template and playable roster validation path |
 | Prismcade GameMaker adapters | Integration contract | `docs/integrations/gamemaker-html5-adapter.md`, `docs/integrations/gamemaker-cli-tooling.md`, `data/integrations/prismcade-reference-sources.json` | Contract-only Prismcade import/wrapper research validated by `npm run integrations:validate` |
 | OpenBOR Prismtek Evaluation | Experiment | `experiments/openbor-prismtek-brawler/` | Original brawler-engine spike using the reference registry workflow |
 | Castagne Pixel Fruit Spike | Experiment | `experiments/castagne-pixel-fruit-spike/` | Pixel Fruit Arena combat architecture evaluation |

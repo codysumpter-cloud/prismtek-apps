@@ -102,6 +102,8 @@ Controllers: left stick move, face buttons jump and abilities, shoulder dodge an
 
 Character identity is independent from fruit powers. Players can edit name, body sprite, hair style, combat style, hair color, skin tone, outfit colors, and accessory colors. Combat style is independent from fruit powers and currently supports Duelist, Brawler, Striker, Ranger, Guardian, and Trickster.
 
+Prismcade/Pixellab bodies are selectable in the creator and lobby: Buddy, Prismtek, Prismtek Jones, Female Blue Hoodie, Ponytail Guy, Prismtek Pixel God, and PrismBot Pixel God. Details and the repeatable import command live in [`docs/PRISMCADE_PLAYABLE_ROSTER.md`](docs/PRISMCADE_PLAYABLE_ROSTER.md).
+
 ## Fruit System
 
 Fruits are equipment modules in `src/fruits`. The MVP includes Flame, Frost, Volt, Shadow, Rubber, and Gravity. Each fruit has three abilities and a unique awakening mode. Switching fruits does not reset mastery.
