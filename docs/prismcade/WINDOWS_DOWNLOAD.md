@@ -17,4 +17,4 @@ Player flow:
 3. Double-click Prismcade.exe.
 4. Pick a game from the Prismcade catalog.
 
-The current PR adds the package builder. A public one-click button still requires attaching the ZIP to a release or workflow artifact.
+The package builder is ready. Publish the generated ZIP when cutting a player build.
