@@ -17,4 +17,4 @@ Player flow:
 3. Double-click Prismcade.exe.
 4. Pick a game from the Prismcade catalog.
 
-Until the ZIP is attached to a GitHub Release or Actions artifact, the repo only has the package builder, not the final one-click download button.
+The current PR adds the package builder. A public one-click button still requires attaching the ZIP to a release or workflow artifact.
