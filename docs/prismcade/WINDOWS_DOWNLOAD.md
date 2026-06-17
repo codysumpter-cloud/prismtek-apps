@@ -16,5 +16,3 @@ Player flow:
 2. Extract it.
 3. Double-click Prismcade.exe.
 4. Pick a game from the Prismcade catalog.
-
-The package builder is ready.
