@@ -1,0 +1,13 @@
+{
+  "name": "@prismtek/prismcade",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Static Prismcade catalog and launcher prototype.",
+  "scripts": {
+    "dev": "python3 -m http.server 4173",
+    "build": "node -e \"require('node:fs').accessSync('index.html')\"",
+    "lint": "npm run build"
+  },
+  "license": "UNLICENSED"
+}

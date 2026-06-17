@@ -20,7 +20,8 @@
     "platforms:validate": "npm run porting-kits:verify && npm run dual-screen:validate && npm run dual-screen:smoke",
     "games:validate-support": "node games/_shared/prismtek-arcade/validate-game-roster.mjs",
     "references:validate": "node tools/reference-games/validate-reference-games.mjs",
-    "integrations:validate": "node tools/integrations/validate-integration-manifests.mjs"
+    "integrations:validate": "node tools/integrations/validate-integration-manifests.mjs",
+    "prismcade:validate": "node tools/prismcade/validate-game-manifests.mjs"
   },
   "dependencies": {
     "@google/genai": "^2.8.0",

@@ -1,0 +1,13 @@
+{
+  "name": "@prismtek/prismcade-creator",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Static Prismcade manifest creator MVP.",
+  "scripts": {
+    "dev": "python3 -m http.server 4174",
+    "build": "node -e \"require('node:fs').accessSync('index.html')\"",
+    "lint": "npm run build"
+  },
+  "license": "UNLICENSED"
+}
