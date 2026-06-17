@@ -80,6 +80,7 @@ jobs:
       - name: Validate Pixel Fruit Arena
         run: |
           npm --prefix games/pixel-fruit-arena test
+          npm --prefix games/pixel-fruit-arena run validate:prismcade-roster
           python3 games/pixel-fruit-arena/tools/validate_sprites.py games/pixel-fruit-arena/assets/characters/prismtek_placeholder_character.json
           npm --prefix games/pixel-fruit-arena run build
 

@@ -270,6 +270,11 @@ function drawCustomLayers(ctx, f, sprite, dx, dy) {
   if (clothing === "skirt") { px(ctx, dx, dy, scale, 8, 22, 17, 5, outfit); px(ctx, dx, dy, scale, 9, 21, 15, 2, trim); }
   if (clothing === "gi") { px(ctx, dx, dy, scale, 9, 15, 15, 10, "#e8e0cf"); px(ctx, dx, dy, scale, 10, 20, 13, 2, accessory); }
   if (clothing === "coat") { px(ctx, dx, dy, scale, 7, 15, 19, 12, outfit); px(ctx, dx, dy, scale, 15, 15, 2, 12, trim); }
+  if (clothing === "blue_hoodie") { px(ctx, dx, dy, scale, 8, 14, 17, 12, outfit); px(ctx, dx, dy, scale, 11, 14, 11, 3, trim); px(ctx, dx, dy, scale, 15, 17, 1, 5, "#f8fafc"); px(ctx, dx, dy, scale, 18, 17, 1, 5, "#f8fafc"); }
+  if (clothing === "arcade_jacket") { px(ctx, dx, dy, scale, 7, 15, 19, 11, outfit); px(ctx, dx, dy, scale, 8, 15, 4, 11, trim); px(ctx, dx, dy, scale, 21, 15, 4, 11, trim); px(ctx, dx, dy, scale, 14, 15, 5, 11, "#111827"); }
+  if (clothing === "buddy_shell") { px(ctx, dx, dy, scale, 8, 14, 17, 13, outfit); px(ctx, dx, dy, scale, 10, 16, 13, 8, trim); px(ctx, dx, dy, scale, 13, 18, 2, 2, "#111827"); px(ctx, dx, dy, scale, 19, 18, 2, 2, "#111827"); }
+  if (clothing === "pixel_god") { px(ctx, dx, dy, scale, 8, 15, 17, 12, "#111827"); px(ctx, dx, dy, scale, 10, 15, 13, 3, trim); px(ctx, dx, dy, scale, 15, 18, 3, 9, accessory); }
+  if (clothing === "prismbot_armor") { px(ctx, dx, dy, scale, 8, 15, 17, 10, outfit); px(ctx, dx, dy, scale, 9, 16, 15, 3, trim); px(ctx, dx, dy, scale, 12, 20, 9, 2, "#adb5bd"); }
   px(ctx, dx, dy, scale, 11, 25, 4, 5, trim);
   px(ctx, dx, dy, scale, 18, 25, 4, 5, trim);
   if (hairStyle === "crest") { px(ctx, dx, dy, scale, 13, 2, 7, 3, hair); px(ctx, dx, dy, scale, 15, 0, 4, 3, hair); }
@@ -280,6 +285,11 @@ function drawCustomLayers(ctx, f, sprite, dx, dy) {
   else if (hairStyle === "ponytail") { px(ctx, dx, dy, scale, 11, 2, 11, 5, hair); px(ctx, dx, dy, scale, 22, 6, 5, 8, hair); }
   else if (hairStyle === "mohawk") px(ctx, dx, dy, scale, 15, 0, 4, 8, hair);
   else if (hairStyle === "hood") { px(ctx, dx, dy, scale, 9, 2, 15, 8, outfit); px(ctx, dx, dy, scale, 12, 5, 9, 3, hair); }
+  else if (hairStyle === "normal_hair") { px(ctx, dx, dy, scale, 10, 3, 13, 4, hair); px(ctx, dx, dy, scale, 11, 6, 11, 2, hair); }
+  else if (hairStyle === "low_taper") { px(ctx, dx, dy, scale, 10, 3, 13, 3, hair); px(ctx, dx, dy, scale, 10, 6, 2, 5, hair); px(ctx, dx, dy, scale, 21, 6, 2, 5, hair); }
+  else if (hairStyle === "antenna_nubs") { px(ctx, dx, dy, scale, 12, 3, 9, 3, hair); px(ctx, dx, dy, scale, 10, 1, 3, 3, accessory); px(ctx, dx, dy, scale, 21, 1, 3, 3, accessory); }
+  else if (hairStyle === "pixel_crown") { px(ctx, dx, dy, scale, 10, 4, 13, 3, hair); px(ctx, dx, dy, scale, 11, 1, 3, 4, accessory); px(ctx, dx, dy, scale, 16, 0, 3, 5, accessory); px(ctx, dx, dy, scale, 21, 1, 3, 4, accessory); }
+  else if (hairStyle === "robot_glow") { px(ctx, dx, dy, scale, 10, 3, 13, 4, "#111827"); px(ctx, dx, dy, scale, 12, 5, 9, 2, accessory); px(ctx, dx, dy, scale, 16, 1, 2, 2, hair); }
 }
 
 function px(ctx, dx, dy, scale, x, y, w, h, color) {

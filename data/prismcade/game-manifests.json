@@ -73,8 +73,10 @@
       },
       "assets": {
         "manifest": "games/pixel-fruit-arena/assets/characters/prismtek_placeholder_character.json",
+        "prismcadePlayableRoster": "games/pixel-fruit-arena/data/characters/prismcade_playable_roster.json",
+        "prismcadeRuntimeAssets": "games/pixel-fruit-arena/assets/characters/prismcade-pixellab",
         "provenance": "games/pixel-fruit-arena/assets/licenses",
-        "nextAssetNeed": "final 64x64 fighter bases, fruit icons, ability VFX, and catalog thumbnail"
+        "nextAssetNeed": "final polish pass for rotation-derived PixelLab fighters, fruit icons, ability VFX, and catalog thumbnail"
       },
       "receipts": [
         "README documents web MVP, ZIP packaging path, DS source receipt, and release limitations."

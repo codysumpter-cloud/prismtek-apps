@@ -1,0 +1,123 @@
+{
+    "schemaVersion":  "pixel-fruit-arena-prismcade-character-v0",
+    "id":  "prismcade_female_blue_hoodie",
+    "displayName":  "Female Blue Hoodie",
+    "sourceVariantId":  "female-character-blue-hoodie",
+    "sourceCharacterId":  "a0bf4028-6285-4cec-870c-8723b5fedbed",
+    "sourceRegistry":  "data/integrations/pixellab-character-export-registry.json",
+    "sourcePacketName":  "Female_Character_Blue_Hoodie.zip",
+    "sourcePacketOrigin":  "local-downloads",
+    "sourceDownloadUrl":  "https://api.pixellab.ai/mcp/characters/a0bf4028-6285-4cec-870c-8723b5fedbed/download",
+    "outputFrameSize":  {
+                            "height":  64,
+                            "width":  64
+                        },
+    "animationFidelity":  "rotation-derived",
+    "animations":  {
+                       "idle":  {
+                                    "src":  "assets/characters/prismcade-pixellab/prismcade_female_blue_hoodie/idle_4.png",
+                                    "frames":  4,
+                                    "frameWidth":  64,
+                                    "frameHeight":  64,
+                                    "fps":  8,
+                                    "loop":  true,
+                                    "source":  "rotations/east",
+                                    "synthetic":  true
+                                },
+                       "walk":  {
+                                    "src":  "assets/characters/prismcade-pixellab/prismcade_female_blue_hoodie/walk_4.png",
+                                    "frames":  4,
+                                    "frameWidth":  64,
+                                    "frameHeight":  64,
+                                    "fps":  8,
+                                    "loop":  true,
+                                    "source":  "rotations/east",
+                                    "synthetic":  true
+                                },
+                       "run":  {
+                                   "src":  "assets/characters/prismcade-pixellab/prismcade_female_blue_hoodie/run_4.png",
+                                   "frames":  4,
+                                   "frameWidth":  64,
+                                   "frameHeight":  64,
+                                   "fps":  8,
+                                   "loop":  true,
+                                   "source":  "rotations/east",
+                                   "synthetic":  true
+                               },
+                       "jump":  {
+                                    "src":  "assets/characters/prismcade-pixellab/prismcade_female_blue_hoodie/jump_4.png",
+                                    "frames":  4,
+                                    "frameWidth":  64,
+                                    "frameHeight":  64,
+                                    "fps":  12,
+                                    "loop":  false,
+                                    "source":  "rotations/east",
+                                    "synthetic":  true
+                                },
+                       "fall":  {
+                                    "src":  "assets/characters/prismcade-pixellab/prismcade_female_blue_hoodie/fall_4.png",
+                                    "frames":  4,
+                                    "frameWidth":  64,
+                                    "frameHeight":  64,
+                                    "fps":  12,
+                                    "loop":  false,
+                                    "source":  "rotations/east",
+                                    "synthetic":  true
+                                },
+                       "attack":  {
+                                      "src":  "assets/characters/prismcade-pixellab/prismcade_female_blue_hoodie/attack_4.png",
+                                      "frames":  4,
+                                      "frameWidth":  64,
+                                      "frameHeight":  64,
+                                      "fps":  12,
+                                      "loop":  false,
+                                      "source":  "rotations/east",
+                                      "synthetic":  true
+                                  },
+                       "special":  {
+                                       "src":  "assets/characters/prismcade-pixellab/prismcade_female_blue_hoodie/special_4.png",
+                                       "frames":  4,
+                                       "frameWidth":  64,
+                                       "frameHeight":  64,
+                                       "fps":  12,
+                                       "loop":  false,
+                                       "source":  "rotations/east",
+                                       "synthetic":  true
+                                   },
+                       "hurt":  {
+                                    "src":  "assets/characters/prismcade-pixellab/prismcade_female_blue_hoodie/hurt_4.png",
+                                    "frames":  4,
+                                    "frameWidth":  64,
+                                    "frameHeight":  64,
+                                    "fps":  12,
+                                    "loop":  false,
+                                    "source":  "rotations/east",
+                                    "synthetic":  true
+                                },
+                       "knockout":  {
+                                        "src":  "assets/characters/prismcade-pixellab/prismcade_female_blue_hoodie/knockout_4.png",
+                                        "frames":  4,
+                                        "frameWidth":  64,
+                                        "frameHeight":  64,
+                                        "fps":  12,
+                                        "loop":  false,
+                                        "source":  "rotations/east",
+                                        "synthetic":  true
+                                    },
+                       "victory":  {
+                                       "src":  "assets/characters/prismcade-pixellab/prismcade_female_blue_hoodie/victory_4.png",
+                                       "frames":  4,
+                                       "frameWidth":  64,
+                                       "frameHeight":  64,
+                                       "fps":  8,
+                                       "loop":  true,
+                                       "source":  "rotations/east",
+                                       "synthetic":  true
+                                   }
+                   },
+    "notes":  [
+                  "Raw PixelLab export packets are not committed.",
+                  "These runtime sheets are normalized 64x64 game-facing outputs for Pixel Fruit Arena.",
+                  "Rotation-derived animations are playable placeholders and should be replaced by curated PixelLab animation jobs when available."
+              ]
+}

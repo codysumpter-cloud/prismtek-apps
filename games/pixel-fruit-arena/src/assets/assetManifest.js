@@ -1,4 +1,5 @@
 const customRoot = "assets/characters/prismtek-custom";
+const prismcadeRoot = "assets/characters/prismcade-pixellab";
 
 const customCharacterAnimations = (src) => ({
   idle: { src, frames: 4, fps: 7, loop: true },
@@ -11,6 +12,34 @@ const customCharacterAnimations = (src) => ({
   hurt: { src, frames: 4, fps: 10, loop: false },
   knockout: { src, frames: 4, fps: 10, loop: false },
   victory: { src, frames: 4, fps: 7, loop: true }
+});
+
+const prismcadeCharacterAnimations = (id) => ({
+  idle: { src: `${prismcadeRoot}/${id}/idle_4.png`, frames: 4, fps: 8, loop: true },
+  walk: { src: `${prismcadeRoot}/${id}/walk_4.png`, frames: 4, fps: 8, loop: true },
+  run: { src: `${prismcadeRoot}/${id}/run_4.png`, frames: 4, fps: 10, loop: true },
+  jump: { src: `${prismcadeRoot}/${id}/jump_4.png`, frames: 4, fps: 12, loop: false },
+  fall: { src: `${prismcadeRoot}/${id}/fall_4.png`, frames: 4, fps: 12, loop: false },
+  attack: { src: `${prismcadeRoot}/${id}/attack_4.png`, frames: 4, fps: 14, loop: false },
+  special: { src: `${prismcadeRoot}/${id}/special_4.png`, frames: 4, fps: 14, loop: false },
+  hurt: { src: `${prismcadeRoot}/${id}/hurt_4.png`, frames: 4, fps: 12, loop: false },
+  knockout: { src: `${prismcadeRoot}/${id}/knockout_4.png`, frames: 4, fps: 10, loop: false },
+  victory: { src: `${prismcadeRoot}/${id}/victory_4.png`, frames: 4, fps: 8, loop: true }
+});
+
+const prismcadeCharacterSprite = (id, name, sourceVariantId, animationFidelity) => ({
+  name,
+  frameWidth: 64,
+  frameHeight: 64,
+  scale: 1,
+  source: {
+    provider: "pixellab.ai",
+    registry: "data/integrations/pixellab-character-export-registry.json",
+    sourceVariantId,
+    manifest: `${prismcadeRoot}/${id}/manifest.json`,
+    animationFidelity
+  },
+  animations: prismcadeCharacterAnimations(id)
 });
 
 export const CHARACTER_SPRITES = {
@@ -30,6 +59,13 @@ export const CHARACTER_SPRITES = {
     scale: 2,
     animations: customCharacterAnimations(`${customRoot}/female-basic.svg`)
   },
+  prismcade_buddy: prismcadeCharacterSprite("prismcade_buddy", "Buddy", "buddy", "source-animation-normalized"),
+  prismcade_prismtek: prismcadeCharacterSprite("prismcade_prismtek", "Prismtek", "prismtek", "source-animation-normalized"),
+  prismcade_prismtek_jones: prismcadeCharacterSprite("prismcade_prismtek_jones", "Prismtek Jones", "prismtek-jones", "rotation-derived"),
+  prismcade_female_blue_hoodie: prismcadeCharacterSprite("prismcade_female_blue_hoodie", "Female Blue Hoodie", "female-character-blue-hoodie", "rotation-derived"),
+  prismcade_ponytail_guy: prismcadeCharacterSprite("prismcade_ponytail_guy", "Ponytail Guy", "ponytail-guy", "rotation-derived"),
+  prismcade_prismtek_pixel_god: prismcadeCharacterSprite("prismcade_prismtek_pixel_god", "Prismtek Pixel God", "prismtek-pixel-god", "rotation-derived"),
+  prismcade_prismbot_pixel_god: prismcadeCharacterSprite("prismcade_prismbot_pixel_god", "PrismBot Pixel God", "prismbot-pixel-god", "rotation-derived"),
   pink: {
     name: "Prism Imp",
     frameWidth: 32,

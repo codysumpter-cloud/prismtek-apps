@@ -1,4 +1,4 @@
-const CACHE_NAME = "pixel-fruit-arena-v5-character-customization";
+const CACHE_NAME = "pixel-fruit-arena-v6-prismcade-roster";
 const ASSETS = [
   "./",
   "./index.html",
@@ -28,6 +28,7 @@ const ASSETS = [
   "./data/stages/training_arena.json",
   "./assets/effects/elemental-vfx/flame-fireball.png",
   "./src/characters/characterCreator.js",
+  "./src/characters/prismcadeRoster.js",
   "./src/systems/matchSystem.js",
   "./src/systems/runtimeConfig.js",
   "./src/combat/combatStyles.js",
@@ -37,6 +38,7 @@ const ASSETS = [
   "./src/ui/renderer.js",
   "./src/ui/styles.css",
   "./data/fruits/fruits.json",
+  "./data/characters/prismcade_playable_roster.json",
   "./data/stages/sky_ruins.json",
   "./assets/characters/prismtek-custom/male-basic.svg",
   "./assets/characters/prismtek-custom/female-basic.svg",

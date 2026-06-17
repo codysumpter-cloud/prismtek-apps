@@ -9,6 +9,7 @@
     "test": "node tools/test.mjs",
     "catalog:assets": "node tools/build_asset_catalog.mjs",
     "validate:catalog": "node tools/validate_asset_catalog.mjs",
+    "validate:prismcade-roster": "node tools/validate_prismcade_roster.mjs",
     "validate:dist": "node tools/validate_dist.mjs",
     "package:zip": "npm run build && npm run validate:dist && node tools/package_zip.mjs",
     "validate:dist:ps": "powershell -ExecutionPolicy Bypass -File tools/validate_dist.ps1",

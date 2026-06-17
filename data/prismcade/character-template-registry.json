@@ -7,6 +7,18 @@
     "pixelForge": "docs/integrations/prismtek-pixel-forge.md",
     "assetPolicy": "docs/assets/asset-source-policy.md"
   },
+  "runtimeSlices": [
+    {
+      "id": "pixel-fruit-arena-prismcade-roster",
+      "gameId": "pixel-fruit-arena",
+      "status": "playable-runtime-ready-needs-polish-pass",
+      "roster": "games/pixel-fruit-arena/data/characters/prismcade_playable_roster.json",
+      "runtimeModule": "games/pixel-fruit-arena/src/characters/prismcadeRoster.js",
+      "assetRoot": "games/pixel-fruit-arena/assets/characters/prismcade-pixellab",
+      "validator": "games/pixel-fruit-arena/tools/validate_prismcade_roster.mjs",
+      "notes": "Buddy and Prismtek use normalized PixelLab animation exports. Rotation-only sources are playable placeholders until polished animation jobs are available."
+    }
+  ],
   "gameReadyTarget": {
     "frameWidth": 64,
     "frameHeight": 64,

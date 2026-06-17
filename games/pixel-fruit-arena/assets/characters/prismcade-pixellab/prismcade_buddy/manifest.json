@@ -1,0 +1,123 @@
+{
+    "schemaVersion":  "pixel-fruit-arena-prismcade-character-v0",
+    "id":  "prismcade_buddy",
+    "displayName":  "Buddy",
+    "sourceVariantId":  "buddy",
+    "sourceCharacterId":  "7a14aefe-6c41-4290-ba26-a149d93725fb",
+    "sourceRegistry":  "data/integrations/pixellab-character-export-registry.json",
+    "sourcePacketName":  "Buddy_detail_restored_clean.zip",
+    "sourcePacketOrigin":  "local-downloads",
+    "sourceDownloadUrl":  "https://api.pixellab.ai/mcp/characters/7a14aefe-6c41-4290-ba26-a149d93725fb/download",
+    "outputFrameSize":  {
+                            "height":  64,
+                            "width":  64
+                        },
+    "animationFidelity":  "source-animation-normalized",
+    "animations":  {
+                       "idle":  {
+                                    "src":  "assets/characters/prismcade-pixellab/prismcade_buddy/idle_4.png",
+                                    "frames":  4,
+                                    "frameWidth":  64,
+                                    "frameHeight":  64,
+                                    "fps":  8,
+                                    "loop":  true,
+                                    "source":  "animations/idle/east",
+                                    "synthetic":  false
+                                },
+                       "walk":  {
+                                    "src":  "assets/characters/prismcade-pixellab/prismcade_buddy/walk_4.png",
+                                    "frames":  4,
+                                    "frameWidth":  64,
+                                    "frameHeight":  64,
+                                    "fps":  8,
+                                    "loop":  true,
+                                    "source":  "animations/Walk/east",
+                                    "synthetic":  false
+                                },
+                       "run":  {
+                                   "src":  "assets/characters/prismcade-pixellab/prismcade_buddy/run_4.png",
+                                   "frames":  4,
+                                   "frameWidth":  64,
+                                   "frameHeight":  64,
+                                   "fps":  8,
+                                   "loop":  true,
+                                   "source":  "animations/Walk/east",
+                                   "synthetic":  false
+                               },
+                       "jump":  {
+                                    "src":  "assets/characters/prismcade-pixellab/prismcade_buddy/jump_4.png",
+                                    "frames":  4,
+                                    "frameWidth":  64,
+                                    "frameHeight":  64,
+                                    "fps":  12,
+                                    "loop":  false,
+                                    "source":  "animations/Push_Object/east",
+                                    "synthetic":  false
+                                },
+                       "fall":  {
+                                    "src":  "assets/characters/prismcade-pixellab/prismcade_buddy/fall_4.png",
+                                    "frames":  4,
+                                    "frameWidth":  64,
+                                    "frameHeight":  64,
+                                    "fps":  12,
+                                    "loop":  false,
+                                    "source":  "animations/Pull_Object/east",
+                                    "synthetic":  false
+                                },
+                       "attack":  {
+                                      "src":  "assets/characters/prismcade-pixellab/prismcade_buddy/attack_4.png",
+                                      "frames":  4,
+                                      "frameWidth":  64,
+                                      "frameHeight":  64,
+                                      "fps":  12,
+                                      "loop":  false,
+                                      "source":  "animations/melee_thrust/south",
+                                      "synthetic":  false
+                                  },
+                       "special":  {
+                                       "src":  "assets/characters/prismcade-pixellab/prismcade_buddy/special_4.png",
+                                       "frames":  4,
+                                       "frameWidth":  64,
+                                       "frameHeight":  64,
+                                       "fps":  12,
+                                       "loop":  false,
+                                       "source":  "animations/Fireball/east",
+                                       "synthetic":  false
+                                   },
+                       "hurt":  {
+                                    "src":  "assets/characters/prismcade-pixellab/prismcade_buddy/hurt_4.png",
+                                    "frames":  4,
+                                    "frameWidth":  64,
+                                    "frameHeight":  64,
+                                    "fps":  12,
+                                    "loop":  false,
+                                    "source":  "animations/Taking_Punch/east",
+                                    "synthetic":  false
+                                },
+                       "knockout":  {
+                                        "src":  "assets/characters/prismcade-pixellab/prismcade_buddy/knockout_4.png",
+                                        "frames":  4,
+                                        "frameWidth":  64,
+                                        "frameHeight":  64,
+                                        "fps":  12,
+                                        "loop":  false,
+                                        "source":  "animations/KO/south",
+                                        "synthetic":  false
+                                    },
+                       "victory":  {
+                                       "src":  "assets/characters/prismcade-pixellab/prismcade_buddy/victory_4.png",
+                                       "frames":  4,
+                                       "frameWidth":  64,
+                                       "frameHeight":  64,
+                                       "fps":  8,
+                                       "loop":  true,
+                                       "source":  "animations/victory/south",
+                                       "synthetic":  false
+                                   }
+                   },
+    "notes":  [
+                  "Raw PixelLab export packets are not committed.",
+                  "These runtime sheets are normalized 64x64 game-facing outputs for Pixel Fruit Arena.",
+                  "Rotation-derived animations are playable placeholders and should be replaced by curated PixelLab animation jobs when available."
+              ]
+}

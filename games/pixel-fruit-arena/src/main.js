@@ -1,6 +1,7 @@
 import { FRUITS } from "./fruits/fruits.js";
 import { STAGES, stageFor } from "./stages/stages.js";
 import { createCharacter, COSMETICS } from "./characters/characterCreator.js";
+import { prismcadeRosterGuest } from "./characters/prismcadeRoster.js";
 import { COMBAT_STYLES } from "./combat/combatStyles.js";
 import { createMatch } from "./systems/matchSystem.js";
 import { KeyboardInput, GamepadInput, routeActions, buildAssignments } from "./multiplayer/input.js";
@@ -91,8 +92,8 @@ function lobbyPlayerFromProfile() {
   return { device: "kb1", name: profile.name, sprite_key: profile.sprite_key, combat_style: profile.combat_style, fruitId: profile.equipped_fruit, appearance: { ...profile.appearance } };
 }
 function defaultGuest(slot) {
-  const spriteKeys = ["male_basic", "female_basic", "dude", "owlet"];
-  return { device: "cpu", name: `P${slot + 1} Guest`, sprite_key: spriteKeys[slot % spriteKeys.length], combat_style: COSMETICS.combatStyles[slot % COSMETICS.combatStyles.length], fruitId: fruitIds[slot % fruitIds.length], appearance: { ...COSMETICS.presets[slot % COSMETICS.presets.length] } };
+  const guest = prismcadeRosterGuest(Math.max(0, slot - 1));
+  return { ...guest, name: guest.name || `P${slot + 1} Guest`, fruitId: guest.fruitId || fruitIds[slot % fruitIds.length] };
 }
 
 function openLobby(playerCount, options = {}) {

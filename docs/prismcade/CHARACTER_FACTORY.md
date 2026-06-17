@@ -36,6 +36,37 @@ Validator:
 npm run prismcade:validate-characters
 ```
 
+## First playable runtime slice
+
+Pixel Fruit Arena now has a game-local Prismcade roster bridge:
+
+```txt
+games/pixel-fruit-arena/data/characters/prismcade_playable_roster.json
+games/pixel-fruit-arena/src/characters/prismcadeRoster.js
+games/pixel-fruit-arena/assets/characters/prismcade-pixellab/
+```
+
+Current playable entries:
+
+- Buddy;
+- Prismtek;
+- Prismtek Jones;
+- Female Blue Hoodie;
+- Ponytail Guy;
+- Prismtek Pixel God;
+- PrismBot Pixel God.
+
+Buddy and Prismtek use normalized PixelLab animation exports. Prismtek Jones, Female Blue Hoodie, Ponytail Guy, Prismtek Pixel God, and PrismBot Pixel God are playable now with rotation-derived strips and still need PixelLab animation-job polish before being called final production animation packs.
+
+Validation:
+
+```bash
+npm --prefix games/pixel-fruit-arena run validate:prismcade-roster
+npm run prismcade:validate:all
+```
+
+BMO remains a 4-direction source group. Preserve that source format unless a real 8-direction derivative is generated.
+
 ## What character-ready means
 
 A source packet is not game-ready just because PixelLab says it can be downloaded.

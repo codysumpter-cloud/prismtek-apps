@@ -28,6 +28,12 @@ const localParts = [];
 const centralParts = [];
 let offset = 0;
 
+const crcTable = Array.from({ length: 256 }, (_, index) => {
+  let c = index;
+  for (let k = 0; k < 8; k += 1) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+  return c >>> 0;
+});
+
 for (const relativePath of filePaths) {
   const absolutePath = path.join(dist, relativePath);
   const data = await readFile(absolutePath);
@@ -110,12 +116,6 @@ function dosTimestamp(date) {
   const dosDate = ((year - 1980) << 9) | ((date.getMonth() + 1) << 5) | date.getDate();
   return { dosTime, dosDate };
 }
-
-const crcTable = Array.from({ length: 256 }, (_, index) => {
-  let c = index;
-  for (let k = 0; k < 8; k += 1) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
-  return c >>> 0;
-});
 
 function crc32(buffer) {
   let crc = 0xffffffff;
