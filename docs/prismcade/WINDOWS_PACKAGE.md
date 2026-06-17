@@ -53,27 +53,17 @@ It includes:
 
 Development-only folders such as `node_modules`, `dist`, `artifacts`, and Pixel Fruit Arena reference assets are excluded.
 
-## Build in GitHub Actions
-
-Run the workflow:
-
-```txt
-Prismcade Windows Package
-```
-
-Artifact name:
-
-```txt
-Prismcade-Windows-ZIP
-```
-
 ## Player instructions
 
-1. Download `Prismcade-Windows.zip` from the workflow artifact or release.
+1. Build or download `Prismcade-Windows.zip`.
 2. Extract the ZIP.
 3. Double-click `Prismcade.exe`.
 4. Pick a game from the Prismcade catalog.
 5. Close the Prismcade console window when done.
+
+## Future release automation
+
+A follow-up PR should add a GitHub Actions workflow or release job that runs `npm run prismcade:package:windows` on `windows-latest` and uploads `dist/prismcade-windows/Prismcade-Windows.zip` as a release artifact.
 
 ## Honest limitation
 
