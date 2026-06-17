@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Prismcade</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #101018;
+      --panel: #17172a;
+      --ink: #f7f7ff;
+      --muted: #a9aac4;
+      --line: #2c2c4c;
+      --accent: #5ee7ff;
+      --hot: #ff5e78;
+      --good: #7cff9b;
+      --warn: #ffd166;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background:
+        linear-gradient(transparent 95%, rgba(94,231,255,.08) 95%),
+        linear-gradient(90deg, transparent 95%, rgba(94,231,255,.08) 95%),
+        var(--bg);
+      background-size: 18px 18px;
+      color: var(--ink);
+    }
+    .shell { max-width: 1180px; margin: 0 auto; padding: 28px 18px 48px; }
+    .hero {
+      border: 2px solid var(--line);
+      background: rgba(23,23,42,.94);
+      box-shadow: 0 0 0 4px rgba(0,0,0,.22);
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+    .eyebrow { color: var(--accent); text-transform: uppercase; letter-spacing: .16em; margin: 0 0 8px; font-size: 12px; }
+    h1 { margin: 0; font-size: clamp(34px, 7vw, 72px); line-height: .9; text-transform: uppercase; }
+    .lede { color: var(--muted); max-width: 820px; line-height: 1.5; }
+    .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin: 18px 0; }
+    button {
+      border: 2px solid var(--line);
+      background: #20203a;
+      color: var(--ink);
+      padding: 9px 12px;
+      font: inherit;
+      cursor: pointer;
+    }
+    button[data-active="true"] { border-color: var(--accent); color: var(--accent); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+    .card {
+      border: 2px solid var(--line);
+      background: rgba(23,23,42,.96);
+      padding: 14px;
+      min-height: 270px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .thumb {
+      height: 84px;
+      display: grid;
+      place-items: center;
+      border: 2px solid #2f3158;
+      background: radial-gradient(circle at 40% 30%, rgba(94,231,255,.24), transparent 38%), #101018;
+      color: var(--accent);
+      text-transform: uppercase;
+      text-align: center;
+      font-weight: 800;
+      letter-spacing: .08em;
+      image-rendering: pixelated;
+    }
+    .card h2 { margin: 0; font-size: 20px; }
+    .meta { display: flex; flex-wrap: wrap; gap: 6px; }
+    .pill { border: 1px solid var(--line); padding: 3px 6px; color: var(--muted); font-size: 12px; }
+    .priority-high { color: var(--good); }
+    .priority-medium { color: var(--warn); }
+    .priority-later { color: var(--hot); }
+    .desc, .controls, .status { color: var(--muted); font-size: 13px; line-height: 1.45; margin: 0; }
+    .links { margin-top: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+    a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; }
+    a:hover { border-bottom-color: var(--accent); }
+    .error { border: 2px solid var(--hot); padding: 14px; color: var(--hot); background: rgba(255,94,120,.08); }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <p class="eyebrow">Prismtek Arcade</p>
+      <h1>Prismcade</h1>
+      <p class="lede">
+        Retro pixel games, small first. This catalog is the first Prismcade platform loop:
+        manifest → catalog → play → package → receipts → future creator sharing.
+      </p>
+      <div class="toolbar" id="filters" aria-label="Catalog filters"></div>
+    </section>
+    <section id="catalog" class="grid" aria-live="polite"></section>
+  </main>
+
+  <script type="module">
+    const catalog = document.querySelector("#catalog");
+    const filters = document.querySelector("#filters");
+    const registryUrl = "../../data/prismcade/game-manifests.json";
+    let registry = null;
+    let active = "all";
+
+    const filterDefs = [
+      ["all", "All"],
+      ["high", "High priority"],
+      ["medium", "Medium"],
+      ["later", "Later"],
+      ["platform-fighter", "Fighters"],
+      ["quick-play", "Quick-play"]
+    ];
+
+    function button(id, label) {
+      const el = document.createElement("button");
+      el.type = "button";
+      el.textContent = label;
+      el.dataset.active = String(active === id);
+      el.addEventListener("click", () => {
+        active = id;
+        render();
+      });
+      return el;
+    }
+
+    function matches(game) {
+      if (active === "all") return true;
+      if (active === "quick-play") return game.status === "quick-play-import";
+      return game.priority === active || game.arcadeRole === active || game.tags.includes(active);
+    }
+
+    function statusText(game) {
+      const hooks = game.platformHooks;
+      const readyHooks = Object.entries(hooks).filter(([, value]) => value).map(([key]) => key);
+      return readyHooks.length ? `Hooks: ${readyHooks.join(", ")}` : "Hooks: local profile / receipts / share cards pending";
+    }
+
+    function render() {
+      filters.replaceChildren(...filterDefs.map(([id, label]) => button(id, label)));
+      const games = registry.games.filter(matches);
+      catalog.replaceChildren(...games.map((game) => {
+        const card = document.createElement("article");
+        card.className = "card";
+        card.innerHTML = `
+          <div class="thumb">${game.title}</div>
+          <h2>${game.title}</h2>
+          <div class="meta">
+            <span class="pill">${game.status}</span>
+            <span class="pill">${game.arcadeRole}</span>
+            <span class="pill priority-${game.priority}">${game.priority}</span>
+            <span class="pill">${game.players.min}-${game.players.max}P</span>
+          </div>
+          <p class="desc">${game.description}</p>
+          <p class="controls"><strong>Controls:</strong> ${game.controls.slice(0, 2).join(" / ")}</p>
+          <p class="status">${statusText(game)}</p>
+          <div class="links">
+            <a href="../../${game.entrypoint}">Play/Open</a>
+            <a href="../../${game.path}/README.md">README</a>
+            <a href="../../docs/prismcade/GAME_MANIFEST_CONTRACT.md">Manifest contract</a>
+          </div>
+        `;
+        return card;
+      }));
+    }
+
+    fetch(registryUrl)
+      .then((response) => {
+        if (!response.ok) throw new Error(`Could not load ${registryUrl}: ${response.status}`);
+        return response.json();
+      })
+      .then((data) => {
+        registry = data;
+        render();
+      })
+      .catch((error) => {
+        catalog.className = "error";
+        catalog.textContent = `${error.message}. Serve the repo root over HTTP and open /apps/prismcade/.`;
+      });
+  </script>
+</body>
+</html>

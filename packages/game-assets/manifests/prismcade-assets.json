@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "prismcade-asset-index-v0",
+  "description": "Prismcade asset planning index. Generated/curated files must still be promoted through Pixel Forge provenance and validation.",
+  "sourceOfTruth": {
+    "pixelAssetPipeline": "packages/pixel-asset-pipeline/",
+    "pixelForge": "tools/pixel-forge/",
+    "policy": "docs/assets/asset-source-policy.md"
+  },
+  "promotionFlow": [
+    "prompt or import request",
+    "raw output",
+    "LibreSprite cleanup if needed",
+    "Pixel Forge validation",
+    "manifest/provenance",
+    "game-local usage",
+    "release receipt"
+  ],
+  "categories": {
+    "characters": [],
+    "fighters": [
+      {
+        "id": "prismcade-default-hero-64",
+        "displayName": "Prismcade Default Hero 64",
+        "type": "sprite-sheet",
+        "status": "planned",
+        "frameWidth": 64,
+        "frameHeight": 64,
+        "targetGames": [
+          "pixel-fruit-arena",
+          "platform-fighter-lite"
+        ],
+        "source": "pixellab.ai planned generation",
+        "promptPath": "assets/generated/pixellab/prismcade/prompts/prismcade-default-hero-64.md",
+        "notes": "Original 64x64 readable platform-fighter base; must not copy protected characters."
+      }
+    ],
+    "ui": [
+      {
+        "id": "prismcade-ui-card-frame",
+        "displayName": "Prismcade UI Card Frame",
+        "type": "ui-frame",
+        "status": "planned",
+        "targetGames": [
+          "prismcade-catalog",
+          "prismcade-creator"
+        ],
+        "source": "pixellab.ai or manual Pixel Forge",
+        "promptPath": "assets/generated/pixellab/prismcade/prompts/prismcade-ui-card-frame.md",
+        "notes": "Pixel arcade catalog/game card frame with transparent corners and hard-edged border."
+      }
+    ],
+    "icons": [
+      {
+        "id": "pixel-fruit-arena-fruit-icon-set",
+        "displayName": "Pixel Fruit Arena Fruit Icon Set",
+        "type": "icon-set",
+        "status": "planned",
+        "frameWidth": 32,
+        "frameHeight": 32,
+        "targetGames": [
+          "pixel-fruit-arena"
+        ],
+        "source": "pixellab.ai planned generation",
+        "promptPath": "assets/generated/pixellab/prismcade/prompts/pixel-fruit-arena-fruit-icons.md",
+        "notes": "Original fruit-power icons for Flame/Frost/Volt/Shadow/Rubber/Gravity; avoid anime/franchise references."
+      },
+      {
+        "id": "spin-street-bit-beast-icons",
+        "displayName": "Spin Street Bit Beast Icons",
+        "type": "icon-set",
+        "status": "planned",
+        "frameWidth": 32,
+        "frameHeight": 32,
+        "targetGames": [
+          "spin-street-showdown"
+        ],
+        "source": "pixellab.ai planned generation",
+        "promptPath": "assets/generated/pixellab/prismcade/prompts/spin-street-bit-beast-icons.md",
+        "notes": "Original icons for Astral Lynx, Chrome Wyvern, Vault Turtle, Pulse Raven, Comet Wolf, Neon Kirin, Grav Bull, Volt Jackal."
+      }
+    ],
+    "thumbnails": [
+      {
+        "id": "prismcade-game-thumbnail-pack",
+        "displayName": "Prismcade Game Thumbnail Pack",
+        "type": "thumbnail-set",
+        "status": "planned",
+        "targetGames": [
+          "pixel-fruit-arena",
+          "flappy-pixel",
+          "crossy-pixel",
+          "pixel-snake",
+          "neon-brick-breaker",
+          "pixel-stacker",
+          "spin-street-showdown",
+          "tamernet-battle-sandbox",
+          "prismwilds-echo-dominion"
+        ],
+        "source": "manual or pixellab.ai",
+        "promptPath": "assets/generated/pixellab/prismcade/prompts/prismcade-game-thumbnails.md",
+        "notes": "Catalog thumbnails can be generated after each game manifest is stable."
+      }
+    ],
+    "tiles": [],
+    "effects": [],
+    "backgrounds": []
+  }
+}

@@ -13,6 +13,9 @@
 [<kbd>▶ Neon Brick Breaker</kbd>](games/neon-brick-breaker/)
 [<kbd>▶ Pixel Stacker</kbd>](games/pixel-stacker/)
 [<kbd>▶ Prismwilds: Echo Dominion</kbd>](games/prismwilds-echo-dominion/)
+[<kbd>Prismcade catalog</kbd>](apps/prismcade/)
+[<kbd>Prismcade creator</kbd>](apps/prismcade-creator/)
+[<kbd>Prismcade platform loop</kbd>](docs/prismcade/PRISMCADE_PLATFORM.md)
 [<kbd>Prismcade contracts</kbd>](docs/integrations/gamemaker-html5-adapter.md)
 [<kbd>🧪 Experiments</kbd>](experiments/)
 [<kbd>📚 Reference registry</kbd>](docs/games/open-source-reference-games.md)
@@ -148,6 +151,8 @@ Run common checks:
 ```bash
 npm run lint
 npm run build
+npm run prismcade:validate
+npm run games:validate-support
 npm run references:validate
 ```
 
@@ -166,6 +171,8 @@ Some projects are intentionally dependency-free browser prototypes and should be
 | Neon Brick Breaker | Game | `games/neon-brick-breaker/` | Prismtek-site arcade import |
 | Pixel Stacker | Game | `games/pixel-stacker/` | Prismtek-site arcade import |
 | Prismwilds: Echo Dominion | Game prototype | `games/prismwilds-echo-dominion/` | Browser creature-survival prototype with local smoke test and web ZIP packager |
+| Prismcade catalog | Game platform app | `apps/prismcade/` | Static catalog/launcher for the Prismtek game roster driven by `data/prismcade/game-manifests.json` |
+| Prismcade creator MVP | Game creation tool | `apps/prismcade-creator/` | Manifest-first creator prototype for reusable Prismcade game templates and publishing metadata |
 | Prismcade GameMaker adapters | Integration contract | `docs/integrations/gamemaker-html5-adapter.md`, `docs/integrations/gamemaker-cli-tooling.md`, `data/integrations/prismcade-reference-sources.json` | Contract-only Prismcade import/wrapper research validated by `npm run integrations:validate` |
 | OpenBOR Prismtek Evaluation | Experiment | `experiments/openbor-prismtek-brawler/` | Original brawler-engine spike using the reference registry workflow |
 | Castagne Pixel Fruit Spike | Experiment | `experiments/castagne-pixel-fruit-spike/` | Pixel Fruit Arena combat architecture evaluation |
