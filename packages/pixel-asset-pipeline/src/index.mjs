@@ -8,6 +8,25 @@ export const CANONICAL_ANIMATION_SLOTS = Object.freeze([
   'buff', 'debuff', 'victory', 'defeat'
 ]);
 
+export const PIXELLAB_STANDARD_DIRECTIONS = Object.freeze([
+  'south', 'east', 'north', 'west', 'south-east', 'north-east', 'north-west', 'south-west'
+]);
+
+export const PIXELLAB_CARDINAL_DIRECTIONS = Object.freeze([
+  'south', 'east', 'north', 'west'
+]);
+
+export const PIXELLAB_CORE_TEMPLATE_ANIMATIONS = Object.freeze([
+  { slot: 'idle', templateAnimationId: 'breathing-idle', frameCount: 4, loop: true, purpose: 'Default standing/living idle loop.' },
+  { slot: 'walk', templateAnimationId: 'walking-8-frames', frameCount: 8, loop: true, purpose: 'Readable locomotion for RPG and arcade movement.' },
+  { slot: 'run', templateAnimationId: 'running-8-frames', frameCount: 8, loop: true, purpose: 'Fast locomotion for dash, chase, and action games.' },
+  { slot: 'hurt', templateAnimationId: 'taking-punch', frameCount: 6, loop: false, purpose: 'Reusable hit reaction.' },
+  { slot: 'jump', templateAnimationId: 'jumping-1', frameCount: 6, loop: false, purpose: 'Reusable hop/jump action.' },
+  { slot: 'melee_thrust', templateAnimationId: 'lead-jab', frameCount: 6, loop: false, purpose: 'Short-range attack starter.' },
+  { slot: 'melee_spin', templateAnimationId: 'hurricane-kick', frameCount: 8, loop: false, purpose: 'Spinning melee flourish.' },
+  { slot: 'projectile', templateAnimationId: 'fireball', frameCount: 6, loop: false, purpose: 'Projectile/casting attack starter.' }
+]);
+
 const ANIMATION_ALIASES = new Map([
   ['faint', 'ko'], ['knockout', 'ko'], ['happy', 'emote_happy'], ['angry', 'emote_angry'],
   ['shocked', 'emote_shocked'], ['magic_cast', 'cast'], ['projectile_launch', 'projectile'],
@@ -15,23 +34,13 @@ const ANIMATION_ALIASES = new Map([
 ]);
 
 export function normalizeAnimationName(value) {
-  const normalized = String(value ?? '')
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '_')
-    .replace(/^_+|_+$/g, '')
-    .replace(/_{2,}/g, '_');
+  const normalized = sanitizeIdentifier(value, '_');
   if (!normalized) return 'idle';
   return ANIMATION_ALIASES.get(normalized) ?? normalized;
 }
 
 export function normalizeVariantId(value) {
-  const normalized = String(value ?? '')
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9-]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .replace(/-{2,}/g, '-');
+  const normalized = sanitizeIdentifier(value, '-');
   return (normalized || 'unnamed-asset').slice(0, 64);
 }
 
@@ -176,6 +185,116 @@ export function buildProviderJob(input = {}) {
   };
 }
 
+export function listPixelLabAnimationTemplates(input = {}) {
+  const requestedSlots = Array.isArray(input.slots) && input.slots.length > 0
+    ? new Set(input.slots.map(normalizeAnimationName))
+    : null;
+  return PIXELLAB_CORE_TEMPLATE_ANIMATIONS
+    .filter((template) => !requestedSlots || requestedSlots.has(template.slot))
+    .map((template) => ({ ...template, provider: 'pixellab.ai', mode: 'template' }));
+}
+
+export function buildPixelLabCharacterExportDescriptor(input = {}) {
+  const characterId = String(input.characterId || input.id || '').trim();
+  const displayName = String(input.displayName || input.name || characterId || 'PixelLab Character');
+  const directions = normalizeDirections(input.directions);
+  const completedAnimations = normalizeCompletedAnimations(input.completedAnimations || input.animations);
+  const pendingJobs = normalizeJobList(input.pendingJobs);
+  const failedJobs = normalizeJobList(input.failedJobs);
+  const templatePack = {
+    schemaVersion: 'prismtek-pixellab-animation-template-pack-v1',
+    provider: 'pixellab.ai',
+    directions,
+    templates: listPixelLabAnimationTemplates({ slots: input.templateSlots })
+  };
+  const coveragePlan = buildPixelLabAnimationJobPlan({
+    characters: [{ characterId, displayName, completedAnimations }],
+    directions,
+    templates: templatePack.templates
+  });
+  const size = normalizePixelLabSize(input);
+
+  return {
+    schemaVersion: 'prismtek-pixellab-character-export-v1',
+    variantId: normalizeVariantId(input.variantId || displayName),
+    displayName,
+    provider: {
+      name: 'pixellab.ai',
+      source: 'pixellab-mcp',
+      characterId
+    },
+    status: String(input.status || 'completed'),
+    directions,
+    directionMode: `${directions.length}dir`,
+    size,
+    download: {
+      url: String(input.downloadUrl || buildPixelLabCharacterDownloadUrl(characterId)),
+      lockedUntilJobsComplete: Boolean(input.downloadLockedUntilJobsComplete || pendingJobs.length > 0)
+    },
+    completedAnimations,
+    pendingJobs,
+    failedJobs,
+    templatePack,
+    animationCoverage: {
+      requiredTemplateCount: templatePack.templates.length,
+      missingJobCount: coveragePlan.jobs.length,
+      exportReady: pendingJobs.length === 0 && failedJobs.length === 0,
+      fullyTemplateCovered: coveragePlan.jobs.length === 0
+    },
+    missingAnimationJobs: coveragePlan.jobs,
+    provenance: normalizeProvenance({
+      source: 'pixellab-character-export-packet',
+      rights: input.rights || 'user-owned-pixellab-export; verify project/license before shipping',
+      createdBy: input.createdBy || 'pixellab.ai',
+      generatedWith: 'pixellab-mcp',
+      notes: input.notes || 'Download the export packet, validate it with Pixel Forge, then commit only reviewed game-ready outputs.'
+    })
+  };
+}
+
+export function buildPixelLabAnimationJobPlan(input = {}) {
+  const directions = normalizeDirections(input.directions);
+  const templates = normalizeTemplateSelection(input);
+  const characters = Array.isArray(input.characters) ? input.characters : [];
+  const jobs = [];
+
+  for (const character of characters) {
+    const characterId = String(character.characterId || character.id || '').trim();
+    const displayName = String(character.displayName || character.name || characterId || 'PixelLab Character');
+    const completedAnimations = normalizeCompletedAnimations(character.completedAnimations || character.animations);
+    for (const template of templates) {
+      const missingDirections = directions.filter((direction) => !hasCompletedTemplate(completedAnimations, template.templateAnimationId, direction));
+      if (missingDirections.length === 0) continue;
+      jobs.push({
+        characterId,
+        variantId: normalizeVariantId(character.variantId || displayName),
+        displayName,
+        slot: template.slot,
+        templateAnimationId: template.templateAnimationId,
+        mode: 'template',
+        frameCount: template.frameCount,
+        loop: template.loop,
+        directions: missingDirections
+      });
+    }
+  }
+
+  const commands = jobs.map((job) => `animate_character(character_id="${escapeCommandString(job.characterId)}", template_animation_id="${escapeCommandString(job.templateAnimationId)}", mode="template", directions=${JSON.stringify(job.directions)})`);
+  return {
+    schemaVersion: 'prismtek-pixellab-animation-job-plan-v1',
+    provider: 'pixellab.ai',
+    directions,
+    templates,
+    jobs,
+    commands,
+    safety: {
+      requiresGenerationBudgetConfirmation: true,
+      doNotCommitSecrets: true,
+      pollWithGetCharacterBeforeDownload: true
+    }
+  };
+}
+
 function normalizeAnimation(animation = {}, grid) {
   const id = normalizeAnimationName(animation.id);
   const frameIndexes = Array.isArray(animation.frameIndexes)
@@ -207,6 +326,116 @@ function normalizeProvenance(input = {}) {
     generatedWith: input.generatedWith ? String(input.generatedWith) : undefined,
     notes: input.notes ? String(input.notes) : 'No third-party assets may be shipped without review.'
   };
+}
+
+function sanitizeIdentifier(value, separator) {
+  const source = String(value ?? '').trim().toLowerCase();
+  let output = '';
+  let pendingSeparator = false;
+  for (const character of source) {
+    const code = character.charCodeAt(0);
+    const isDigit = code >= 48 && code <= 57;
+    const isLower = code >= 97 && code <= 122;
+    if (isDigit || isLower) {
+      if (pendingSeparator && output.length > 0) output += separator;
+      output += character;
+      pendingSeparator = false;
+    } else {
+      pendingSeparator = output.length > 0;
+    }
+  }
+  return output;
+}
+
+function normalizeDirections(input) {
+  const mode = String(input ?? '').trim().toLowerCase();
+  if (input === 4 || mode === '4' || mode === '4dir' || mode === '4-direction') return [...PIXELLAB_CARDINAL_DIRECTIONS];
+  if (input === 8 || mode === '8' || mode === '8dir' || mode === '8-direction') return [...PIXELLAB_STANDARD_DIRECTIONS];
+  const directions = Array.isArray(input) && input.length > 0 ? input : PIXELLAB_STANDARD_DIRECTIONS;
+  const seen = new Set();
+  return directions
+    .map((direction) => String(direction || '').trim().toLowerCase())
+    .filter((direction) => PIXELLAB_STANDARD_DIRECTIONS.includes(direction))
+    .filter((direction) => {
+      if (seen.has(direction)) return false;
+      seen.add(direction);
+      return true;
+    });
+}
+
+function normalizePixelLabSize(input) {
+  const size = input.size && typeof input.size === 'object' ? input.size : {};
+  return {
+    width: toInteger(size.width ?? input.width, DEFAULT_FRAME_SIZE),
+    height: toInteger(size.height ?? input.height, DEFAULT_FRAME_SIZE)
+  };
+}
+
+function buildPixelLabCharacterDownloadUrl(characterId) {
+  return characterId ? `https://api.pixellab.ai/mcp/characters/${encodeURIComponent(characterId)}/download` : '';
+}
+
+function normalizeTemplateSelection(input = {}) {
+  if (Array.isArray(input.templates) && input.templates.length > 0) {
+    return input.templates.map(normalizePixelLabTemplate).filter(Boolean);
+  }
+  return listPixelLabAnimationTemplates({ slots: input.templateSlots });
+}
+
+function normalizePixelLabTemplate(template = {}) {
+  const templateAnimationId = String(template.templateAnimationId || template.id || '').trim();
+  if (!templateAnimationId) return null;
+  return {
+    slot: normalizeAnimationName(template.slot || templateAnimationId),
+    templateAnimationId,
+    frameCount: toInteger(template.frameCount, 8),
+    loop: template.loop !== false,
+    purpose: template.purpose ? String(template.purpose) : undefined,
+    provider: 'pixellab.ai',
+    mode: 'template'
+  };
+}
+
+function normalizeCompletedAnimations(input) {
+  if (!Array.isArray(input)) return [];
+  return input.map((animation) => {
+    if (typeof animation === 'string') {
+      return { templateAnimationId: animation.trim(), direction: undefined, frameCount: undefined };
+    }
+    const templateAnimationId = String(animation.templateAnimationId || animation.id || animation.name || '').trim();
+    const direction = animation.direction ? String(animation.direction).trim().toLowerCase() : undefined;
+    const directions = Array.isArray(animation.directions)
+      ? normalizeDirections(animation.directions)
+      : direction
+        ? [direction]
+        : [];
+    return {
+      templateAnimationId,
+      slot: animation.slot ? normalizeAnimationName(animation.slot) : undefined,
+      direction,
+      directions,
+      frameCount: animation.frameCount === undefined ? undefined : toInteger(animation.frameCount, 0),
+      source: animation.source ? String(animation.source) : undefined
+    };
+  }).filter((animation) => animation.templateAnimationId);
+}
+
+function normalizeJobList(input) {
+  if (!Array.isArray(input)) return [];
+  return input.map((job) => typeof job === 'string' ? { description: job } : { ...job });
+}
+
+function hasCompletedTemplate(completedAnimations, templateAnimationId, direction) {
+  return completedAnimations.some((animation) => {
+    if (animation.templateAnimationId !== templateAnimationId) return false;
+    if (animation.direction === direction) return true;
+    if (animation.directions?.includes(direction)) return true;
+    return !animation.direction && (!animation.directions || animation.directions.length === 0);
+  });
+}
+
+function escapeCommandString(value) {
+  return String(value).replaceAll('\\', '\\\\').replaceAll('"', '\\"');
 }
 
 function toInteger(value, fallback) {

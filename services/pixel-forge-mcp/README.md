@@ -8,6 +8,8 @@ It is intentionally **not** a PixelLab clone and it does not store API keys. It 
 - frame rectangle slicing,
 - asset manifest generation,
 - animation slot listing,
+- PixelLab export descriptor planning,
+- PixelLab reusable template job planning,
 - safe prompt/provider-job construction,
 - manifest validation.
 
@@ -34,6 +36,9 @@ npm --prefix services/pixel-forge-mcp run smoke
 | `build_generation_prompt` | Produce a safe provider prompt for original sprite sheets. |
 | `build_provider_job` | Produce provider-neutral generation job JSON. |
 | `list_animation_slots` | Return the canonical Buddy/Prismtek animation slot IDs. |
+| `list_pixellab_template_pack` | Return PixelLab template animation IDs mapped to Prismtek slots. |
+| `build_pixellab_character_export_descriptor` | Build a repeatable descriptor around one PixelLab character export packet. |
+| `build_pixellab_animation_job_plan` | Emit exact `animate_character(...)` calls for missing reusable PixelLab template animations. |
 
 ## ChatGPT / Codex config shape
 
@@ -54,4 +59,6 @@ For a hosted ChatGPT connector, wrap these tools in a remote HTTPS MCP transport
 
 ## Provider boundary
 
-Pixel Forge can later call Pixellab, OpenAI image generation, Replicate, ComfyUI, or a local model through adapter packages. Those adapters should consume `build_provider_job` output and return original assets plus provenance receipts. This MCP server does not make network calls in the foundation PR.
+Pixel Forge can later call Pixellab, OpenAI image generation, Replicate, ComfyUI, or a local model through adapter packages. Those adapters should consume `build_provider_job` output and return original assets plus provenance receipts.
+
+The PixelLab helper tools in this MCP server are deterministic planning tools only. They do not call PixelLab or spend generations. Use them after `pixellab.get_character`, review the returned job plan, then queue `animate_character(...)` through the real PixelLab MCP only after confirming the generation budget.

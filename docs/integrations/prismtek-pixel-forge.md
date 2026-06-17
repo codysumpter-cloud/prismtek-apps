@@ -20,6 +20,7 @@ services/pixel-forge-mcp/
   README.md
   package.json
   src/server.mjs
+data/integrations/pixellab-character-export-registry.json
 docs/integrations/prismtek-pixel-forge.md
 ```
 
@@ -114,8 +115,28 @@ The MCP server exposes deterministic, non-network tools:
 - `build_generation_prompt`
 - `build_provider_job`
 - `list_animation_slots`
+- `list_pixellab_template_pack`
+- `build_pixellab_character_export_descriptor`
+- `build_pixellab_animation_job_plan`
 
 This gives ChatGPT/Codex a safe integration point now, before any hosted generation is added.
+
+## Repeatable PixelLab export loop
+
+The real PixelLab MCP owns account state, generation jobs, and export downloads. Pixel Forge owns deterministic planning around those outputs.
+
+Recommended loop for Buddy, Prismtek, Female Character Blue Hoodie, and Ponytail Guy:
+
+1. Run `list_characters(limit=50)` in the PixelLab MCP and confirm the target character IDs.
+2. Run `get_character(character_id=...)` for each target and record status, directions, size, completed animations, pending jobs, failed jobs, and download URL.
+3. Feed that metadata into `build_pixellab_character_export_descriptor`.
+4. Feed the descriptors into `build_pixellab_animation_job_plan` with the core template slots: `idle`, `walk`, `run`, `hurt`, `jump`, `melee_thrust`, `melee_spin`, and `projectile`.
+5. Review the emitted `animate_character(...)` calls and confirm the PixelLab generation budget before queueing any missing jobs.
+6. Poll `get_character` until pending jobs are complete and failed jobs are retried or intentionally skipped.
+7. Download the export packet with `curl --fail <downloadUrl>` only after PixelLab reports the packet is ready.
+8. Convert the export packet into game-ready sheets/manifests through Pixel Forge validation, then use the Sprite Sheet to GIF flow for preview.
+
+The current account snapshot is stored in `data/integrations/pixellab-character-export-registry.json`. As of June 17, 2026, Buddy has existing animations, Prismtek has 56 animations and an export-ready packet with one failed `fight-stance-idle-8-frames(north-east)` job, and Female Character Blue Hoodie plus Ponytail Guy need animation jobs before they are fully template-covered. Buddy and Prismtek both have useful generated animations that need curation and polish before they become shippable. Prismtek Jones, PrismBot Pixel God, and Prismtek Pixel God are tracked as usable source sprites. The BMO variants are tracked as a 4-direction source group; preserve them as cardinal-direction sprites unless a separate 8-direction derivative is generated.
 
 ## Security and IP rules
 

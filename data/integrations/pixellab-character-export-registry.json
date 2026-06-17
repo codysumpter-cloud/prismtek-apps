@@ -1,0 +1,221 @@
+{
+  "schemaVersion": "prismtek-pixellab-character-export-registry-v1",
+  "capturedAt": "2026-06-17",
+  "source": "PixelLab MCP list_characters/get_character",
+  "purpose": "Machine-readable snapshot for making the PixelLab character animation/export process repeatable without committing credentials or unreviewed binary assets.",
+  "provider": {
+    "name": "pixellab.ai",
+    "mcpServer": "pixellab",
+    "accountCharacterCountObserved": 21
+  },
+  "standardDirections": [
+    "south",
+    "east",
+    "north",
+    "west",
+    "south-east",
+    "north-east",
+    "north-west",
+    "south-west"
+  ],
+  "cardinalDirections": [
+    "south",
+    "east",
+    "north",
+    "west"
+  ],
+  "coreTemplateSlots": [
+    "idle",
+    "walk",
+    "run",
+    "hurt",
+    "jump",
+    "melee_thrust",
+    "melee_spin",
+    "projectile"
+  ],
+  "characters": [
+    {
+      "variantId": "prismtek-jones",
+      "displayName": "Prismtek Jones",
+      "characterId": "eb325608-c78f-4249-906f-64b831834a28",
+      "status": "completed",
+      "directionMode": "8dir",
+      "size": {
+        "width": 116,
+        "height": 116
+      },
+      "observedAnimationCount": 0,
+      "downloadUrl": "https://api.pixellab.ai/mcp/characters/eb325608-c78f-4249-906f-64b831834a28/download",
+      "exportReady": true,
+      "needsAnimationJobs": true,
+      "needsPolish": false,
+      "notes": "User marked this as a good source sprite. Queue template animations before calling it fully animated."
+    },
+    {
+      "variantId": "prismtek",
+      "displayName": "Prismtek",
+      "characterId": "ce607761-915c-46ca-9f9c-9eb51cbd30eb",
+      "status": "completed-with-one-failed-job",
+      "directionMode": "8dir",
+      "size": {
+        "width": 256,
+        "height": 256
+      },
+      "observedAnimationCount": 56,
+      "downloadUrl": "https://api.pixellab.ai/mcp/characters/ce607761-915c-46ca-9f9c-9eb51cbd30eb/download",
+      "exportReady": true,
+      "needsAnimationJobs": false,
+      "needsPolish": true,
+      "failedJobsObserved": [
+        "fight-stance-idle-8-frames(north-east): Generation failed due to heavy load. Retry in PixelLab if that exact direction/template is needed."
+      ],
+      "notes": "Pending jobs finished after the first snapshot. Generated animations include strong candidates but still need curation and polish before shipping."
+    },
+    {
+      "variantId": "female-character-blue-hoodie",
+      "displayName": "Female Character Blue Hoodie",
+      "characterId": "a0bf4028-6285-4cec-870c-8723b5fedbed",
+      "status": "completed",
+      "directionMode": "8dir",
+      "size": {
+        "width": 124,
+        "height": 124
+      },
+      "observedAnimationCount": 0,
+      "downloadUrl": "https://api.pixellab.ai/mcp/characters/a0bf4028-6285-4cec-870c-8723b5fedbed/download",
+      "exportReady": true,
+      "needsAnimationJobs": true,
+      "needsPolish": false,
+      "notes": "Rotations are ready. Queue reusable template animations before calling this character fully animated."
+    },
+    {
+      "variantId": "ponytail-guy",
+      "displayName": "Ponytail Guy",
+      "characterId": "90611122-97c7-4b92-acd9-db41084445e9",
+      "status": "completed",
+      "directionMode": "8dir",
+      "size": {
+        "width": 120,
+        "height": 120
+      },
+      "observedAnimationCount": 0,
+      "downloadUrl": "https://api.pixellab.ai/mcp/characters/90611122-97c7-4b92-acd9-db41084445e9/download",
+      "exportReady": true,
+      "needsAnimationJobs": true,
+      "needsPolish": false,
+      "notes": "Rotations are ready. Queue reusable template animations before calling this character fully animated."
+    },
+    {
+      "variantId": "buddy",
+      "displayName": "Buddy",
+      "characterId": "7a14aefe-6c41-4290-ba26-a149d93725fb",
+      "status": "completed",
+      "directionMode": "8dir",
+      "size": {
+        "width": 116,
+        "height": 116
+      },
+      "observedAnimationCount": 103,
+      "downloadUrl": "https://api.pixellab.ai/mcp/characters/7a14aefe-6c41-4290-ba26-a149d93725fb/download",
+      "exportReady": true,
+      "needsAnimationJobs": false,
+      "needsPolish": true,
+      "notes": "Buddy has many existing custom and template animations. Some are promising, but normalize names, curate loops, and polish frame consistency before shipping game assets."
+    },
+    {
+      "variantId": "prismbot-pixel-god",
+      "displayName": "PrismBot Pixel God",
+      "characterId": "9ff7bf55-bc38-4e8f-acc7-aa1b7ce157e6",
+      "status": "completed",
+      "directionMode": "8dir",
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "observedAnimationCount": 0,
+      "downloadUrl": "https://api.pixellab.ai/mcp/characters/9ff7bf55-bc38-4e8f-acc7-aa1b7ce157e6/download",
+      "exportReady": true,
+      "needsAnimationJobs": true,
+      "needsPolish": false,
+      "notes": "User marked this as a good source sprite. Treat as a compact 48px source/master candidate."
+    },
+    {
+      "variantId": "prismtek-pixel-god",
+      "displayName": "Prismtek Pixel God",
+      "characterId": "65a80608-9b8b-4174-a4bf-b9708fc70d38",
+      "status": "completed",
+      "directionMode": "8dir",
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "observedAnimationCount": 0,
+      "downloadUrl": "https://api.pixellab.ai/mcp/characters/65a80608-9b8b-4174-a4bf-b9708fc70d38/download",
+      "exportReady": true,
+      "needsAnimationJobs": true,
+      "needsPolish": false,
+      "notes": "User marked this as a good source sprite. Treat as a compact 48px source/master candidate."
+    }
+  ],
+  "fourDirectionSourceGroups": [
+    {
+      "variantId": "bmo-4dir-source-group",
+      "displayName": "BMO 4-direction source variants",
+      "directionMode": "4dir",
+      "size": {
+        "width": 68,
+        "height": 68
+      },
+      "formatNotes": "These BMO variants use PixelLab's four-direction output. Pixel Forge must preserve 4dir descriptors instead of inventing diagonal frames.",
+      "upgradePath": "Use directly in games that support cardinal directions, or create a separate new 8dir derivative/rebuild pass if diagonal movement becomes required.",
+      "characters": [
+        {
+          "characterId": "89cc0912-2dfc-4b84-9c50-d9b0079a5d0e",
+          "downloadUrl": "https://api.pixellab.ai/mcp/characters/89cc0912-2dfc-4b84-9c50-d9b0079a5d0e/download"
+        },
+        {
+          "characterId": "91221f66-534e-4186-85c4-41eb34e450a9",
+          "downloadUrl": "https://api.pixellab.ai/mcp/characters/91221f66-534e-4186-85c4-41eb34e450a9/download"
+        },
+        {
+          "characterId": "323ff231-5573-472a-9541-65feb70337ac",
+          "downloadUrl": "https://api.pixellab.ai/mcp/characters/323ff231-5573-472a-9541-65feb70337ac/download"
+        },
+        {
+          "characterId": "a2353fd1-e291-4470-bf7c-69896e5e8be9",
+          "downloadUrl": "https://api.pixellab.ai/mcp/characters/a2353fd1-e291-4470-bf7c-69896e5e8be9/download"
+        },
+        {
+          "characterId": "c2be27dd-7e63-4877-9ab6-4dbacb655e42",
+          "downloadUrl": "https://api.pixellab.ai/mcp/characters/c2be27dd-7e63-4877-9ab6-4dbacb655e42/download"
+        },
+        {
+          "characterId": "a83ac3dd-a4f2-4cc8-9b54-f0782991ad40",
+          "downloadUrl": "https://api.pixellab.ai/mcp/characters/a83ac3dd-a4f2-4cc8-9b54-f0782991ad40/download"
+        },
+        {
+          "characterId": "4eb92ba2-24ee-4360-b1a8-991414525868",
+          "downloadUrl": "https://api.pixellab.ai/mcp/characters/4eb92ba2-24ee-4360-b1a8-991414525868/download"
+        },
+        {
+          "characterId": "b6f443a5-f0a6-4325-9a04-f37ffd8dd011",
+          "downloadUrl": "https://api.pixellab.ai/mcp/characters/b6f443a5-f0a6-4325-9a04-f37ffd8dd011/download"
+        },
+        {
+          "characterId": "969a6b46-6b4e-4a72-98df-a6b7716679c8",
+          "downloadUrl": "https://api.pixellab.ai/mcp/characters/969a6b46-6b4e-4a72-98df-a6b7716679c8/download"
+        }
+      ]
+    }
+  ],
+  "repeatableFlow": [
+    "Refresh this registry from PixelLab MCP list_characters/get_character before final game export.",
+    "Build descriptors with build_pixellab_character_export_descriptor.",
+    "Build missing animation commands with build_pixellab_animation_job_plan.",
+    "Confirm PixelLab generation budget before queueing animate_character jobs.",
+    "Poll get_character until there are no pending jobs, then download export packets with curl --fail.",
+    "Preserve 4dir source sprites as 4dir unless a separate 8dir derivative is generated.",
+    "Validate sheets and manifests through Pixel Forge before committing game-ready outputs."
+  ]
+}

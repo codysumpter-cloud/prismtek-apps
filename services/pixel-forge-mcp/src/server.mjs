@@ -4,7 +4,10 @@ import {
   CANONICAL_ANIMATION_SLOTS,
   buildAnimationManifest,
   buildGenerationPrompt,
+  buildPixelLabAnimationJobPlan,
+  buildPixelLabCharacterExportDescriptor,
   buildProviderJob,
+  listPixelLabAnimationTemplates,
   sliceSpriteSheetGrid,
   validateAnimationManifest,
   validateSpriteSheetGrid
@@ -111,6 +114,53 @@ const TOOLS = [
     name: 'list_animation_slots',
     description: 'List the canonical Prismtek/Buddy animation slot IDs.',
     inputSchema: { type: 'object', additionalProperties: false, properties: {} }
+  },
+  {
+    name: 'list_pixellab_template_pack',
+    description: 'List the reusable PixelLab template animations mapped to Prismtek canonical slots.',
+    inputSchema: {
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        slots: { type: 'array', items: { type: 'string' } }
+      }
+    }
+  },
+  {
+    name: 'build_pixellab_character_export_descriptor',
+    description: 'Create a repeatable Prismtek descriptor for a PixelLab character export packet and animation coverage.',
+    inputSchema: {
+      type: 'object',
+      additionalProperties: true,
+      properties: {
+        characterId: { type: 'string' },
+        displayName: { type: 'string' },
+        status: { type: 'string' },
+        directions: { type: 'array', items: { type: 'string' } },
+        size: { type: 'object' },
+        downloadUrl: { type: 'string' },
+        completedAnimations: { type: 'array' },
+        pendingJobs: { type: 'array' },
+        failedJobs: { type: 'array' },
+        templateSlots: { type: 'array', items: { type: 'string' } }
+      },
+      required: ['characterId']
+    }
+  },
+  {
+    name: 'build_pixellab_animation_job_plan',
+    description: 'Build exact PixelLab MCP animate_character calls for missing reusable template animations.',
+    inputSchema: {
+      type: 'object',
+      additionalProperties: true,
+      properties: {
+        characters: { type: 'array' },
+        directions: { type: 'array', items: { type: 'string' } },
+        templateSlots: { type: 'array', items: { type: 'string' } },
+        templates: { type: 'array' }
+      },
+      required: ['characters']
+    }
   }
 ];
 
@@ -140,6 +190,12 @@ function callTool(name, args) {
       return textResult(buildProviderJob(args));
     case 'list_animation_slots':
       return textResult({ slots: CANONICAL_ANIMATION_SLOTS });
+    case 'list_pixellab_template_pack':
+      return textResult({ templates: listPixelLabAnimationTemplates(args) });
+    case 'build_pixellab_character_export_descriptor':
+      return textResult(buildPixelLabCharacterExportDescriptor(args));
+    case 'build_pixellab_animation_job_plan':
+      return textResult(buildPixelLabAnimationJobPlan(args));
     default:
       throw new Error(`Unknown tool: ${name}`);
   }

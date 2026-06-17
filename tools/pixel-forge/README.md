@@ -8,6 +8,7 @@ The first version is pipeline-first:
 - validate frame size/grid constraints,
 - preview frames and animation timing,
 - generate a Prismtek asset manifest,
+- plan repeatable PixelLab character export and animation template jobs through the package/MCP helpers,
 - generate a safe provider prompt/job for future AI backends,
 - keep provenance and originality rules visible.
 
@@ -54,3 +55,18 @@ This PR does not include:
 - direct repo-write automation.
 
 Those should land as separate provider-adapter PRs after the deterministic manifest and validation flow is stable.
+
+## PixelLab character workflow
+
+Use the real PixelLab MCP to read account characters and queue generation jobs. Use Pixel Forge to make those outputs repeatable:
+
+1. Capture `get_character` metadata for a PixelLab character.
+2. Build a descriptor with `build_pixellab_character_export_descriptor`.
+3. Build missing reusable animation commands with `build_pixellab_animation_job_plan`.
+4. Queue the reviewed `animate_character(...)` calls in PixelLab after confirming generation budget.
+5. Download the export packet only when PixelLab reports no pending jobs.
+6. Validate and promote only reviewed game-ready sheets/manifests.
+
+The current Buddy, Prismtek, Female Character Blue Hoodie, and Ponytail Guy snapshot lives in `data/integrations/pixellab-character-export-registry.json`.
+
+BMO source variants are recorded there as 4-direction sprites. Pixel Forge can preserve them as cardinal-direction assets now; an 8-direction BMO should be generated as a separate derivative instead of fabricating diagonal frames from the 4-direction packet.
