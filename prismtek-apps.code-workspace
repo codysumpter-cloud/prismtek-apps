@@ -1,0 +1,17 @@
+{
+  "folders": [
+    {
+      "name": "Prismtek Apps",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "npm.packageManager": "npm",
+    "npm.scriptExplorerAction": "run",
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "editor.formatOnSave": true,
+    "files.eol": "\n",
+    "files.trimTrailingWhitespace": true,
+    "search.followSymlinks": false
+  }
+}

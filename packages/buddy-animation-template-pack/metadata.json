@@ -4,17 +4,29 @@
   "name": "Prismtek Buddy Grok Animation Template Pack",
   "owner": "Prismtek",
   "repoPath": "packages/buddy-animation-template-pack",
-  "status": "source-contract-imported",
+  "status": "source-contract-plus-partial-reference-assets",
   "binaryAssets": {
-    "status": "reserved-not-committed",
-    "reason": "The original ZIP archive and PNG bytes were not available to the execution environment. This package reserves canonical filenames and stores the reusable source contract directly in GitHub.",
-    "expectedReferenceFiles": [
+    "status": "partial-committed",
+    "sourceArchive": "Prismtek_Buddy_Grok_Template_Pack.zip",
+    "reason": "The follow-up ZIP import included the full, idle, and emote Buddy/Grok sheets plus idle and emote animation strips. It did not include the reserved attack or RPG effects sheets.",
+    "committedReferenceFiles": [
       "reference/Buddy_Full_Sprite_Sheet.png",
       "reference/Buddy_Grok_Idle_Sprite_Sheet.png",
       "reference/Buddy_Grok_Emote_Sprite_Sheet.png",
+      "reference/Buddy_Grok_Idle_Animation_Strip.png",
+      "reference/Buddy_Grok_Emote_Animation_Strip.png"
+    ],
+    "stillReservedReferenceFiles": [
       "reference/Buddy_Grok_Attack_Sprite_Sheet.png",
       "reference/Buddy_Grok_RPG_Effects_Sprite_Sheet.png"
-    ]
+    ],
+    "sha256": {
+      "reference/Buddy_Full_Sprite_Sheet.png": "9F4A8B3416B3F0AB5578B62BDF5E26F8B1EE08A2334556D76DEDC60CFF2BE1D9",
+      "reference/Buddy_Grok_Idle_Sprite_Sheet.png": "499BB2FA0AC2038FF6B27870A17ED3B2A8417B7EAE4336AA077224BC0B7D8263",
+      "reference/Buddy_Grok_Emote_Sprite_Sheet.png": "B637BD528C076E6BCB8E70AE3C378D991CA2037F0787D3D94F91A55DB78EB9B9",
+      "reference/Buddy_Grok_Idle_Animation_Strip.png": "F9C9AD7FA815BB5531F5AE2A8D6CC649AE36EF287AFF252E276B59A5D3A8B975",
+      "reference/Buddy_Grok_Emote_Animation_Strip.png": "19A26F6D125C933C00E1C35607D6B34E1145845754C819C89D5B20701FE7B8BE"
+    }
   },
   "frameProfiles": {
     "runtimeDefault": {

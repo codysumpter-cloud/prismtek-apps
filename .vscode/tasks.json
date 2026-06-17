@@ -1,0 +1,111 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Prismtek: install dependencies",
+      "type": "shell",
+      "command": "npm install",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Prismtek: workspace doctor",
+      "type": "npm",
+      "script": "workspace:doctor",
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "Prismtek: lint",
+      "type": "npm",
+      "script": "lint",
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "Prismtek: build",
+      "type": "npm",
+      "script": "build",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Prismtek: validate games",
+      "type": "npm",
+      "script": "games:validate-support",
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "Prismtek: validate platforms",
+      "type": "npm",
+      "script": "platforms:validate",
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "Prismtek: validate references",
+      "type": "npm",
+      "script": "references:validate",
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "Prismtek: validate integrations",
+      "type": "npm",
+      "script": "integrations:validate",
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "Game: Pixel Fruit Arena test",
+      "type": "shell",
+      "command": "npm test",
+      "options": {
+        "cwd": "${workspaceFolder}/games/pixel-fruit-arena"
+      },
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "Game: Pixel Fruit Arena package ZIP",
+      "type": "shell",
+      "command": "npm run package:zip",
+      "options": {
+        "cwd": "${workspaceFolder}/games/pixel-fruit-arena"
+      },
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Game: TamerNet package ZIP",
+      "type": "shell",
+      "command": "npm run package:zip",
+      "options": {
+        "cwd": "${workspaceFolder}/games/tamernet-battle-sandbox"
+      },
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Game: Spin Street Showdown test",
+      "type": "shell",
+      "command": "npm test",
+      "options": {
+        "cwd": "${workspaceFolder}/games/spin-street-showdown"
+      },
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "Game: Spin Street Showdown package ZIP",
+      "type": "shell",
+      "command": "npm run package:zip",
+      "options": {
+        "cwd": "${workspaceFolder}/games/spin-street-showdown"
+      },
+      "group": "build",
+      "problemMatcher": []
+    }
+  ]
+}

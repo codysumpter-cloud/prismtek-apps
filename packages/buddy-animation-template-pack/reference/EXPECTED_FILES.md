@@ -1,27 +1,29 @@
-# Expected reference files
+# Reference files
 
-The package contract expects these canonical binary files when the image assets are available:
+The package now includes the available binary reference files from `Prismtek_Buddy_Grok_Template_Pack.zip` and keeps the missing attack/effects sheets reserved by exact filename.
 
-| File | Purpose | Required now |
+| File | Purpose | Status |
 | --- | --- | --- |
-| `Buddy_Full_Sprite_Sheet.png` | Largest full Buddy sheet / canonical silhouette and palette source. | No — reserved. |
-| `Buddy_Grok_Idle_Sprite_Sheet.png` | Idle, breathe, blink, and small loop references. | No — reserved. |
-| `Buddy_Grok_Emote_Sprite_Sheet.png` | Expression and social emote references. | No — reserved. |
-| `Buddy_Grok_Attack_Sprite_Sheet.png` | Melee slash, jab, spin, hit, and impact timing references. | No — reserved. |
-| `Buddy_Grok_RPG_Effects_Sprite_Sheet.png` | Za-style RPG attack effects, projectiles, buffs, debuffs, and status effects. | No — reserved. |
+| `Buddy_Full_Sprite_Sheet.png` | Largest full Buddy sheet / canonical silhouette and palette source. | Committed. |
+| `Buddy_Grok_Idle_Sprite_Sheet.png` | Idle, breathe, blink, and small loop references. | Committed. |
+| `Buddy_Grok_Emote_Sprite_Sheet.png` | Expression and social emote references. | Committed. |
+| `Buddy_Grok_Idle_Animation_Strip.png` | Horizontal idle strip reference exported from the ZIP. | Committed. |
+| `Buddy_Grok_Emote_Animation_Strip.png` | Horizontal emote strip reference exported from the ZIP. | Committed. |
+| `Buddy_Grok_Attack_Sprite_Sheet.png` | Melee slash, jab, spin, hit, and impact timing references. | Reserved; not present in the ZIP. |
+| `Buddy_Grok_RPG_Effects_Sprite_Sheet.png` | Za-style RPG attack effects, projectiles, buffs, debuffs, and status effects. | Reserved; not present in the ZIP. |
 
-## Why they are reserved instead of committed in this import
+## Import note
 
-The active environment could write text files to GitHub, but it did not have access to the original ZIP archive or PNG bytes. This means the repository now owns the format and path, while the binary asset drop can happen later without changing the package contract.
+The first source-only PR reserved all canonical filenames because the active environment did not have the ZIP bytes. The follow-up import added the five PNGs that were present in `Prismtek_Buddy_Grok_Template_Pack.zip`; it did not rename the idle/emote strips into attack or effects sheets.
 
-## Integrity fields to fill after binary import
+## Integrity fields
 
-After the PNG files are added, update `metadata.json` with:
+`metadata.json` records SHA-256 hashes for committed PNGs:
 
 ```json
 {
   "binaryAssets": {
-    "status": "committed",
+    "status": "partial-committed",
     "sha256": {
       "reference/Buddy_Full_Sprite_Sheet.png": "..."
     }

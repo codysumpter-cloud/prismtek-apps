@@ -1,0 +1,89 @@
+openapi: 3.1.0
+info:
+  title: Prismtek Sprite Sheet to GIF Action
+  version: 1.0.0
+  description: Creates an iPhone-friendly launch link for the Prismtek Sprite Sheet to GIF browser tool. ChatGPT can pass sprite-sheet settings and optional uploaded file references. The GIF is generated locally in the Prismtek browser tool.
+servers:
+  - url: https://prismtek.dev
+    description: Prismtek production site
+paths:
+  /api/spritesheet-gif/launch:
+    post:
+      operationId: createSpriteSheetGifLaunch
+      summary: Create a preconfigured launch link for the Prismtek Sprite Sheet to GIF tool.
+      description: Use this when the user wants to turn a sprite sheet into an animated GIF from ChatGPT, especially on iPhone. If the user uploaded a sprite sheet in the conversation, pass it in openaiFileIdRefs when available. This action returns a Prismtek tool URL plus instructions.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                openaiFileIdRefs:
+                  type: array
+                  description: Optional sprite sheet files from the ChatGPT conversation.
+                  items:
+                    type: string
+                rows:
+                  type: integer
+                  minimum: 1
+                  maximum: 64
+                  default: 1
+                columns:
+                  type: integer
+                  minimum: 1
+                  maximum: 64
+                  default: 4
+                frameDelayMs:
+                  type: integer
+                  minimum: 10
+                  maximum: 5000
+                  default: 120
+                scale:
+                  type: integer
+                  minimum: 1
+                  maximum: 12
+                  default: 4
+                startFrame:
+                  type: integer
+                  minimum: 1
+                  default: 1
+                endFrame:
+                  type: integer
+                  minimum: 0
+                  default: 0
+                offsetTop:
+                  type: integer
+                  minimum: 0
+                  default: 0
+                offsetBottom:
+                  type: integer
+                  minimum: 0
+                  default: 0
+                offsetLeft:
+                  type: integer
+                  minimum: 0
+                  default: 0
+                offsetRight:
+                  type: integer
+                  minimum: 0
+                  default: 0
+                alphaMode:
+                  type: string
+                  enum: [keep, fill]
+                  default: keep
+                background:
+                  type: string
+                  pattern: '^#[0-9a-fA-F]{6}$'
+                  default: '#000000'
+              required:
+                - rows
+                - columns
+      responses:
+        '200':
+          description: Launch link and handoff instructions.
+        '400':
+          description: Invalid request body.
+        '405':
+          description: Unsupported HTTP method.

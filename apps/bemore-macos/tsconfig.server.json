@@ -7,6 +7,9 @@
     "noEmit": false,
     "outDir": "dist/server",
     "types": ["node"]
+    ,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true
   },
   "include": ["server.ts", "gemma4-gateway.ts"],
   "exclude": ["dist", "node_modules"]
