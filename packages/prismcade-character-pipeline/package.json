@@ -1,0 +1,12 @@
+{
+  "name": "@prismtek/prismcade-character-pipeline",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Prismcade character-pack standard, validation, and PixelLab/Pixelorama import tooling.",
+  "scripts": {
+    "validate": "node tools/validate-character-pack.mjs examples/minimal-character-pack --allow-missing-assets",
+    "gif:plan": "node tools/export-animation-gifs.mjs examples/minimal-character-pack --plan-only",
+    "showcase:plan": "node tools/export-showcase-gif.mjs examples/minimal-character-pack --plan-only"
+  }
+}
