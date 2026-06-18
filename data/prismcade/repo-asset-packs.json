@@ -1,0 +1,192 @@
+{
+  "schemaVersion": "prismcade-repo-asset-packs-v0",
+  "description": "Curated Prismcade-facing map of existing Prismtek-apps asset packs. These are repo-local candidates; public shipping still requires license/provenance review where noted.",
+  "sourceDocs": [
+    "game-assets/README.md",
+    "game-assets/characters/README.md",
+    "games/pixel-fruit-arena/assets/uploaded/asset-manifest.json",
+    "games/pixel-fruit-arena/src/assets/assetManifest.js",
+    "games/prismwilds-echo-dominion/data/assets.json"
+  ],
+  "characters": [
+    {
+      "id": "normal-hair-guy",
+      "displayName": "Normal Hair Guy",
+      "path": "game-assets/characters/Normal_Hair_Guy.zip",
+      "assetType": "source-zip",
+      "role": "preferred male player/NPC base",
+      "views": ["low_top_down", "top_down", "profile_lobby"],
+      "sizes": [124],
+      "usage": ["avatar-template", "npc-template", "character-creator-base"],
+      "status": "preferred-source-pack"
+    },
+    {
+      "id": "female-blue-hoodie",
+      "displayName": "Female Character Blue Hoodie",
+      "path": "game-assets/characters/Female_Character_Blue_Hoodie.zip",
+      "assetType": "source-zip",
+      "role": "female hoodie player/NPC base",
+      "views": ["low_top_down", "top_down", "profile_lobby"],
+      "sizes": [124],
+      "usage": ["avatar-template", "npc-template", "style-match-base"],
+      "status": "preferred-source-pack"
+    },
+    {
+      "id": "buddy-main",
+      "displayName": "Buddy Main Source Pack",
+      "path": "game-assets/characters/Buddy (2).zip",
+      "assetType": "source-zip",
+      "role": "primary Buddy identity reference",
+      "views": ["profile_lobby", "side"],
+      "sizes": [64, 124],
+      "usage": ["buddy-ui", "buddy-avatar", "identity-reference"],
+      "status": "protected-source-pack"
+    },
+    {
+      "id": "buddy-grok-64",
+      "displayName": "Buddy Grok 64",
+      "path": "game-assets/characters/Buddy_Grok_64.zip",
+      "assetType": "runtime-zip",
+      "role": "compact 64px Buddy runtime variant",
+      "views": ["side", "profile_lobby"],
+      "sizes": [64],
+      "usage": ["runtime-preview", "chat-avatar", "profile-avatar"],
+      "status": "compact-runtime-pack"
+    },
+    {
+      "id": "buddy-grok-showcase",
+      "displayName": "Buddy Grok Showcase",
+      "path": "game-assets/characters/Buddy_Grok_Showcase.zip",
+      "assetType": "showcase-zip",
+      "role": "Buddy preview and QA receipt bundle",
+      "views": ["profile_lobby"],
+      "sizes": [64],
+      "usage": ["readme-preview", "asset-vault-preview", "visual-qa"],
+      "status": "showcase-pack"
+    },
+    {
+      "id": "tiny-hero-dude",
+      "displayName": "Prism Dude Runtime",
+      "path": "games/pixel-fruit-arena/assets/characters/tiny-hero/dude/idle_4.png",
+      "assetType": "runtime-png",
+      "role": "already wired Pixel Fruit Arena tiny hero character",
+      "views": ["side", "profile_lobby"],
+      "sizes": [32],
+      "usage": ["game-card-preview", "avatar-fallback", "platform-fighter-placeholder"],
+      "status": "runtime-ready"
+    },
+    {
+      "id": "tiny-hero-owlet",
+      "displayName": "Prism Owlet Runtime",
+      "path": "games/pixel-fruit-arena/assets/characters/tiny-hero/owlet/idle_4.png",
+      "assetType": "runtime-png",
+      "role": "already wired Pixel Fruit Arena tiny hero character",
+      "views": ["side", "profile_lobby"],
+      "sizes": [32],
+      "usage": ["game-card-preview", "avatar-fallback", "platform-fighter-placeholder"],
+      "status": "runtime-ready"
+    }
+  ],
+  "cosmeticsAndItems": [
+    {
+      "id": "uploaded-rpg-weapons",
+      "displayName": "RPG Weapons Sheet",
+      "path": "games/pixel-fruit-arena/assets/uploaded/weapons/RPG_Weapons.png",
+      "assetType": "loose-png",
+      "usage": ["weapon-icons", "pickup-weapons", "cosmetic-loadout"],
+      "status": "license-review-required"
+    },
+    {
+      "id": "uploaded-items-7",
+      "displayName": "Loose Items 7",
+      "path": "games/pixel-fruit-arena/assets/uploaded/items/items_7.png",
+      "assetType": "loose-png",
+      "usage": ["inventory-icons", "pickup-icons", "stage-props"],
+      "status": "license-review-required"
+    },
+    {
+      "id": "uploaded-hairstyle-gif",
+      "displayName": "Hairstyle GIF",
+      "path": "games/pixel-fruit-arena/assets/uploaded/cosmetics/hair/Hairstyle.gif",
+      "assetType": "animated-gif",
+      "usage": ["character-creator-hair", "animation-reference"],
+      "status": "extract-png-frames-before-runtime"
+    },
+    {
+      "id": "clothes-pack",
+      "displayName": "Clothes Pack",
+      "path": "games/pixel-fruit-arena/assets/uploaded/Clothes.zip",
+      "assetType": "source-zip",
+      "usage": ["character-creator-outfits", "costume-variants"],
+      "status": "license-review-required"
+    }
+  ],
+  "worldAndUi": [
+    {
+      "id": "trees-plus",
+      "displayName": "Trees+",
+      "path": "game-assets/tilesets-environment/Trees+.png",
+      "assetType": "loose-png",
+      "usage": ["home-background-card", "world-cover", "forest-biome"],
+      "status": "candidate"
+    },
+    {
+      "id": "surplus-trees",
+      "displayName": "Surplus Trees",
+      "path": "game-assets/tilesets-environment/Surplus Trees.png",
+      "assetType": "loose-png",
+      "usage": ["home-background-card", "stealth-cover", "forest-biome"],
+      "status": "candidate"
+    },
+    {
+      "id": "tiny-ranch-crops",
+      "displayName": "TinyRanch Crops",
+      "path": "game-assets/tilesets-environment/TinyRanch_Crops.png",
+      "assetType": "loose-png",
+      "usage": ["food-icons", "resource-icons", "cozy-hub-props"],
+      "status": "candidate"
+    },
+    {
+      "id": "tiny-ranch-animals",
+      "displayName": "TinyRanch Animals",
+      "path": "game-assets/tilesets-environment/TinyRanch_Animals.png",
+      "assetType": "loose-png",
+      "usage": ["npc-preview", "feeder-animals", "cozy-hub-life"],
+      "status": "candidate"
+    },
+    {
+      "id": "fruit-plus",
+      "displayName": "Fruit+",
+      "path": "game-assets/props-items/Fruit+.png",
+      "assetType": "loose-png",
+      "usage": ["fruit-power-icons", "food-icons", "inventory-preview"],
+      "status": "candidate"
+    },
+    {
+      "id": "water-plus",
+      "displayName": "Water+",
+      "path": "game-assets/props-items/Water+.png",
+      "assetType": "loose-png",
+      "usage": ["resource-icons", "water-ui", "survival-hud"],
+      "status": "candidate"
+    }
+  ],
+  "effects": [
+    {
+      "id": "flame-fireball",
+      "displayName": "Flame Fireball",
+      "path": "games/pixel-fruit-arena/assets/effects/elemental-vfx/flame-fireball.png",
+      "assetType": "runtime-png",
+      "usage": ["ability-preview", "game-card-vfx", "combat-effect"],
+      "status": "runtime-ready"
+    },
+    {
+      "id": "hit-spark",
+      "displayName": "Hit Spark",
+      "path": "games/pixel-fruit-arena/assets/effects/elemental-vfx/hit-spark.png",
+      "assetType": "runtime-png",
+      "usage": ["ability-preview", "ui-feedback", "combat-effect"],
+      "status": "runtime-ready"
+    }
+  ]
+}
