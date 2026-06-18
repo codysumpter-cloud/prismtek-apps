@@ -12,12 +12,27 @@ Animate the template once. Reuse it many times.
 
 A created character, outfit, hairstyle, or accessory must conform to the template instead of inventing a new body layout per game.
 
+## Canonical sprite sizes
+
+Prismcade should allow template rigs up to 256x256, but smaller sizes should remain the default for quick-play games.
+
+- 32x32 mini
+- 48x48 compact
+- 64x64 standard chibi
+- 96x96 fighter
+- 128x128 boss or showcase
+- 192x192 premium showcase
+- 256x256 maximum avatar, boss, cutscene, or high-detail fighter frame
+
+A game should declare its max supported frame size. If a player avatar is larger than a game supports, the game should use a smaller baked sheet, portrait, mini avatar, palette identity, or badge fallback.
+
 ## Template requirements
 
 Each animation template should define:
 
 - view family: side, top_down, low_top_down, or isometric
 - frame width and frame height
+- allowed frame sizes, capped at 256x256
 - origin point
 - floor point
 - head anchor
@@ -74,13 +89,14 @@ Each animation template should define:
 ## Compatibility levels
 
 - exact_template: same frame size and anchors; animations can be reused directly
+- scaled_template: same proportions at another approved size
 - compatible_template: same anchors but needs palette or layer baking
 - adapted_template: same view family but needs conversion
 - incompatible_template: custom animation required
 
 ## Game requirement
 
-Every Prismcade game should declare the animation templates it accepts. A game should prefer template IDs over one-off per-character animation logic.
+Every Prismcade game should declare the animation templates it accepts and its maximum supported frame size. A game should prefer template IDs over one-off per-character animation logic.
 
 ## Creator requirement
 
