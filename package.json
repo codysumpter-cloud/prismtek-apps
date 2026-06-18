@@ -24,9 +24,10 @@
     "prismcade:validate": "node tools/prismcade/validate-game-manifests.mjs",
     "prismcade:validate-characters": "node tools/prismcade/validate-character-templates.mjs",
     "prismcade:check-animation-templates": "node tools/prismcade/check-animation-templates.mjs",
+    "prismcade:check-view-modes": "node tools/prismcade/check-view-modes.mjs",
     "prismcade:retarget-plan": "node tools/prismcade/retarget-character-animations.mjs --job data/prismcade/retarget-jobs/prismtek-fixed-hair-starter.json",
     "prismcade-fighter:validate": "node tools/prismcade-fighter/validate-fighter-content.mjs",
-    "prismcade:validate:all": "npm run prismcade:validate && npm run prismcade:validate-characters && npm run prismcade:check-animation-templates && npm run prismcade-fighter:validate && npm --prefix games/pixel-fruit-arena run validate:prismcade-roster",
+    "prismcade:validate:all": "npm run prismcade:validate && npm run prismcade:validate-characters && npm run prismcade:check-animation-templates && npm run prismcade:check-view-modes && npm run prismcade-fighter:validate && npm --prefix games/pixel-fruit-arena run validate:prismcade-roster",
     "prismcade:package:windows": "node tools/prismcade/package-windows.mjs"
   },
   "dependencies": {
