@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prismtek.dev/schemas/prismcade-character-pack.schema.json",
+  "title": "Prismcade Character Pack Metadata",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "characterId",
+    "displayName",
+    "sourceTool",
+    "targetFrame",
+    "transparentBackground",
+    "provenance"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "prismcade-character-pack-v0"
+    },
+    "characterId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sourceTool": {
+      "enum": ["pixellab", "pixelorama", "manual", "generated", "mixed", "contract"]
+    },
+    "assetMode": {
+      "enum": ["assets-required", "contract-only"]
+    },
+    "targetFrame": {
+      "type": "object",
+      "required": ["width", "height"],
+      "properties": {
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "transparentBackground": {
+      "type": "boolean"
+    },
+    "pipeline": {
+      "type": "object"
+    },
+    "provenance": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type", "note"],
+        "properties": {
+          "type": { "type": "string", "minLength": 1 },
+          "note": { "type": "string", "minLength": 1 }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}
