@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "prismcade-view-template-registry-v0",
+  "templates": [
+    {
+      "id": "side-compact-chibi-64",
+      "view": "side",
+      "status": "active",
+      "defaultRuntimeSize": [64, 64],
+      "templateMap": "packages/game-assets/characters/prismtek-fixed-hair/templates/side-template-map.json",
+      "referenceSources": [
+        "generated-prismtek-side-sheets",
+        "template-free-side-motion",
+        "metroidvania-side-motion",
+        "stickman-basic-motion"
+      ],
+      "usage": "Side-view platformers, fighters, and brawlers."
+    },
+    {
+      "id": "low-top-down-economy-64",
+      "view": "low_top_down",
+      "status": "next_target",
+      "defaultRuntimeSize": [64, 64],
+      "templateMap": "packages/game-assets/characters/prismtek-fixed-hair/templates/low-top-down-template-map.json",
+      "directionTier": "4_facing_8_movement",
+      "referenceSources": [
+        "prismtek-rotations",
+        "mana-seed-farmer-template",
+        "eris-esra-character-template",
+        "gumdrop-character-structure",
+        "slynyrd-top-down-guide"
+      ],
+      "usage": "Prismcade hub, avatar locker, shops, cozy/social games, RPG maps."
+    },
+    {
+      "id": "top-down-full-8dir-64",
+      "view": "top_down",
+      "status": "planned_after_low_top_down",
+      "defaultRuntimeSize": [64, 64],
+      "templateMap": "packages/game-assets/characters/prismtek-fixed-hair/templates/top-down-template-map.json",
+      "directionTier": "8_facing_8_action",
+      "referenceSources": [
+        "prismtek-rotations",
+        "mana-seed-farmer-template",
+        "eris-esra-character-template",
+        "slynyrd-top-down-guide"
+      ],
+      "usage": "Action RPGs, creature survival maps, directional combat, precise aiming."
+    },
+    {
+      "id": "isometric-diagonal-64",
+      "view": "isometric",
+      "status": "planned_after_top_down",
+      "defaultRuntimeSize": [64, 64],
+      "templateMap": "packages/game-assets/characters/prismtek-fixed-hair/templates/isometric-template-map.json",
+      "directionTier": "4_diagonal_or_8_isometric",
+      "referenceSources": [
+        "prismtek-rotations",
+        "low-top-down-economy-output",
+        "top-down-full-8dir-output"
+      ],
+      "usage": "Tactics, sim, builder, diorama, and stylish map games."
+    },
+    {
+      "id": "profile-lobby-identity-64",
+      "view": "profile_lobby",
+      "status": "fallback_active",
+      "defaultRuntimeSize": [64, 64],
+      "templateMap": "packages/game-assets/characters/prismtek-fixed-hair/templates/profile-lobby-template-map.json",
+      "referenceSources": [
+        "prismtek-side-idle",
+        "prismtek-showcase-gif",
+        "pixelart-study-expression-sheets"
+      ],
+      "usage": "Profile cards, catalog, leaderboards, avatar select, menus."
+    }
+  ],
+  "rules": [
+    "Templates may define pose, direction, anchor, frame timing, and slot mapping.",
+    "The Prismtek identity contract defines hair, face, outfit, palette, and style consistency.",
+    "External sources are reference/template inputs until rights are reviewed for direct asset reuse.",
+    "Low-top-down economy mode is the next production target before full top-down or isometric."
+  ]
+}
