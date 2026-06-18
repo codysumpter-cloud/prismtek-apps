@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "prismcade-animation-template-v0",
+  "templateId": "compact-chibi-64-side",
+  "viewFamily": "side",
+  "frameSize": [64, 64],
+  "origin": [32, 56],
+  "floor": 56,
+  "anchors": {
+    "head": [32, 18],
+    "body": [32, 34],
+    "leftHand": [22, 34],
+    "rightHand": [42, 34],
+    "leftFoot": [25, 56],
+    "rightFoot": [39, 56]
+  },
+  "layers": ["shadow", "base", "legs", "feet", "torso", "backHair", "face", "frontHair", "accessory", "effect"],
+  "slots": ["idle", "walk", "run", "jump", "fall", "land", "hurt", "defeat", "victory", "basic", "strong", "popup", "skill", "big_skill"],
+  "compatibilityLevels": ["exact_template", "compatible_template", "adapted_template", "incompatible_template"]
+}
