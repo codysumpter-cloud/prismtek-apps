@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "prismcade-character-pack-v0",
+  "characterId": "example-prismcade-buddy",
+  "displayName": "Example Prismcade Buddy",
+  "sourceTool": "contract",
+  "assetMode": "contract-only",
+  "targetFrame": {
+    "width": 64,
+    "height": 64
+  },
+  "transparentBackground": true,
+  "pipeline": {
+    "sourceGeneration": "PixelLab character states",
+    "cleanup": "Pixelorama frame cleanup",
+    "normalization": "Prismcade character pipeline validation"
+  },
+  "provenance": [
+    {
+      "type": "example-contract",
+      "note": "Schema-only example. Replace with real Prismtek-owned art before game use."
+    }
+  ]
+}
