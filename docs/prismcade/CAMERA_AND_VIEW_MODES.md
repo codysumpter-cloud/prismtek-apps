@@ -33,6 +33,16 @@ Initial modes:
 - `arena_2_5d`
 - `profile_lobby`
 
+## Top-down animation source guide
+
+The top-down and low-top-down animation rules are expanded in:
+
+```txt
+docs/prismcade/TOP_DOWN_CHARACTER_ANIMATION_GUIDE.md
+```
+
+That guide captures the practical Prismcade takeaways from SLYNYRD Pixelblog 55: 3/4 top-down projection, 4-facing economy mode, full 8-facing mode, rotation QA, six-frame walk/run defaults, subtle idle timing, and layer-friendly character design.
+
 ## Why this comes before game wiring
 
 If Pixel Fruit Arena loads Prismtek Fixed Hair directly, it proves one side-view game.
