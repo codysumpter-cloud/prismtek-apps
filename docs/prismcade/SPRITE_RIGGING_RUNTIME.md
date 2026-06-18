@@ -41,6 +41,7 @@ Each rig template should define:
 - collision boxes
 - sockets for weapons, tools, effects, and held items
 - compatibility level rules
+- max frame size supported by the target game
 
 ## Character variant fields
 
@@ -71,20 +72,39 @@ At runtime:
 - 32x32 character head anchor becomes 16, 9
 - 64x64 character head anchor becomes 32, 18
 - 96x96 character head anchor becomes 48, 27
+- 128x128 character head anchor becomes 64, 36
+- 192x192 character head anchor becomes 96, 54
+- 256x256 character head anchor becomes 128, 72
 
 This lets the same rig support several pixel sizes without hand-authoring every coordinate again.
 
 ## Size strategy
 
-Do not allow infinite arbitrary scaling. Use canonical sizes first:
+Do not allow infinite arbitrary scaling. Use canonical sizes first and support up to 256x256 as the platform ceiling:
 
 - 32x32 mini
 - 48x48 compact
 - 64x64 standard chibi
 - 96x96 fighter
 - 128x128 boss or showcase
+- 192x192 premium showcase
+- 256x256 maximum avatar, boss, cutscene, or high-detail fighter frame
+
+64x64 should remain the default portable avatar target. 256x256 is allowed, but games must opt into it through their manifest so tiny arcade games are not forced to render oversized sheets.
 
 A sprite can be accepted only if it declares its size and passes anchor and bounds checks.
+
+## Performance tiers
+
+Games should declare a max supported frame size:
+
+- `tiny`: up to 64x64
+- `standard`: up to 96x96
+- `showcase`: up to 128x128
+- `premium`: up to 192x192
+- `max`: up to 256x256
+
+If a selected avatar exceeds the game's tier, the game should fall back to a smaller baked view, portrait, mini avatar, palette identity, or badge.
 
 ## Compatibility levels
 
@@ -117,7 +137,7 @@ Game systems should not care which character sheet is currently plugged in as lo
 
 The creator and asset pipeline should check:
 
-- frame size is approved
+- frame size is approved and at most 256x256
 - transparent background exists
 - required animation slots exist
 - required anchors exist
@@ -148,4 +168,7 @@ Then add:
 - compact-chibi-64-low-top-down
 - compact-chibi-64-isometric
 - fighter-96-side
+- boss-128-side
+- showcase-192-side
+- max-256-side
 - creature-64-top-down
