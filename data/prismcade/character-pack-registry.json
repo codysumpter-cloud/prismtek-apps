@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "prismcade-character-pack-registry-v0",
+  "packages": [
+    {
+      "id": "prismtek-fixed-hair-game-ready-v2",
+      "characterId": "prismtek-fixed-hair",
+      "kind": "generated_game_ready_pack",
+      "displayName": "Prismtek Fixed Hair Game Ready Pack v2",
+      "packagePath": "packages/game-assets/characters/prismtek-fixed-hair",
+      "jobConfig": "data/prismcade/sprite-sheet-jobs/prismtek-fixed-hair-game-ready.json",
+      "pipelineDoc": "docs/prismcade/GAME_READY_SPRITE_SHEET_PIPELINE.md",
+      "usageDoc": "docs/prismcade/USING_PORTABLE_CHARACTER_PACKS.md",
+      "loader": "src/prismcade/characterLoader.ts",
+      "defaultSize": [
+        64,
+        64
+      ],
+      "allowedSizes": [
+        [
+          32,
+          32
+        ],
+        [
+          48,
+          48
+        ],
+        [
+          64,
+          64
+        ],
+        [
+          96,
+          96
+        ],
+        [
+          128,
+          128
+        ],
+        [
+          192,
+          192
+        ],
+        [
+          256,
+          256
+        ]
+      ],
+      "views": [
+        "side"
+      ],
+      "portableAvatarRole": [
+        "side_view_playable_character",
+        "catalog_avatar",
+        "lobby_avatar",
+        "profile_identity"
+      ],
+      "status": "manifested_assets_pending_binary_commit",
+      "notes": [
+        "Generated/sliced starter pack approved for integration and playtesting.",
+        "Store generated binaries under the package path using the documented folder layout.",
+        "Prop-heavy rows remain usable but should eventually be split into character and environment/effect layers."
+      ]
+    }
+  ]
+}
