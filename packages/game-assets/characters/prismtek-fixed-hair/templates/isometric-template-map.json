@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "prismcade-character-view-template-map-v0",
+  "characterId": "prismtek-fixed-hair",
+  "view": "isometric",
+  "templateId": "isometric-diagonal-64",
+  "status": "planned_after_top_down",
+  "identitySource": "packages/game-assets/characters/prismtek-fixed-hair/identity/identity.json",
+  "outputRuntimeRoot": "runtime/isometric",
+  "defaultRuntimeSize": [64, 64],
+  "directionTier": "4_diagonal_minimum",
+  "templateSources": [
+    {
+      "id": "prismtek-rotations",
+      "role": "identity_rotation_reference",
+      "rightsStatus": "first_party_user_provided"
+    },
+    {
+      "id": "low-top-down-economy-output",
+      "role": "derived_identity_source",
+      "rightsStatus": "first_party_generated_when_available"
+    },
+    {
+      "id": "top-down-full-8dir-output",
+      "role": "derived_motion_source",
+      "rightsStatus": "first_party_generated_when_available"
+    }
+  ],
+  "requiredSlots": {
+    "idle_south_east": { "frames": 4, "durationMs": 160, "priority": "required" },
+    "walk_south_east": { "frames": 6, "durationMs": 110, "priority": "required" },
+    "idle_south_west": { "frames": 4, "durationMs": 160, "priority": "required" },
+    "walk_south_west": { "frames": 6, "durationMs": 110, "priority": "required" },
+    "idle_north_east": { "frames": 4, "durationMs": 160, "priority": "required" },
+    "walk_north_east": { "frames": 6, "durationMs": 110, "priority": "required" },
+    "idle_north_west": { "frames": 4, "durationMs": 160, "priority": "required" },
+    "walk_north_west": { "frames": 6, "durationMs": 110, "priority": "required" }
+  },
+  "qaChecklist": [
+    "Diorama/isometric read must be distinct from low-top-down.",
+    "Diagonal facings must preserve hair and teal outfit identity.",
+    "Feet/ground contact must match isometric tile footprint.",
+    "Use profile fallback until a dedicated isometric runtime exists."
+  ]
+}
