@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "prismcade-retarget-job-v0",
+  "jobId": "prismtek-fixed-hair-starter",
+  "targetCharacter": {
+    "id": "prismtek-fixed-hair",
+    "displayName": "Prismtek Fixed Hair",
+    "referencePaths": [
+      "external/user-provided/prismtek-fixed-hair/Prismtek_Fixed_Hair_showcase.gif",
+      "external/user-provided/prismtek-fixed-hair/Prismtek_Fixed_Hair_rotations_8dir.gif"
+    ]
+  },
+  "rigTemplateId": "compact-chibi-64-side",
+  "defaultFrameSize": [64, 64],
+  "allowedOutputSizes": [[32, 32], [48, 48], [64, 64], [96, 96], [128, 128], [192, 192], [256, 256]],
+  "sourcePacks": [
+    {
+      "id": "template-free-side-motion",
+      "root": "external/user-provided/template_free",
+      "role": "side_view_locomotion",
+      "candidateSlots": ["idle", "walk", "run", "jump", "fall", "basic"]
+    },
+    {
+      "id": "metroidvania-side-motion",
+      "root": "external/user-provided/metroidvania-roguelike-template",
+      "role": "side_view_traversal_combat",
+      "candidateSlots": ["land", "wall_slide", "ledge_climb", "crouch_idle", "crouch_walk", "push", "pull", "roll", "hurt", "defeat", "punch", "sword_idle", "sword_run", "sword_stab"]
+    },
+    {
+      "id": "thicc-n-juicy-free-sheet",
+      "root": "external/user-provided/thicc-n-juicy-free",
+      "role": "compact_motion_reference",
+      "candidateSlots": ["snappy_jump", "idle", "walk", "climb"]
+    },
+    {
+      "id": "pixel-fruit-arena-first-party",
+      "root": "games/pixel-fruit-arena",
+      "role": "first_party_runtime_reference",
+      "candidateSlots": ["idle", "walk", "run", "jump", "fall", "hurt", "victory"]
+    },
+    {
+      "id": "buddy-template-pack-first-party",
+      "root": "packages/buddy-animation-template-pack",
+      "role": "first_party_template_reference",
+      "candidateSlots": ["idle", "walk", "run", "hurt", "victory", "defeat", "emote"]
+    }
+  ],
+  "canonicalSlots": [
+    "idle",
+    "walk",
+    "run",
+    "jump",
+    "fall",
+    "land",
+    "climb",
+    "crouch_idle",
+    "crouch_walk",
+    "wall_slide",
+    "wall_land",
+    "ledge_climb",
+    "roll",
+    "push",
+    "pull",
+    "hurt",
+    "defeat",
+    "punch",
+    "basic",
+    "skill",
+    "big_skill",
+    "sword_idle",
+    "sword_run",
+    "sword_stab",
+    "victory",
+    "interact"
+  ],
+  "outputRoot": "generated/prismcade/retarget-jobs/prismtek-fixed-hair-starter",
+  "reviewRequired": true,
+  "promotionPolicy": "draft_until_visual_review"
+}
