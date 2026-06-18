@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "prismcade-row-level-ui-assets-v0",
+  "sourceInventory": "game-assets/README.md#ui",
+  "summary": { "items": 7, "sizeMb": 11.96 },
+  "defaultLicenseStatus": "mixed_needs_per_pack_review",
+  "entries": [
+    { "id": "complete-ui-book-styles", "name": "Complete UI Book Styles Pack", "sourcePath": "game-assets/ui/Complete_UI_Book_Styles_Pack_Free.7z", "size": "73 KB", "roles": ["menus", "journal", "inventory_book"], "views": ["profile_lobby"], "status": "candidate" },
+    { "id": "complete-ui-essential", "name": "Complete UI Essential Pack", "sourcePath": "game-assets/ui/Complete_UI_Essential_Pack_Free.7z", "size": "40 KB", "roles": ["buttons", "panels", "hud"], "views": ["profile_lobby"], "status": "candidate" },
+    { "id": "raven-fantasy-icons", "name": "Raven Fantasy Icons", "sourcePath": "game-assets/ui/Free - Raven Fantasy Icons.zip", "size": "7.93 MB", "roles": ["icons", "items", "abilities"], "views": ["profile_lobby", "side", "top_down"], "status": "candidate" },
+    { "id": "mine-location-icons", "name": "Icons for Mine Location Pixel Art", "sourcePath": "game-assets/ui/Free Icons for Mine Location Pixel Art.zip", "size": "85 KB", "roles": ["map_icons", "resource_icons"], "views": ["profile_lobby", "top_down"], "status": "candidate" },
+    { "id": "gandalfhardcore-emojis-icons", "name": "GandalfHardcore Emojis and Icons", "sourcePath": "game-assets/ui/GandalfHardcore Emojis and Icons.zip", "size": "30 KB", "roles": ["emotes", "chat", "profile"], "views": ["profile_lobby"], "status": "candidate" },
+    { "id": "shikashi-fantasy-icons-v2", "name": "Shikashi Fantasy Icons Pack v2", "sourcePath": "game-assets/ui/Shikashi's Fantasy Icons Pack v2.zip", "size": "2.00 MB", "roles": ["icons", "abilities", "inventory"], "views": ["profile_lobby", "top_down"], "status": "candidate" },
+    { "id": "shikashi-fantasy-icons", "name": "Shikashi Fantasy Icons Pack", "sourcePath": "game-assets/ui/Shikashi's Fantasy Icons Pack.zip", "size": "1.81 MB", "roles": ["icons", "abilities", "inventory"], "views": ["profile_lobby", "top_down"], "status": "candidate" },
+    { "id": "prismcade-product-shell", "name": "Prismcade Product Shell", "sourcePath": "docs/prismcade/PRISMCADE_PLATFORM.md", "roles": ["launcher", "catalog", "avatar_locker", "leaderboards"], "views": ["profile_lobby"], "licenseStatus": "first_party", "status": "template_ready" }
+  ]
+}
