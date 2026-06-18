@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "prismcade-row-level-item-assets-v0",
+  "sourceInventory": "game-assets/README.md#props-items",
+  "summary": { "items": 13, "sizeMb": 7.18 },
+  "defaultLicenseStatus": "mixed_needs_per_pack_review",
+  "entries": [
+    { "id": "animated-chests", "name": "Animated Chests", "sourcePath": "game-assets/props-items/Animated Chests.zip", "size": "103 KB", "type": "container_pack", "views": ["side", "low_top_down", "top_down"], "roles": ["reward", "map_object"], "status": "candidate" },
+    { "id": "fantasy-assets", "name": "Fantasy Assets", "sourcePath": "game-assets/props-items/Fantasy Assets.zip", "size": "1.63 MB", "type": "item_pack", "views": ["low_top_down", "top_down", "profile_lobby"], "roles": ["inventory", "props", "icons"], "status": "candidate" },
+    { "id": "fruit-plus", "name": "Fruit+", "sourcePath": "game-assets/props-items/Fruit+.png", "size": "41 KB", "type": "food_item_sheet", "views": ["side", "low_top_down", "top_down", "profile_lobby"], "roles": ["fruit", "pickup", "icon"], "status": "candidate" },
+    { "id": "pixel-food", "name": "Pixel Food", "sourcePath": "game-assets/props-items/Ghostpixxells_pixelfood.zip", "size": "127 KB", "type": "food_item_pack", "views": ["low_top_down", "top_down", "profile_lobby"], "roles": ["food", "shop", "inventory"], "status": "candidate" },
+    { "id": "treasure-hunters", "name": "Treasure Hunters", "sourcePath": "game-assets/props-items/Treasure Hunters.zip", "size": "1.33 MB", "type": "item_pack", "views": ["side", "low_top_down", "top_down"], "roles": ["treasure", "props", "adventure"], "status": "candidate" },
+    { "id": "water-plus", "name": "Water+", "sourcePath": "game-assets/props-items/Water+.png", "size": "8 KB", "type": "resource_item_sheet", "views": ["low_top_down", "top_down"], "roles": ["water_resource", "pickup"], "status": "candidate" },
+    { "id": "jaguar-statue", "name": "Jaguar Statue", "sourcePath": "game-assets/props-items/jaguar-statue.png", "size": "46 KB", "type": "decor_prop", "views": ["low_top_down", "top_down", "isometric"], "roles": ["statue", "map_decoration"], "status": "candidate" }
+  ]
+}
