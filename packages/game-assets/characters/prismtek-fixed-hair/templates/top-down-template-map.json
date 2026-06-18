@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "prismcade-character-view-template-map-v0",
+  "characterId": "prismtek-fixed-hair",
+  "view": "top_down",
+  "templateId": "top-down-full-8dir-64",
+  "status": "planned_after_low_top_down",
+  "identitySource": "packages/game-assets/characters/prismtek-fixed-hair/identity/identity.json",
+  "outputRuntimeRoot": "runtime/top_down",
+  "defaultRuntimeSize": [64, 64],
+  "directionTier": "8_facing_8_action",
+  "projection": "three_quarter_top_down_action",
+  "templateSources": [
+    {
+      "id": "prismtek-rotations",
+      "role": "identity_rotation_reference",
+      "rightsStatus": "first_party_user_provided"
+    },
+    {
+      "id": "mana-seed-farmer-template",
+      "role": "compact_top_down_movement_reference",
+      "rightsStatus": "terms_review_required"
+    },
+    {
+      "id": "eris-esra-character-template",
+      "role": "directional_animation_reference",
+      "rightsStatus": "terms_review_required"
+    },
+    {
+      "id": "slynyrd-top-down-guide",
+      "role": "8_direction_action_principles",
+      "rightsStatus": "public_reference_summary_only"
+    }
+  ],
+  "directions": [
+    "south",
+    "south_east",
+    "east",
+    "north_east",
+    "north",
+    "north_west",
+    "west",
+    "south_west"
+  ],
+  "requiredSlotFamilies": {
+    "idle": { "frames": 4, "durationMs": 160, "priority": "required" },
+    "walk": { "frames": 6, "durationMs": 110, "priority": "required" },
+    "run": { "frames": 6, "durationMs": 90, "priority": "recommended" },
+    "attack": { "frames": 5, "durationMs": 90, "priority": "game_dependent" },
+    "block": { "frames": 3, "durationMs": 120, "priority": "game_dependent" },
+    "dodge": { "frames": 4, "durationMs": 90, "priority": "game_dependent" }
+  },
+  "mirrorPolicy": {
+    "eastWest": "allowed_for_symmetric_designs_only",
+    "diagonals": "allowed_for_symmetric_designs_only",
+    "asymmetryRequiresUniqueFrames": ["hair_part", "weapon", "shield", "backpack", "large_accessory"]
+  },
+  "qaChecklist": [
+    "Eight-direction rotation preview must be reviewed in a circle.",
+    "Head/hair size must not pop across diagonal frames.",
+    "Attack-facing frames must not reuse unrelated side-view poses.",
+    "Directional combat frames require game-specific hitbox review."
+  ]
+}
