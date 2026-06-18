@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "prismcade-character-view-template-map-v0",
+  "characterId": "prismtek-fixed-hair",
+  "view": "side",
+  "templateId": "side-compact-chibi-64",
+  "status": "playtest_ready",
+  "identitySource": "packages/game-assets/characters/prismtek-fixed-hair/identity/identity.json",
+  "runtimeRoot": "runtime/side",
+  "legacyRuntimeRoots": ["runtime"],
+  "defaultRuntimeSize": [64, 64],
+  "templateSources": [
+    {
+      "id": "generated-prismtek-side-sheets",
+      "role": "primary_rendered_output",
+      "rightsStatus": "first_party_generated",
+      "usage": "Existing generated/sliced Prismtek side-view runtime."
+    },
+    {
+      "id": "template-free-side-motion",
+      "role": "motion_reference_only",
+      "rightsStatus": "prototype_or_terms_review_required",
+      "usage": "Side-view walk/run/jump/fall rhythm and row layout reference."
+    },
+    {
+      "id": "metroidvania-side-motion",
+      "role": "motion_reference_only",
+      "rightsStatus": "terms_review_required",
+      "usage": "Traversal/combat slot inspiration: crouch, wall slide, ledge climb, roll, hurt, punch, sword."
+    },
+    {
+      "id": "stickman-basic-motion",
+      "role": "pose_reference_only",
+      "rightsStatus": "terms_review_required",
+      "usage": "Simple readable idle/run/jump/punch/death pose timing."
+    }
+  ],
+  "slots": {
+    "idle": { "status": "generated", "frames": 4, "durationMs": 160 },
+    "walk": { "status": "generated", "frames": 6, "durationMs": 110 },
+    "run": { "status": "generated", "frames": 6, "durationMs": 80 },
+    "jump": { "status": "generated", "frames": 4, "durationMs": 120 },
+    "fall": { "status": "generated", "frames": 3, "durationMs": 130 },
+    "land": { "status": "generated", "frames": 3, "durationMs": 100 },
+    "hurt": { "status": "generated", "frames": 3, "durationMs": 120 },
+    "death": { "status": "generated_prop_heavy", "frames": 5, "durationMs": 180 },
+    "punch": { "status": "generated", "frames": 5, "durationMs": 90 },
+    "basic": { "status": "generated", "frames": 5, "durationMs": 100 },
+    "sword_idle": { "status": "generated_prop_heavy", "frames": 4, "durationMs": 140 },
+    "sword_run": { "status": "generated_prop_heavy", "frames": 6, "durationMs": 90 },
+    "sword_stab": { "status": "generated_prop_heavy", "frames": 5, "durationMs": 90 },
+    "victory": { "status": "generated", "frames": 4, "durationMs": 140 }
+  },
+  "promotionNotes": [
+    "Side view is usable now for Pixel Fruit Arena-style proof work.",
+    "Prop-heavy rows should eventually be split into character, prop, and effect layers.",
+    "Legacy runtime/<size> paths are accepted until runtime/side/<size> migration is complete."
+  ]
+}

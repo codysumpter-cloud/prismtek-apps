@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "prismcade-character-view-template-map-v0",
+  "characterId": "prismtek-fixed-hair",
+  "view": "low_top_down",
+  "templateId": "low-top-down-economy-64",
+  "status": "next_target",
+  "identitySource": "packages/game-assets/characters/prismtek-fixed-hair/identity/identity.json",
+  "outputRuntimeRoot": "runtime/low_top_down",
+  "defaultRuntimeSize": [64, 64],
+  "directionTier": "4_facing_8_movement",
+  "projection": "three_quarter_top_down",
+  "internalBodyFootprint": {
+    "recommendedMin": [26, 32],
+    "recommendedMax": [36, 48],
+    "runtimeCell": [64, 64]
+  },
+  "templateSources": [
+    {
+      "id": "prismtek-rotations",
+      "role": "identity_rotation_reference",
+      "rightsStatus": "first_party_user_provided",
+      "usage": "Preserve hair/outfit/face identity across north/south/east/west variants."
+    },
+    {
+      "id": "mana-seed-farmer-template",
+      "role": "low_top_down_body_and_walk_reference",
+      "rightsStatus": "terms_review_required",
+      "usage": "Body footprint, tile readability, farming/RPG-style map presence."
+    },
+    {
+      "id": "eris-esra-character-template",
+      "role": "directional_character_template_reference",
+      "rightsStatus": "terms_review_required",
+      "usage": "Directional facing, layer organization, consistency reference."
+    },
+    {
+      "id": "gumdrop-character-structure",
+      "role": "layer_and_pack_structure_reference",
+      "rightsStatus": "terms_review_required",
+      "usage": "Pack structure, source/manifest conventions, layer separation ideas."
+    },
+    {
+      "id": "slynyrd-top-down-guide",
+      "role": "animation_principles_reference",
+      "rightsStatus": "public_reference_summary_only",
+      "usage": "3/4 projection, 4-facing economy mode, rotation QA, idle/walk timing."
+    }
+  ],
+  "requiredSlots": {
+    "idle_south": { "frames": 4, "durationMs": 160, "priority": "required" },
+    "walk_south": { "frames": 6, "durationMs": 110, "priority": "required" },
+    "idle_north": { "frames": 4, "durationMs": 160, "priority": "required" },
+    "walk_north": { "frames": 6, "durationMs": 110, "priority": "required" },
+    "idle_side": { "frames": 4, "durationMs": 160, "priority": "required", "mirrorPolicy": "east_west_allowed_if_symmetric" },
+    "walk_side": { "frames": 6, "durationMs": 110, "priority": "required", "mirrorPolicy": "east_west_allowed_if_symmetric" },
+    "interact": { "frames": 3, "durationMs": 140, "priority": "recommended" },
+    "emote": { "frames": 4, "durationMs": 140, "priority": "recommended" }
+  },
+  "qaChecklist": [
+    "Rotation preview reads as the same character from all economy facings.",
+    "Hair silhouette remains low taper fade with fuller messy top.",
+    "Teal outfit remains recognizable at 64x64.",
+    "Feet remain grounded and baseline does not jitter.",
+    "Side facings mirror only if asymmetry is not visible.",
+    "Idle stays subtle; walk uses clear readable head/shoulder/foot rhythm."
+  ],
+  "promotionTarget": "Prismcade hub and avatar locker first playable social view"
+}

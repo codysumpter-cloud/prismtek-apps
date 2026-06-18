@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "prismcade-view-modes-v0",
+  "defaultViewMode": "side",
+  "viewModes": [
+    {
+      "id": "side",
+      "displayName": "Side View",
+      "description": "Horizontal side-view camera for platformers, fighters, brawlers, and action games.",
+      "gameFamilies": ["platformer", "fighter", "brawler", "action_platformer"],
+      "requiredCharacterViews": ["side"],
+      "fallbackViews": ["profile", "lobby"],
+      "defaultRuntimeSize": [64, 64],
+      "requiredSlots": ["idle", "walk", "run", "jump", "fall", "hurt"],
+      "recommendedSlots": ["land", "death", "basic", "punch", "victory"]
+    },
+    {
+      "id": "top_down",
+      "displayName": "Top Down",
+      "description": "Overhead camera for Zelda-like action, survival maps, towns, hubs, and creature games.",
+      "gameFamilies": ["adventure", "survival", "town", "overworld", "hub"],
+      "requiredCharacterViews": ["top_down"],
+      "fallbackViews": ["low_top_down", "profile", "lobby"],
+      "defaultRuntimeSize": [64, 64],
+      "requiredSlots": ["idle_south", "walk_south", "idle_north", "walk_north", "idle_east", "walk_east", "idle_west", "walk_west"],
+      "recommendedSlots": ["interact", "hurt", "emote"]
+    },
+    {
+      "id": "low_top_down",
+      "displayName": "Low Top Down",
+      "description": "Pokemon/Stardew/RPG-Maker-style camera for the social hub, avatar locker, shops, cozy games, and RPG maps.",
+      "gameFamilies": ["social_hub", "cozy", "rpg", "avatar_locker", "shop", "town"],
+      "requiredCharacterViews": ["low_top_down", "top_down"],
+      "fallbackViews": ["profile", "lobby"],
+      "defaultRuntimeSize": [64, 64],
+      "requiredSlots": ["idle_south", "walk_south", "idle_north", "walk_north", "idle_side", "walk_side"],
+      "recommendedSlots": ["interact", "emote", "sit", "celebrate"]
+    },
+    {
+      "id": "isometric",
+      "displayName": "Isometric",
+      "description": "Diagonal/diorama camera for tactics, sim, builder, and stylized map games.",
+      "gameFamilies": ["tactics", "sim", "builder", "diorama"],
+      "requiredCharacterViews": ["isometric"],
+      "fallbackViews": ["low_top_down", "profile", "lobby"],
+      "defaultRuntimeSize": [64, 64],
+      "requiredSlots": ["idle_south_east", "walk_south_east", "idle_south_west", "walk_south_west", "idle_north_east", "walk_north_east", "idle_north_west", "walk_north_west"],
+      "recommendedSlots": ["interact", "hurt", "emote"]
+    },
+    {
+      "id": "arena_2_5d",
+      "displayName": "Arena 2.5D",
+      "description": "Side-view character presentation inside an arena with foreground/background depth lanes.",
+      "gameFamilies": ["arena", "fighter", "sports", "battle_top", "boss_rush"],
+      "requiredCharacterViews": ["side"],
+      "fallbackViews": ["profile", "lobby"],
+      "defaultRuntimeSize": [96, 96],
+      "requiredSlots": ["idle", "walk", "run", "hurt"],
+      "recommendedSlots": ["jump", "fall", "basic", "victory"]
+    },
+    {
+      "id": "profile_lobby",
+      "displayName": "Profile / Lobby",
+      "description": "Fallback presentation view for profiles, game cards, catalog entries, leaderboards, menus, and avatar select.",
+      "gameFamilies": ["profile", "catalog", "leaderboard", "menu", "avatar_select"],
+      "requiredCharacterViews": ["profile", "lobby", "side", "low_top_down"],
+      "fallbackViews": [],
+      "defaultRuntimeSize": [64, 64],
+      "requiredSlots": ["idle"],
+      "recommendedSlots": ["walk", "victory", "emote"]
+    }
+  ],
+  "rules": {
+    "gameManifestsDeclareViewMode": true,
+    "characterManifestsDeclareViewVariants": true,
+    "gamesMustUseFallbackWhenRequiredViewMissing": true,
+    "profileLobbyIsUniversalFallback": true
+  }
+}

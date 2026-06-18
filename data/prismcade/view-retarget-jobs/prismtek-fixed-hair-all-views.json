@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "prismcade-view-retarget-job-v0",
+  "jobId": "prismtek-fixed-hair-all-views",
+  "characterId": "prismtek-fixed-hair",
+  "displayName": "Prismtek Fixed Hair All-View Retarget Plan",
+  "identitySource": "packages/game-assets/characters/prismtek-fixed-hair/identity/identity.json",
+  "viewTemplateRegistry": "data/prismcade/view-template-registry.json",
+  "sourcePolicy": {
+    "firstPartyGeneratedAllowed": true,
+    "userProvidedFirstPartyReferencesAllowed": true,
+    "externalTemplatesReferenceOnlyUntilRightsReviewed": true,
+    "noDirectCopyFromUnapprovedPacks": true
+  },
+  "stages": [
+    {
+      "id": "side-playtest-runtime",
+      "view": "side",
+      "status": "already_generated_playtest",
+      "templateMap": "packages/game-assets/characters/prismtek-fixed-hair/templates/side-template-map.json",
+      "outputRuntimeRoot": "packages/game-assets/characters/prismtek-fixed-hair/runtime/side",
+      "legacyRuntimeRoot": "packages/game-assets/characters/prismtek-fixed-hair/runtime",
+      "slots": ["idle", "walk", "run", "jump", "fall", "land", "hurt", "death", "basic", "punch", "victory"],
+      "nextAction": "Keep as side-view proof runtime and migrate legacy runtime/<size> into runtime/side/<size> when asset layout is cleaned."
+    },
+    {
+      "id": "profile-lobby-fallback-runtime",
+      "view": "profile_lobby",
+      "status": "fallback_active",
+      "templateMap": "packages/game-assets/characters/prismtek-fixed-hair/templates/profile-lobby-template-map.json",
+      "outputRuntimeRoot": "packages/game-assets/characters/prismtek-fixed-hair/runtime/profile",
+      "slots": ["idle", "victory", "emote_happy", "emote_thinking"],
+      "nextAction": "Use side idle fallback now; generate dedicated profile/emote frames after low-top-down proof."
+    },
+    {
+      "id": "low-top-down-economy-runtime",
+      "view": "low_top_down",
+      "status": "next_generation_target",
+      "templateMap": "packages/game-assets/characters/prismtek-fixed-hair/templates/low-top-down-template-map.json",
+      "outputRuntimeRoot": "packages/game-assets/characters/prismtek-fixed-hair/runtime/low_top_down",
+      "directionTier": "4_facing_8_movement",
+      "slots": ["idle_south", "walk_south", "idle_north", "walk_north", "idle_side", "walk_side", "interact", "emote"],
+      "generationPromptInputs": [
+        "Prismtek identity contract",
+        "Prismtek rotations",
+        "Mana Seed Farmer / Eris Esra / Gumdrop structural references",
+        "SLYNYRD 3/4 top-down animation rules"
+      ],
+      "acceptanceCriteria": [
+        "64x64 transparent runtime cells",
+        "same hair/outfit/face identity in all economy facings",
+        "stable baseline across walk frames",
+        "rotation contact sheet passes visual QA",
+        "manifest declares viewVariants.low_top_down as playtest"
+      ],
+      "nextAction": "Generate this first for Prismcade hub/avatar locker."
+    },
+    {
+      "id": "top-down-full-runtime",
+      "view": "top_down",
+      "status": "planned_after_low_top_down",
+      "templateMap": "packages/game-assets/characters/prismtek-fixed-hair/templates/top-down-template-map.json",
+      "outputRuntimeRoot": "packages/game-assets/characters/prismtek-fixed-hair/runtime/top_down",
+      "directionTier": "8_facing_8_action",
+      "slots": ["idle_<direction>", "walk_<direction>", "run_<direction>", "attack_<direction>", "block_<direction>", "dodge_<direction>", "hurt", "emote"],
+      "nextAction": "Generate only when an action RPG/survival/combat game needs full directional behavior."
+    },
+    {
+      "id": "isometric-runtime",
+      "view": "isometric",
+      "status": "planned_after_top_down",
+      "templateMap": "packages/game-assets/characters/prismtek-fixed-hair/templates/isometric-template-map.json",
+      "outputRuntimeRoot": "packages/game-assets/characters/prismtek-fixed-hair/runtime/isometric",
+      "directionTier": "4_diagonal_minimum",
+      "slots": ["idle_south_east", "walk_south_east", "idle_south_west", "walk_south_west", "idle_north_east", "walk_north_east", "idle_north_west", "walk_north_west"],
+      "nextAction": "Derive after low-top-down/top-down identity is stable."
+    }
+  ],
+  "recommendedOrder": [
+    "side-playtest-runtime",
+    "profile-lobby-fallback-runtime",
+    "low-top-down-economy-runtime",
+    "top-down-full-runtime",
+    "isometric-runtime"
+  ]
+}

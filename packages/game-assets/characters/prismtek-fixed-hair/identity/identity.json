@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "prismcade-character-identity-v0",
+  "characterId": "prismtek-fixed-hair",
+  "displayName": "Prismtek Fixed Hair",
+  "identityRole": "source_of_truth_for_all_view_variants",
+  "visualIdentity": {
+    "species": "human",
+    "ageRead": "young_adult",
+    "build": "compact_chibi",
+    "skinTone": "light",
+    "eyes": {
+      "color": "light blue / lavender",
+      "shape": "large readable friendly pixel eyes"
+    },
+    "face": {
+      "expressionDefault": "simple friendly neutral",
+      "shape": "rounded cute face",
+      "avoid": [
+        "heavy blush",
+        "overly girly face",
+        "tiny unreadable eyes",
+        "angry default expression"
+      ]
+    },
+    "hair": {
+      "color": "dark brown",
+      "style": "low taper fade with fuller slightly messy top",
+      "requirements": [
+        "hairline must stay filled with no bald fade gap",
+        "sides should read as short/tapered",
+        "top should stay fuller and slightly messy",
+        "no ponytail",
+        "no long back hair",
+        "hair silhouette must remain recognizable in every camera view"
+      ]
+    },
+    "outfit": {
+      "primary": "teal / blue-green hoodie or simple jumpsuit silhouette",
+      "secondary": "minimal darker trim only when needed for readability",
+      "shoes": "small dark shoes",
+      "requirements": [
+        "keep silhouette simple",
+        "preserve teal identity color",
+        "avoid noisy belts, logos, or tiny detail clusters"
+      ]
+    },
+    "pixelStyle": {
+      "edgeStyle": "hard-edged pixel art",
+      "antiAliasing": "none",
+      "background": "transparent",
+      "outline": "clean readable dark outline",
+      "palette": "limited retro-friendly palette"
+    }
+  },
+  "viewRules": {
+    "side": [
+      "keep current side-view generated identity",
+      "keep feet inside frame with stable baseline",
+      "prop-heavy frames must be marked or split later"
+    ],
+    "low_top_down": [
+      "use 3/4 top-down projection, not straight overhead",
+      "show enough face or hair silhouette to preserve identity",
+      "prefer economy 4-facing / 8-movement first",
+      "use 64x64 runtime cell with smaller internal body footprint"
+    ],
+    "top_down": [
+      "promote to full 8-facing only when a game needs directional combat",
+      "mirror east/west only when asymmetry is not visible",
+      "rotation preview must pass before game promotion"
+    ],
+    "isometric": [
+      "derive after low-top-down/top-down identity is stable",
+      "use diagonal facings and preserve hair/outfit readability"
+    ],
+    "profile_lobby": [
+      "side idle is allowed as fallback",
+      "dedicated portrait/profile art may replace fallback later"
+    ]
+  },
+  "promotionRules": [
+    "Every generated view variant must preserve hair, face, outfit, palette, and proportions.",
+    "Any template/reference pack must have rights reviewed before direct asset reuse.",
+    "Templates can guide pose, frame timing, anchors, and direction labels without copying unapproved art.",
+    "All playable variants must export a manifest, runtime atlas, and canonical slots before game integration."
+  ]
+}
