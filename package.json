@@ -23,7 +23,8 @@
     "integrations:validate": "node tools/integrations/validate-integration-manifests.mjs",
     "prismcade:validate": "node tools/prismcade/validate-game-manifests.mjs",
     "prismcade:validate-characters": "node tools/prismcade/validate-character-templates.mjs",
-    "prismcade:validate:all": "npm run prismcade:validate && npm run prismcade:validate-characters && npm --prefix games/pixel-fruit-arena run validate:prismcade-roster",
+    "prismcade:check-animation-templates": "node tools/prismcade/check-animation-templates.mjs",
+    "prismcade:validate:all": "npm run prismcade:validate && npm run prismcade:validate-characters && npm run prismcade:check-animation-templates && npm --prefix games/pixel-fruit-arena run validate:prismcade-roster",
     "prismcade:package:windows": "node tools/prismcade/package-windows.mjs"
   },
   "dependencies": {
