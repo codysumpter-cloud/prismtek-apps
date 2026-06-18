@@ -1,0 +1,4 @@
+side
+top_down
+low_top_down
+isometric
