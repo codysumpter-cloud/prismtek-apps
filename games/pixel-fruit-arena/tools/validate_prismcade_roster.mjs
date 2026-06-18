@@ -12,8 +12,10 @@ import { FRUITS } from "../src/fruits/fruits.js";
 const gameRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const repoRoot = path.resolve(gameRoot, "../..");
 const rosterPath = path.join(gameRoot, "data/characters/prismcade_playable_roster.json");
+const assetRowMapPath = path.join(gameRoot, "data/characters/asset_row_map.json");
 const pixellabRegistryPath = path.join(repoRoot, "data/integrations/pixellab-character-export-registry.json");
 const templateRegistryPath = path.join(repoRoot, "data/prismcade/character-template-registry.json");
+const characterAssetRowsPath = path.join(repoRoot, "data/prismcade/asset-rows/character-assets.json");
 const engineAdaptersPath = path.join(repoRoot, "data/integrations/game-engine-adapters.json");
 
 const requiredRuntimeAnimations = ["idle", "walk", "run", "jump", "fall", "attack", "special", "hurt", "knockout", "victory"];
@@ -37,17 +39,32 @@ function assertRepoRelative(value, label) {
   assert.ok(!value.includes(".."), `${label} must not contain ..`);
 }
 
+function rowEntries(file) {
+  return [
+    ...(Array.isArray(file.entries) ? file.entries : []),
+    ...(Array.isArray(file.priorityRows) ? file.priorityRows : []),
+    ...(Array.isArray(file.categories) ? file.categories : [])
+  ];
+}
+
 assert.ok(existsSync(rosterPath), "Prismcade playable roster JSON is required");
+assert.ok(existsSync(assetRowMapPath), "Pixel Fruit Arena asset row map is required");
 assert.ok(existsSync(pixellabRegistryPath), "PixelLab character registry is required");
 assert.ok(existsSync(templateRegistryPath), "Prismcade character template registry is required");
+assert.ok(existsSync(characterAssetRowsPath), "Prismcade row-level character asset registry is required");
 assert.ok(existsSync(engineAdaptersPath), "Game engine adapter registry is required");
 
 const roster = readJson(rosterPath);
+const assetRowMap = readJson(assetRowMapPath);
 const pixellabRegistry = readJson(pixellabRegistryPath);
 const templateRegistry = readJson(templateRegistryPath);
+const characterAssetRows = readJson(characterAssetRowsPath);
 const engineAdapters = readJson(engineAdaptersPath);
 
 assert.equal(roster.schemaVersion, "pixel-fruit-arena-prismcade-playable-roster-v0");
+assert.equal(assetRowMap.schemaVersion, "pixel-fruit-arena-asset-row-map-v0");
+assert.equal(assetRowMap.sourceRegistry, "data/prismcade/asset-rows/character-assets.json");
+assert.equal(assetRowMap.requiredView, "side");
 assert.deepEqual(roster.requiredRuntimeAnimations, requiredRuntimeAnimations, "runtime animation contract must stay explicit");
 assert.equal(roster.engineAdapterDecision.liveRuntime, "pixel-fruit-arena-browser-canvas", "Pixel Fruit Arena should not silently switch engines");
 assert.equal(roster.engineAdapterDecision.openbor, "reference-only-contract", "OpenBOR must remain reference-only until an adapter output exists");
@@ -55,6 +72,7 @@ assert.match(roster.engineAdapterDecision.mugen, /do not import third-party cont
 assert.equal(roster.engineAdapterDecision.ikemen, "reference-only-contract", "Ikemen must remain reference-only until an adapter output exists");
 
 for (const registryPath of Object.values(roster.sourceRegistries)) assertRepoRelative(registryPath, "sourceRegistries path");
+assertRepoRelative(assetRowMap.sourceRegistry, "assetRowMap.sourceRegistry");
 
 const adapterIds = new Set(engineAdapters.adapters.map((adapter) => adapter.id));
 assert.ok(adapterIds.has("openbor-brawler-adapter"), "OpenBOR adapter contract must exist");
@@ -66,17 +84,23 @@ const sourceVariantIds = new Set((pixellabRegistry.characters || []).map((charac
 for (const group of pixellabRegistry.fourDirectionSourceGroups || []) sourceVariantIds.add(group.variantId);
 
 const templateFamilyIds = new Set(templateRegistry.templateFamilies.map((family) => family.id));
+const assetRowsById = new Map(rowEntries(characterAssetRows).map((entry) => [entry.id, entry]));
+const assetMappingsByRosterId = new Map(assetRowMap.mappings.map((entry) => [entry.rosterId, entry]));
+const allowedAssetRowStatuses = new Set(assetRowMap.usableStatuses);
 const dataById = new Map(roster.characters.map((character) => [character.id, character]));
 const runtimeById = new Map(PRISMCADE_PLAYABLE_ROSTER.map((character) => [character.id, character]));
 
 for (const requiredId of requiredRosterIds) {
   assert.ok(dataById.has(requiredId), `roster JSON missing ${requiredId}`);
   assert.ok(runtimeById.has(requiredId), `runtime roster missing ${requiredId}`);
+  assert.ok(assetMappingsByRosterId.has(requiredId), `asset row map missing ${requiredId}`);
 }
 
 for (const character of roster.characters) {
   const runtimeCharacter = runtimeById.get(character.id);
+  const assetMapping = assetMappingsByRosterId.get(character.id);
   assert.ok(runtimeCharacter, `${character.id} missing from runtime module`);
+  assert.ok(assetMapping, `${character.id} missing from asset row map`);
   assert.equal(runtimeCharacter.spriteKey, character.spriteKey, `${character.id} spriteKey mismatch`);
   assert.equal(runtimeCharacter.sourceVariantId, character.sourceVariantId, `${character.id} sourceVariantId mismatch`);
   assert.equal(runtimeCharacter.defaultFighter.fruitId, character.defaultFighter.fruitId, `${character.id} fruitId mismatch`);
@@ -88,6 +112,13 @@ for (const character of roster.characters) {
   assert.ok(COSMETICS.spriteKeys.includes(character.spriteKey), `${character.id} sprite key missing from character creator choices`);
   assert.ok(FRUITS[character.defaultFighter.fruitId], `${character.id} fruit is not available at runtime`);
   assert.ok(COSMETICS.combatStyles.includes(character.defaultFighter.combatStyle), `${character.id} combat style is not available`);
+
+  const assetRow = assetRowsById.get(assetMapping.assetRowId);
+  assert.ok(assetRow, `${character.id} asset row missing: ${assetMapping.assetRowId}`);
+  assert.ok(assetRow.views?.includes(assetRowMap.requiredView), `${assetMapping.assetRowId} must support ${assetRowMap.requiredView}`);
+  assert.ok(allowedAssetRowStatuses.has(assetRow.status), `${assetMapping.assetRowId} has unsupported status ${assetRow.status}`);
+  assert.equal(runtimeCharacter.assetRowId, assetMapping.assetRowId, `${character.id} runtime assetRowId mismatch`);
+  assert.equal(runtimeCharacter.assetRowPath, `${assetRowMap.sourceRegistry}#${assetMapping.assetRowId}`, `${character.id} runtime assetRowPath mismatch`);
 
   const sprite = CHARACTER_SPRITES[character.spriteKey];
   assert.ok(sprite, `${character.id} has no CHARACTER_SPRITES entry`);
@@ -130,4 +161,4 @@ const heldBackBmo = roster.sourceGroupsHeldBack.find((entry) => entry.sourceVari
 assert.ok(heldBackBmo, "BMO 4-direction source group decision must be explicit");
 assert.match(heldBackBmo.reason, /4-direction/, "BMO held-back note must preserve the 4-direction constraint");
 
-console.log(`Prismcade Pixel Fruit Arena roster passed: ${roster.characters.length} playable entries, ${requiredRuntimeAnimations.length} animations each.`);
+console.log(`Prismcade Pixel Fruit Arena roster passed: ${roster.characters.length} playable entries, ${requiredRuntimeAnimations.length} animations each, ${assetRowMap.mappings.length} asset row mappings.`);
