@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "pixel-fruit-arena-asset-row-map-v0",
+  "sourceRegistry": "data/prismcade/asset-rows/character-assets.json",
+  "requiredView": "side",
+  "usableStatuses": ["template_ready", "playtest_ready", "game_ready", "needs_manifest"],
+  "mappings": [
+    { "rosterId": "buddy", "assetRowId": "buddy-main-pack", "assetRole": "buddy", "promotionGate": "template_ready" },
+    { "rosterId": "prismtek", "assetRowId": "prismtek-fixed-hair", "assetRole": "player", "promotionGate": "playtest_ready" },
+    { "rosterId": "prismtek-jones", "assetRowId": "normal-hair-guy", "assetRole": "player", "promotionGate": "needs_manifest" },
+    { "rosterId": "female-blue-hoodie", "assetRowId": "female-blue-hoodie", "assetRole": "player", "promotionGate": "needs_manifest" },
+    { "rosterId": "ponytail-guy", "assetRowId": "ponytail-guy", "assetRole": "player", "promotionGate": "needs_manifest" },
+    { "rosterId": "prismtek-pixel-god", "assetRowId": "prismtek-fixed-hair", "assetRole": "variant", "promotionGate": "playtest_ready" },
+    { "rosterId": "prismbot-pixel-god", "assetRowId": "buddy-main-pack", "assetRole": "variant", "promotionGate": "template_ready" }
+  ],
+  "nextPromotionWork": [
+    "Promote Normal Hair Guy, Female Blue Hoodie, Ponytail Guy, and Buddy 2 rows after runtime manifests are attached.",
+    "Create dedicated row entries for Prismtek Pixel God and PrismBot Pixel God if they remain separate playable identities.",
+    "Expose these mappings in the PFA character select UI after this validation pass is green."
+  ]
+}
