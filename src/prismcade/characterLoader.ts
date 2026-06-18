@@ -18,6 +18,14 @@ export type PrismcadeCharacterView =
   | "profile"
   | "lobby";
 
+export type PrismcadeViewMode =
+  | "side"
+  | "top_down"
+  | "low_top_down"
+  | "isometric"
+  | "arena_2_5d"
+  | "profile_lobby";
+
 export interface PrismcadeVec2 {
   x: number;
   y: number;
@@ -64,6 +72,17 @@ export interface PrismcadeRuntimeManifest {
   };
 }
 
+export interface PrismcadeCharacterViewVariant {
+  status: "playtest" | "available" | "fallback" | "missing" | string;
+  runtimeRoot?: string;
+  runtimeSizes?: number[];
+  defaultSize?: number;
+  requiredSlotsReady?: boolean;
+  sourceView?: PrismcadeCharacterView;
+  fallbackSlot?: PrismcadeAnimationSlot;
+  notes?: string;
+}
+
 export interface PrismcadeCharacterManifest {
   schemaVersion: "prismcade-game-ready-animation-pack-v0" | string;
   characterId: PrismcadeCharacterId;
@@ -79,6 +98,7 @@ export interface PrismcadeCharacterManifest {
   portableAvatarRole?: string[];
   compatibleGameViews?: string[];
   needsFutureVariants?: string[];
+  viewVariants?: Partial<Record<PrismcadeCharacterView, PrismcadeCharacterViewVariant>>;
   slots: Record<PrismcadeAnimationSlot, {
     frameCount: number;
     durationMs: number;
@@ -99,6 +119,14 @@ export interface LoadedPrismcadeCharacter {
   clips: Record<PrismcadeAnimationSlot, PrismcadeAnimationClip>;
 }
 
+export interface LoadedPrismcadeCharacterForView extends LoadedPrismcadeCharacter {
+  requestedViewMode: PrismcadeViewMode;
+  selectedView: PrismcadeCharacterView;
+  selectedVariant: PrismcadeCharacterViewVariant;
+  fallbackUsed: boolean;
+  fallbackReason?: string;
+}
+
 export interface LoadPrismcadeCharacterOptions {
   /** Preferred sprite size. Defaults to the manifest's default size, usually 64. */
   size?: PrismcadeSpriteSize;
@@ -108,7 +136,22 @@ export interface LoadPrismcadeCharacterOptions {
   fetchImpl?: typeof fetch;
 }
 
+export interface LoadPrismcadeCharacterForViewOptions extends LoadPrismcadeCharacterOptions {
+  viewMode: PrismcadeViewMode;
+  /** Optional override for the view preference chain. */
+  viewPreference?: PrismcadeCharacterView[];
+}
+
 const DEFAULT_FALLBACK_SIZE: PrismcadeSpriteSize = 64;
+
+const VIEW_MODE_TO_CHARACTER_VIEW_PRIORITY: Record<PrismcadeViewMode, PrismcadeCharacterView[]> = {
+  side: ["side", "profile", "lobby"],
+  arena_2_5d: ["side", "profile", "lobby"],
+  top_down: ["top_down", "low_top_down", "profile", "lobby"],
+  low_top_down: ["low_top_down", "top_down", "profile", "lobby"],
+  isometric: ["isometric", "low_top_down", "profile", "lobby"],
+  profile_lobby: ["profile", "lobby", "side", "low_top_down", "top_down", "isometric"],
+};
 
 function trimTrailingSlash(value: string): string {
   return value.replace(/\/+$/, "");
@@ -129,13 +172,19 @@ function resolveRequestedSize(
   manifest: PrismcadeCharacterManifest,
   requested?: PrismcadeSpriteSize,
   fallback: PrismcadeSpriteSize = DEFAULT_FALLBACK_SIZE,
+  selectedVariant?: PrismcadeCharacterViewVariant,
 ): PrismcadeSpriteSize {
+  const variantDefault = selectedVariant?.defaultSize as PrismcadeSpriteSize | undefined;
   const manifestDefault = manifest.defaultFrameSize[0] as PrismcadeSpriteSize;
-  const candidates = [requested, manifestDefault, fallback, DEFAULT_FALLBACK_SIZE].filter(Boolean) as PrismcadeSpriteSize[];
+  const candidates = [requested, variantDefault, manifestDefault, fallback, DEFAULT_FALLBACK_SIZE].filter(Boolean) as PrismcadeSpriteSize[];
 
   for (const candidate of candidates) {
-    if (manifestSupportsSize(manifest, candidate)) return candidate;
+    const variantAllowsSize = !selectedVariant?.runtimeSizes || selectedVariant.runtimeSizes.includes(candidate);
+    if (variantAllowsSize && manifestSupportsSize(manifest, candidate)) return candidate;
   }
+
+  const firstVariantSize = selectedVariant?.runtimeSizes?.find((size) => manifestSupportsSize(manifest, size));
+  if (firstVariantSize) return firstVariantSize as PrismcadeSpriteSize;
 
   const first = manifest.allowedSizes[0]?.[0];
   if (!first) {
@@ -171,18 +220,61 @@ function buildClips(runtime: PrismcadeRuntimeManifest): Record<PrismcadeAnimatio
   return clips;
 }
 
+function selectCharacterViewVariant(
+  manifest: PrismcadeCharacterManifest,
+  viewMode: PrismcadeViewMode,
+  viewPreference?: PrismcadeCharacterView[],
+): { selectedView: PrismcadeCharacterView; selectedVariant: PrismcadeCharacterViewVariant; fallbackUsed: boolean; fallbackReason?: string } {
+  const variants = manifest.viewVariants ?? {};
+  const priority = viewPreference ?? VIEW_MODE_TO_CHARACTER_VIEW_PRIORITY[viewMode];
+
+  for (let index = 0; index < priority.length; index += 1) {
+    const candidate = priority[index];
+    const variant = variants[candidate];
+    if (!variant) continue;
+    if (variant.status === "missing") continue;
+
+    return {
+      selectedView: candidate,
+      selectedVariant: variant,
+      fallbackUsed: index > 0,
+      fallbackReason: index > 0 ? `No usable ${priority[0]} variant; selected ${candidate}.` : undefined,
+    };
+  }
+
+  const compatibleSide = manifest.compatibleGameViews?.includes("side") || manifest.compatibleGameViews?.includes("profile/lobby");
+  if (compatibleSide) {
+    return {
+      selectedView: "side",
+      selectedVariant: { status: "fallback", defaultSize: manifest.defaultFrameSize[0], fallbackSlot: "idle" },
+      fallbackUsed: true,
+      fallbackReason: "No structured viewVariants were available; fell back to legacy side/profile compatibility.",
+    };
+  }
+
+  throw new Error(`Character ${manifest.characterId} has no usable variant for view mode ${viewMode}.`);
+}
+
+async function loadRuntime(
+  baseUrl: string,
+  manifest: PrismcadeCharacterManifest,
+  size: PrismcadeSpriteSize,
+  fetchImpl: typeof fetch,
+  selectedVariant?: PrismcadeCharacterViewVariant,
+): Promise<Pick<LoadedPrismcadeCharacter, "runtime" | "atlasUrl" | "clips">> {
+  const runtimeRoot = selectedVariant?.runtimeRoot ?? "runtime";
+  const runtimeBaseUrl = joinUrl(baseUrl, runtimeRoot, String(size));
+  const runtime = await fetchJson<PrismcadeRuntimeManifest>(fetchImpl, joinUrl(runtimeBaseUrl, "manifest.json"));
+
+  return {
+    runtime,
+    atlasUrl: joinUrl(runtimeBaseUrl, runtime.atlas.image),
+    clips: buildClips(runtime),
+  };
+}
+
 /**
  * Load a Prismcade portable character pack from a base URL.
- *
- * Example:
- *
- * ```ts
- * const character = await loadPrismcadeCharacter(
- *   "/game-assets/characters/prismtek-fixed-hair",
- *   { size: 64 },
- * );
- * const idle = character.clips.idle;
- * ```
  */
 export async function loadPrismcadeCharacter(
   baseUrl: string,
@@ -196,19 +288,43 @@ export async function loadPrismcadeCharacter(
   );
 
   const size = resolveRequestedSize(manifest, options.size, options.fallbackSize);
-  const runtimeBaseUrl = joinUrl(cleanBaseUrl, "runtime", String(size));
-  const runtime = await fetchJson<PrismcadeRuntimeManifest>(
-    fetchImpl,
-    joinUrl(runtimeBaseUrl, "manifest.json"),
-  );
+  const runtimeData = await loadRuntime(cleanBaseUrl, manifest, size, fetchImpl);
 
   return {
     baseUrl: cleanBaseUrl,
     manifest,
     size,
-    runtime,
-    atlasUrl: joinUrl(runtimeBaseUrl, runtime.atlas.image),
-    clips: buildClips(runtime),
+    ...runtimeData,
+  };
+}
+
+/**
+ * Load a Prismcade character while respecting the game's camera/view mode.
+ */
+export async function loadPrismcadeCharacterForView(
+  baseUrl: string,
+  options: LoadPrismcadeCharacterForViewOptions,
+): Promise<LoadedPrismcadeCharacterForView> {
+  const fetchImpl = options.fetchImpl ?? fetch;
+  const cleanBaseUrl = trimTrailingSlash(baseUrl);
+  const manifest = await fetchJson<PrismcadeCharacterManifest>(
+    fetchImpl,
+    joinUrl(cleanBaseUrl, "manifest.prismcade-character.json"),
+  );
+  const selection = selectCharacterViewVariant(manifest, options.viewMode, options.viewPreference);
+  const size = resolveRequestedSize(manifest, options.size, options.fallbackSize, selection.selectedVariant);
+  const runtimeData = await loadRuntime(cleanBaseUrl, manifest, size, fetchImpl, selection.selectedVariant);
+
+  return {
+    baseUrl: cleanBaseUrl,
+    manifest,
+    size,
+    requestedViewMode: options.viewMode,
+    selectedView: selection.selectedView,
+    selectedVariant: selection.selectedVariant,
+    fallbackUsed: selection.fallbackUsed,
+    fallbackReason: selection.fallbackReason,
+    ...runtimeData,
   };
 }
 
