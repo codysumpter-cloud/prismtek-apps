@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "prismcade-animation-source-registry-v0",
+  "docs": "docs/prismcade/ANIMATION_SOURCE_REGISTRY.md",
+  "sources": [
+    {
+      "id": "pixel-fruit-arena-current",
+      "type": "first_party_game",
+      "status": "candidate",
+      "sourcePath": "games/pixel-fruit-arena/",
+      "notes": "Existing Pixel Fruit Arena animation tooling and character assets should be audited and mapped into reusable Prismcade templates."
+    },
+    {
+      "id": "buddy-animation-template-pack",
+      "type": "first_party_package",
+      "status": "candidate",
+      "sourcePath": "packages/buddy-animation-template-pack/",
+      "notes": "Buddy animation contract and examples can feed portable avatar and compact chibi template work."
+    },
+    {
+      "id": "prismcade-fighter-buddy-starter",
+      "type": "first_party_game",
+      "status": "candidate",
+      "sourcePath": "games/prismcade-fighter/content/characters/buddy/",
+      "templateIds": ["compact-chibi-64-side"],
+      "notes": "Starter Buddy fighter metadata used to prove the reusable side-view template shape."
+    },
+    {
+      "id": "itch-animation-packs-staging",
+      "type": "external_asset_pack_collection",
+      "status": "needs_terms_review",
+      "sourcePath": "external/user-provided/itch-animation-packs/",
+      "notes": "User says there are usable itch.io animation packs. Add specific pack names, creators, store pages, and usage terms before import."
+    }
+  ],
+  "promotionStatuses": ["candidate", "needs_terms_review", "approved", "platform_template"],
+  "requiredExternalFields": [
+    "packName",
+    "creator",
+    "storePageOrReceipt",
+    "allowedProjectUse",
+    "allowedModification",
+    "allowedRedistribution",
+    "attributionRequired",
+    "mappedTemplateIds"
+  ]
+}
