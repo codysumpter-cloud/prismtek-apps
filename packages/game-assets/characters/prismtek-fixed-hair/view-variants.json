@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "prismcade-character-view-variants-v0",
+  "characterId": "prismtek-fixed-hair",
+  "identitySource": "packages/game-assets/characters/prismtek-fixed-hair/identity/identity.json",
+  "viewRetargetJob": "data/prismcade/view-retarget-jobs/prismtek-fixed-hair-all-views.json",
+  "variants": {
+    "side": {
+      "status": "playtest",
+      "runtimeRoot": "runtime",
+      "futureRuntimeRoot": "runtime/side",
+      "templateMap": "packages/game-assets/characters/prismtek-fixed-hair/templates/side-template-map.json",
+      "runtimeSizes": [32, 48, 64, 96, 128, 192, 256],
+      "defaultSize": 64,
+      "requiredSlotsReady": true
+    },
+    "profile": {
+      "status": "fallback",
+      "sourceView": "side",
+      "templateMap": "packages/game-assets/characters/prismtek-fixed-hair/templates/profile-lobby-template-map.json",
+      "defaultSize": 64,
+      "fallbackSlot": "idle"
+    },
+    "lobby": {
+      "status": "fallback",
+      "sourceView": "side",
+      "templateMap": "packages/game-assets/characters/prismtek-fixed-hair/templates/profile-lobby-template-map.json",
+      "defaultSize": 64,
+      "fallbackSlot": "idle"
+    },
+    "low_top_down": {
+      "status": "planned_next",
+      "runtimeRoot": "runtime/low_top_down",
+      "templateMap": "packages/game-assets/characters/prismtek-fixed-hair/templates/low-top-down-template-map.json",
+      "runtimeSizes": [64],
+      "defaultSize": 64,
+      "requiredSlotsReady": false
+    },
+    "top_down": {
+      "status": "planned_after_low_top_down",
+      "runtimeRoot": "runtime/top_down",
+      "templateMap": "packages/game-assets/characters/prismtek-fixed-hair/templates/top-down-template-map.json",
+      "runtimeSizes": [64],
+      "defaultSize": 64,
+      "requiredSlotsReady": false
+    },
+    "isometric": {
+      "status": "planned_after_top_down",
+      "runtimeRoot": "runtime/isometric",
+      "templateMap": "packages/game-assets/characters/prismtek-fixed-hair/templates/isometric-template-map.json",
+      "runtimeSizes": [64],
+      "defaultSize": 64,
+      "requiredSlotsReady": false
+    }
+  },
+  "nextProductionTarget": "low_top_down",
+  "notes": [
+    "This file is the all-view planning companion to the root character manifest.",
+    "Root manifest remains backward compatible for current loader behavior.",
+    "When a runtime exists for a planned view, promote the status and mirror it into the root manifest."
+  ]
+}
