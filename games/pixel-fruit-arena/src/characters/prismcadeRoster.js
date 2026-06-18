@@ -1,3 +1,9 @@
+const CHARACTER_ASSET_ROW_REGISTRY = "data/prismcade/asset-rows/character-assets.json";
+
+function assetRowPath(assetRowId) {
+  return `${CHARACTER_ASSET_ROW_REGISTRY}#${assetRowId}`;
+}
+
 export const PRISMCADE_PLAYABLE_ROSTER = [
   {
     id: "buddy",
@@ -5,6 +11,8 @@ export const PRISMCADE_PLAYABLE_ROSTER = [
     rosterClass: "mascot",
     sourceVariantId: "buddy",
     templateFamilyId: "buddy-core",
+    assetRowId: "buddy-main-pack",
+    assetRowPath: assetRowPath("buddy-main-pack"),
     spriteKey: "prismcade_buddy",
     animationFidelity: "source-animation-normalized",
     defaultFighter: {
@@ -28,6 +36,8 @@ export const PRISMCADE_PLAYABLE_ROSTER = [
     rosterClass: "humanoid",
     sourceVariantId: "prismtek",
     templateFamilyId: "prismtek-player",
+    assetRowId: "prismtek-fixed-hair",
+    assetRowPath: assetRowPath("prismtek-fixed-hair"),
     spriteKey: "prismcade_prismtek",
     animationFidelity: "source-animation-normalized",
     defaultFighter: {
@@ -51,6 +61,8 @@ export const PRISMCADE_PLAYABLE_ROSTER = [
     rosterClass: "humanoid",
     sourceVariantId: "prismtek-jones",
     templateFamilyId: "prismtek-player",
+    assetRowId: "normal-hair-guy",
+    assetRowPath: assetRowPath("normal-hair-guy"),
     spriteKey: "prismcade_prismtek_jones",
     animationFidelity: "rotation-derived",
     defaultFighter: {
@@ -74,6 +86,8 @@ export const PRISMCADE_PLAYABLE_ROSTER = [
     rosterClass: "humanoid",
     sourceVariantId: "female-character-blue-hoodie",
     templateFamilyId: "female-blue-hoodie-player",
+    assetRowId: "female-blue-hoodie",
+    assetRowPath: assetRowPath("female-blue-hoodie"),
     spriteKey: "prismcade_female_blue_hoodie",
     animationFidelity: "rotation-derived",
     defaultFighter: {
@@ -97,6 +111,8 @@ export const PRISMCADE_PLAYABLE_ROSTER = [
     rosterClass: "humanoid",
     sourceVariantId: "ponytail-guy",
     templateFamilyId: "ponytail-avatar",
+    assetRowId: "ponytail-guy",
+    assetRowPath: assetRowPath("ponytail-guy"),
     spriteKey: "prismcade_ponytail_guy",
     animationFidelity: "rotation-derived",
     defaultFighter: {
@@ -120,6 +136,8 @@ export const PRISMCADE_PLAYABLE_ROSTER = [
     rosterClass: "humanoid",
     sourceVariantId: "prismtek-pixel-god",
     templateFamilyId: "prismtek-player",
+    assetRowId: "prismtek-fixed-hair",
+    assetRowPath: assetRowPath("prismtek-fixed-hair"),
     spriteKey: "prismcade_prismtek_pixel_god",
     animationFidelity: "rotation-derived",
     defaultFighter: {
@@ -143,6 +161,8 @@ export const PRISMCADE_PLAYABLE_ROSTER = [
     rosterClass: "humanoid",
     sourceVariantId: "prismbot-pixel-god",
     templateFamilyId: "buddy-core",
+    assetRowId: "buddy-main-pack",
+    assetRowPath: assetRowPath("buddy-main-pack"),
     spriteKey: "prismcade_prismbot_pixel_god",
     animationFidelity: "rotation-derived",
     defaultFighter: {
@@ -188,6 +208,13 @@ export const PRISMCADE_ROSTER_PRESETS = PRISMCADE_PLAYABLE_ROSTER.map((character
   ...character.defaultFighter.appearance
 }));
 
+export const PRISMCADE_ROSTER_ASSET_ROWS = PRISMCADE_PLAYABLE_ROSTER.map((character) => ({
+  id: character.id,
+  assetRowId: character.assetRowId,
+  assetRowPath: character.assetRowPath,
+  spriteKey: character.spriteKey
+}));
+
 export function prismcadeRosterGuest(slot = 0) {
   const character = PRISMCADE_PLAYABLE_ROSTER[slot % PRISMCADE_PLAYABLE_ROSTER.length];
   return {
@@ -197,7 +224,8 @@ export function prismcadeRosterGuest(slot = 0) {
     combat_style: character.defaultFighter.combatStyle,
     fruitId: character.defaultFighter.fruitId,
     appearance: { ...character.defaultFighter.appearance },
-    prismcadeSource: character.id
+    prismcadeSource: character.id,
+    prismcadeAssetRow: character.assetRowPath
   };
 }
 
