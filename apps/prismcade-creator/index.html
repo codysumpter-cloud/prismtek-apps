@@ -5,23 +5,41 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Prismcade Creator MVP</title>
   <style>
-    :root { color-scheme: dark; --bg:#101018; --panel:#17172a; --line:#2c2c4c; --ink:#f7f7ff; --muted:#a9aac4; --accent:#5ee7ff; --hot:#ff5e78; --good:#7cff9b; --warn:#ffd166; }
-    * { box-sizing: border-box; }
-    body { margin:0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:var(--bg); color:var(--ink); }
-    main { max-width:1100px; margin:0 auto; padding:28px 18px 48px; }
-    .hero, .panel { border:2px solid var(--line); background:var(--panel); padding:18px; margin-bottom:14px; }
+    :root { color-scheme: dark; --bg:#101018; --panel:#17172a; --panel2:#20203a; --line:#2c2c4c; --ink:#f7f7ff; --muted:#a9aac4; --accent:#5ee7ff; --hot:#ff5e78; --good:#7cff9b; --warn:#ffd166; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:radial-gradient(circle at 8% 0%, rgba(94,231,255,.13), transparent 26rem), var(--bg); color:var(--ink); }
+    main { max-width:1320px; margin:0 auto; padding:28px 18px 48px; }
+    .hero,.panel,.card { border:2px solid var(--line); background:var(--panel); padding:18px; margin-bottom:14px; box-shadow:0 3px 0 rgba(0,0,0,.25); }
     .eyebrow { color:var(--accent); text-transform:uppercase; letter-spacing:.16em; font-size:12px; margin:0 0 8px; }
     h1 { margin:0; font-size:clamp(30px,6vw,58px); line-height:.92; text-transform:uppercase; }
+    h2,h3 { margin:0 0 8px; }
     p { color:var(--muted); line-height:1.5; }
-    .layout { display:grid; grid-template-columns:minmax(260px,380px) 1fr; gap:14px; align-items:start; }
+    .layout { display:grid; grid-template-columns:minmax(300px,410px) 1fr; gap:14px; align-items:start; }
     label { display:block; margin:12px 0 5px; color:var(--accent); font-size:13px; }
-    input, select, textarea { width:100%; border:2px solid var(--line); background:#101018; color:var(--ink); padding:9px; font:inherit; }
+    input,select,textarea { width:100%; border:2px solid var(--line); background:#101018; color:var(--ink); padding:9px; font:inherit; }
     textarea { min-height:90px; }
-    button { border:2px solid var(--line); background:#20203a; color:var(--ink); padding:9px 12px; font:inherit; cursor:pointer; margin:10px 8px 0 0; }
-    button:hover { border-color:var(--accent); color:var(--accent); }
+    button { border:2px solid var(--line); background:var(--panel2); color:var(--ink); padding:9px 12px; font:inherit; cursor:pointer; margin:10px 8px 0 0; }
+    button:hover,button[data-active="true"] { border-color:var(--accent); color:var(--accent); }
+    button[disabled] { opacity:.45; cursor:not-allowed; }
     pre { white-space:pre-wrap; word-break:break-word; background:#08080f; border:2px solid #242442; padding:14px; min-height:380px; overflow:auto; }
-    .hint { font-size:12px; color:var(--muted); }
-    @media (max-width: 820px) { .layout { grid-template-columns:1fr; } }
+    .hint,.meta { font-size:12px; color:var(--muted); overflow-wrap:anywhere; }
+    .row,.tabs,.selected { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+    .pill { border:1px solid #41416b; color:var(--muted); background:#101018; padding:4px 7px; font-size:12px; }
+    .good { color:var(--good); border-color:rgba(124,255,155,.5); }
+    .warn { color:var(--warn); border-color:rgba(255,209,102,.5); }
+    .hot { color:var(--hot); border-color:rgba(255,94,120,.5); }
+    .accent { color:var(--accent); border-color:rgba(94,231,255,.5); }
+    .filters { display:grid; grid-template-columns:2fr repeat(3,minmax(130px,1fr)); gap:8px; margin:12px 0; }
+    .checks { display:flex; gap:14px; flex-wrap:wrap; color:var(--muted); font-size:13px; margin-bottom:12px; }
+    .checks input { width:auto; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:10px; }
+    .card { margin:0; min-height:205px; display:flex; flex-direction:column; gap:8px; }
+    .card.locked { opacity:.78; }
+    .card.selected { border-color:var(--good); box-shadow:0 0 0 2px rgba(124,255,155,.18); }
+    .card .actions { margin-top:auto; }
+    .selected { min-height:34px; padding:8px; border:2px solid #242442; background:#08080f; }
+    .error { border:2px solid var(--hot); padding:12px; color:var(--hot); background:rgba(255,94,120,.08); }
+    @media (max-width:980px) { .layout,.filters { grid-template-columns:1fr; } }
   </style>
 </head>
 <body>
@@ -29,42 +47,58 @@
     <section class="hero">
       <p class="eyebrow">Prismcade Creator</p>
       <h1>Manifest-first MVP</h1>
-      <p>Pick a template, name the game, choose metadata, then export a Prismcade manifest. Tiny and useful beats giant and imaginary.</p>
+      <p>Pick a template, browse the merged Prismcade asset rows, select usable assets, then export a game manifest.</p>
     </section>
 
     <section class="layout">
       <form class="panel" id="creator">
         <label for="template">Template</label>
         <select id="template"></select>
-
         <label for="title">Game title</label>
         <input id="title" value="Buddy Bounce" />
-
         <label for="slug">Slug</label>
         <input id="slug" value="buddy-bounce" />
-
         <label for="genre">Genre / arcade role</label>
         <input id="genre" value="one-button-reflex" />
-
         <label for="tags">Tags, comma separated</label>
         <input id="tags" value="quick-play, score-chaser, prismcade" />
-
         <label for="controls">Controls</label>
         <textarea id="controls">Space / click / tap: action
 Restart button: reset run</textarea>
-
-        <label for="assets">Starter asset IDs, comma separated</label>
-        <input id="assets" value="prismcade-ui-card-frame, prismcade-default-hero-64" />
-
+        <label>Selected assets</label>
+        <div class="selected" id="selectedAssets"></div>
+        <p class="hint">Selectable rows are template-ready, playtest-ready, or game-ready. Candidate rows stay visible as cleanup backlog.</p>
         <button type="button" id="copy">Copy JSON</button>
         <button type="button" id="download">Download JSON</button>
-        <p class="hint">Place reviewed manifests into `data/prismcade/game-manifests.json` or a future game-local manifest path after validation.</p>
       </form>
-
       <section class="panel">
         <p class="eyebrow">Preview</p>
         <pre id="output"></pre>
       </section>
+    </section>
+
+    <section class="panel">
+      <div class="row" style="justify-content:space-between;align-items:flex-end;">
+        <div>
+          <p class="eyebrow">Creator Asset Library</p>
+          <h2>Rows from the Prismcade warehouse</h2>
+          <p>Browse characters, VFX, worlds, items, UI, and audio from `data/prismcade/asset-rows/`.</p>
+        </div>
+        <div class="row" id="stats"></div>
+      </div>
+      <div class="tabs" id="tabs"></div>
+      <div class="filters">
+        <input id="search" placeholder="Search names, roles, views, paths..." />
+        <select id="view"><option value="all">All views</option></select>
+        <select id="status"><option value="all">All statuses</option></select>
+        <select id="role"><option value="all">All roles</option></select>
+      </div>
+      <div class="checks">
+        <label><input type="checkbox" id="usableOnly" /> usable only</label>
+        <label><input type="checkbox" id="includeLocked" checked /> show locked cleanup rows</label>
+      </div>
+      <section id="assetError" class="error" hidden></section>
+      <div class="grid" id="grid"></div>
     </section>
   </main>
 
@@ -80,8 +114,34 @@ Restart button: reset run</textarea>
       { id:"creature-battle-lite", role:"creature-battle-lite", players:{ min:1, max:1 }, tags:["creature-battle","sandbox"], controls:["WASD move", "1/2/3/4 command moves"] },
       { id:"survival-lite", role:"creature-survival-world", players:{ min:1, max:1 }, tags:["survival","large-showcase","later"], controls:["WASD move", "Interact and ability keys"] }
     ];
-
+    const families = {
+      characters:"character-assets.json",
+      vfx:"vfx-assets.json",
+      worlds:"world-assets.json",
+      items:"item-assets.json",
+      ui:"ui-assets.json",
+      audio:"audio-assets.json"
+    };
+    const usableStatuses = new Set(["template_ready","playtest_ready","game_ready"]);
+    const blockedStatuses = new Set(["reference_only","blocked_license","partial_download_do_not_ship"]);
+    const blockedLicenses = new Set(["unknown_do_not_ship","external_reference_only"]);
+    const selected = new Set();
+    let rows = [];
+    let activeFamily = "characters";
     const $ = (id) => document.getElementById(id);
+    const esc = (value) => String(value ?? "").replace(/[&<>'"]/g, (char) => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;"})[char]);
+    const csv = (value) => value.split(",").map((part) => part.trim()).filter(Boolean);
+    const lines = (value) => value.split(/\n+/).map((line) => line.trim()).filter(Boolean);
+    const slugify = (value) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"") || "untitled-prismcade-game";
+    const rowName = (row) => row.displayName || row.name || row.id;
+    const rowStatus = (row) => row.prismcadeStatus || row.status || "candidate";
+    const rowLicense = (row) => row.licenseStatus || row.defaultLicenseStatus || "mixed_needs_per_pack_review";
+    const rowViews = (row) => row.viewModes || row.views || [];
+    const keyFor = (row) => `${row.family}:${row.id}`;
+    const isLocked = (row) => blockedStatuses.has(rowStatus(row)) || blockedLicenses.has(rowLicense(row)) || !usableStatuses.has(rowStatus(row));
+    const lockText = (row) => blockedStatuses.has(rowStatus(row)) ? `Status: ${rowStatus(row)}` : blockedLicenses.has(rowLicense(row)) ? `License: ${rowLicense(row)}` : !usableStatuses.has(rowStatus(row)) ? `Needs promotion from ${rowStatus(row)}` : "Selectable";
+    const pill = (text,tone="") => `<span class="pill ${tone}">${esc(text)}</span>`;
+
     const templateSelect = $("template");
     for (const template of templates) {
       const option = document.createElement("option");
@@ -89,100 +149,132 @@ Restart button: reset run</textarea>
       option.textContent = template.id;
       templateSelect.appendChild(option);
     }
+    templateSelect.value = "arcade-one-button";
 
-    function slugify(value) {
-      return value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "untitled-prismcade-game";
-    }
-
-    function selectedTemplate() {
-      return templates.find((template) => template.id === templateSelect.value);
-    }
-
-    function lines(value) {
-      return value.split(/\n+/).map((line) => line.trim()).filter(Boolean);
-    }
-
-    function csv(value) {
-      return value.split(",").map((part) => part.trim()).filter(Boolean);
-    }
+    function selectedTemplate() { return templates.find((template) => template.id === templateSelect.value); }
 
     function manifest() {
       const template = selectedTemplate();
       const slug = slugify($("slug").value || $("title").value);
+      const selectedRows = rows.filter((row) => selected.has(keyFor(row)));
       return {
-        schemaVersion: "prismcade-game-manifest-v0",
-        id: slug,
-        title: $("title").value.trim() || "Untitled Prismcade Game",
+        schemaVersion:"prismcade-game-manifest-v0",
+        id:slug,
+        title:$("title").value.trim() || "Untitled Prismcade Game",
         slug,
-        path: `games/${slug}`,
-        status: "contract-only",
-        arcadeRole: $("genre").value.trim() || template.role,
-        template: template.id,
-        priority: template.id === "survival-lite" ? "later" : "high",
-        description: `Generated Prismcade starter from ${template.id}.`,
-        tags: [...new Set([...template.tags, ...csv($("tags").value)])],
-        thumbnail: `apps/prismcade/assets/thumbnails/${slug}.svg`,
-        entrypoint: `games/${slug}/index.html`,
-        commands: {
-          dev: `cd games/${slug} && npm run dev`,
-          test: `cd games/${slug} && npm test`,
-          build: `cd games/${slug} && npm run build`,
-          package: `cd games/${slug} && npm run package:zip`
+        path:`games/${slug}`,
+        status:"contract-only",
+        arcadeRole:$("genre").value.trim() || template.role,
+        template:template.id,
+        priority:template.id === "survival-lite" ? "later" : "high",
+        description:`Generated Prismcade starter from ${template.id}.`,
+        tags:[...new Set([...template.tags, ...csv($("tags").value)])],
+        thumbnail:`apps/prismcade/assets/thumbnails/${slug}.svg`,
+        entrypoint:`games/${slug}/index.html`,
+        controls:lines($("controls").value).length ? lines($("controls").value) : template.controls,
+        players:{ ...template.players, modes:["generated starter"] },
+        inputSupport:{ keyboard:true, pointer:template.tags.includes("one-button"), touch:template.tags.includes("one-button"), gamepad:false },
+        platformStatus:{ web:"missing", webZip:"missing" },
+        assets:{
+          manifest:null,
+          selectedAssetIds:[...selected],
+          selectedAssetRows:selectedRows.map((row) => ({ id:row.id, family:row.family, sourcePath:row.sourcePath, status:rowStatus(row) })),
+          nextAssetNeed:"Promote selected rows into manifests and wire runtime paths before claiming game-ready."
         },
-        controls: lines($("controls").value).length ? lines($("controls").value) : template.controls,
-        players: { ...template.players, modes: ["generated starter"] },
-        inputSupport: { keyboard: true, pointer: template.tags.includes("one-button"), touch: template.tags.includes("one-button"), gamepad: false },
-        platformStatus: { web: "missing", webZip: "missing" },
-        platformHooks: {
-          localProfileReady: false,
-          localHistoryReady: false,
-          matchReceiptReady: false,
-          shareCardReady: false,
-          leaderboardExportReady: false,
-          hostedLeaderboardReady: false
-        },
-        assets: {
-          manifest: null,
-          selectedAssetIds: csv($("assets").value),
-          nextAssetNeed: "Run through Pixel Forge / pixellab.ai, save prompts/raw/cleaned/metadata, then validate."
-        },
-        receipts: [],
-        nextActions: [
-          "Create game folder from selected template.",
-          "Wire selected assets.",
-          "Run npm test and package zip.",
-          "Add receipt before public release claim."
-        ]
+        receipts:[],
+        nextActions:["Create game folder from selected template.","Wire selected assets.","Run tests and package zip.","Add receipt before public release claim."]
       };
     }
 
-    function render() {
+    function renderSelected() {
+      const picked = rows.filter((row) => selected.has(keyFor(row)));
+      $("selectedAssets").innerHTML = picked.length ? picked.map((row) => pill(keyFor(row),"good")).join("") : pill("No assets selected yet","warn");
       $("output").textContent = JSON.stringify(manifest(), null, 2);
     }
 
-    $("title").addEventListener("input", () => {
-      $("slug").value = slugify($("title").value);
-      render();
-    });
-    for (const id of ["template", "slug", "genre", "tags", "controls", "assets"]) $(id).addEventListener("input", render);
+    function filterRows() {
+      const search = $("search").value.trim().toLowerCase();
+      const view = $("view").value;
+      const status = $("status").value;
+      const role = $("role").value;
+      return rows.filter((row) => {
+        if (row.family !== activeFamily) return false;
+        if (view !== "all" && rowViews(row).length && !rowViews(row).includes(view)) return false;
+        if (status !== "all" && rowStatus(row) !== status) return false;
+        if (role !== "all" && !(row.roles || []).includes(role)) return false;
+        if ($("usableOnly").checked && isLocked(row)) return false;
+        if (!$("includeLocked").checked && isLocked(row)) return false;
+        if (search) {
+          const haystack = [row.id,rowName(row),row.sourcePath,rowStatus(row),rowLicense(row),...(row.roles || []),...rowViews(row),...(row.tags || [])].join(" ").toLowerCase();
+          if (!haystack.includes(search)) return false;
+        }
+        return true;
+      });
+    }
 
-    $("copy").addEventListener("click", async () => {
-      await navigator.clipboard.writeText(JSON.stringify(manifest(), null, 2));
-      $("copy").textContent = "Copied";
-      setTimeout(() => $("copy").textContent = "Copy JSON", 900);
-    });
+    function renderFilters() {
+      const views = [...new Set(rows.flatMap(rowViews))].sort();
+      const statuses = [...new Set(rows.map(rowStatus))].sort();
+      const roles = [...new Set(rows.flatMap((row) => row.roles || []))].sort();
+      $("view").innerHTML = `<option value="all">All views</option>` + views.map((view) => `<option value="${esc(view)}">${esc(view)}</option>`).join("");
+      $("status").innerHTML = `<option value="all">All statuses</option>` + statuses.map((status) => `<option value="${esc(status)}">${esc(status)}</option>`).join("");
+      $("role").innerHTML = `<option value="all">All roles</option>` + roles.map((role) => `<option value="${esc(role)}">${esc(role)}</option>`).join("");
+    }
 
-    $("download").addEventListener("click", () => {
-      const blob = new Blob([JSON.stringify(manifest(), null, 2) + "\n"], { type: "application/json" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `${manifest().slug}.prismcade-manifest.json`;
-      a.click();
-      URL.revokeObjectURL(a.href);
-    });
+    function renderBrowser() {
+      const usable = rows.filter((row) => !isLocked(row)).length;
+      $("stats").innerHTML = [pill(`${rows.length} rows`,"accent"), pill(`${usable} selectable`,"good"), pill(`${rows.length - usable} cleanup`,"warn")].join("");
+      $("tabs").innerHTML = Object.keys(families).map((family) => {
+        const familyRows = rows.filter((row) => row.family === family);
+        const familyUsable = familyRows.filter((row) => !isLocked(row)).length;
+        return `<button type="button" data-family="${family}" data-active="${activeFamily === family}">${esc(family)} ${familyUsable}/${familyRows.length}</button>`;
+      }).join("");
+      document.querySelectorAll("[data-family]").forEach((button) => button.addEventListener("click", () => { activeFamily = button.dataset.family; renderBrowser(); }));
+      const shown = filterRows();
+      $("grid").innerHTML = shown.length ? shown.map((row) => {
+        const locked = isLocked(row);
+        const key = keyFor(row);
+        return `<article class="card ${locked ? "locked" : ""} ${selected.has(key) ? "selected" : ""}">
+          <div class="row">${pill(row.family,"accent")}${pill(rowStatus(row), locked ? "warn" : "good")}${pill(rowLicense(row), locked ? "warn" : "good")}</div>
+          <h3>${esc(rowName(row))}</h3>
+          <div class="meta">${esc(row.sourcePath || row.sourceInventory || "registry category")}</div>
+          <div class="row">${(rowViews(row).slice(0,4).map((view) => pill(view)).join("") || pill("all views"))}</div>
+          <div class="row">${((row.roles || []).slice(0,4).map((role) => pill(role)).join("") || pill("role pending"))}</div>
+          <p class="hint">${esc(lockText(row))}</p>
+          <div class="actions"><button type="button" data-asset="${esc(key)}" ${locked ? "disabled" : ""}>${selected.has(key) ? "Remove" : "Select"}</button></div>
+        </article>`;
+      }).join("") : `<section class="error">No matching asset rows.</section>`;
+      document.querySelectorAll("[data-asset]").forEach((button) => button.addEventListener("click", () => {
+        const key = button.dataset.asset;
+        if (selected.has(key)) selected.delete(key); else selected.add(key);
+        renderSelected();
+        renderBrowser();
+      }));
+      renderSelected();
+    }
 
-    templateSelect.value = "arcade-one-button";
-    render();
+    async function loadRows() {
+      const loaded = [];
+      for (const [family,fileName] of Object.entries(families)) {
+        const response = await fetch(`../../data/prismcade/asset-rows/${fileName}`);
+        if (!response.ok) throw new Error(`Could not load ${fileName}: ${response.status}`);
+        const file = await response.json();
+        for (const row of [...(file.entries || []), ...(file.priorityRows || []), ...(file.categories || [])]) {
+          loaded.push({ ...row, family, defaultLicenseStatus:file.defaultLicenseStatus, sourceInventory:file.sourceInventory || (file.sourceInventories || []).join(", ") });
+        }
+      }
+      rows = loaded;
+      renderFilters();
+      renderBrowser();
+    }
+
+    $("title").addEventListener("input", () => { $("slug").value = slugify($("title").value); renderSelected(); });
+    for (const id of ["template","slug","genre","tags","controls"]) $(id).addEventListener("input", renderSelected);
+    for (const id of ["search","view","status","role","usableOnly","includeLocked"]) $(id).addEventListener("input", renderBrowser);
+    $("copy").addEventListener("click", async () => { await navigator.clipboard.writeText(JSON.stringify(manifest(), null, 2)); $("copy").textContent = "Copied"; setTimeout(() => $("copy").textContent = "Copy JSON", 900); });
+    $("download").addEventListener("click", () => { const blob = new Blob([JSON.stringify(manifest(), null, 2) + "\n"], { type:"application/json" }); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `${manifest().slug}.prismcade-manifest.json`; a.click(); URL.revokeObjectURL(a.href); });
+    renderSelected();
+    loadRows().catch((error) => { $("assetError").hidden = false; $("assetError").textContent = `${error.message}. Serve the repo root over HTTP and open /apps/prismcade-creator/.`; });
   </script>
 </body>
 </html>
