@@ -2,7 +2,7 @@
 
 Status: **foundation slice**
 
-Prismcade is the Prismtek Arcade product loop: a retro pixel-art, browser-first arcade platform where small original games can be cataloged, remixed, asset-backed, packaged, and eventually published with shared profiles, portable avatars, match receipts, share cards, and leaderboard-ready exports.
+Prismcade is the Prismtek Arcade product loop: a retro pixel-art, browser-first arcade platform where small original games can be cataloged, remixed, asset-backed, packaged, and eventually published with shared profiles, portable avatars, reusable animation templates, match receipts, share cards, and leaderboard-ready exports.
 
 This is not a mandate to finish the largest game first. Prismcade should make many small games easy to ship before large-world showcases absorb attention.
 
@@ -15,6 +15,7 @@ Prismcade should feel like an indie Roblox for retro/pixel games, but scoped aro
 - friend-ready pick-up-and-play sessions;
 - one portable created character identity;
 - created and earned avatar cosmetics that work across many games;
+- template-bound animation rigs that let compatible characters reuse the same movement and action sets;
 - shared player progression, clout, ranks, and leaderboard receipts;
 - local-first game loops;
 - reusable templates;
@@ -32,7 +33,8 @@ Generic game catalogs are good at discovery and downloads, but Prismcade needs t
 2. The same created avatar should work across many game formats.
 3. Leaderboards, match receipts, ranks, and clout should make every small game matter.
 4. Cosmetics should be reusable platform inventory, not one-off per-game art dumps.
-5. Games should be tiny, readable, social, and replayable before they are huge.
+5. A sprite style should be animated once, then reused by any character that matches its dimensions, anchors, view family, and layer rules.
+6. Games should be tiny, readable, social, and replayable before they are huge.
 
 The platform is successful when a player says: **this is my Prismcade character, these are my friends, these are my scores, and I can bring my look into the next game.**
 
@@ -54,23 +56,26 @@ Avatar source assets should be generated and validated as a reusable kit instead
 - legs/bottom layer;
 - shoes/accessory layer;
 - palette slots;
+- animation template ID;
 - animation map;
+- anchor map;
 - view map;
 - provenance receipt.
 
 If a game cannot support the full avatar, it should support a fallback representation such as portrait, head icon, simplified mini avatar, or color/palette identity.
 
-See `docs/prismcade/PORTABLE_AVATAR_CONTRACT.md` for the contract.
+See `docs/prismcade/PORTABLE_AVATAR_CONTRACT.md` and `docs/prismcade/REUSABLE_ANIMATION_TEMPLATE.md` for the contracts.
 
 ## Priority order
 
 1. **Platform loop:** catalog, manifests, validation, asset index, publishing docs.
 2. **Portable identity:** profile, avatar contract, inventory, cosmetics, view support, receipts.
-3. **Focused showcase games:** Pixel Fruit Arena, Spin Street Showdown, TamerNet, and the migrated quick-play arcade games.
-4. **Creator MVP:** template picker, metadata editor, asset picker, manifest preview/export, avatar compatibility flags.
-5. **Asset generation workflow:** Pixel Forge plus pixellab.ai/LibreSprite curation.
-6. **Social/leaderboard loop:** friends, parties, local receipts, hosted leaderboard bridge, share cards.
-7. **Large showcases:** Prismwilds / Wildlands-style survival after the loop is usable.
+3. **Reusable animation templates:** shared dimensions, anchors, layer rules, animation slots, and game compatibility levels.
+4. **Focused showcase games:** Pixel Fruit Arena, Spin Street Showdown, TamerNet, and the migrated quick-play arcade games.
+5. **Creator MVP:** template picker, metadata editor, asset picker, manifest preview/export, avatar compatibility flags.
+6. **Asset generation workflow:** Pixel Forge plus pixellab.ai/LibreSprite curation.
+7. **Social/leaderboard loop:** friends, parties, local receipts, hosted leaderboard bridge, share cards.
+8. **Large showcases:** Prismwilds / Wildlands-style survival after the loop is usable.
 
 ## Current active game roles
 
@@ -94,7 +99,8 @@ See `docs/prismcade/PORTABLE_AVATAR_CONTRACT.md` for the contract.
 - No online ranked system until local match receipts are stable.
 - No asset dumps without provenance.
 - No replacing the existing Pixel Forge or pixel asset pipeline with a duplicate system.
-- No game may claim full Prismcade compatibility unless it declares profile, avatar, cosmetics, input, receipt, and leaderboard support levels.
+- No game may claim full Prismcade compatibility unless it declares profile, avatar, cosmetics, input, receipt, leaderboard, and animation-template support levels.
+- No portable avatar may bypass the animation template contract unless it is marked as a custom/non-portable character.
 
 ## Near-term implementation slices
 
@@ -103,7 +109,8 @@ See `docs/prismcade/PORTABLE_AVATAR_CONTRACT.md` for the contract.
 3. Add `apps/prismcade/` as a static catalog/launcher.
 4. Add `apps/prismcade-creator/` as a manifest creator MVP.
 5. Add `packages/game-assets/manifests/prismcade-assets.json`.
-6. Add `docs/prismcade/PORTABLE_AVATAR_CONTRACT.md` and `data/prismcade/avatar-view-contract.json`.
-7. Add Pixel Fruit Arena catalog polish and manifest-first match receipt hooks.
-8. Add shared profile/avatar/inventory stubs before hosted leaderboards.
-9. Add share-card/result-receipt contracts before hosted leaderboards.
+6. Add `docs/prismcade/PORTABLE_AVATAR_CONTRACT.md` and `data/prismcade/view-contract.txt`.
+7. Add `docs/prismcade/REUSABLE_ANIMATION_TEMPLATE.md` and animation template validation.
+8. Add Pixel Fruit Arena catalog polish and manifest-first match receipt hooks.
+9. Add shared profile/avatar/inventory stubs before hosted leaderboards.
+10. Add share-card/result-receipt contracts before hosted leaderboards.
