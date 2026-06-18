@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "prismcade-bulk-asset-source-map-v0",
+  "purpose": "Deep intake map for the large Prismtek Apps asset surface before assets are normalized into individual Prismcade template assets.",
+  "repoSizeObservation": {
+    "source": "GitHub repository metadata",
+    "observedSizeKb": 2214444,
+    "observedSizeNote": "Repository size is roughly 2.1 GiB. Binary-heavy paths and generated packs need aggregate scanning plus staged extraction."
+  },
+  "knownInventories": [
+    {
+      "id": "game-assets-reusable-library",
+      "sourcePath": "game-assets/README.md",
+      "reportedTotals": { "itemsOrPacks": 252, "sizeMb": 146.35, "categories": 7 },
+      "categoryRollup": [
+        { "id": "game-assets-characters", "sourcePath": "game-assets/characters/", "kind": "character_template", "reportedItems": 102, "reportedSizeMb": 33.54 },
+        { "id": "game-assets-tilesets-environment", "sourcePath": "game-assets/tilesets-environment/", "kind": "world_tileset", "reportedItems": 68, "reportedSizeMb": 66.8 },
+        { "id": "game-assets-vfx", "sourcePath": "game-assets/vfx/", "kind": "attack_effect" },
+        { "id": "game-assets-audio", "sourcePath": "game-assets/audio/", "kind": "audio_template" },
+        { "id": "game-assets-ui", "sourcePath": "game-assets/ui/", "kind": "ui_template" },
+        { "id": "game-assets-props-items", "sourcePath": "game-assets/props-items/", "kind": "projectile_template" },
+        { "id": "game-assets-models-3d", "sourcePath": "game-assets/models-3d/", "kind": "engine_template" }
+      ]
+    },
+    { "id": "game-assets-character-sprite-packs-readme", "sourcePath": "game-assets/characters/README.md", "packs": ["Normal_Hair_Guy.zip", "Female_Character_Blue_Hoodie.zip", "Buddy (2).zip", "Buddy_no_heart.zip", "Ponytail_Guy.zip", "Crazy_Hair_Guy.zip", "Crazy_Hair_Guy_Fixed.zip"] },
+    { "id": "pixel-fruit-arena-generated-asset-catalog", "sourcePath": "games/pixel-fruit-arena/src/assets/generatedAssetCatalog.js", "reportedCounts": { "bodies": 5, "hair": 8, "clothing": 8, "vfx": 8, "tilesets": 1, "stageBackgrounds": 0, "weapons": 0, "items": 0, "fruitIcons": 0, "props": 0, "ui": 0 } },
+    { "id": "pixel-fruit-arena-uploaded-asset-manifest", "sourcePath": "games/pixel-fruit-arena/assets/uploaded/asset-manifest.json", "packs": ["items_7.png", "RPG_Weapons.png / RPG_Weapons.aseprite", "Hairstyle.gif", "water-example.tmx", "rpgiab_icon_pack_v1.3.zip", "Elementals_ground_monk_FREE_v1.3.1.zip", "32rogues-0.5.0.zip", "Clothes_snacks Asset Pack.zip", "Clothes.zip"] },
+    { "id": "reference-engine-and-asset-registry", "sourcePath": "data/reference-games/" }
+  ],
+  "nextInventoryPasses": [
+    "Convert all game-assets/README.md rows into individual template-asset records.",
+    "Enumerate binary-only paths using a local checkout or Git tree dump.",
+    "Extract Pixel Fruit Arena VFX and hit/projectile effects into an effect registry.",
+    "Convert character ZIPs into character_identity and view-template candidates."
+  ]
+}
