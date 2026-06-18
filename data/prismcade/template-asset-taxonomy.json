@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "prismcade-template-asset-taxonomy-v0",
+  "purpose": "Classify reusable Prismtek Apps engines, characters, effects, weapons, tilesets, UI, audio, and starters as Prismcade template assets.",
+  "assetKinds": [
+    { "id": "engine_template", "displayName": "Engine Template" },
+    { "id": "game_starter", "displayName": "Game Starter" },
+    { "id": "character_identity", "displayName": "Character Identity" },
+    { "id": "character_template", "displayName": "Character Template" },
+    { "id": "animation_template", "displayName": "Animation Template" },
+    { "id": "attack_effect", "displayName": "Attack Effect" },
+    { "id": "hit_effect", "displayName": "Hit Effect" },
+    { "id": "projectile_template", "displayName": "Projectile Template" },
+    { "id": "weapon_template", "displayName": "Weapon Template" },
+    { "id": "world_tileset", "displayName": "World / Tileset Template" },
+    { "id": "ui_template", "displayName": "UI / HUD Template" },
+    { "id": "audio_template", "displayName": "Audio Template" }
+  ],
+  "licenseStatuses": ["first_party", "first_party_generated", "user_provided_needs_review", "external_reference_only", "commercial_allowed_with_attribution", "personal_only_do_not_ship", "mixed_needs_per_pack_review", "unknown_do_not_ship"],
+  "prismcadeStatuses": ["candidate", "reference_only", "template_ready", "playtest_ready", "game_ready", "blocked_license", "needs_cleanup", "needs_manifest"],
+  "promotionRules": [
+    "No asset becomes game_ready without source and rights metadata.",
+    "Reference-only assets can guide structure, timing, layout, and categories but cannot be used as shipped runtimes until rights allow it.",
+    "Binary-heavy roots must be inventoried by aggregate map before row-level normalization."
+  ]
+}
