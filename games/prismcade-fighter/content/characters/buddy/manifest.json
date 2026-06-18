@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "prismcade-fighter-character-v0",
+  "id": "buddy",
+  "displayName": "Buddy",
+  "archetype": "helper-rushdown",
+  "spriteSize": [64, 64],
+  "health": 1000,
+  "meterMax": 300,
+  "movement": {
+    "walkSpeed": 2.6,
+    "dashSpeed": 6.8,
+    "jumpVelocity": -9.5,
+    "airControl": 0.72
+  },
+  "avatarSupport": {
+    "level": "full_view",
+    "views": ["side"],
+    "fallback": "portrait",
+    "supportsCosmetics": true,
+    "supportsPaletteSlots": true,
+    "supportsLayeredBuild": false
+  },
+  "files": {
+    "moves": "moves.json",
+    "animations": "animations.json",
+    "hitboxes": "hitboxes.json",
+    "palettes": "palettes.json"
+  }
+}
