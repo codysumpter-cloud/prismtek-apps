@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "prismcade-world-item-asset-intake-v0",
+  "sourceCommit": "6e7892e29113c06cbdc77a952292f292ed6d189e",
+  "status": "root-upload-mapped-for-organization",
+  "notes": [
+    "These assets were uploaded directly to the repository root after the UI/font batch.",
+    "This manifest maps the root files into intended game-assets categories for a later binary-aware git mv cleanup.",
+    "Some files appear to duplicate assets already listed in game-assets; verify before moving or keep the newest source with a receipt."
+  ],
+  "fonts": [
+    { "id": "monogram-bitmap-json", "currentPath": "monogram-bitmap.json", "targetPath": "game-assets/fonts/monogram/monogram-bitmap.json", "usage": ["bitmap-font-map", "retro-ui-font", "pico-style-ui"], "status": "needs-relocation-and-license-receipt" },
+    { "id": "monogram-bitmap-png", "currentPath": "monogram-bitmap.png", "targetPath": "game-assets/fonts/monogram/monogram-bitmap.png", "usage": ["bitmap-font-sheet", "retro-ui-font"], "status": "needs-relocation-and-license-receipt" },
+    { "id": "monogram-regular-ttf", "currentPath": "monogram.ttf", "targetPath": "game-assets/fonts/monogram/monogram.ttf", "usage": ["ui-font", "dialog-font", "hud-font"], "status": "needs-relocation-and-license-receipt" },
+    { "id": "monogram-extended-italic-ttf", "currentPath": "monogram-extended-italic.ttf", "targetPath": "game-assets/fonts/monogram/monogram-extended-italic.ttf", "usage": ["ui-font-variant", "dialog-font", "stylized-hud-font"], "status": "needs-relocation-and-license-receipt" },
+    { "id": "monogram-pico8-source", "currentPath": "monogram.p8", "targetPath": "game-assets/fonts/monogram/monogram.p8", "usage": ["font-source", "bitmap-font-reference"], "status": "needs-relocation-and-license-receipt" },
+    { "id": "monogram-source-zip", "currentPath": "monogram.zip", "targetPath": "game-assets/fonts/monogram/monogram.zip", "usage": ["font-source-archive", "license-source"], "status": "needs-relocation-and-license-receipt" }
+  ],
+  "ui": [
+    { "id": "pixel-ui-pack-3", "currentPath": "Pixel UI pack 3.zip", "targetPath": "game-assets/ui/source-packs/Pixel UI pack 3.zip", "usage": ["pixel-ui", "menus", "panels", "buttons"], "status": "needs-relocation-and-license-receipt" }
+  ],
+  "itemsAndProps": [
+    { "id": "rpg-item-pack-rar", "currentPath": "16x16 RPG Item Pack.rar", "targetPath": "game-assets/props-items/16x16 RPG Item Pack.rar", "usage": ["inventory-icons", "pickup-icons", "item-sheets"], "status": "needs-relocation-and-license-receipt" },
+    { "id": "rpg-item-pack-zip", "currentPath": "16x16 RPG Item Pack.zip", "targetPath": "game-assets/props-items/16x16 RPG Item Pack.zip", "usage": ["inventory-icons", "pickup-icons", "item-sheets"], "status": "needs-relocation-and-license-receipt" },
+    { "id": "clothes-pack-root", "currentPath": "Clothes.zip", "targetPath": "game-assets/props-items/Clothes.zip", "usage": ["avatar-clothes", "character-creator-outfits", "cosmetics"], "status": "needs-relocation-and-license-receipt" },
+    { "id": "clothes-snacks-pack-root", "currentPath": "Clothes_snacks Asset Pack.zip", "targetPath": "game-assets/props-items/Clothes_snacks Asset Pack.zip", "usage": ["avatar-clothes", "snack-items", "shop-inventory"], "status": "needs-relocation-and-license-receipt" },
+    { "id": "food-png-root", "currentPath": "Food.png", "targetPath": "game-assets/props-items/Food.png", "usage": ["food-icons", "healing-items", "shop-items"], "status": "needs-relocation-and-license-receipt" },
+    { "id": "free-pixel-food-root", "currentPath": "FreePixelFood.zip", "targetPath": "game-assets/props-items/FreePixelFood.zip", "usage": ["food-icons", "healing-items", "survival-food"], "status": "needs-relocation-and-license-receipt" },
+    { "id": "rpg-weapons-root", "currentPath": "RPG_Weapons.png", "targetPath": "game-assets/props-items/RPG_Weapons.png", "usage": ["weapon-icons", "pickup-weapons", "loadout-ui"], "status": "needs-relocation-and-license-receipt" },
+    { "id": "items-7-root", "currentPath": "items_7.png", "targetPath": "game-assets/props-items/items_7.png", "usage": ["inventory-icons", "pickup-icons", "stage-props"], "status": "needs-relocation-and-license-receipt" }
+  ],
+  "characters": [
+    { "id": "blue-witch", "currentPath": "Blue Witch.zip", "targetPath": "game-assets/characters/Blue Witch.zip", "usage": ["npc-template", "caster-character", "enemy-or-avatar-reference"], "status": "needs-relocation-and-license-receipt" },
+    { "id": "elementals-water-priestess", "currentPath": "Elementals_water_priestess_FREE_v1.1.zip", "targetPath": "game-assets/characters/Elementals_water_priestess_FREE_v1.1.zip", "usage": ["caster-character", "water-element-reference", "combat-animation-reference"], "status": "needs-relocation-and-license-receipt" },
+    { "id": "elementals-wind-hashashin", "currentPath": "elementals_wind_hashashin_FREE_v1.1.zip", "targetPath": "game-assets/characters/elementals_wind_hashashin_FREE_v1.1.zip", "usage": ["assassin-character", "wind-element-reference", "combat-animation-reference"], "status": "needs-relocation-and-license-receipt" },
+    { "id": "lively-npcs", "currentPath": "Lively_NPCs_v3.1.zip", "targetPath": "game-assets/characters/Lively_NPCs_v3.1.zip", "usage": ["town-npcs", "hub-population", "creator-npc-library"], "status": "needs-relocation-and-license-receipt" },
+    { "id": "monster-pack-1", "currentPath": "Monster Pack 1.7z", "targetPath": "game-assets/characters/Monster Pack 1.7z", "usage": ["enemy-mobs", "monster-library", "rpg-encounters"], "status": "needs-relocation-and-license-receipt" },
+    { "id": "pixel-adventure-1-root", "currentPath": "Pixel Adventure 1.zip", "targetPath": "game-assets/characters/Pixel Adventure 1.zip", "usage": ["platformer-character-reference", "enemy-template", "starter-game-assets"], "status": "needs-relocation-and-license-receipt" }
+  ],
+  "worldAndTiles": [
+    { "id": "tiny-texture-pack-2", "currentPath": "SBS - Tiny Texture Pack 2 - 128x128.rar", "targetPath": "game-assets/tilesets-environment/SBS - Tiny Texture Pack 2 - 128x128.rar", "usage": ["world-textures", "tile-reference", "retro-world-materials"], "status": "needs-relocation-and-license-receipt" },
+    { "id": "water-example-tmx-root", "currentPath": "water-example.tmx", "targetPath": "game-assets/tilesets-environment/water-example.tmx", "usage": ["water-map-reference", "tilemap-test", "world-builder-example"], "status": "needs-relocation-and-license-receipt" },
+    { "id": "water-tiles-auto-tsx", "currentPath": "watertiles-auto.tsx", "targetPath": "game-assets/tilesets-environment/watertiles-auto.tsx", "usage": ["water-tileset-source", "tilemap-autotile-reference"], "status": "needs-relocation-and-license-receipt" }
+  ],
+  "vfx": [
+    { "id": "super-pixel-effects-gigapack-root", "currentPath": "Super Pixel Effects Gigapack (Free Version) v2.4.0.zip", "targetPath": "game-assets/vfx/Super Pixel Effects Gigapack (Free Version) v2.4.0.zip", "usage": ["hit-effects", "attack-effects", "ability-vfx", "game-card-vfx"], "status": "needs-relocation-and-license-receipt" }
+  ],
+  "misc": [
+    { "id": "32rogues-0-4-root", "currentPath": "32rogues-0.4.0.zip", "targetPath": "game-assets/misc/32rogues-0.4.0.zip", "usage": ["roguelike-icons", "tiles", "prototype-library"], "status": "needs-deduplication-and-license-receipt" },
+    { "id": "32rogues-0-5-root", "currentPath": "32rogues-0.5.0.zip", "targetPath": "game-assets/misc/32rogues-0.5.0.zip", "usage": ["roguelike-icons", "tiles", "prototype-library"], "status": "needs-deduplication-and-license-receipt" }
+  ]
+}
