@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "prismcade-row-level-vfx-assets-v0",
+  "sourceInventory": "game-assets/README.md#vfx",
+  "summary": { "items": 24, "sizeMb": 21.97 },
+  "defaultLicenseStatus": "mixed_needs_per_pack_review",
+  "entries": [
+    { "id": "pfa-runtime-vfx", "name": "Pixel Fruit Arena Runtime VFX", "sourcePath": "games/pixel-fruit-arena/src/ui/renderer.js", "size": "code", "category": "runtime_vfx", "tags": ["impact", "ability", "hud"], "licenseStatus": "first_party", "status": "candidate" },
+    { "id": "acid-vfx-01-02", "name": "Acid VFX 01-02", "sourcePath": "game-assets/vfx/Acid VFX 01 - 02.rar", "size": "16 KB", "category": "elemental_vfx", "tags": ["acid"], "licenseStatus": "mixed_needs_per_pack_review", "status": "candidate" },
+    { "id": "dark-vfx-01-02", "name": "Dark VFX 01-02", "sourcePath": "game-assets/vfx/Dark VFX 01 - 02.rar", "size": "21 KB", "category": "elemental_vfx", "tags": ["dark", "shadow"], "licenseStatus": "mixed_needs_per_pack_review", "status": "candidate" },
+    { "id": "earth-effect-01", "name": "Earth Effect 01", "sourcePath": "game-assets/vfx/Earth Effect 01.rar", "size": "6 KB", "category": "elemental_vfx", "tags": ["earth"], "licenseStatus": "mixed_needs_per_pack_review", "status": "candidate" },
+    { "id": "fireballs-weenter", "name": "Fireballs by Weentermakesgames", "sourcePath": "game-assets/vfx/Fireballs by Weentermakesgames.zip", "size": "4.25 MB", "category": "moving_vfx", "tags": ["fire", "impact"], "licenseStatus": "mixed_needs_per_pack_review", "status": "candidate" },
+    { "id": "hit-effect-01", "name": "Hit Effect 01", "sourcePath": "game-assets/vfx/Hit Effect 01.rar", "size": "11 KB", "category": "impact_vfx", "tags": ["hit", "flash"], "licenseStatus": "mixed_needs_per_pack_review", "status": "candidate" },
+    { "id": "ice-effect-01", "name": "Ice Effect 01", "sourcePath": "game-assets/vfx/Ice Effect 01.rar", "size": "50 KB", "category": "elemental_vfx", "tags": ["ice"], "licenseStatus": "mixed_needs_per_pack_review", "status": "candidate" },
+    { "id": "pixel-fire-pack", "name": "Pixel Fire Asset Pack v1.2", "sourcePath": "game-assets/vfx/Pixel fire asset pack v1.2.zip", "size": "7.82 MB", "category": "elemental_vfx", "tags": ["fire", "burst", "environment"], "licenseStatus": "mixed_needs_per_pack_review", "status": "candidate" },
+    { "id": "smear-vfx-01", "name": "Smear VFX 01", "sourcePath": "game-assets/vfx/Smear VFX 01.rar", "size": "5 KB", "category": "motion_vfx", "tags": ["smear", "dash", "slash"], "licenseStatus": "mixed_needs_per_pack_review", "status": "candidate" },
+    { "id": "super-pixel-effects-gigapack-free", "name": "Super Pixel Effects Gigapack Free v2.4.0", "sourcePath": "game-assets/vfx/Super Pixel Effects Gigapack (Free Version) v2.4.0.zip", "size": "8.46 MB", "category": "vfx_collection", "tags": ["impact", "magic", "burst"], "licenseStatus": "mixed_needs_per_pack_review", "status": "candidate" },
+    { "id": "thunder-effect-01", "name": "Thunder Effect 01", "sourcePath": "game-assets/vfx/Thunder Effect 01.rar", "size": "38 KB", "category": "elemental_vfx", "tags": ["electric"], "licenseStatus": "mixed_needs_per_pack_review", "status": "candidate" },
+    { "id": "water-effect-2", "name": "Water Effect 2", "sourcePath": "game-assets/vfx/Water Effect 2.rar", "size": "59 KB", "category": "elemental_vfx", "tags": ["water"], "licenseStatus": "mixed_needs_per_pack_review", "status": "candidate" },
+    { "id": "clean-calm-water-animation", "name": "Clean Calm Water Animation", "sourcePath": "game-assets/vfx/clean-calm-water-animation.png", "size": "2 KB", "category": "environment_loop", "tags": ["water", "loop"], "licenseStatus": "mixed_needs_per_pack_review", "status": "candidate" },
+    { "id": "clouds", "name": "Clouds", "sourcePath": "game-assets/vfx/clouds.rar", "size": "100 KB", "category": "background_vfx", "tags": ["sky", "cloud"], "licenseStatus": "mixed_needs_per_pack_review", "status": "candidate" },
+    { "id": "ocean-clouds-background", "name": "Ocean and Clouds Free Pixel Art Backgrounds", "sourcePath": "game-assets/vfx/ocean-and-clouds-free-pixel-art-backgrounds.zip", "size": "837 KB", "category": "background_vfx", "tags": ["ocean", "cloud", "background"], "licenseStatus": "mixed_needs_per_pack_review", "status": "candidate" }
+  ]
+}
