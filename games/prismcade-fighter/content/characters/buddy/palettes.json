@@ -1,0 +1,16 @@
+{
+  "default": {
+    "skin": "#f3c9a8",
+    "hair": "#3b2417",
+    "primary": "#42d6d6",
+    "secondary": "#143a4a",
+    "accent": "#fff07a"
+  },
+  "arcade": {
+    "skin": "#f3c9a8",
+    "hair": "#2b1a12",
+    "primary": "#6dfcff",
+    "secondary": "#2b4cff",
+    "accent": "#ff5ea8"
+  }
+}
