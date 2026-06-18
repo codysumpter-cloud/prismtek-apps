@@ -1,0 +1,7 @@
+{
+  "basic": { "input": "x", "startup": 4, "active": 3, "recovery": 8, "power": 25 },
+  "strong": { "input": "y", "startup": 6, "active": 4, "recovery": 12, "power": 45 },
+  "popUp": { "input": "down+y", "startup": 8, "active": 4, "recovery": 18, "power": 65 },
+  "skill": { "input": "forward+x", "startup": 10, "active": 8, "recovery": 20, "power": 85 },
+  "bigSkill": { "input": "forward+y", "meterCost": 100, "startup": 12, "power": 220 }
+}
