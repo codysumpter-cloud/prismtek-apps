@@ -11,11 +11,13 @@ This map exists because Prismcade already has many usable asset packs in `prismt
 - `games/pixel-fruit-arena/assets/uploaded/asset-manifest.json`
 - `games/pixel-fruit-arena/src/assets/assetManifest.js`
 - `games/prismwilds-echo-dominion/data/assets.json`
+- `data/prismcade/ui-font-asset-intake.json`
 
-The machine-readable Prismcade-facing map now lives at:
+The machine-readable Prismcade-facing maps now live at:
 
 ```txt
- data/prismcade/repo-asset-packs.json
+data/prismcade/repo-asset-packs.json
+data/prismcade/ui-font-asset-intake.json
 ```
 
 ## Character / avatar packs
@@ -50,6 +52,27 @@ The machine-readable Prismcade-facing map now lives at:
 | Fruit+ | `game-assets/props-items/Fruit+.png` | Fruit power icons, food/inventory preview |
 | Water+ | `game-assets/props-items/Water+.png` | Resource icons, water UI, survival HUD |
 
+## UI / font intake assets
+
+The June 18 direct upload commit added BoldPixels font assets, UI kits, panel/menu archives, icon/button packs, and controller prompt sheets to the repo root. They are mapped in:
+
+```txt
+data/prismcade/ui-font-asset-intake.json
+docs/prismcade/UI_FONT_ASSET_INTAKE.md
+```
+
+These should be physically relocated into:
+
+```txt
+game-assets/fonts/
+game-assets/ui/source-packs/
+game-assets/ui/icons/
+game-assets/ui/buttons/
+game-assets/ui/controller-prompts/
+```
+
+The incomplete `Helton Yan's Pixel Combat.zip.download` file should be replaced with the real archive or deleted.
+
 ## VFX assets
 
 | Asset | Repo path | Prismcade use |
@@ -74,3 +97,4 @@ The locker lets the user pick a real repo asset pack. It includes the chosen pac
 3. Unpack reviewed ZIPs into normalized runtime folders instead of linking directly to source ZIPs.
 4. Add `assetPackId` and `avatarSupport` fields to `data/prismcade/game-manifests.json`.
 5. Replace CSS placeholder avatars with resolved runtime sprites where available.
+6. Move the root-level UI/font upload files into the target `game-assets/` folders using a binary-aware cleanup pass.
