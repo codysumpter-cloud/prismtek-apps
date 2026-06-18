@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prismtek.dev/schemas/prismcade-animation-manifest.schema.json",
+  "title": "Prismcade Animation Manifest",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "characterId",
+    "frameWidth",
+    "frameHeight",
+    "anchor",
+    "baselineY",
+    "requiredAnimations",
+    "animations"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "prismcade-animation-manifest-v0" },
+    "characterId": { "type": "string", "minLength": 1 },
+    "frameWidth": { "type": "integer", "minimum": 1 },
+    "frameHeight": { "type": "integer", "minimum": 1 },
+    "anchor": { "$ref": "#/$defs/point" },
+    "baselineY": { "type": "number" },
+    "requiredAnimations": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "animations": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/animation" }
+    }
+  },
+  "$defs": {
+    "point": {
+      "type": "object",
+      "required": ["x", "y"],
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" }
+      },
+      "additionalProperties": false
+    },
+    "rect": {
+      "type": "object",
+      "required": ["x", "y", "width", "height"],
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "width": { "type": "number", "exclusiveMinimum": 0 },
+        "height": { "type": "number", "exclusiveMinimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "animation": {
+      "type": "object",
+      "required": [
+        "id",
+        "source",
+        "frameWidth",
+        "frameHeight",
+        "frameCount",
+        "columns",
+        "rows",
+        "fps",
+        "loop",
+        "anchor",
+        "baselineY",
+        "hitbox",
+        "hurtbox",
+        "tags"
+      ],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "source": { "type": "string", "minLength": 1 },
+        "frameWidth": { "type": "integer", "minimum": 1 },
+        "frameHeight": { "type": "integer", "minimum": 1 },
+        "frameCount": { "type": "integer", "minimum": 1 },
+        "columns": { "type": "integer", "minimum": 1 },
+        "rows": { "type": "integer", "minimum": 1 },
+        "fps": { "type": "number", "exclusiveMinimum": 0, "maximum": 60 },
+        "loop": { "type": "boolean" },
+        "anchor": { "$ref": "#/$defs/point" },
+        "baselineY": { "type": "number" },
+        "hitbox": { "$ref": "#/$defs/rect" },
+        "hurtbox": { "$ref": "#/$defs/rect" },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

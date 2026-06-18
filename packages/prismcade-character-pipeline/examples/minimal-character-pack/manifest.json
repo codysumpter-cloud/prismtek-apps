@@ -1,0 +1,116 @@
+{
+  "schemaVersion": "prismcade-animation-manifest-v0",
+  "characterId": "example-prismcade-buddy",
+  "frameWidth": 64,
+  "frameHeight": 64,
+  "anchor": {
+    "x": 32,
+    "y": 56
+  },
+  "baselineY": 56,
+  "requiredAnimations": [
+    "idle",
+    "walk",
+    "hurt"
+  ],
+  "animations": [
+    {
+      "id": "idle",
+      "source": "spritesheets/idle.png",
+      "frameWidth": 64,
+      "frameHeight": 64,
+      "frameCount": 4,
+      "columns": 4,
+      "rows": 1,
+      "fps": 6,
+      "loop": true,
+      "anchor": {
+        "x": 32,
+        "y": 56
+      },
+      "baselineY": 56,
+      "hitbox": {
+        "x": 22,
+        "y": 18,
+        "width": 20,
+        "height": 38
+      },
+      "hurtbox": {
+        "x": 16,
+        "y": 10,
+        "width": 32,
+        "height": 48
+      },
+      "tags": [
+        "example",
+        "loop",
+        "strict-feet-check"
+      ]
+    },
+    {
+      "id": "walk",
+      "source": "spritesheets/walk.png",
+      "frameWidth": 64,
+      "frameHeight": 64,
+      "frameCount": 6,
+      "columns": 6,
+      "rows": 1,
+      "fps": 10,
+      "loop": true,
+      "anchor": {
+        "x": 32,
+        "y": 56
+      },
+      "baselineY": 56,
+      "hitbox": {
+        "x": 21,
+        "y": 18,
+        "width": 22,
+        "height": 38
+      },
+      "hurtbox": {
+        "x": 15,
+        "y": 10,
+        "width": 34,
+        "height": 48
+      },
+      "tags": [
+        "example",
+        "locomotion",
+        "strict-feet-check"
+      ]
+    },
+    {
+      "id": "hurt",
+      "source": "spritesheets/hurt.png",
+      "frameWidth": 64,
+      "frameHeight": 64,
+      "frameCount": 2,
+      "columns": 2,
+      "rows": 1,
+      "fps": 8,
+      "loop": false,
+      "anchor": {
+        "x": 32,
+        "y": 56
+      },
+      "baselineY": 56,
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "width": 24,
+        "height": 38
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 10,
+        "width": 36,
+        "height": 48
+      },
+      "tags": [
+        "example",
+        "damage"
+      ]
+    }
+  ]
+}
