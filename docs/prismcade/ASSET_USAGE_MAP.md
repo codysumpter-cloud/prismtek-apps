@@ -12,12 +12,14 @@ This map exists because Prismcade already has many usable asset packs in `prismt
 - `games/pixel-fruit-arena/src/assets/assetManifest.js`
 - `games/prismwilds-echo-dominion/data/assets.json`
 - `data/prismcade/ui-font-asset-intake.json`
+- `data/prismcade/world-item-asset-intake.json`
 
 The machine-readable Prismcade-facing maps now live at:
 
 ```txt
 data/prismcade/repo-asset-packs.json
 data/prismcade/ui-font-asset-intake.json
+data/prismcade/world-item-asset-intake.json
 ```
 
 ## Character / avatar packs
@@ -54,7 +56,7 @@ data/prismcade/ui-font-asset-intake.json
 
 ## UI / font intake assets
 
-The June 18 direct upload commit added BoldPixels font assets, UI kits, panel/menu archives, icon/button packs, and controller prompt sheets to the repo root. They are mapped in:
+The June 18 direct upload commit `47cb687b619beb6fe35e1a0ed42fb5b15c1ce9d9` added BoldPixels font assets, UI kits, panel/menu archives, icon/button packs, and controller prompt sheets to the repo root. They are mapped in:
 
 ```txt
 data/prismcade/ui-font-asset-intake.json
@@ -72,6 +74,29 @@ game-assets/ui/controller-prompts/
 ```
 
 The incomplete `Helton Yan's Pixel Combat.zip.download` file should be replaced with the real archive or deleted.
+
+## World / item / character / Monogram intake assets
+
+The later direct upload commit `6e7892e29113c06cbdc77a952292f292ed6d189e` added a second root-level batch: Monogram font files, Pixel UI pack 3, RPG item packs, clothes/snacks, food, weapons, Blue Witch, Elementals characters, Lively NPCs, monster pack, Pixel Adventure, tiny texture pack, water tilemap files, Super Pixel Effects Gigapack, and 32rogues archives.
+
+They are mapped in:
+
+```txt
+data/prismcade/world-item-asset-intake.json
+docs/prismcade/WORLD_ITEM_FONT_ASSET_INTAKE.md
+```
+
+These should be physically relocated into:
+
+```txt
+game-assets/fonts/monogram/
+game-assets/ui/source-packs/
+game-assets/props-items/
+game-assets/characters/
+game-assets/tilesets-environment/
+game-assets/vfx/
+game-assets/misc/
+```
 
 ## VFX assets
 
@@ -97,4 +122,4 @@ The locker lets the user pick a real repo asset pack. It includes the chosen pac
 3. Unpack reviewed ZIPs into normalized runtime folders instead of linking directly to source ZIPs.
 4. Add `assetPackId` and `avatarSupport` fields to `data/prismcade/game-manifests.json`.
 5. Replace CSS placeholder avatars with resolved runtime sprites where available.
-6. Move the root-level UI/font upload files into the target `game-assets/` folders using a binary-aware cleanup pass.
+6. Move the root-level UI/font/world/item upload files into the target `game-assets/` folders using a binary-aware cleanup pass.
