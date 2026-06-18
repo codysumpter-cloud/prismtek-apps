@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "prismcade-row-level-world-assets-v0",
+  "sourceInventory": "game-assets/README.md#tilesets-environment",
+  "summary": { "items": 68, "sizeMb": 39.70 },
+  "defaultLicenseStatus": "mixed_needs_per_pack_review",
+  "categories": [
+    { "id": "side-platformer-worlds", "views": ["side"], "roles": ["platformer_tiles", "stage_backgrounds"], "sourceCount": 18, "status": "needs_row_expansion" },
+    { "id": "top-down-worlds", "views": ["low_top_down", "top_down"], "roles": ["hub_maps", "rpg_maps", "cozy_maps"], "sourceCount": 26, "status": "needs_row_expansion" },
+    { "id": "interior-and-shop-worlds", "views": ["low_top_down", "top_down"], "roles": ["interiors", "shops", "avatar_locker"], "sourceCount": 8, "status": "needs_row_expansion" },
+    { "id": "isometric-builder-worlds", "views": ["isometric", "top_down"], "roles": ["city_builder", "props", "buildings"], "sourceCount": 6, "status": "needs_row_expansion" },
+    { "id": "environment-loose-sheets", "views": ["side", "low_top_down", "top_down"], "roles": ["decorations", "trees", "water", "foliage"], "sourceCount": 10, "status": "needs_row_expansion" }
+  ],
+  "priorityRows": [
+    { "id": "pixel-art-top-down-basic", "sourcePath": "game-assets/tilesets-environment/Pixel Art Top Down - Basic v1.2.3.zip", "views": ["low_top_down", "top_down"], "roles": ["hub_map", "rpg_map"], "status": "candidate" },
+    { "id": "modern-interiors", "sourcePath": "game-assets/tilesets-environment/Modern_Interiors_Free_v2.2.zip", "views": ["low_top_down", "top_down"], "roles": ["interior", "shop"], "status": "candidate" },
+    { "id": "tiny-ranch", "sourcePath": "game-assets/tilesets-environment/TinyRanch_Assets.zip", "views": ["low_top_down", "top_down"], "roles": ["cozy", "farming"], "status": "candidate" },
+    { "id": "pixel-platformer-set", "sourcePath": "game-assets/tilesets-environment/PixelPlatformerSet1v.1.1.zip", "views": ["side"], "roles": ["platformer_stage"], "status": "candidate" }
+  ]
+}
