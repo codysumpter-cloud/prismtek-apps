@@ -1,0 +1,180 @@
+{
+  "schemaVersion": "prismcade-game-ready-animation-pack-v0",
+  "characterId": "prismtek-fixed-hair",
+  "displayName": "Prismtek Fixed Hair",
+  "defaultFrameSize": [
+    64,
+    64
+  ],
+  "allowedSizes": [
+    [
+      32,
+      32
+    ],
+    [
+      48,
+      48
+    ],
+    [
+      64,
+      64
+    ],
+    [
+      96,
+      96
+    ],
+    [
+      128,
+      128
+    ],
+    [
+      192,
+      192
+    ],
+    [
+      256,
+      256
+    ]
+  ],
+  "contentPackagePath": "packages/game-assets/characters/prismtek-fixed-hair",
+  "recommendedRuntime": {
+    "frameSize": [
+      64,
+      64
+    ],
+    "atlas": "runtime/64/atlas/atlas.png",
+    "manifest": "runtime/64/manifest.json"
+  },
+  "portableAvatarRole": [
+    "side_view_playable_character",
+    "catalog_avatar",
+    "lobby_avatar",
+    "profile_identity"
+  ],
+  "compatibleGameViews": [
+    "side",
+    "profile/lobby"
+  ],
+  "needsFutureVariants": [
+    "top_down",
+    "low_top_down",
+    "isometric"
+  ],
+  "slots": {
+    "idle": {
+      "frameCount": 4,
+      "durationMs": 160,
+      "containsProp": false
+    },
+    "walk": {
+      "frameCount": 6,
+      "durationMs": 110,
+      "containsProp": false
+    },
+    "run": {
+      "frameCount": 6,
+      "durationMs": 80,
+      "containsProp": false
+    },
+    "jump": {
+      "frameCount": 4,
+      "durationMs": 120,
+      "containsProp": false
+    },
+    "fall": {
+      "frameCount": 3,
+      "durationMs": 130,
+      "containsProp": false
+    },
+    "land": {
+      "frameCount": 3,
+      "durationMs": 100,
+      "containsProp": false
+    },
+    "climb": {
+      "frameCount": 4,
+      "durationMs": 120,
+      "containsProp": true
+    },
+    "crouch_idle": {
+      "frameCount": 4,
+      "durationMs": 140,
+      "containsProp": false
+    },
+    "crouch_walk": {
+      "frameCount": 6,
+      "durationMs": 105,
+      "containsProp": false
+    },
+    "wall_slide": {
+      "frameCount": 3,
+      "durationMs": 130,
+      "containsProp": true
+    },
+    "wall_land": {
+      "frameCount": 3,
+      "durationMs": 110,
+      "containsProp": false
+    },
+    "ledge_climb": {
+      "frameCount": 5,
+      "durationMs": 130,
+      "containsProp": true
+    },
+    "roll": {
+      "frameCount": 6,
+      "durationMs": 90,
+      "containsProp": false
+    },
+    "hurt": {
+      "frameCount": 3,
+      "durationMs": 120,
+      "containsProp": false
+    },
+    "death": {
+      "frameCount": 5,
+      "durationMs": 180,
+      "containsProp": true
+    },
+    "punch": {
+      "frameCount": 5,
+      "durationMs": 90,
+      "containsProp": false
+    },
+    "basic": {
+      "frameCount": 5,
+      "durationMs": 100,
+      "containsProp": false
+    },
+    "sword_idle": {
+      "frameCount": 4,
+      "durationMs": 140,
+      "containsProp": true
+    },
+    "sword_run": {
+      "frameCount": 6,
+      "durationMs": 90,
+      "containsProp": true
+    },
+    "sword_stab": {
+      "frameCount": 5,
+      "durationMs": 90,
+      "containsProp": true
+    },
+    "victory": {
+      "frameCount": 4,
+      "durationMs": 140,
+      "containsProp": false
+    },
+    "interact": {
+      "frameCount": 3,
+      "durationMs": 140,
+      "containsProp": true
+    }
+  },
+  "notes": [
+    "Store generated binaries under packages/game-assets/characters/prismtek-fixed-hair/ using the documented folder shape.",
+    "This manifest is the repo-side contract for using the generated pack in Prismcade games.",
+    "Use the repeatable slicer job to regenerate the runtime assets from approved source sheets."
+  ]
+}
