@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "prismcade-character-view-template-map-v0",
+  "characterId": "prismtek-fixed-hair",
+  "view": "profile_lobby",
+  "templateId": "profile-lobby-identity-64",
+  "status": "fallback_active",
+  "identitySource": "packages/game-assets/characters/prismtek-fixed-hair/identity/identity.json",
+  "outputRuntimeRoot": "runtime/profile",
+  "defaultRuntimeSize": [64, 64],
+  "fallbackSource": {
+    "view": "side",
+    "slot": "idle",
+    "runtimeRoot": "runtime/side",
+    "legacyRuntimeRoot": "runtime"
+  },
+  "templateSources": [
+    {
+      "id": "prismtek-side-idle",
+      "role": "active_fallback",
+      "rightsStatus": "first_party_generated"
+    },
+    {
+      "id": "prismtek-showcase-gif",
+      "role": "catalog_motion_reference",
+      "rightsStatus": "first_party_generated"
+    },
+    {
+      "id": "pixelart-study-expression-sheets",
+      "role": "expression_reference_only",
+      "rightsStatus": "terms_review_required"
+    }
+  ],
+  "requiredSlots": {
+    "idle": { "frames": 4, "durationMs": 160, "priority": "required" },
+    "victory": { "frames": 4, "durationMs": 140, "priority": "recommended" },
+    "emote_happy": { "frames": 4, "durationMs": 140, "priority": "planned" },
+    "emote_thinking": { "frames": 4, "durationMs": 160, "priority": "planned" }
+  },
+  "usage": [
+    "leaderboard identity",
+    "avatar select",
+    "catalog card",
+    "profile card",
+    "loading screen"
+  ],
+  "qaChecklist": [
+    "Fallback frame must not imply the character is playable in missing gameplay views.",
+    "Dedicated profile art can replace side idle later without changing game contracts.",
+    "Expression frames must preserve the less-blushy, less-girly Prismtek face rule."
+  ]
+}
