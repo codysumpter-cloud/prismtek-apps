@@ -7,113 +7,699 @@
   <style>
     :root {
       color-scheme: dark;
-      --bg: #101018;
+      --bg: #080811;
+      --bg-2: #101018;
       --panel: #17172a;
+      --panel-2: #20203a;
       --ink: #f7f7ff;
-      --muted: #a9aac4;
-      --line: #2c2c4c;
+      --muted: #aaaac7;
+      --line: #303052;
+      --line-2: #48486e;
       --accent: #5ee7ff;
+      --accent-2: #a477ff;
       --hot: #ff5e78;
       --good: #7cff9b;
       --warn: #ffd166;
+      --coin: #ffe66d;
     }
+
     * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
     body {
       margin: 0;
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       background:
-        linear-gradient(transparent 95%, rgba(94,231,255,.08) 95%),
-        linear-gradient(90deg, transparent 95%, rgba(94,231,255,.08) 95%),
+        radial-gradient(circle at 10% 0%, rgba(94, 231, 255, .16), transparent 28rem),
+        radial-gradient(circle at 88% 10%, rgba(164, 119, 255, .18), transparent 24rem),
+        linear-gradient(transparent 95%, rgba(94,231,255,.07) 95%),
+        linear-gradient(90deg, transparent 95%, rgba(94,231,255,.07) 95%),
         var(--bg);
-      background-size: 18px 18px;
+      background-size: auto, auto, 18px 18px, 18px 18px, auto;
       color: var(--ink);
     }
-    .shell { max-width: 1180px; margin: 0 auto; padding: 28px 18px 48px; }
-    .hero {
-      border: 2px solid var(--line);
-      background: rgba(23,23,42,.94);
-      box-shadow: 0 0 0 4px rgba(0,0,0,.22);
-      padding: 22px;
-      margin-bottom: 18px;
+
+    a { color: inherit; text-decoration: none; }
+    img { image-rendering: pixelated; }
+
+    .shell {
+      width: min(1440px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 16px 0 42px;
     }
-    .eyebrow { color: var(--accent); text-transform: uppercase; letter-spacing: .16em; margin: 0 0 8px; font-size: 12px; }
-    h1 { margin: 0; font-size: clamp(34px, 7vw, 72px); line-height: .9; text-transform: uppercase; }
-    .lede { color: var(--muted); max-width: 820px; line-height: 1.5; }
-    .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin: 18px 0; }
-    button {
-      border: 2px solid var(--line);
-      background: #20203a;
-      color: var(--ink);
-      padding: 9px 12px;
-      font: inherit;
-      cursor: pointer;
-    }
-    button[data-active="true"] { border-color: var(--accent); color: var(--accent); }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
-    .card {
-      border: 2px solid var(--line);
-      background: rgba(23,23,42,.96);
-      padding: 14px;
-      min-height: 270px;
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 5;
       display: flex;
-      flex-direction: column;
-      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      border: 2px solid var(--line);
+      background: rgba(8, 8, 17, .92);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 0 rgba(0,0,0,.3);
+      padding: 10px 12px;
+      margin-bottom: 14px;
     }
-    .thumb {
-      height: 84px;
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 220px;
+    }
+
+    .brand-mark {
+      width: 32px;
+      height: 32px;
       display: grid;
       place-items: center;
-      border: 2px solid #2f3158;
-      background: radial-gradient(circle at 40% 30%, rgba(94,231,255,.24), transparent 38%), #101018;
+      border: 2px solid var(--accent);
+      background: #101018;
+      box-shadow: inset 0 0 0 4px rgba(94,231,255,.1);
+      color: var(--accent);
+      font-weight: 900;
+    }
+
+    .brand strong {
+      display: block;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      line-height: 1;
+    }
+
+    .brand span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 3px;
+    }
+
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .nav-link, button, .button {
+      border: 2px solid var(--line);
+      background: var(--panel-2);
+      color: var(--ink);
+      padding: 9px 11px;
+      font: inherit;
+      cursor: pointer;
+      box-shadow: 0 3px 0 rgba(0,0,0,.35);
+    }
+
+    .nav-link:hover, button:hover, .button:hover,
+    button[data-active="true"] {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    .account-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 2px solid var(--line);
+      background: var(--panel);
+      padding: 6px 8px;
+      min-width: 190px;
+      justify-content: flex-end;
+    }
+
+    .mini-avatar {
+      width: 32px;
+      height: 32px;
+      border: 2px solid var(--accent);
+      display: grid;
+      place-items: end center;
+      background:
+        linear-gradient(180deg, transparent 0 20%, rgba(94,231,255,.16) 20% 100%),
+        #111125;
+      overflow: hidden;
+    }
+
+    .sprite {
+      width: 20px;
+      height: 26px;
+      position: relative;
+      margin-bottom: 2px;
+      image-rendering: pixelated;
+    }
+
+    .sprite::before {
+      content: "";
+      position: absolute;
+      left: 4px;
+      top: 0;
+      width: 12px;
+      height: 12px;
+      background: #f0c7a8;
+      box-shadow:
+        0 -3px 0 #362015,
+        -3px 2px 0 #362015,
+        3px 1px 0 #362015,
+        3px 14px 0 #182031,
+        -3px 14px 0 #182031;
+    }
+
+    .sprite::after {
+      content: "";
+      position: absolute;
+      left: 3px;
+      top: 13px;
+      width: 14px;
+      height: 10px;
+      background: #12b7c7;
+      box-shadow:
+        3px 10px 0 #0e566e,
+        -3px 10px 0 #0e566e,
+        0 15px 0 #171729;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(260px, 330px) minmax(0, 1fr) minmax(280px, 360px);
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .panel, .game-card, .hero-card {
+      border: 2px solid var(--line);
+      background: rgba(23, 23, 42, .96);
+      box-shadow: 0 0 0 4px rgba(0,0,0,.18), inset 0 0 0 1px rgba(255,255,255,.03);
+    }
+
+    .panel { padding: 14px; }
+
+    .eyebrow {
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: .16em;
+      margin: 0 0 8px;
+      font-size: 12px;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(42px, 8vw, 94px);
+      line-height: .86;
+      text-transform: uppercase;
+      letter-spacing: -.05em;
+      text-shadow: 4px 4px 0 rgba(94,231,255,.16), -4px 0 0 rgba(255,94,120,.08);
+    }
+
+    h2 { font-size: 22px; margin-bottom: 10px; }
+    h3 { font-size: 16px; margin-bottom: 6px; }
+
+    .lede {
+      color: var(--muted);
+      max-width: 840px;
+      line-height: 1.55;
+      font-size: 15px;
+    }
+
+    .hero-card {
+      padding: 20px;
+      min-height: 370px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      right: -40px;
+      bottom: -30px;
+      width: 210px;
+      height: 210px;
+      border: 2px solid rgba(94,231,255,.2);
+      background: repeating-linear-gradient(0deg, rgba(94,231,255,.08) 0 8px, transparent 8px 16px);
+      transform: rotate(12deg);
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .button.primary {
+      border-color: var(--accent);
+      color: #061016;
+      background: var(--accent);
+      font-weight: 900;
+    }
+
+    .button.hot {
+      border-color: var(--hot);
+      color: var(--hot);
+    }
+
+    .avatar-stage {
+      min-height: 184px;
+      display: grid;
+      place-items: center;
+      border: 2px solid var(--line-2);
+      background:
+        linear-gradient(transparent 90%, rgba(94,231,255,.1) 90%),
+        linear-gradient(90deg, transparent 90%, rgba(94,231,255,.1) 90%),
+        #101018;
+      background-size: 12px 12px;
+      margin: 10px 0 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .avatar-big {
+      width: 112px;
+      height: 150px;
+      position: relative;
+      filter: drop-shadow(0 10px 0 rgba(0,0,0,.35));
+    }
+
+    .avatar-big .head {
+      position: absolute;
+      left: 33px;
+      top: 12px;
+      width: 46px;
+      height: 44px;
+      background: #f0c7a8;
+      box-shadow:
+        0 -10px 0 #362015,
+        -8px -4px 0 #362015,
+        8px -6px 0 #362015,
+        -4px 18px 0 #f0c7a8,
+        4px 18px 0 #f0c7a8,
+        -8px 44px 0 #0a3042,
+        8px 44px 0 #0a3042;
+    }
+
+    .avatar-big .body {
+      position: absolute;
+      left: 28px;
+      top: 64px;
+      width: 56px;
+      height: 56px;
+      background: #13b7c7;
+      box-shadow:
+        -14px 8px 0 #13b7c7,
+        14px 8px 0 #13b7c7,
+        -10px 58px 0 #171729,
+        10px 58px 0 #171729,
+        -10px 70px 0 #0d0d16,
+        10px 70px 0 #0d0d16;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 8px;
+    }
+
+    .stat {
+      border: 1px solid var(--line);
+      background: rgba(8,8,17,.55);
+      padding: 8px;
+    }
+
+    .stat b { display: block; color: var(--ink); }
+    .stat span { color: var(--muted); font-size: 11px; text-transform: uppercase; }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .pill {
+      border: 1px solid var(--line);
+      background: rgba(8,8,17,.45);
+      color: var(--muted);
+      padding: 4px 7px;
+      font-size: 12px;
+    }
+
+    .pill.good { color: var(--good); border-color: rgba(124,255,155,.35); }
+    .pill.warn { color: var(--warn); border-color: rgba(255,209,102,.35); }
+    .pill.hot { color: var(--hot); border-color: rgba(255,94,120,.35); }
+    .pill.accent { color: var(--accent); border-color: rgba(94,231,255,.35); }
+
+    .shelf {
+      margin-top: 16px;
+    }
+
+    .shelf-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .shelf-head p { color: var(--muted); margin: 0; font-size: 13px; }
+
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 12px;
+    }
+
+    .game-card {
+      min-height: 292px;
+      display: flex;
+      flex-direction: column;
+      padding: 12px;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .game-card.featured {
+      min-height: 330px;
+      background: linear-gradient(135deg, rgba(94,231,255,.14), rgba(255,94,120,.08)), rgba(23,23,42,.96);
+    }
+
+    .thumb {
+      height: 96px;
+      display: grid;
+      place-items: center;
+      border: 2px solid var(--line-2);
+      background: radial-gradient(circle at 40% 35%, rgba(94,231,255,.28), transparent 40%), #101018;
       color: var(--accent);
       text-transform: uppercase;
       text-align: center;
-      font-weight: 800;
+      font-weight: 900;
       letter-spacing: .08em;
-      image-rendering: pixelated;
+      padding: 8px;
     }
-    .card h2 { margin: 0; font-size: 20px; }
-    .meta { display: flex; flex-wrap: wrap; gap: 6px; }
-    .pill { border: 1px solid var(--line); padding: 3px 6px; color: var(--muted); font-size: 12px; }
-    .priority-high { color: var(--good); }
-    .priority-medium { color: var(--warn); }
-    .priority-later { color: var(--hot); }
-    .desc, .controls, .status { color: var(--muted); font-size: 13px; line-height: 1.45; margin: 0; }
+
+    .game-card h3 { margin: 0; font-size: 18px; }
+    .desc, .muted { color: var(--muted); font-size: 13px; line-height: 1.45; }
+    .desc { margin: 0; }
     .links { margin-top: auto; display: flex; gap: 8px; flex-wrap: wrap; }
-    a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; }
-    a:hover { border-bottom-color: var(--accent); }
-    .error { border: 2px solid var(--hot); padding: 14px; color: var(--hot); background: rgba(255,94,120,.08); }
+    .links a { color: var(--accent); border-bottom: 1px solid rgba(94,231,255,.35); }
+
+    .filters { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .side-stack {
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: 14px;
+    }
+
+    .chat-log {
+      min-height: 190px;
+      display: grid;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .bubble {
+      border: 2px solid var(--line);
+      background: rgba(8,8,17,.55);
+      padding: 9px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .bubble.buddy {
+      border-color: rgba(94,231,255,.5);
+      color: var(--ink);
+    }
+
+    .leaderboard-list, .friend-list, .receipt-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .leaderboard-list li, .friend-list li, .receipt-list li {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      border: 1px solid var(--line);
+      background: rgba(8,8,17,.45);
+      padding: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .leaderboard-list b, .friend-list b, .receipt-list b { color: var(--ink); }
+
+    .section-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .error {
+      border: 2px solid var(--hot);
+      padding: 14px;
+      color: var(--hot);
+      background: rgba(255,94,120,.08);
+    }
+
+    @media (max-width: 1120px) {
+      .hero-grid { grid-template-columns: 1fr; }
+      .side-stack { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+    }
+
+    @media (max-width: 760px) {
+      .topbar { position: static; align-items: stretch; flex-direction: column; }
+      .brand, .account-chip { min-width: 0; justify-content: flex-start; }
+      nav { justify-content: flex-start; }
+      .side-stack, .section-grid { grid-template-columns: 1fr; }
+      .shell { width: min(100% - 18px, 1440px); }
+    }
   </style>
 </head>
 <body>
   <main class="shell">
-    <section class="hero">
-      <p class="eyebrow">Prismtek Arcade</p>
-      <h1>Prismcade</h1>
-      <p class="lede">
-        Retro pixel games, small first. This catalog is the first Prismcade platform loop:
-        manifest → catalog → play → package → receipts → future creator sharing.
-      </p>
-      <div class="toolbar" id="filters" aria-label="Catalog filters"></div>
+    <header class="topbar">
+      <a class="brand" href="#home" aria-label="Prismcade home">
+        <span class="brand-mark">P</span>
+        <span><strong>Prismcade</strong><span>Pixel games. One avatar.</span></span>
+      </a>
+      <nav aria-label="Primary">
+        <a class="nav-link" href="#play">Play</a>
+        <a class="nav-link" href="../prismcade-avatar/">Avatar</a>
+        <a class="nav-link" href="../prismcade-creator/">Create</a>
+        <a class="nav-link" href="#leaderboards">Boards</a>
+        <a class="nav-link" href="#chat">Buddy Chat</a>
+      </nav>
+      <section class="account-chip" aria-label="Local account preview">
+        <div>
+          <strong id="accountName">Prismtek</strong><br />
+          <span class="muted" id="accountRank">Neon Rookie</span>
+        </div>
+        <div class="mini-avatar"><div class="sprite" aria-hidden="true"></div></div>
+      </section>
+    </header>
+
+    <section class="hero-grid" id="home">
+      <aside class="panel" aria-label="Current avatar">
+        <p class="eyebrow">My Prismcade Avatar</p>
+        <h2 id="avatarName">Prismtek</h2>
+        <div class="avatar-stage" aria-label="Pixel avatar preview">
+          <div class="avatar-big" aria-hidden="true"><div class="head"></div><div class="body"></div></div>
+        </div>
+        <div class="row" id="avatarTags"></div>
+        <div class="stat-grid" style="margin-top: 12px;">
+          <div class="stat"><span>Level</span><b id="levelValue">12</b></div>
+          <div class="stat"><span>Coins</span><b id="coinValue">420</b></div>
+          <div class="stat"><span>Best view</span><b id="viewValue">Side 64</b></div>
+          <div class="stat"><span>Inventory</span><b id="inventoryValue">8 items</b></div>
+        </div>
+        <div class="hero-actions">
+          <a class="button primary" href="../prismcade-avatar/">Open Locker</a>
+          <button type="button" id="randomizeAvatar">Roll fit</button>
+        </div>
+      </aside>
+
+      <section class="hero-card">
+        <p class="eyebrow">Indie Roblox for retro games</p>
+        <h1>Play tiny games. Keep your look.</h1>
+        <p class="lede">
+          Prismcade is the shared home for browser-first pixel games, portable avatars, reusable animations,
+          match receipts, leaderboards, friends, chat, and creator-made cartridges. One character should scale
+          from 32x32 to 256x256 and travel across side, top-down, low-top-down, isometric, 2.5D arena, and lobby views.
+        </p>
+        <div class="hero-actions">
+          <a class="button primary" href="#play">Play now</a>
+          <a class="button" href="../prismcade-avatar/">Customize avatar</a>
+          <a class="button hot" href="../prismcade-creator/">Make a game</a>
+        </div>
+        <div class="row" style="margin-top: 18px;">
+          <span class="pill good">Local-first</span>
+          <span class="pill accent">Manifest-backed</span>
+          <span class="pill warn">Hosted social pending</span>
+          <span class="pill">No fake release claims</span>
+        </div>
+      </section>
+
+      <aside class="side-stack">
+        <section class="panel" id="chat">
+          <p class="eyebrow">Buddy Chat</p>
+          <div class="chat-log" id="chatLog"></div>
+          <div class="row">
+            <button type="button" data-chat="quick">Find quick game</button>
+            <button type="button" data-chat="avatar">Fix my avatar</button>
+            <button type="button" data-chat="party">Start party</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <p class="eyebrow">Friends / Party</p>
+          <ul class="friend-list" id="friendList"></ul>
+        </section>
+      </aside>
     </section>
-    <section id="catalog" class="grid" aria-live="polite"></section>
+
+    <section class="shelf" id="play">
+      <div class="shelf-head">
+        <div>
+          <p class="eyebrow">Game shelves</p>
+          <h2>All games live here</h2>
+          <p>Cards are generated from the Prismcade game manifest registry. Compatibility badges are local-first hints until each game declares full avatar support.</p>
+        </div>
+        <div class="filters" id="filters" aria-label="Catalog filters"></div>
+      </div>
+      <div id="featuredShelf"></div>
+      <div id="quickShelf"></div>
+      <div id="competitiveShelf"></div>
+      <div id="compatibleShelf"></div>
+      <section id="catalogError" class="error" hidden></section>
+    </section>
+
+    <section class="section-grid" id="leaderboards">
+      <section class="panel">
+        <p class="eyebrow">Leaderboard preview</p>
+        <h2>Clout loop</h2>
+        <ul class="leaderboard-list" id="leaderboardList"></ul>
+        <p class="muted" style="margin-top: 10px;">Hosted leaderboards are intentionally not claimed yet. This preview models the UI using local/profile receipts first.</p>
+      </section>
+      <section class="panel">
+        <p class="eyebrow">Recent receipts</p>
+        <h2>Every run should matter</h2>
+        <ul class="receipt-list" id="receiptList"></ul>
+      </section>
+    </section>
   </main>
 
   <script type="module">
-    const catalog = document.querySelector("#catalog");
-    const filters = document.querySelector("#filters");
     const registryUrl = "../../data/prismcade/game-manifests.json";
-    let registry = null;
+    const accountKey = "prismcade.localAccount.v0";
+    const filters = document.querySelector("#filters");
+    const chatLog = document.querySelector("#chatLog");
+    const catalogError = document.querySelector("#catalogError");
     let active = "all";
+    let registry = { games: [] };
+
+    const starterAccount = {
+      id: "local-prismtek",
+      displayName: "Prismtek",
+      handle: "@prismtek",
+      rankTitle: "Neon Rookie",
+      level: 12,
+      coins: 420,
+      avatar: {
+        characterId: "prismtek-fixed-hair",
+        displayName: "Prismtek",
+        templateId: "prismtek-player",
+        preferredView: "side",
+        preferredSize: 64,
+        equippedCosmetics: ["low-taper", "teal-jumpsuit", "dark-shoes", "founder-badge"],
+        supportedViews: ["side", "profile_lobby"],
+        supportedSizes: [32, 48, 64, 96, 128, 192, 256]
+      },
+      friends: [
+        { name: "Taylor", status: "offline", note: "Invite-ready once hosted parties exist" },
+        { name: "BuddyBot", status: "online", note: "Can help pick a game" },
+        { name: "Lil Buddy", status: "online", note: "Testing local receipts" }
+      ],
+      receipts: [
+        { game: "Pixel Fruit Arena", result: "Local win", stat: "3 stocks" },
+        { game: "Crossy Pixel", result: "Best distance", stat: "128 tiles" },
+        { game: "Pixel Snake", result: "Score run", stat: "920 pts" }
+      ]
+    };
 
     const filterDefs = [
       ["all", "All"],
-      ["high", "High priority"],
-      ["medium", "Medium"],
-      ["later", "Later"],
-      ["platform-fighter", "Fighters"],
-      ["quick-play", "Quick-play"]
+      ["compatible", "Works with avatar"],
+      ["quick", "Quick-play"],
+      ["competitive", "Competitive"],
+      ["creator", "Creator-ready"],
+      ["later", "Later"]
     ];
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>'"]/g, (char) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", "\"": "&quot;"
+      })[char]);
+    }
+
+    function loadAccount() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(accountKey));
+        return saved && saved.id ? saved : starterAccount;
+      } catch {
+        return starterAccount;
+      }
+    }
+
+    function saveAccount(account) {
+      localStorage.setItem(accountKey, JSON.stringify(account));
+    }
+
+    let account = loadAccount();
+    saveAccount(account);
+
+    function inferCompatibility(game) {
+      const tags = new Set([game.arcadeRole, ...(game.tags ?? [])]);
+      if (tags.has("platform-fighter") || tags.has("fighter")) {
+        return { level: "full_view", view: "side", size: 64, label: "Side 64 ready", compatible: true };
+      }
+      if (tags.has("lane-dodge")) {
+        return { level: "mini", view: "top_down", size: 32, label: "Top-down mini", compatible: true };
+      }
+      if (tags.has("creature-battle") || tags.has("survival")) {
+        return { level: "planned", view: "low_top_down", size: 64, label: "Needs low-top-down", compatible: false };
+      }
+      if (tags.has("top-battle") || tags.has("physics")) {
+        return { level: "portrait", view: "profile_lobby", size: 64, label: "Owner badge / portrait", compatible: true };
+      }
+      if (game.status === "quick-play-import") {
+        return { level: "profile", view: "profile_lobby", size: 32, label: "Profile identity", compatible: true };
+      }
+      return { level: "profile", view: "profile_lobby", size: 64, label: "Profile fallback", compatible: true };
+    }
+
+    function matches(game) {
+      const compatibility = inferCompatibility(game);
+      if (active === "all") return true;
+      if (active === "compatible") return compatibility.compatible;
+      if (active === "quick") return game.status === "quick-play-import" || game.tags?.includes("quick-play");
+      if (active === "competitive") return ["platform-fighter", "top-battle-arena", "creature-battle-lite"].includes(game.arcadeRole);
+      if (active === "creator") return compatibility.compatible && game.priority !== "later";
+      if (active === "later") return game.priority === "later";
+      return true;
+    }
 
     function button(id, label) {
       const el = document.createElement("button");
@@ -122,50 +708,155 @@
       el.dataset.active = String(active === id);
       el.addEventListener("click", () => {
         active = id;
-        render();
+        renderShelves();
       });
       return el;
     }
 
-    function matches(game) {
-      if (active === "all") return true;
-      if (active === "quick-play") return game.status === "quick-play-import";
-      return game.priority === active || game.arcadeRole === active || game.tags.includes(active);
+    function pill(text, tone = "") {
+      return `<span class="pill ${tone}">${escapeHtml(text)}</span>`;
     }
 
-    function statusText(game) {
-      const hooks = game.platformHooks;
-      const readyHooks = Object.entries(hooks).filter(([, value]) => value).map(([key]) => key);
-      return readyHooks.length ? `Hooks: ${readyHooks.join(", ")}` : "Hooks: local profile / receipts / share cards pending";
+    function gameCard(game, featured = false) {
+      const compatibility = inferCompatibility(game);
+      const playerText = game.players ? `${game.players.min}-${game.players.max}P` : "1P";
+      const readinessTone = compatibility.compatible ? "good" : "warn";
+      const hooks = game.platformHooks ?? {};
+      const hookCount = Object.values(hooks).filter(Boolean).length;
+      return `
+        <article class="game-card ${featured ? "featured" : ""}">
+          <div class="thumb">${escapeHtml(game.title)}</div>
+          <h3>${escapeHtml(game.title)}</h3>
+          <div class="row">
+            ${pill(game.status)}
+            ${pill(game.arcadeRole, "accent")}
+            ${pill(game.priority, game.priority === "high" ? "good" : game.priority === "later" ? "hot" : "warn")}
+            ${pill(playerText)}
+          </div>
+          <p class="desc">${escapeHtml(game.description)}</p>
+          <div class="row">
+            ${pill(compatibility.label, readinessTone)}
+            ${pill(`${compatibility.view} ${compatibility.size}x${compatibility.size}`)}
+            ${pill(hookCount ? `${hookCount} hooks ready` : "receipts pending", hookCount ? "good" : "warn")}
+          </div>
+          <p class="muted"><strong>Controls:</strong> ${escapeHtml((game.controls ?? []).slice(0, 2).join(" / ") || "Game-specific controls")}</p>
+          <div class="links">
+            <a href="../../${escapeHtml(game.entrypoint)}">Play/Open</a>
+            <a href="../../${escapeHtml(game.path)}/README.md">README</a>
+            <a href="../prismcade-avatar/">Avatar fit</a>
+          </div>
+        </article>
+      `;
     }
 
-    function render() {
+    function shelf(id, title, subtitle, games, featured = false) {
+      const target = document.querySelector(`#${id}`);
+      if (!games.length) {
+        target.innerHTML = "";
+        return;
+      }
+      target.innerHTML = `
+        <section class="shelf">
+          <div class="shelf-head">
+            <div>
+              <h2>${escapeHtml(title)}</h2>
+              <p>${escapeHtml(subtitle)}</p>
+            </div>
+          </div>
+          <div class="game-grid">${games.map((game) => gameCard(game, featured)).join("")}</div>
+        </section>
+      `;
+    }
+
+    function renderShelves() {
       filters.replaceChildren(...filterDefs.map(([id, label]) => button(id, label)));
       const games = registry.games.filter(matches);
-      catalog.replaceChildren(...games.map((game) => {
-        const card = document.createElement("article");
-        card.className = "card";
-        card.innerHTML = `
-          <div class="thumb">${game.title}</div>
-          <h2>${game.title}</h2>
-          <div class="meta">
-            <span class="pill">${game.status}</span>
-            <span class="pill">${game.arcadeRole}</span>
-            <span class="pill priority-${game.priority}">${game.priority}</span>
-            <span class="pill">${game.players.min}-${game.players.max}P</span>
-          </div>
-          <p class="desc">${game.description}</p>
-          <p class="controls"><strong>Controls:</strong> ${game.controls.slice(0, 2).join(" / ")}</p>
-          <p class="status">${statusText(game)}</p>
-          <div class="links">
-            <a href="../../${game.entrypoint}">Play/Open</a>
-            <a href="../../${game.path}/README.md">README</a>
-            <a href="../../docs/prismcade/GAME_MANIFEST_CONTRACT.md">Manifest contract</a>
-          </div>
-        `;
-        return card;
-      }));
+      const featured = games.filter((game) => game.priority === "high").slice(0, 3);
+      const quick = games.filter((game) => game.status === "quick-play-import" || game.tags?.includes("quick-play"));
+      const competitive = games.filter((game) => ["platform-fighter", "top-battle-arena", "creature-battle-lite"].includes(game.arcadeRole));
+      const compatible = games.filter((game) => inferCompatibility(game).compatible).slice(0, 6);
+
+      shelf("featuredShelf", "Featured cartridges", "Fast to pick up, easy to replay, ready to become social.", featured, true);
+      shelf("quickShelf", "Quick-play arcade", "Tiny games that make leaderboards, receipts, and avatar identity useful immediately.", quick);
+      shelf("competitiveShelf", "Competitive / showcase", "Games that should prove friends, parties, character portability, and clout rewards.", competitive);
+      shelf("compatibleShelf", "Works with your avatar", "Current local compatibility hints for Prismtek's avatar. Games can improve this by declaring view/size support.", compatible);
     }
+
+    function renderAccount() {
+      document.querySelector("#accountName").textContent = account.displayName;
+      document.querySelector("#accountRank").textContent = account.rankTitle;
+      document.querySelector("#avatarName").textContent = account.avatar.displayName;
+      document.querySelector("#levelValue").textContent = account.level;
+      document.querySelector("#coinValue").textContent = account.coins;
+      document.querySelector("#viewValue").textContent = `${account.avatar.preferredView} ${account.avatar.preferredSize}`;
+      document.querySelector("#inventoryValue").textContent = `${account.avatar.equippedCosmetics.length} items`;
+      document.querySelector("#avatarTags").innerHTML = [
+        pill(account.avatar.templateId, "accent"),
+        pill(`${account.avatar.supportedSizes[0]}-${account.avatar.supportedSizes.at(-1)} px`, "good"),
+        pill(account.avatar.supportedViews.join(" + "))
+      ].join("");
+
+      document.querySelector("#friendList").innerHTML = account.friends.map((friend) => `
+        <li><span><b>${escapeHtml(friend.name)}</b><br />${escapeHtml(friend.note)}</span><span class="pill ${friend.status === "online" ? "good" : ""}">${escapeHtml(friend.status)}</span></li>
+      `).join("");
+
+      document.querySelector("#receiptList").innerHTML = account.receipts.map((receipt) => `
+        <li><span><b>${escapeHtml(receipt.game)}</b><br />${escapeHtml(receipt.result)}</span><span>${escapeHtml(receipt.stat)}</span></li>
+      `).join("");
+
+      document.querySelector("#leaderboardList").innerHTML = [
+        ["Pixel Fruit Arena", "Prismtek", "3 wins"],
+        ["Crossy Pixel", "Taylor", "188 tiles"],
+        ["Pixel Snake", "BuddyBot", "1,220 pts"],
+        ["Pixel Stacker", "Lil Buddy", "42 stack"]
+      ].map(([game, name, score]) => `
+        <li><span><b>${escapeHtml(game)}</b><br />${escapeHtml(name)}</span><span>${escapeHtml(score)}</span></li>
+      `).join("");
+    }
+
+    function renderChat(mode = "default") {
+      const lines = {
+        default: [
+          ["buddy", "Wanna play something fast? I can route you to quick-play, competitive, or avatar-compatible games."],
+          ["user", "Show me games where my Prismtek character can actually matter."],
+          ["buddy", "Right now: Pixel Fruit Arena proves side-view 64. Quick-play games can use profile/mini identity until full views land."]
+        ],
+        quick: [
+          ["buddy", "Pick Crossy Pixel, Flappy Pixel, Snake, or Stacker. They are perfect for local receipts and friend leaderboards."],
+          ["buddy", "Next build target: every quick game should emit a local match receipt after each run."]
+        ],
+        avatar: [
+          ["buddy", "Your side-view avatar is strongest. Low-top-down is the next missing view for the hub, locker, shops, and RPG-style games."],
+          ["buddy", "Open the Avatar Locker to test 32 through 256 sizes and see which camera modes need fallback art."]
+        ],
+        party: [
+          ["buddy", "Party UI is stubbed locally. The honest next milestone is local friend invites + match receipts before hosted multiplayer claims."],
+          ["buddy", "Pixel Fruit Arena is the best first party proof because it already supports local multiplayer."]
+        ]
+      }[mode];
+      chatLog.innerHTML = lines.map(([speaker, text]) => `<div class="bubble ${speaker}">${escapeHtml(text)}</div>`).join("");
+    }
+
+    document.querySelectorAll("[data-chat]").forEach((button) => {
+      button.addEventListener("click", () => renderChat(button.dataset.chat));
+    });
+
+    document.querySelector("#randomizeAvatar").addEventListener("click", () => {
+      const fits = [
+        ["low-taper", "teal-jumpsuit", "dark-shoes", "founder-badge"],
+        ["normal-hair", "arcade-jacket", "sneakers", "neon-badge"],
+        ["hood-up", "blue-hoodie", "dark-shoes", "chat-pin"],
+        ["messy-top", "teal-jumpsuit", "speed-shoes", "fruit-pin"]
+      ];
+      account.avatar.equippedCosmetics = fits[Math.floor(Math.random() * fits.length)];
+      account.coins += 1;
+      saveAccount(account);
+      renderAccount();
+      renderChat("avatar");
+    });
+
+    renderAccount();
+    renderChat();
 
     fetch(registryUrl)
       .then((response) => {
@@ -174,11 +865,11 @@
       })
       .then((data) => {
         registry = data;
-        render();
+        renderShelves();
       })
       .catch((error) => {
-        catalog.className = "error";
-        catalog.textContent = `${error.message}. Serve the repo root over HTTP and open /apps/prismcade/.`;
+        catalogError.hidden = false;
+        catalogError.textContent = `${error.message}. Serve the repo root over HTTP and open /apps/prismcade/.`;
       });
   </script>
 </body>
