@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "prismcade-ui-font-asset-intake-v0",
+  "sourceCommit": "47cb687b619beb6fe35e1a0ed42fb5b15c1ce9d9",
+  "status": "root-upload-mapped-for-organization",
+  "notes": [
+    "These assets were uploaded directly to the repository root and should be relocated into game-assets/ui or game-assets/fonts in a binary-aware cleanup pass.",
+    "This manifest maps current root paths to intended library paths and Prismcade uses.",
+    "The partial .download file should be replaced with the completed archive or deleted before runtime use."
+  ],
+  "fonts": [
+    {
+      "id": "boldpixels-ttf",
+      "displayName": "BoldPixels TTF",
+      "currentPath": "BoldPixels.ttf",
+      "targetPath": "game-assets/fonts/BoldPixels.ttf",
+      "usage": ["brand-font", "hud-font", "arcade-ui-font"],
+      "status": "needs-relocation-and-license-receipt"
+    },
+    {
+      "id": "boldpixels-webfontkit",
+      "displayName": "BoldPixels Webfont Kit",
+      "currentPath": "webfontkit-BoldPixels.zip",
+      "targetPath": "game-assets/fonts/webfontkit-BoldPixels.zip",
+      "usage": ["web-ui-font", "prismcade-home-font"],
+      "status": "needs-relocation-and-license-receipt"
+    }
+  ],
+  "uiPacks": [
+    { "id": "complete-ui-essential-pack-free", "currentPath": "Complete_UI_Essential_Pack_Free.7z", "targetPath": "game-assets/ui/source-packs/Complete_UI_Essential_Pack_Free.7z", "usage": ["buttons", "panels", "menus", "hud", "dialog-boxes"], "status": "needs-relocation-and-license-receipt" },
+    { "id": "cryo-mini-gui", "currentPath": "Cryo's Mini GUI.zip", "targetPath": "game-assets/ui/source-packs/Cryo's Mini GUI.zip", "usage": ["menus", "panels", "compact-ui"], "status": "needs-relocation-and-license-receipt" },
+    { "id": "cryo-mini-gui-controller", "currentPath": "Cryo's Mini GUI Controller.zip", "targetPath": "game-assets/ui/source-packs/Cryo's Mini GUI Controller.zip", "usage": ["controller-prompts", "settings-ui", "input-help"], "status": "needs-relocation-and-license-receipt" },
+    { "id": "cryo-mini-gui-social-buttons", "currentPath": "Cryo's Mini GUI Social Buttons.zip", "targetPath": "game-assets/ui/source-packs/Cryo's Mini GUI Social Buttons.zip", "usage": ["social-buttons", "profile-links", "share-ui"], "status": "needs-relocation-and-license-receipt" },
+    { "id": "custom-border-panels-menu", "currentPath": "Custom Border and Panels Menu All Part.rar", "targetPath": "game-assets/ui/source-packs/Custom Border and Panels Menu All Part.rar", "usage": ["panel-borders", "dialog-frames", "creator-ui"], "status": "needs-relocation-and-license-receipt" },
+    { "id": "raven-fantasy-icons", "currentPath": "Free - Raven Fantasy Icons.zip", "targetPath": "game-assets/ui/icons/Free - Raven Fantasy Icons.zip", "usage": ["inventory-icons", "ability-icons", "menu-icons"], "status": "needs-relocation-and-license-receipt" },
+    { "id": "freebuttons", "currentPath": "Freebuttons.zip", "targetPath": "game-assets/ui/buttons/Freebuttons.zip", "usage": ["primary-buttons", "menu-buttons", "mobile-buttons"], "status": "needs-relocation-and-license-receipt" },
+    { "id": "humble-gift-paper-ui-system", "currentPath": "Humble Gift - Paper UI System.zip", "targetPath": "game-assets/ui/source-packs/Humble Gift - Paper UI System.zip", "usage": ["paper-panels", "dialog-ui", "inventory-ui"], "status": "needs-relocation-and-license-receipt" },
+    { "id": "humble-gift-v1-3", "currentPath": "Humble Gift - v1.3.zip", "targetPath": "game-assets/ui/source-packs/Humble Gift - v1.3.zip", "usage": ["panels", "menus", "hud"], "status": "needs-relocation-and-license-receipt" },
+    { "id": "ui-bundle-free", "currentPath": "UIBundleFree.zip", "targetPath": "game-assets/ui/source-packs/UIBundleFree.zip", "usage": ["general-ui", "buttons", "hud", "menus"], "status": "needs-relocation-and-license-receipt" }
+  ],
+  "controllerPrompts": [
+    { "id": "gamepad-buttons-all", "currentPath": "gdb-gamepad-2(all).zip", "targetPath": "game-assets/ui/controller-prompts/gdb-gamepad-2(all).zip", "usage": ["controller-prompts", "settings-ui", "tutorial-ui"], "status": "needs-relocation-and-license-receipt" },
+    { "id": "gamepad-buttons-aseprite", "currentPath": "gdb-gamepad-2.aseprite", "targetPath": "game-assets/ui/controller-prompts/gdb-gamepad-2.aseprite", "usage": ["controller-prompts-source", "button-remix-source"], "status": "needs-relocation-and-license-receipt" },
+    { "id": "gamepad-platform-a-png", "currentPath": "gdb-playstation-3.png", "targetPath": "game-assets/ui/controller-prompts/gdb-playstation-3.png", "usage": ["controller-prompts", "tutorial-ui", "settings-ui"], "status": "needs-relocation-and-license-receipt" },
+    { "id": "gamepad-platform-b-png", "currentPath": "gdb-switch-2.png", "targetPath": "game-assets/ui/controller-prompts/gdb-switch-2.png", "usage": ["controller-prompts", "tutorial-ui", "settings-ui"], "status": "needs-relocation-and-license-receipt" },
+    { "id": "gamepad-platform-c-png", "currentPath": "gdb-xbox-2.png", "targetPath": "game-assets/ui/controller-prompts/gdb-xbox-2.png", "usage": ["controller-prompts", "tutorial-ui", "settings-ui"], "status": "needs-relocation-and-license-receipt" }
+  ],
+  "needsFollowup": [
+    { "id": "partial-pixel-combat-download", "currentPath": "Helton Yan's Pixel Combat.zip.download", "targetPath": "game-assets/_incoming/retry-or-remove/Helton Yan's Pixel Combat.zip.download", "status": "partial-download-needs-reupload-or-delete" }
+  ]
+}
