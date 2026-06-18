@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "prismcade-generated-sheet-slice-job-v0",
+  "jobId": "prismtek-fixed-hair-game-ready",
+  "characterId": "prismtek-fixed-hair",
+  "displayName": "Prismtek Fixed Hair",
+  "defaultFrameSize": [64, 64],
+  "allowedSizes": [[32, 32], [48, 48], [64, 64], [96, 96], [128, 128], [192, 192], [256, 256]],
+  "sourceSheets": {
+    "locomotion": "external/user-provided/prismtek-fixed-hair/generated/01_locomotion_sheet.png",
+    "traversal": "external/user-provided/prismtek-fixed-hair/generated/02_traversal_sheet.png",
+    "combat": "external/user-provided/prismtek-fixed-hair/generated/03_combat_sheet.png"
+  },
+  "outputRoot": "packages/game-assets/characters/prismtek-fixed-hair",
+  "rows": [
+    { "sheet": "locomotion", "slot": "idle", "y0": 0, "y1": 180, "frames": 4, "gap": 35, "duration": 160, "containsProp": false, "x_min": 150 },
+    { "sheet": "locomotion", "slot": "walk", "y0": 180, "y1": 360, "frames": 6, "gap": 35, "duration": 110, "containsProp": false, "x_min": 150 },
+    { "sheet": "locomotion", "slot": "run", "y0": 360, "y1": 530, "frames": 6, "gap": 35, "duration": 80, "containsProp": false, "x_min": 150 },
+    { "sheet": "locomotion", "slot": "jump", "y0": 530, "y1": 690, "frames": 4, "gap": 35, "duration": 120, "containsProp": false, "x_min": 150 },
+    { "sheet": "locomotion", "slot": "fall", "y0": 690, "y1": 850, "frames": 3, "gap": 30, "duration": 130, "containsProp": false, "x_min": 150 },
+    { "sheet": "locomotion", "slot": "land", "y0": 850, "y1": 1080, "frames": 3, "gap": 35, "duration": 100, "containsProp": false, "x_min": 150 },
+    { "sheet": "traversal", "slot": "climb", "y0": 0, "y1": 175, "frames": 4, "gap": 35, "duration": 120, "containsProp": true, "x_min": 210 },
+    { "sheet": "traversal", "slot": "crouch_idle", "y0": 175, "y1": 315, "frames": 4, "gap": 50, "duration": 140, "containsProp": false, "x_min": 220 },
+    { "sheet": "traversal", "slot": "crouch_walk", "y0": 315, "y1": 455, "frames": 6, "gap": 50, "duration": 105, "containsProp": false, "x_min": 220 },
+    { "sheet": "traversal", "slot": "wall_slide", "y0": 455, "y1": 585, "frames": 3, "gap": 70, "duration": 130, "containsProp": true, "x_min": 220 },
+    { "sheet": "traversal", "slot": "wall_land", "y0": 585, "y1": 705, "frames": 3, "gap": 60, "duration": 110, "containsProp": false, "x_min": 220 },
+    { "sheet": "traversal", "slot": "ledge_climb", "y0": 705, "y1": 875, "frames": 5, "gap": 20, "duration": 130, "containsProp": true, "x_min": 220 },
+    { "sheet": "traversal", "slot": "roll", "y0": 875, "y1": 1086, "frames": 6, "gap": 20, "duration": 90, "containsProp": false, "x_min": 220 },
+    { "sheet": "combat", "slot": "hurt", "y0": 0, "y1": 130, "frames": 3, "gap": 20, "duration": 120, "containsProp": false, "x_min": 220 },
+    { "sheet": "combat", "slot": "death", "y0": 130, "y1": 260, "frames": 5, "gap": 20, "duration": 180, "containsProp": true, "x_min": 220 },
+    { "sheet": "combat", "slot": "punch", "y0": 260, "y1": 380, "frames": 5, "gap": 20, "duration": 90, "containsProp": false, "x_min": 220 },
+    { "sheet": "combat", "slot": "basic", "y0": 380, "y1": 500, "frames": 5, "gap": 40, "duration": 100, "containsProp": false, "x_min": 220 },
+    { "sheet": "combat", "slot": "sword_idle", "y0": 500, "y1": 610, "frames": 4, "gap": 40, "duration": 140, "containsProp": true, "x_min": 220 },
+    { "sheet": "combat", "slot": "sword_run", "y0": 610, "y1": 720, "frames": 6, "gap": 20, "duration": 90, "containsProp": true, "x_min": 220 },
+    { "sheet": "combat", "slot": "sword_stab", "y0": 720, "y1": 835, "frames": 5, "gap": 20, "duration": 90, "containsProp": true, "x_min": 220 },
+    { "sheet": "combat", "slot": "victory", "y0": 835, "y1": 955, "frames": 4, "gap": 25, "duration": 140, "containsProp": false, "x_min": 220 },
+    { "sheet": "combat", "slot": "interact", "y0": 955, "y1": 1086, "frames": 3, "gap": 40, "duration": 140, "containsProp": true, "x_min": 220 }
+  ]
+}
