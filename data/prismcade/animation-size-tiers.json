@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "prismcade-animation-size-tiers-v0",
+  "maxFrameSize": [256, 256],
+  "defaultPortableFrameSize": [64, 64],
+  "tiers": [
+    { "id": "mini", "frameSize": [32, 32], "uses": ["icons", "tiny_arcade", "fallback_mini_avatar"] },
+    { "id": "compact", "frameSize": [48, 48], "uses": ["small_arcade", "mobile_fallback"] },
+    { "id": "standard_chibi", "frameSize": [64, 64], "uses": ["portable_avatar", "platformer", "top_down", "default_fighter"] },
+    { "id": "fighter", "frameSize": [96, 96], "uses": ["fighter", "brawler", "larger_avatar"] },
+    { "id": "showcase", "frameSize": [128, 128], "uses": ["boss", "showcase_character", "cutscene"] },
+    { "id": "premium_showcase", "frameSize": [192, 192], "uses": ["premium_character", "large_boss", "hero_cutscene"] },
+    { "id": "max", "frameSize": [256, 256], "uses": ["maximum_character", "boss", "high_detail_fighter", "cutscene"] }
+  ],
+  "gamePerformanceTiers": [
+    { "id": "tiny", "maxFrameSize": [64, 64] },
+    { "id": "standard", "maxFrameSize": [96, 96] },
+    { "id": "showcase", "maxFrameSize": [128, 128] },
+    { "id": "premium", "maxFrameSize": [192, 192] },
+    { "id": "max", "maxFrameSize": [256, 256] }
+  ],
+  "fallbacks": ["baked_smaller_sheet", "portrait", "mini_avatar", "palette_identity", "badge"]
+}
