@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "prismcade-row-level-world-assets-v0",
+  "sourceInventory": "game-assets/README.md#tilesets-environment",
+  "summary": { "items": 68, "sizeMb": 39.70, "intakeItems": 5 },
+  "defaultLicenseStatus": "mixed_needs_per_pack_review",
+  "categories": [
+    { "id": "side-platformer-worlds", "views": ["side"], "roles": ["platformer_tiles", "stage_backgrounds"], "sourceCount": 18, "status": "needs_row_expansion" },
+    { "id": "top-down-worlds", "views": ["low_top_down", "top_down"], "roles": ["hub_maps", "rpg_maps", "cozy_maps"], "sourceCount": 26, "status": "needs_row_expansion" },
+    { "id": "interior-and-shop-worlds", "views": ["low_top_down", "top_down"], "roles": ["interiors", "shops", "avatar_locker"], "sourceCount": 8, "status": "needs_row_expansion" },
+    { "id": "isometric-builder-worlds", "views": ["isometric", "top_down"], "roles": ["city_builder", "props", "buildings"], "sourceCount": 6, "status": "needs_row_expansion" },
+    { "id": "environment-loose-sheets", "views": ["side", "low_top_down", "top_down"], "roles": ["decorations", "trees", "water", "foliage"], "sourceCount": 10, "status": "needs_row_expansion" }
+  ],
+  "priorityRows": [
+    { "id": "pixel-art-top-down-basic", "sourcePath": "game-assets/tilesets-environment/Pixel Art Top Down - Basic v1.2.3.zip", "views": ["low_top_down", "top_down"], "roles": ["hub_map", "rpg_map"], "status": "candidate" },
+    { "id": "modern-interiors", "sourcePath": "game-assets/tilesets-environment/Modern_Interiors_Free_v2.2.zip", "views": ["low_top_down", "top_down"], "roles": ["interior", "shop"], "status": "candidate" },
+    { "id": "tiny-ranch", "sourcePath": "game-assets/tilesets-environment/TinyRanch_Assets.zip", "views": ["low_top_down", "top_down"], "roles": ["cozy", "farming"], "status": "candidate" },
+    { "id": "pixel-platformer-set", "sourcePath": "game-assets/tilesets-environment/PixelPlatformerSet1v.1.1.zip", "views": ["side"], "roles": ["platformer_stage"], "status": "candidate" },
+    { "id": "tiny-texture-pack-2-root", "sourcePath": "SBS - Tiny Texture Pack 2 - 128x128.rar", "targetPath": "game-assets/tilesets-environment/SBS - Tiny Texture Pack 2 - 128x128.rar", "views": ["side", "low_top_down", "top_down"], "roles": ["world_textures", "tile_reference", "retro_world_materials"], "sourceCommit": "6e7892e29113c06cbdc77a952292f292ed6d189e", "status": "root_upload_needs_relocation" },
+    { "id": "water-example-tmx-root", "sourcePath": "water-example.tmx", "targetPath": "game-assets/tilesets-environment/water-example.tmx", "views": ["low_top_down", "top_down"], "roles": ["water_map_reference", "tilemap_test", "world_builder_example"], "sourceCommit": "6e7892e29113c06cbdc77a952292f292ed6d189e", "status": "root_upload_needs_relocation" },
+    { "id": "water-tiles-auto-tsx-root", "sourcePath": "watertiles-auto.tsx", "targetPath": "game-assets/tilesets-environment/watertiles-auto.tsx", "views": ["low_top_down", "top_down"], "roles": ["water_tileset_source", "tilemap_autotile_reference"], "sourceCommit": "6e7892e29113c06cbdc77a952292f292ed6d189e", "status": "root_upload_needs_relocation" },
+    { "id": "32rogues-0-4-root", "sourcePath": "32rogues-0.4.0.zip", "targetPath": "game-assets/misc/32rogues-0.4.0.zip", "views": ["low_top_down", "top_down", "profile_lobby"], "roles": ["roguelike_tiles", "roguelike_icons", "prototype_library"], "sourceCommit": "6e7892e29113c06cbdc77a952292f292ed6d189e", "status": "root_upload_needs_deduplication" },
+    { "id": "32rogues-0-5-root", "sourcePath": "32rogues-0.5.0.zip", "targetPath": "game-assets/misc/32rogues-0.5.0.zip", "views": ["low_top_down", "top_down", "profile_lobby"], "roles": ["roguelike_tiles", "roguelike_icons", "prototype_library"], "sourceCommit": "6e7892e29113c06cbdc77a952292f292ed6d189e", "status": "root_upload_needs_deduplication" }
+  ]
+}

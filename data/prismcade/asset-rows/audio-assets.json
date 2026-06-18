@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "prismcade-row-level-audio-assets-v0",
+  "sourceInventory": "game-assets/README.md#audio",
+  "summary": { "items": 30, "sizeMb": 17.68 },
+  "defaultLicenseStatus": "mixed_needs_per_pack_review",
+  "entries": [
+    { "id": "announcer-choose-fighter", "name": "Choose Your Fighter", "sourcePath": "game-assets/audio/01. Choose Your Fighter.wav", "size": "637 KB", "cueType": "announcer", "roles": ["character_select"] },
+    { "id": "announcer-select-arena", "name": "Select the Arena", "sourcePath": "game-assets/audio/02. Select the Arena.wav", "size": "599 KB", "cueType": "announcer", "roles": ["arena_select"] },
+    { "id": "announcer-select-difficulty", "name": "Select Difficulty", "sourcePath": "game-assets/audio/03. Select Difficulty.wav", "size": "599 KB", "cueType": "announcer", "roles": ["difficulty_select"] },
+    { "id": "announcer-player-1", "name": "Player 1", "sourcePath": "game-assets/audio/04. Player 1.wav", "size": "559 KB", "cueType": "announcer", "roles": ["player_label"] },
+    { "id": "announcer-player-2", "name": "Player 2", "sourcePath": "game-assets/audio/05. Player 2.wav", "size": "545 KB", "cueType": "announcer", "roles": ["player_label"] },
+    { "id": "announcer-round-1", "name": "Round 1", "sourcePath": "game-assets/audio/09. Round 1.wav", "size": "491 KB", "cueType": "announcer", "roles": ["round_start"] },
+    { "id": "announcer-final-round", "name": "Final Round", "sourcePath": "game-assets/audio/13. Final Round.wav", "size": "610 KB", "cueType": "announcer", "roles": ["round_start"] },
+    { "id": "announcer-defeat", "name": "Defeat", "sourcePath": "game-assets/audio/18. Defeat.wav", "size": "526 KB", "cueType": "announcer", "roles": ["loss"] },
+    { "id": "announcer-victory", "name": "Victory", "sourcePath": "game-assets/audio/21. Victory.wav", "size": "587 KB", "cueType": "announcer", "roles": ["win"] },
+    { "id": "announcer-winner", "name": "Winner", "sourcePath": "game-assets/audio/22. Winner.wav", "size": "521 KB", "cueType": "announcer", "roles": ["win"] },
+    { "id": "announcer-you-win", "name": "You Win", "sourcePath": "game-assets/audio/23. You Win.wav", "size": "581 KB", "cueType": "announcer", "roles": ["win"] },
+    { "id": "announcer-fight", "name": "Fight", "sourcePath": "game-assets/audio/24. Fight.wav", "size": "479 KB", "cueType": "announcer", "roles": ["match_start"] },
+    { "id": "announcer-countdown-3", "name": "Countdown 3 2 1 Fight", "sourcePath": "game-assets/audio/25. Countdown - 3, 2, 1 Fight.wav", "size": "975 KB", "cueType": "announcer", "roles": ["countdown"] },
+    { "id": "announcer-countdown-5", "name": "Countdown 5 4 3 2 1", "sourcePath": "game-assets/audio/26. Countdown - 5, 4, 3, 2, 1....wav", "size": "1.14 MB", "cueType": "announcer", "roles": ["countdown"] },
+    { "id": "announcer-time", "name": "Time", "sourcePath": "game-assets/audio/27. Time.wav", "size": "540 KB", "cueType": "announcer", "roles": ["timer"] },
+    { "id": "announcer-sudden-death", "name": "Sudden Death", "sourcePath": "game-assets/audio/29. Sudden Death.wav", "size": "568 KB", "cueType": "announcer", "roles": ["final_state"] },
+    { "id": "announcer-congratulations", "name": "Congratulations", "sourcePath": "game-assets/audio/30. Congratulations.wav", "size": "733 KB", "cueType": "announcer", "roles": ["reward"] },
+    { "id": "announcer-game-over", "name": "Game Over", "sourcePath": "game-assets/audio/31. Game Over.wav", "size": "689 KB", "cueType": "announcer", "roles": ["game_over"] }
+  ]
+}
