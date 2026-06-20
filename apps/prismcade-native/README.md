@@ -58,3 +58,4 @@ apps/prismcade-native/verification-screenshots/
 
 Desktop `screencapture` returned black in this Codex desktop context, so each SpriteKit scene writes its own macOS runtime snapshot during gated verification.
 
+`/Users/prismtek/Prismtek/prismtek-site` was cloned locally before the final merge pass and searched for Flappy Pixel, Dino, Buck/Borris/Boris, Prismcade, and image/source references. The site contains useful Flappy Pixel React/canvas source and Prismcade platform metadata, but the native app keeps the curated local Onocentaur bird, DinoSprites, and Buck Borris assets because they are the best safe native sprites found.

@@ -29,3 +29,4 @@ Verified: all four dinos found and selected, real sprites visible, jump works, o
 - Art used: `/Users/prismtek/Documents/Libresprite/dinoCharactersVersion1/sheets/DinoSprites - vita.png`
 - Excluded: copied Google/Chrome Dino assets; none were used.
 
+The final `prismtek-site` pass found only incidental dino-like references in companion/pet content, not a safer or more complete Dino Dash asset set. The native app therefore keeps the four local DinoSprites sheets.

@@ -1,0 +1,11 @@
+{
+  "cardCount" : 3,
+  "gameCards" : [
+    "Flappy Pixel",
+    "Prismtek Dino Dash",
+    "Buck Borris Mini-Game"
+  ],
+  "screen" : "Prismcade hub",
+  "selectedGame" : null,
+  "verified" : true
+}

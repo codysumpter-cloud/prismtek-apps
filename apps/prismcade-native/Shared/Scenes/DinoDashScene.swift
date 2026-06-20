@@ -57,6 +57,8 @@ final class DinoDashScene: SKScene {
     private var autoSawSpeedRamp = false
     private var autoSawGameOver = false
     private var autoSawRestart = false
+    private var autoWroteSelectSnapshot = false
+    private var autoWroteGameplaySnapshot = false
     private var autoForcedCollision = false
     private let groundY: CGFloat = 92
     private let gravity: CGFloat = -1600
@@ -342,6 +344,10 @@ final class DinoDashScene: SKScene {
                 autoSelectedIds.append(choices[index].id)
             }
             layoutChoices()
+            if autoTime > 0.4 && !autoWroteSelectSnapshot {
+                autoWroteSelectSnapshot = true
+                writeSceneSnapshot(path: "/tmp/prismcade-dino-character-select-snapshot.png")
+            }
             if autoTime > 1.7 {
                 startRun(index: choices.count - 1)
             }
@@ -349,6 +355,10 @@ final class DinoDashScene: SKScene {
         }
 
         if phase == .playing {
+            if runTime > 2.0 && !autoWroteGameplaySnapshot {
+                autoWroteGameplaySnapshot = true
+                writeSceneSnapshot(path: "/tmp/prismcade-dino-gameplay-snapshot.png")
+            }
             if runner.position.y <= groundY + 2 && (obstacles.first?.node.position.x ?? size.width) - runner.position.x < 160 {
                 jumpOrRestart()
             }

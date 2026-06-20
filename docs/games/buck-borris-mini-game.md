@@ -29,3 +29,4 @@ Verified: Buck sprite visible, jump works, hazards spawn, pickup collection work
 - Art used: `/Users/prismtek/Documents/Libresprite/Buck Borris/sensible_frames/frames/run/run_03.png`
 - Additional curated Buck strips copied for future animation expansion.
 
+The final `prismtek-site` pass did not find Buck, Borris, or Boris game assets. The native app uses the local Buck Borris LibreSprite folder assets instead of any placeholder player art.
