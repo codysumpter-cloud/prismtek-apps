@@ -4,7 +4,8 @@ This TODO is for the next branch/PR. It should not be treated as proof that the 
 
 ## Game identity cleanup
 
-- Rename `Buck Borris Mini-Game` to `Beat Em Up Buck` once the gameplay becomes a tiny fighter/brawler.
+- `Beat Em Up Buck` is the canonical Buck Borris game direction.
+- The current merged runtime is still the earlier Buck Borris jump/dodge prototype until the next polish PR replaces it.
 - Keep `Flappy Pixel` and `Prismtek Dino Dash` as canonical launch names.
 
 ## Hub preview cleanup
