@@ -70,6 +70,7 @@
 		6560BC5E3617F554335C9602 /* review_3.png in Resources */ = {isa = PBXBuildFile; fileRef = EBF9D899B45756E46EFF8D3B /* review_3.png */; };
 		66404813CAD16225A2C436C0 /* failed_0.png in Resources */ = {isa = PBXBuildFile; fileRef = DCE9F21735C144C860455D28 /* failed_0.png */; };
 		69FD557C72A6B6E2EB3A64E0 /* jumping_3.png in Resources */ = {isa = PBXBuildFile; fileRef = F524DE77F67C32948548DE6C /* jumping_3.png */; };
+		6F5CE03D4B7E101CDCD72F50 /* BuddyRoomTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFE08E8055FB310865FEA71 /* BuddyRoomTheme.swift */; };
 		6F976EB5C765CF34DAF72817 /* failed_4.png in Resources */ = {isa = PBXBuildFile; fileRef = 048070596A34A291BA04E20A /* failed_4.png */; };
 		70065D5B924B69942DCDDEC6 /* running_4.png in Resources */ = {isa = PBXBuildFile; fileRef = 5CBCA187015664F28A12D8F4 /* running_4.png */; };
 		7091E7C318492E6F47D6B98F /* failed_2.png in Resources */ = {isa = PBXBuildFile; fileRef = CAEA3EAD6E4A8211D8DE142F /* failed_2.png */; };
@@ -84,6 +85,7 @@
 		7CF21AD6133387E3123AB152 /* idle_0.png in Resources */ = {isa = PBXBuildFile; fileRef = 357E456495ED9340BAC1328E /* idle_0.png */; };
 		7DEAB4D42B347C637C313C3A /* jumping_0.png in Resources */ = {isa = PBXBuildFile; fileRef = 8E83474E36737A149E1E3365 /* jumping_0.png */; };
 		80BEEC0B8638C488220CAB35 /* running-right_2.png in Resources */ = {isa = PBXBuildFile; fileRef = 2D071155B7AD2015E880FCB2 /* running-right_2.png */; };
+		828FDDFD9AC6CB669F814FAB /* BuddyRoomTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFE08E8055FB310865FEA71 /* BuddyRoomTheme.swift */; };
 		888F4F76C75D0215B90A86AF /* idle_3.png in Resources */ = {isa = PBXBuildFile; fileRef = 581CF2E705E8ADDD200BBCA4 /* idle_3.png */; };
 		89040BADF70815EB9406A0A4 /* review_4.png in Resources */ = {isa = PBXBuildFile; fileRef = CB3B8B6201957D17AD115EC4 /* review_4.png */; };
 		89A26D309AA4E2B15557EEBB /* failed_4.png in Resources */ = {isa = PBXBuildFile; fileRef = 048070596A34A291BA04E20A /* failed_4.png */; };
@@ -155,6 +157,7 @@
 		048070596A34A291BA04E20A /* failed_4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = failed_4.png; sourceTree = "<group>"; };
 		07246C40F2000E9C927CC29F /* running_1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = running_1.png; sourceTree = "<group>"; };
 		090AD032326FC8FC432FE6CF /* running-left_0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "running-left_0.png"; sourceTree = "<group>"; };
+		0AFE08E8055FB310865FEA71 /* BuddyRoomTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyRoomTheme.swift; sourceTree = "<group>"; };
 		0C16BBFB5E028D2A386DBB14 /* running-left_2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "running-left_2.png"; sourceTree = "<group>"; };
 		0CC03DC31B30CC61CBACAE2C /* running-left_3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "running-left_3.png"; sourceTree = "<group>"; };
 		0E76EF05EB88BF707A2AC0CF /* jumping_4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = jumping_4.png; sourceTree = "<group>"; };
@@ -344,6 +347,7 @@
 			isa = PBXGroup;
 			children = (
 				DA64B48D14DDC677E13BC135 /* AppState.swift */,
+				0AFE08E8055FB310865FEA71 /* BuddyRoomTheme.swift */,
 				68EC04D71256422644304D11 /* Progression.swift */,
 				AAC0AA786246FFC0F46E7204 /* Task.swift */,
 			);
@@ -592,6 +596,7 @@
 				1A0E69A73C85B7C9806A8F94 /* AmbienceView.swift in Sources */,
 				10646958300C98800CA4C901 /* AppState.swift in Sources */,
 				AC64DE02B741A7AB4D15981C /* BitbudRenderer.swift in Sources */,
+				828FDDFD9AC6CB669F814FAB /* BuddyRoomTheme.swift in Sources */,
 				E030CECEB68E8795C15FE696 /* CozyRoomView.swift in Sources */,
 				500396D9EB0F2954257F4FEE /* FocusTimerView.swift in Sources */,
 				600E9601A439346AC02342B3 /* MemoView.swift in Sources */,
@@ -611,6 +616,7 @@
 				E2B2C88F04756F3FAA34A279 /* AmbienceView.swift in Sources */,
 				0ED1B2806E443C9C9F47851C /* AppState.swift in Sources */,
 				D8C2E41DCB752B93DFF4F4BD /* BitbudRenderer.swift in Sources */,
+				6F5CE03D4B7E101CDCD72F50 /* BuddyRoomTheme.swift in Sources */,
 				A2B993D0E80892C519150EA5 /* CozyRoomView.swift in Sources */,
 				92B863D64B113DC6E0F3E629 /* FocusTimerView.swift in Sources */,
 				9E5707918FBA12CF2F567BE9 /* MemoView.swift in Sources */,
