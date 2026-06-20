@@ -1,56 +1,74 @@
 # Prismtek Buddies — Buddy Actions
 
-What Bitbud can do in the interactive room today, and the planned expansion.
-Surfaced in-app via the **"What can Buddy do?"** panel (`BuddyActionsView` →
+What Buddy can do in the interactive room today, and the planned expansion.
+Surfaced in-app via the **What can Buddy do?** panel (`BuddyActionsView` ->
 `WhatCanBuddyDoPanel`).
 
 ## Current actions
 
-Each row maps an object `kind` (or app event) → `BuddyInteraction` → Bitbud
-`BuddyState` animation row → on-screen action label. Mapping lives in
-`AppState.state(for:)` and `AppState.label(for:objectName:)`.
-
-| Trigger | Object kind | Interaction | Bitbud state | Label | Notes |
+| Trigger | Object kind | Interaction | Buddy state | Label | Notes |
 |---|---|---|---|---|---|
-| Tap chair / couch | `chair` | `sit` | `waiting` | "Bitbud is sitting" | reuses waiting row (TODO: dedicated sit) |
-| Tap desk | `desk` | `work` | `running` | "Bitbud is working at the desk" | |
-| Tap computer | `computer` | `work` | `running` | "Bitbud is working at the computer" | |
-| Tap shelf / picture | `shelf` | `inspect` | `review` | "Bitbud is inspecting the …" | |
-| Tap plant | `plant` | `waterPlant` | `review` | "Bitbud waters the plant" | reuses review row (TODO: dedicated water) |
-| Tap window | `window` | `rest` | `waiting` | "Bitbud is resting" | |
-| Tap rug | `rug` | `rest` | `waiting` | "Bitbud is resting" | |
-| Tap music player | `musicPlayer` | `listen` | `waving` | "Bitbud is listening to music" | audio is a placeholder (no sound shipped) |
-| Focus session complete | — (event) | `celebrate` | `jumping` | "Bitbud is celebrating a finished focus session!" | wired in `focusSessionCompleted()` |
-| Delete / fail task | — (event) | — | `failed` | "Bitbud reacts to a deleted task" | wired in `deleteTask()` |
-| App appears / greet | — (event) | `wave` | `waving` | "Bitbud waves hello" | wired in `greeted()` |
+| Tap chair / couch | `chair` | `sit` | `waiting` | "Buddy is sitting" | reuses waiting row; future dedicated sit |
+| Tap desk | `desk` | `work` | `running` | "Buddy is working at the desk" | desk anchor places Buddy by the chair |
+| Tap computer | `computer` | `work` | `running` | "Buddy is working at the computer" | |
+| Tap shelf / picture | `shelf` | `inspect` | `review` | "Buddy is inspecting the ..." | |
+| Tap plant | `plant` | `waterPlant` | `review` | "Buddy checks the plant" | future water/garden animation |
+| Tap window | `window` | `rest` | `waiting` | "Buddy is resting" | |
+| Tap rug | `rug` | `rest` | `waiting` | "Buddy is resting" | idle/play-on-rug placeholder |
+| Tap music player | `musicPlayer` | `listen` | `waving` | "Buddy is listening to music" | audio is a placeholder |
+| Focus session complete | event | `celebrate` | `jumping` | "Buddy celebrates a finished focus session!" | Pomodoro completion |
+| Delete / fail task | event | failed | `failed` | "Buddy reacts to a deleted task" | |
+| App appears / greet | event | `wave` | `waving` | "Buddy waves hello" | |
+| Buddy picker | UI | switch | current state | selected Buddy changes renderer | Bitbud animated; variants static |
+| Buddy Studio | UI | workflow | unchanged | panel opens | import/generation workflow v0 |
 
-### Manual emote buttons
+## Manual emote buttons
 
-`BuddyActionsView` also exposes manual emote buttons that set Bitbud's state +
-label directly, independent of furniture:
+- Wave -> `waving`
+- Celebrate -> `jumping`
+- Think -> `review`
+- Work -> `running`
+- Wait -> `waiting`
+- Sit -> `waiting`
+- Sad -> `failed`
 
-- **Wave** → `waving` · "Bitbud waves hello"
-- **Celebrate** → `jumping` · "Bitbud is celebrating!"
-- **Think** (inspect) → `review` · "Bitbud is thinking it over"
-- **Work** → `running` · "Bitbud is working"
-- **Wait** → `waiting` · "Bitbud is waiting"
-- **Sit** → `waiting` · "Bitbud is sitting"
-- **Sad** (fail) → `failed` · "Bitbud feels sad"
+## Static Buddy behavior
+
+Static 64x64 buddies do not have per-state animation rows. They still respond to
+clicks and emotes through action labels, anchor movement, and a small state-driven
+bob/scale in `StaticBuddyRenderer`. Bitbud remains the default animated atlas
+Buddy.
+
+## Current in-app capability list
+
+- Sit on chair
+- Work at desk/computer
+- Review task
+- Wait for user
+- Celebrate focus session
+- Wave/greet
+- React to failed/deleted task
+- Inspect shelf
+- Water/check plant
+- Listen to music placeholder
+- Idle/play on rug
+- Switch buddies
+- Open Buddy Studio
 
 ## Future expansion
 
-Listed in the panel's "Future" section:
-
 - Apple Reminders tasks
-- Apple Notes memo context
-- GitHub PR / check reactions
-- Codex / Claude build-phase reactions
-- Gifts / unlocks after focus streaks
-- Time-of-day room / theme changes
-- Choose different Buddies
-- Dedicated animations (sit / sleep / dance / eat / read / code / fish / garden)
+- Apple Notes context
+- GitHub PR/check status
+- Codex/Claude build phases
+- Obsidian context
+- Focus streak gifts/unlocks
+- Time-of-day room changes
+- More Buddy variants
+- Dedicated animations: sit, sleep, dance, eat, read, code, fish, garden, listen
 - Room editor / furniture placement
 - Mini Mode desktop companion controls
+- Live pet generation/import through LibreSprite + PixelLab plugin
 
-See `interactive-room-plan.md` for how to add a furniture object or a dedicated
-Buddy animation state.
+See `interactive-room-plan.md` for room-object expansion and
+`buddy-studio.md` for Buddy import/generation expansion.

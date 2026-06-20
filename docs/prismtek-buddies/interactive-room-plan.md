@@ -1,99 +1,117 @@
 # Prismtek Buddies — Interactive Pixel-Art Room
 
-This document records the move from the theme-only v0 cozy room to an
+This document records the move from the theme-only v0 cozy room to a polished
 **interactive pixel-art room** in `apps/prismtek-buddies-native/`.
 
 ## Why theme-only was insufficient
 
-The v0 `CozyRoomView` drew the whole room with SwiftUI `Shape`s and
-`LinearGradient`s. It looked fine but had two problems for the cozy-companion
-direction:
+The first native room drew the wall, floor, furniture, and lighting with SwiftUI
+shapes and gradients. It proved the product idea but did not fit Bitbud:
 
-1. **Not pixel-art.** Soft gradients + anti-aliased rounded rectangles read as
-   "modern UI", not as a cozy 2D game room. Bitbud (a hard-edged sprite) sat on
-   top of smooth vector furniture, which clashed.
-2. **Not interactive.** Furniture was decorative. There was no way for Bitbud to
-   *do* anything in the room beyond the timer/task event reactions; you couldn't
-   click the desk to make Bitbud work, or the chair to make it sit.
+1. **Bitbud is pixel art, the room was not.** Smooth gradients and rounded vector
+   furniture made Bitbud look pasted onto a modern UI surface.
+2. **The room did not have a floor plane.** Objects sat like stickers rather than
+   furniture in a small space.
+3. **The wall/floor were not assets.** Theme colors alone could not satisfy the
+   pixel-art visual target.
 
-## Pixel-art target
+## Why PR #202 needed this polish pass
 
-- Every room sprite **and** Bitbud render with
-  `Image(...).interpolation(.none).resizable()` — hard edges, no blur, no
-  anti-alias smoothing.
-- The room scene uses **flat theme color blocks** (a flat wall band + flat floor
-  band + a 2px accent skirting line at the seam). No gradients inside the room
-  scene. `BuddyRoomTheme` (wall/floor/accent) still drives the palette, so the
-  theme picker keeps working.
-- The side panel (timer/tasks/memo/ambience/actions) stays normal SwiftUI — only
-  the room *scene* is held to the pixel-art bar.
+PR #202 proved the interaction pipeline: furniture could be clicked, Buddy moved
+to anchors, action labels changed, and emotes worked. The props were better, but
+the wall and floor still used flat SwiftUI color areas. This pass keeps the PR
+pipeline and replaces the unfinished room surface with tiled pixel art.
 
-## Art slicing / LibreSprite usage
+## Pixel-art visual target
 
-The room sprites are tiny hard-edged PNGs (13–64 px) committed under
-`Shared/Resources/RoomArt/`. Provenance is recorded in
-`docs/prismtek-buddies/asset-inventory.md`. Six are connected-component slices
-from the owner-attested ship-safe `interior free` pack; four are original
-Prismtek pixel props authored this pass. The non-commercial `fishing_free` pack
-is excluded. No raw `.aseprite` / LibreSprite project files are committed — only
-the flat PNGs that ship.
+- Wall and floor are sprite-backed/tiled from 16x16 PNGs.
+- A repeated 16x4 baseboard separates the wall and floor.
+- No gradients are used inside the room scene.
+- Furniture and buddies render with `.interpolation(.none)`.
+- Selection feedback is a blocky pixel outline, not a soft glow.
+- Buddy feet anchor to the floor plane and object anchors.
+- Furniture z-order separates back-wall props, Buddy, and foreground seating.
+
+The side panel remains normal SwiftUI; the room scene itself is held to the
+pixel-art bar.
+
+## LibreSprite / plugin usage
+
+LibreSprite is part of the app workflow and verification path:
+
+```text
+/Applications/LibreSprite.app
+/Applications/LibreSprite.app/Contents/MacOS/libresprite
+~/Library/Application Support/LibreSprite/scripts/PixelLab.js
+~/Library/Application Support/LibreSprite/PixelLab-Aseprite-extension
+```
+
+Use LibreSprite for local inspection/export/cleanup: sprite dimensions, hard-edge
+pixel checks, slicing/cropping, and 64x64 Buddy PNG preparation. Do not use the
+PixelLab plugin to spend credits unless the user explicitly approves it.
 
 ## Clickable object model
 
-A room is a list of `RoomObject` (see `Shared/Models/RoomObject.swift`), loaded
-at launch from `Shared/Resources/default-room-objects.json`
-(`RoomObject.loadDefaultRoom()`), held on `AppState.roomObjects`.
+A room is a list of `RoomObject` values loaded from
+`Shared/Resources/default-room-objects.json` and held on `AppState.roomObjects`.
 
 ```swift
 struct RoomObject: Identifiable, Codable {
     let id: String
     let name: String
-    let kind: RoomObjectKind        // chair, desk, bed, shelf, plant, window, rug, musicPlayer, computer
-    let interaction: BuddyInteraction // sit, work, rest, wave, inspect, waterPlant, listen, celebrate, wait
-    let assetName: String?          // PNG base name in Resources/RoomArt
-    let position: CGPoint           // normalized 0...1 center
-    let size: CGSize                // normalized fraction of room w/h
-    let buddyAnchor: CGPoint        // normalized feet position when interacting
-    let zIndex: Double              // draw order
+    let kind: RoomObjectKind
+    let interaction: BuddyInteraction
+    let assetName: String?
+    let position: CGPoint
+    let size: CGSize
+    let buddyAnchor: CGPoint
+    let zIndex: Double
 }
 ```
 
-Coordinates are **normalized to the room canvas (0…1, origin top-left)** so the
-layout scales with the view on both macOS and iOS.
+Coordinates are normalized to the room canvas (`0...1`, origin top-left), so the
+same JSON scales across macOS, iOS, and Mini Mode-adjacent layouts.
 
-`CozyRoomView` sorts objects by `zIndex`, renders each as a `RoomObjectSprite`,
-and attaches an `onTapGesture` that calls `AppState.interact(with:)`. That:
+`CozyRoomView` now draws:
 
-1. sets `selectedObjectID` (drives the accent outline + slight scale),
-2. moves `buddyAnchor` to the object's anchor (Bitbud animates over via
-   `.animation(.easeInOut, value:)`),
-3. sets the Bitbud `BuddyState` via `AppState.state(for: interaction)`,
-4. sets `actionLabel` (e.g. "Bitbud is sitting"), shown as a flat chip.
+1. tiled wall,
+2. tiled floor,
+3. pixel baseboard,
+4. back objects (`zIndex < 50`),
+5. selected Buddy at its feet anchor,
+6. foreground objects (`zIndex >= 50`),
+7. action label.
 
 ## How to add a furniture object
 
-1. Add a hard-edged PNG to `Shared/Resources/RoomArt/` (keep it small; it bundles
-   automatically — the `Shared` dir is an XcodeGen source path and unknown file
-   types become flat resources in both targets).
-2. Add an entry to `Shared/Resources/default-room-objects.json` with a unique
-   `id`, a `kind`, an `interaction`, the `assetName` (PNG base name), and
-   normalized `position` / `size` / `buddyAnchor` / `zIndex`.
-3. Run `xcodegen generate` and rebuild. No Swift changes are required for a new
-   object that reuses an existing `kind` / `interaction`.
+1. Add a hard-edged PNG to `Shared/Resources/RoomArt/`.
+2. Add a JSON entry to `Shared/Resources/default-room-objects.json` with a unique
+   id, kind, interaction, asset name, position, size, Buddy anchor, and z-index.
+3. Use `zIndex < 50` for wall/back-plane props, `zIndex >= 50` for objects that
+   should appear in front of Buddy.
+4. Run `xcodegen generate` and rebuild.
 
-If the PNG is missing at runtime, `RoomObjectSprite` falls back to a flat accent
-block so the layout stays intact.
+## How to add a new Buddy
+
+See `docs/prismtek-buddies/buddy-studio.md`. Short version: prepare a transparent
+64x64 PNG in LibreSprite, commit only the curated PNG, add it to
+`BuddyCharacter.registry`, and verify the picker plus Mini Mode.
 
 ## How to add a Buddy animation state later
 
-Today some interactions reuse the closest existing atlas row (see the `TODO`s in
-`AppState.state(for:)`): `sit`/`rest`/`wait` → `waiting`, `listen` → `waving`,
-`waterPlant`/`inspect` → `review`. To add a dedicated animation:
+Some interactions still reuse the closest existing atlas row:
 
-1. Add the new row to the Bitbud atlas and re-slice via
-   `scripts/extract_bitbud_frames.py` into `Shared/Resources/BitbudFrames/`.
-2. Add a case to `BuddyState` (`Shared/Models/AppState.swift`) and an entry to
-   `BitbudFrames.layout` (`Shared/Buddy/BitbudRenderer.swift`) with the row name +
-   frame count.
-3. Point the relevant `BuddyInteraction` at the new `BuddyState` in
-   `AppState.state(for:)` and remove the corresponding `TODO`.
+- sit/rest/wait -> `waiting`
+- listen -> `waving`
+- water/check plant and inspect -> `review`
+
+To add a dedicated animation:
+
+1. Add frames to a future Buddy atlas and slice them to PNG.
+2. Add a `BuddyState` case in `AppState.swift`.
+3. Add a frame row entry in `BitbudFrames.layout`.
+4. Point the relevant `BuddyInteraction` at the new state.
+5. Document the mapping in `buddy-actions.md`.
+
+Future hooks are reserved for sit, sleep, dance, read, code, eat, garden, listen,
+and related room-specific actions.

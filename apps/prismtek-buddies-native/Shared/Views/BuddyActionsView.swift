@@ -1,9 +1,6 @@
 import SwiftUI
 
 /// Manual emote buttons + a "What can Buddy do?" panel.
-/// The emote buttons drive Bitbud's state and the room action label directly
-/// (independent of tapping furniture). The panel lists current actions and a
-/// future roadmap.
 struct BuddyActionsView: View {
     @EnvironmentObject var appState: AppState
     @State private var showWhatCanBuddyDo = false
@@ -13,7 +10,6 @@ struct BuddyActionsView: View {
             Text("Buddy Actions")
                 .font(.headline)
 
-            // Manual emote buttons.
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 88), spacing: 8)], spacing: 8) {
                 emoteButton("Wave", "hand.wave") { appState.emote(.wave) }
                 emoteButton("Celebrate", "party.popper") { appState.emote(.celebrate) }
@@ -50,35 +46,38 @@ struct BuddyActionsView: View {
     }
 }
 
-/// Lists the current Buddy actions and a "Future" roadmap section.
 struct WhatCanBuddyDoPanel: View {
     @Binding var isPresented: Bool
 
     private let current: [String] = [
         "Sit on chair",
-        "Work at desk",
-        "Review a task",
+        "Work at desk/computer",
+        "Review task",
         "Wait for user",
         "Celebrate focus session",
-        "Wave / greet",
-        "React to a failed / deleted task",
+        "Wave/greet",
+        "React to failed/deleted task",
         "Inspect shelf",
-        "Water plant",
-        "Listen to music (placeholder)",
-        "Idle on rug"
+        "Water/check plant",
+        "Listen to music placeholder",
+        "Idle/play on rug",
+        "Switch buddies",
+        "Open Buddy Studio"
     ]
 
     private let future: [String] = [
         "Apple Reminders tasks",
-        "Apple Notes memo context",
-        "GitHub PR / check reactions",
-        "Codex / Claude build-phase reactions",
-        "Gifts / unlocks after focus streaks",
-        "Time-of-day room / theme changes",
-        "Choose different Buddies",
-        "Dedicated animations (sit / sleep / dance / eat / read / code / fish / garden)",
+        "Apple Notes context",
+        "GitHub PR/check status",
+        "Codex/Claude build phases",
+        "Obsidian context",
+        "Focus streak gifts/unlocks",
+        "Time-of-day room changes",
+        "More Buddy variants",
+        "Dedicated animations: sit, sleep, dance, eat, read, code, fish, garden, listen",
         "Room editor / furniture placement",
-        "Mini Mode desktop companion controls"
+        "Mini Mode desktop companion controls",
+        "Live pet generation/import through LibreSprite + PixelLab plugin"
     ]
 
     var body: some View {
@@ -99,7 +98,7 @@ struct WhatCanBuddyDoPanel: View {
                 .padding()
             }
         }
-        .frame(minWidth: 320, minHeight: 380)
+        .frame(minWidth: 320, minHeight: 420)
     }
 
     private func section(_ title: String, items: [String], systemImage: String, tint: Color) -> some View {

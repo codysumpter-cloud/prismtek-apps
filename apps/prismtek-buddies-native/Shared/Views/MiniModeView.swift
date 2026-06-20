@@ -7,14 +7,14 @@ struct MiniModeView: View {
 
     var body: some View {
         VStack(spacing: 8) {
-            BitbudRenderer(state: appState.buddyState, pixelScale: 0.9)
+            SelectedBuddyRenderer(state: appState.buddyState, pixelScale: 0.9)
             Text("Lvl \(appState.progression.level)")
                 .font(.caption2)
                 .foregroundStyle(.secondary)
         }
         .padding(8)
         .background(
-            RoundedRectangle(cornerRadius: 12)
+            Rectangle()
                 .fill(Color(white: 0.15).opacity(0.85))
         )
     }

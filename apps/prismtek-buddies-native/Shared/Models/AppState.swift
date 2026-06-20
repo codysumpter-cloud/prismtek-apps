@@ -26,9 +26,9 @@ final class AppState: ObservableObject {
     @Published var roomObjects: [RoomObject] = []
     /// Currently selected object id (for the accent outline / scale state). nil = none.
     @Published var selectedObjectID: String? = nil
-    /// Bitbud's normalized position in the room (feet anchor). Animated on interaction.
+    /// Selected Buddy's normalized position in the room (feet anchor). Animated on interaction.
     @Published var buddyAnchor: CGPoint = CGPoint(x: 0.52, y: 0.80)
-    /// Human-readable label of the current action, e.g. "Bitbud is sitting". Empty = idle.
+    /// Human-readable label of the current action, e.g. "Buddy is sitting". Empty = idle.
     @Published var actionLabel: String = ""
 
     // MARK: Tasks (JSON-encoded in UserDefaults)
@@ -104,15 +104,15 @@ final class AppState: ObservableObject {
     /// Human-readable label for an interaction at a named object.
     static func label(for interaction: BuddyInteraction, objectName: String) -> String {
         switch interaction {
-        case .sit:        return "Bitbud is sitting"
-        case .work:       return "Bitbud is working at the \(objectName.lowercased())"
-        case .rest:       return "Bitbud is resting"
-        case .wave:       return "Bitbud waves hello"
-        case .inspect:    return "Bitbud is inspecting the \(objectName.lowercased())"
-        case .waterPlant: return "Bitbud waters the plant"
-        case .listen:     return "Bitbud is listening to music"
-        case .celebrate:  return "Bitbud is celebrating!"
-        case .wait:       return "Bitbud is waiting"
+        case .sit:        return "Buddy is sitting"
+        case .work:       return "Buddy is working at the \(objectName.lowercased())"
+        case .rest:       return "Buddy is resting"
+        case .wave:       return "Buddy waves hello"
+        case .inspect:    return "Buddy is inspecting the \(objectName.lowercased())"
+        case .waterPlant: return "Buddy checks the plant"
+        case .listen:     return "Buddy is listening to music"
+        case .celebrate:  return "Buddy is celebrating!"
+        case .wait:       return "Buddy is waiting"
         }
     }
 
@@ -131,15 +131,15 @@ final class AppState: ObservableObject {
         selectedObjectID = nil
         let label: String
         switch interaction {
-        case .wave:       label = "Bitbud waves hello"
-        case .celebrate:  label = "Bitbud is celebrating!"
-        case .inspect:    label = "Bitbud is thinking it over"
-        case .work:       label = "Bitbud is working"
-        case .wait:       label = "Bitbud is waiting"
-        case .sit:        label = "Bitbud is sitting"
-        case .rest:       label = "Bitbud is resting"
-        case .listen:     label = "Bitbud is listening"
-        case .waterPlant: label = "Bitbud waters the plant"
+        case .wave:       label = "Buddy waves hello"
+        case .celebrate:  label = "Buddy is celebrating!"
+        case .inspect:    label = "Buddy is thinking it over"
+        case .work:       label = "Buddy is working"
+        case .wait:       label = "Buddy is waiting"
+        case .sit:        label = "Buddy is sitting"
+        case .rest:       label = "Buddy is resting"
+        case .listen:     label = "Buddy is listening"
+        case .waterPlant: label = "Buddy checks the plant"
         }
         setBuddy(AppState.state(for: interaction))
         actionLabel = label
@@ -149,7 +149,7 @@ final class AppState: ObservableObject {
     func emoteFailed() {
         selectedObjectID = nil
         setBuddy(.failed)
-        actionLabel = "Bitbud feels sad"
+        actionLabel = "Buddy feels sad"
     }
 
     // MARK: - Events (wired from views)
@@ -166,12 +166,12 @@ final class AppState: ObservableObject {
         }
         // focus complete -> celebrate -> jumping
         selectedObjectID = nil
-        actionLabel = "Bitbud is celebrating a finished focus session!"
+        actionLabel = "Buddy celebrates a finished focus session!"
         flash(.jumping, for: 2.5, thenReturnTo: .idle)
     }
 
     func greeted() {
-        actionLabel = "Bitbud waves hello"
+        actionLabel = "Buddy waves hello"
         flash(.waving, for: 2.0)
     }
 
@@ -199,7 +199,7 @@ final class AppState: ObservableObject {
         tasks.removeAll { $0.id == task.id }
         // delete/fail task -> failed
         selectedObjectID = nil
-        actionLabel = "Bitbud reacts to a deleted task"
+        actionLabel = "Buddy reacts to a deleted task"
         flash(.failed, for: 1.5)
     }
 
