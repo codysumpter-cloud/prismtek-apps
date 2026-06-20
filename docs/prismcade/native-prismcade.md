@@ -9,31 +9,50 @@ The native app uses SwiftUI for the Prismcade hub and SpriteKit for game runtime
 
 ## Built
 
-- Native Prismcade hub with cards for Flappy Pixel, Prismtek Dino Dash, and Buck Borris Mini-Game.
+- Native Prismcade hub with cards for Flappy Pixel, Prismtek Dino Dash, and the Buck Borris prototype.
 - macOS target: `PrismcadeMac`.
 - iOS target: `PrismcadeiOS`.
 - Curated local assets copied into `Shared/Resources/Art`.
 - Runtime verification receipts for all three game scenes.
 
-## Site Reference Pass
+## Canonical game direction
 
-`/Users/prismtek/Prismtek/prismtek-site` was present for the final verification pass after cloning it locally. The search found:
+The canonical Buck Borris game direction is now **Beat Em Up Buck**.
 
-- `src/arcade/games/FlappyPixelGame.tsx`, the current web Flappy Pixel React/canvas implementation.
-- `memory-wall-react/pixel-games/flappy-pixel/flappy-runtime.js` and `flappy-core.js`, an older full Flappy Pixel runtime with tuning, progression, cosmetics, leaderboards, and challenge hooks.
-- `src/data/game-catalog.js`, shared Flappy Pixel catalog and scoring metadata.
-- `docs/prismcade/*`, `functions/lib/prismcade.js`, and Prismcade API/player shell files documenting the manifest-first web creator direction.
+The currently merged runtime still contains the earlier Buck Borris jump/dodge/pickup prototype. The next native polish pass should replace that prototype with a tiny SpriteKit brawler/fighter using Buck Borris as the player character.
 
-The native app does not replace its curated local sprites with site assets because the site pass did not reveal safer or better bird, dinosaur, or Buck Borris art. The Flappy tuning and Prismcade metadata are kept as reference material for future native score-platform integration.
+Related docs:
 
-## Build Status
+```text
+docs/games/beat-em-up-buck.md
+docs/prismcade/game-catalog-parity.md
+```
 
-- macOS: passed with `macosx27.0`.
-- iOS simulator: passed with `iphonesimulator27.0`.
+## Site reference pass
 
-## Known Limitations
+`prismtek-site` was cloned and searched during the final PR #203 merge pass. It had useful Flappy Pixel source and Prismcade platform metadata, but no better safe bird, dinosaur, or Buck Borris art than the curated local assets already used by the native app.
 
-- Screenshots from macOS `screencapture` were black in this agent desktop environment; app-side SpriteKit scene snapshots were used instead.
+## Catalog parity
+
+Prismcade should converge on one canonical game catalog shared by website/web Prismcade, Windows/HTML Prismcade, and native macOS/iOS Prismcade.
+
+If an older web/HTML game shares a canonical identity with a newer native/canonical game, the newer canonical entry should replace the duplicate instead of producing two cards.
+
+See:
+
+```text
+docs/prismcade/game-catalog-parity.md
+```
+
+## Build status
+
+- macOS: passed with `macosx27.0` during the PR #203 merge pass.
+- iOS simulator: passed with `iphonesimulator27.0` during the PR #203 merge pass.
+
+## Known limitations
+
+- App-side SpriteKit snapshots were used for verification because desktop screen capture was black in the agent environment.
 - Native Prismcade does not yet read `data/prismcade/game-manifests.json` dynamically.
 - Native Prismcade does not yet submit runs to the web Prismcade/Arcade score APIs found in `prismtek-site`.
 - Audio is not wired yet.
+- Beat Em Up Buck is not implemented yet; the merged Buck runtime is still the earlier jump/dodge prototype.
