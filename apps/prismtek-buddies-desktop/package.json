@@ -3,12 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Prototype desktop-style Buddy companion viewer for Codex pet packages.",
+  "description": "Cozy productivity room prototype for BUAP pet companions.",
   "scripts": {
     "dev": "vite --port 5179",
     "build": "vite build",
     "lint": "npm run build",
     "preview": "vite preview --port 4179"
+  },
+  "dependencies": {
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "vite": "^8.0.16"
   },
   "license": "UNLICENSED"
 }
