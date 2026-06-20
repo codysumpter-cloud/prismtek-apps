@@ -1,0 +1,8 @@
+# Xcode build noise (the .xcodeproj itself IS committed — repo convention, matches bemore)
+DerivedData/
+build/
+*.xcuserstate
+xcuserdata/
+.DS_Store
+*.swiftpm
+.build/

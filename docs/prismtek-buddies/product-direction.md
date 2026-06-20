@@ -36,3 +36,12 @@ The Prismtek version should be local-first and BUAP-aware. The pet should eventu
 ## Safety
 
 Use original Prismtek UI and assets.
+
+## Native app (cozy room v0)
+
+In addition to the earlier prototype, there is now a native SwiftUI app for macOS and iOS
+at `apps/prismtek-buddies-native/` (see `native-app-plan.md`). Same cozy-productivity
+vision; original SwiftUI art only; the only bitmap shipped is Bitbud, sliced from Cody's
+own pet atlas. The cozy-room genre (e.g. "Mini Cozy Room"-style scenes) is referenced only
+as inspiration — no copied art or text. Third-party asset packs are prototype-only and not
+shipped.
