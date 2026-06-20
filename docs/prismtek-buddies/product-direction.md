@@ -1,17 +1,17 @@
 # Prismtek Buddies Product Direction
 
-Prismtek Buddies Desktop is a cozy productivity room built around BUAP/Codex pets.
+Prismtek Buddies Desktop is a cozy productivity room built around BUAP pets.
 
 ## Current prototype
 
-The prototype should support:
+The prototype supports:
 
-- loading Codex pet packages
+- loading pet packages
 - animating Bitbud-style pet atlases
 - a cozy room scene
 - a to-do list
 - a memo pad
-- a focus timer
+- a focus timer with countdown and count-up modes
 - focus XP and level stubs
 - ambience controls
 - compact Mini Mode
@@ -27,11 +27,11 @@ The prototype should support:
 | Work review | `review` |
 | Error/failure | `failed` |
 | Session complete | `jumping` |
-| Greeting/music action | `waving` |
+| Greeting action | `waving` |
 
 ## Differentiator
 
-The Prismtek version should be local-first and BUAP-aware. The pet is not just decoration: it should eventually react to tasks, notes, GitHub checks, PR state, Obsidian context, and Buddy/Lil Buddy work phases.
+The Prismtek version should be local-first and BUAP-aware. The pet is not just decoration: it should eventually react to tasks, notes, checks, PR state, Obsidian context, and Buddy/Lil Buddy work phases.
 
 ## Safety
 
