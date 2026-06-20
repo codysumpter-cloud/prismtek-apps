@@ -1,0 +1,61 @@
+name: PrismtekBuddies
+options:
+  bundleIdPrefix: com.prismtek
+  deploymentTarget:
+    macOS: "14.0"
+    iOS: "17.0"
+configs:
+  Debug: debug
+  Release: release
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+targets:
+  PrismtekBuddiesMac:
+    type: application
+    platform: macOS
+    deploymentTarget: "14.0"
+    sources:
+      - path: Shared
+      - path: MacApp
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.prismtek.PrismtekBuddiesMac
+        PRODUCT_NAME: Prismtek Buddies
+        INFOPLIST_FILE: MacApp/Info.plist
+        MACOSX_DEPLOYMENT_TARGET: "14.0"
+        GENERATE_INFOPLIST_FILE: NO
+        ENABLE_PREVIEWS: YES
+    dependencies: []
+  PrismtekBuddiesiOS:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: Shared
+      - path: iOSApp
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.prismtek.PrismtekBuddiesiOS
+        PRODUCT_NAME: Prismtek Buddies
+        INFOPLIST_FILE: iOSApp/Info.plist
+        IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+        GENERATE_INFOPLIST_FILE: NO
+        TARGETED_DEVICE_FAMILY: "1,2"
+        ENABLE_PREVIEWS: YES
+    dependencies: []
+schemes:
+  PrismtekBuddiesMac:
+    build:
+      targets:
+        PrismtekBuddiesMac: all
+    run:
+      config: Debug
+  PrismtekBuddiesiOS:
+    build:
+      targets:
+        PrismtekBuddiesiOS: all
+    run:
+      config: Debug
