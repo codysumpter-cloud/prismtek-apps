@@ -5,9 +5,18 @@
     "kind": "window",
     "interaction": "rest",
     "assetName": "window",
-    "position": { "x": 0.78, "y": 0.26 },
-    "size": { "width": 0.18, "height": 0.34 },
-    "buddyAnchor": { "x": 0.78, "y": 0.78 },
+    "position": [
+      0.78,
+      0.26
+    ],
+    "size": [
+      0.18,
+      0.34
+    ],
+    "buddyAnchor": [
+      0.78,
+      0.78
+    ],
     "zIndex": 1
   },
   {
@@ -16,9 +25,18 @@
     "kind": "shelf",
     "interaction": "inspect",
     "assetName": "picture",
-    "position": { "x": 0.46, "y": 0.20 },
-    "size": { "width": 0.07, "height": 0.10 },
-    "buddyAnchor": { "x": 0.46, "y": 0.80 },
+    "position": [
+      0.46,
+      0.2
+    ],
+    "size": [
+      0.07,
+      0.1
+    ],
+    "buddyAnchor": [
+      0.46,
+      0.8
+    ],
     "zIndex": 1
   },
   {
@@ -27,9 +45,18 @@
     "kind": "shelf",
     "interaction": "inspect",
     "assetName": "shelf",
-    "position": { "x": 0.16, "y": 0.24 },
-    "size": { "width": 0.12, "height": 0.13 },
-    "buddyAnchor": { "x": 0.16, "y": 0.80 },
+    "position": [
+      0.16,
+      0.24
+    ],
+    "size": [
+      0.12,
+      0.13
+    ],
+    "buddyAnchor": [
+      0.16,
+      0.8
+    ],
     "zIndex": 2
   },
   {
@@ -38,9 +65,18 @@
     "kind": "rug",
     "interaction": "rest",
     "assetName": "rug",
-    "position": { "x": 0.52, "y": 0.82 },
-    "size": { "width": 0.30, "height": 0.14 },
-    "buddyAnchor": { "x": 0.52, "y": 0.80 },
+    "position": [
+      0.52,
+      0.82
+    ],
+    "size": [
+      0.3,
+      0.14
+    ],
+    "buddyAnchor": [
+      0.52,
+      0.8
+    ],
     "zIndex": 1
   },
   {
@@ -49,9 +85,18 @@
     "kind": "desk",
     "interaction": "work",
     "assetName": "desk",
-    "position": { "x": 0.20, "y": 0.66 },
-    "size": { "width": 0.22, "height": 0.16 },
-    "buddyAnchor": { "x": 0.20, "y": 0.82 },
+    "position": [
+      0.2,
+      0.66
+    ],
+    "size": [
+      0.22,
+      0.16
+    ],
+    "buddyAnchor": [
+      0.2,
+      0.82
+    ],
     "zIndex": 3
   },
   {
@@ -60,9 +105,18 @@
     "kind": "computer",
     "interaction": "work",
     "assetName": "computer",
-    "position": { "x": 0.20, "y": 0.55 },
-    "size": { "width": 0.10, "height": 0.12 },
-    "buddyAnchor": { "x": 0.24, "y": 0.82 },
+    "position": [
+      0.2,
+      0.55
+    ],
+    "size": [
+      0.1,
+      0.12
+    ],
+    "buddyAnchor": [
+      0.24,
+      0.82
+    ],
     "zIndex": 4
   },
   {
@@ -71,9 +125,18 @@
     "kind": "chair",
     "interaction": "sit",
     "assetName": "chair",
-    "position": { "x": 0.33, "y": 0.70 },
-    "size": { "width": 0.07, "height": 0.13 },
-    "buddyAnchor": { "x": 0.33, "y": 0.80 },
+    "position": [
+      0.33,
+      0.7
+    ],
+    "size": [
+      0.07,
+      0.13
+    ],
+    "buddyAnchor": [
+      0.33,
+      0.8
+    ],
     "zIndex": 5
   },
   {
@@ -82,9 +145,18 @@
     "kind": "chair",
     "interaction": "sit",
     "assetName": "couch",
-    "position": { "x": 0.83, "y": 0.66 },
-    "size": { "width": 0.16, "height": 0.18 },
-    "buddyAnchor": { "x": 0.83, "y": 0.84 },
+    "position": [
+      0.83,
+      0.66
+    ],
+    "size": [
+      0.16,
+      0.18
+    ],
+    "buddyAnchor": [
+      0.83,
+      0.84
+    ],
     "zIndex": 3
   },
   {
@@ -93,9 +165,18 @@
     "kind": "plant",
     "interaction": "waterPlant",
     "assetName": "plant",
-    "position": { "x": 0.64, "y": 0.62 },
-    "size": { "width": 0.07, "height": 0.16 },
-    "buddyAnchor": { "x": 0.64, "y": 0.82 },
+    "position": [
+      0.64,
+      0.62
+    ],
+    "size": [
+      0.07,
+      0.16
+    ],
+    "buddyAnchor": [
+      0.64,
+      0.82
+    ],
     "zIndex": 3
   },
   {
@@ -104,9 +185,18 @@
     "kind": "musicPlayer",
     "interaction": "listen",
     "assetName": "music_player",
-    "position": { "x": 0.46, "y": 0.58 },
-    "size": { "width": 0.10, "height": 0.08 },
-    "buddyAnchor": { "x": 0.46, "y": 0.82 },
+    "position": [
+      0.46,
+      0.58
+    ],
+    "size": [
+      0.1,
+      0.08
+    ],
+    "buddyAnchor": [
+      0.46,
+      0.82
+    ],
     "zIndex": 3
   }
 ]
