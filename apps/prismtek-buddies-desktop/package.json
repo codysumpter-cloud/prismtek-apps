@@ -1,0 +1,14 @@
+{
+  "name": "prismtek-buddies-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Prototype desktop-style Buddy companion viewer for Codex pet packages.",
+  "scripts": {
+    "dev": "vite --port 5179",
+    "build": "vite build",
+    "lint": "npm run build",
+    "preview": "vite preview --port 4179"
+  },
+  "license": "UNLICENSED"
+}
