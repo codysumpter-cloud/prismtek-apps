@@ -1,0 +1,22 @@
+{
+  "dinoSpritesFound" : [
+    "doux",
+    "mort",
+    "tard",
+    "vita"
+  ],
+  "dinoSpritesSelected" : [
+    "doux",
+    "mort",
+    "tard",
+    "vita"
+  ],
+  "game" : "Prismtek Dino Dash",
+  "gameOverTriggered" : true,
+  "jumpWorked" : true,
+  "obstaclesSpawned" : true,
+  "realDinoSpritesVisible" : true,
+  "restartWorked" : true,
+  "scoreChanged" : true,
+  "speedRamped" : true
+}

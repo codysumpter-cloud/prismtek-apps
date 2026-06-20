@@ -1,0 +1,11 @@
+{
+  "birdAnimated" : true,
+  "birdSprite" : "Onocentaur birds-2x row 0 curated frames",
+  "flapMovedUpward" : true,
+  "game" : "Flappy Pixel",
+  "gameOverTriggered" : true,
+  "gravityApplied" : true,
+  "obstaclesSpawned" : true,
+  "restartWorked" : true,
+  "scoreChanged" : true
+}

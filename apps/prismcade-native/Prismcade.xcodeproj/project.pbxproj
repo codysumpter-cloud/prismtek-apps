@@ -1,0 +1,653 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0A33A4A238CA3D1C588A28B2 /* idle_02.png in Resources */ = {isa = PBXBuildFile; fileRef = D32DEA7EEA27EB95A672D27D /* idle_02.png */; };
+		0F08BFCD45BCCBD3A227259F /* damaged_00.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D0961EF58CC1D6688353161 /* damaged_00.png */; };
+		0F0BEBE913E168EC6A8B9666 /* idle_00.png in Resources */ = {isa = PBXBuildFile; fileRef = 03CF5A2E52723AE48C2856C1 /* idle_00.png */; };
+		0FE80FD70B2EB60F09B53DCE /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9AD7985F0D61756F149AB0C /* RootView.swift */; };
+		1512C033459BEF1C261AE350 /* run_03.png in Resources */ = {isa = PBXBuildFile; fileRef = 6BE49507483AA3C771B2E989 /* run_03.png */; };
+		166240BA1EF3B2598ACC58F6 /* DinoDashScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F529CE85E11C9C737245AF6 /* DinoDashScene.swift */; };
+		1697DC6487770918A3577E53 /* attacks_80x32.png in Resources */ = {isa = PBXBuildFile; fileRef = 640DA131CE988EE2B0E18D0A /* attacks_80x32.png */; };
+		2679058B1D119B169DBBCA68 /* run_02.png in Resources */ = {isa = PBXBuildFile; fileRef = B380E4A6AE29067ADEC6273C /* run_02.png */; };
+		29B9237A3FDDA4F35EB8075F /* damaged_01.png in Resources */ = {isa = PBXBuildFile; fileRef = 92209D2733578BF952BD4AFE /* damaged_01.png */; };
+		2D8A04362F450CF8F0586BF5 /* PrismcadeState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB1B091305CD13DEF1B7DCD /* PrismcadeState.swift */; };
+		3557F3F812F8905C9E32BA10 /* idle_03.png in Resources */ = {isa = PBXBuildFile; fileRef = F49CC13D244239AA4E4528FA /* idle_03.png */; };
+		363CD382F8D90F449DE108AB /* FlappyPixelScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3577D2CE2A9A2CC9CC87C2E /* FlappyPixelScene.swift */; };
+		37ABE4818B599E0E73551A3F /* attacks_80x32.png in Resources */ = {isa = PBXBuildFile; fileRef = 640DA131CE988EE2B0E18D0A /* attacks_80x32.png */; };
+		394EE468BB3404E2A913E893 /* PrismcadeiOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE48DBF8432C04B78C5BECA9 /* PrismcadeiOSApp.swift */; };
+		397F049DC7E5308A0AF013DA /* bird_flap_up.png in Resources */ = {isa = PBXBuildFile; fileRef = 1CDA341D950C4FD717F84B8F /* bird_flap_up.png */; };
+		3A13DFEE92663C458E8E225B /* bird_flap_down.png in Resources */ = {isa = PBXBuildFile; fileRef = 4938676045B16F6780F13F5E /* bird_flap_down.png */; };
+		3BA9BD70632CD3DDF40A1EF3 /* dino_vita.png in Resources */ = {isa = PBXBuildFile; fileRef = 15B8B9BAD7393F0B71ADA738 /* dino_vita.png */; };
+		43540529C81C1123EF4822BA /* FlappyPixelScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3577D2CE2A9A2CC9CC87C2E /* FlappyPixelScene.swift */; };
+		4C2C8E3096D7E0F3B81B8E40 /* dino_doux.png in Resources */ = {isa = PBXBuildFile; fileRef = 62BCE200B9CC22347F7F5360 /* dino_doux.png */; };
+		56EE91DE8632E3D80315B483 /* roll_96x32.png in Resources */ = {isa = PBXBuildFile; fileRef = 931B5E3C57F325F89A699600 /* roll_96x32.png */; };
+		60C595D7A71EF52A25BE653A /* run_00.png in Resources */ = {isa = PBXBuildFile; fileRef = 41DA31726DE425F5AE05CF87 /* run_00.png */; };
+		611912B735C6A9E86CBE008E /* damaged_00.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D0961EF58CC1D6688353161 /* damaged_00.png */; };
+		633B153EEC109B260508D871 /* run_00.png in Resources */ = {isa = PBXBuildFile; fileRef = 41DA31726DE425F5AE05CF87 /* run_00.png */; };
+		68E7D913CE3BF2E1A1EFF15F /* bird_glide.png in Resources */ = {isa = PBXBuildFile; fileRef = 64B9702A47C7CEE4FDA11A6D /* bird_glide.png */; };
+		6A3597E576D1783E832044D8 /* roll_96x32.png in Resources */ = {isa = PBXBuildFile; fileRef = 931B5E3C57F325F89A699600 /* roll_96x32.png */; };
+		6B7B96B6B908E17B3B589785 /* bird_flap_down.png in Resources */ = {isa = PBXBuildFile; fileRef = 4938676045B16F6780F13F5E /* bird_flap_down.png */; };
+		6FF773BD6F4B295B873DC69C /* jump_00.png in Resources */ = {isa = PBXBuildFile; fileRef = 6FE41F0707AD91F78CB9D55F /* jump_00.png */; };
+		71AADAAB84C30FB862A6941D /* run_02.png in Resources */ = {isa = PBXBuildFile; fileRef = B380E4A6AE29067ADEC6273C /* run_02.png */; };
+		796DAB1DF626F2CC3E93E147 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9AD7985F0D61756F149AB0C /* RootView.swift */; };
+		7D4933F21BC5F10A1636FBA3 /* PrismcadeMacApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64EBAA6D0CE62451163AC46F /* PrismcadeMacApp.swift */; };
+		7F346A047F81F52BF18CE0CC /* dino_mort.png in Resources */ = {isa = PBXBuildFile; fileRef = CEAEEAFD764DE535A6FF210B /* dino_mort.png */; };
+		81BB930C9AE36188BB9FB2B0 /* idle_32x32.png in Resources */ = {isa = PBXBuildFile; fileRef = 3206928B792802BD8BDD4FA5 /* idle_32x32.png */; };
+		8324123BDA7E114123660653 /* idle_01.png in Resources */ = {isa = PBXBuildFile; fileRef = F1ABDAADD9EDDD34F2168497 /* idle_01.png */; };
+		83F84C0691679D398CE80219 /* PrismcadeState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB1B091305CD13DEF1B7DCD /* PrismcadeState.swift */; };
+		8FD6F0DAE093CA8A479AEB4C /* idle_32x32.png in Resources */ = {isa = PBXBuildFile; fileRef = 3206928B792802BD8BDD4FA5 /* idle_32x32.png */; };
+		910CBEC915A7A7E04F5B3B7D /* dino_doux.png in Resources */ = {isa = PBXBuildFile; fileRef = 62BCE200B9CC22347F7F5360 /* dino_doux.png */; };
+		967E1C4EE0BA34A22CDE8C5D /* damaged_01.png in Resources */ = {isa = PBXBuildFile; fileRef = 92209D2733578BF952BD4AFE /* damaged_01.png */; };
+		9E26947F37506DC1B0D21D51 /* run_32x32.png in Resources */ = {isa = PBXBuildFile; fileRef = 4AD65FA4B1DB441983D1018D /* run_32x32.png */; };
+		A1B0184E932CEB773EFD86CC /* bird_flap_up.png in Resources */ = {isa = PBXBuildFile; fileRef = 1CDA341D950C4FD717F84B8F /* bird_flap_up.png */; };
+		AE78F35FC7F8D208B2ADC053 /* jump_32x32.png in Resources */ = {isa = PBXBuildFile; fileRef = D02891F6D1519F051CB207A6 /* jump_32x32.png */; };
+		AF72364510AA8C1FE586890E /* dino_tard.png in Resources */ = {isa = PBXBuildFile; fileRef = C818C42CC10B041AC983CBE7 /* dino_tard.png */; };
+		B1787F3FED373191BFFBB4DC /* idle_00.png in Resources */ = {isa = PBXBuildFile; fileRef = 03CF5A2E52723AE48C2856C1 /* idle_00.png */; };
+		B30BC695031FA930E9F8D119 /* run_01.png in Resources */ = {isa = PBXBuildFile; fileRef = E074B9922B61E10A60094254 /* run_01.png */; };
+		B69F912A776817E43952515D /* run_03.png in Resources */ = {isa = PBXBuildFile; fileRef = 6BE49507483AA3C771B2E989 /* run_03.png */; };
+		B708B6BC6CC11F6034AD2596 /* bird_glide.png in Resources */ = {isa = PBXBuildFile; fileRef = 64B9702A47C7CEE4FDA11A6D /* bird_glide.png */; };
+		B7ED83E2C41A355359EC1828 /* idle_02.png in Resources */ = {isa = PBXBuildFile; fileRef = D32DEA7EEA27EB95A672D27D /* idle_02.png */; };
+		B8A477A9908067A7B6A54A13 /* dino_vita.png in Resources */ = {isa = PBXBuildFile; fileRef = 15B8B9BAD7393F0B71ADA738 /* dino_vita.png */; };
+		CA7A14C0909FEC438F1D7F95 /* dino_mort.png in Resources */ = {isa = PBXBuildFile; fileRef = CEAEEAFD764DE535A6FF210B /* dino_mort.png */; };
+		CCA008A428DC5262ED17F858 /* idle_01.png in Resources */ = {isa = PBXBuildFile; fileRef = F1ABDAADD9EDDD34F2168497 /* idle_01.png */; };
+		D60FF239078F904036894CE2 /* BuckBorrisScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BBC1CA4D662427F356FAC21 /* BuckBorrisScene.swift */; };
+		D800752F82B7D7EEBF81393D /* idle_03.png in Resources */ = {isa = PBXBuildFile; fileRef = F49CC13D244239AA4E4528FA /* idle_03.png */; };
+		D80F9E958FD2F0EFD7B106D8 /* idle_04.png in Resources */ = {isa = PBXBuildFile; fileRef = BC3D69FEC8804B198E88306C /* idle_04.png */; };
+		D9804179AAC46A3B3FF96C13 /* dino_tard.png in Resources */ = {isa = PBXBuildFile; fileRef = C818C42CC10B041AC983CBE7 /* dino_tard.png */; };
+		DB968E0E2EF3C67B566B54B3 /* DinoDashScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F529CE85E11C9C737245AF6 /* DinoDashScene.swift */; };
+		DE5214420093C991A410660E /* idle_04.png in Resources */ = {isa = PBXBuildFile; fileRef = BC3D69FEC8804B198E88306C /* idle_04.png */; };
+		E0B781248BB527EB7B7B6E26 /* run_32x32.png in Resources */ = {isa = PBXBuildFile; fileRef = 4AD65FA4B1DB441983D1018D /* run_32x32.png */; };
+		E4966B0559AE3BB751F9734A /* BuckBorrisScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BBC1CA4D662427F356FAC21 /* BuckBorrisScene.swift */; };
+		E67BD1035B72DB425B031C8F /* jump_32x32.png in Resources */ = {isa = PBXBuildFile; fileRef = D02891F6D1519F051CB207A6 /* jump_32x32.png */; };
+		E6DD9C7244401ECC166F27D1 /* SpriteKitContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C195D2033E5B3E035D1D1BB /* SpriteKitContainer.swift */; };
+		EB7E88488A94E49FBF8E7013 /* run_01.png in Resources */ = {isa = PBXBuildFile; fileRef = E074B9922B61E10A60094254 /* run_01.png */; };
+		ED3AD6C2C5374F3832B267CB /* jump_00.png in Resources */ = {isa = PBXBuildFile; fileRef = 6FE41F0707AD91F78CB9D55F /* jump_00.png */; };
+		F37E8BE922505266A2EB1BC3 /* SpriteKitContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C195D2033E5B3E035D1D1BB /* SpriteKitContainer.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		03CF5A2E52723AE48C2856C1 /* idle_00.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = idle_00.png; sourceTree = "<group>"; };
+		15B8B9BAD7393F0B71ADA738 /* dino_vita.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = dino_vita.png; sourceTree = "<group>"; };
+		1CDA341D950C4FD717F84B8F /* bird_flap_up.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bird_flap_up.png; sourceTree = "<group>"; };
+		1F529CE85E11C9C737245AF6 /* DinoDashScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DinoDashScene.swift; sourceTree = "<group>"; };
+		25BF31C2A7386D6444EACC5B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		2F77438CB5EE5C91F95D6730 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		3206928B792802BD8BDD4FA5 /* idle_32x32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = idle_32x32.png; sourceTree = "<group>"; };
+		32B2FF15249C371E4DB4DC8C /* PrismcadeMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PrismcadeMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		41DA31726DE425F5AE05CF87 /* run_00.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = run_00.png; sourceTree = "<group>"; };
+		4938676045B16F6780F13F5E /* bird_flap_down.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bird_flap_down.png; sourceTree = "<group>"; };
+		4AD65FA4B1DB441983D1018D /* run_32x32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = run_32x32.png; sourceTree = "<group>"; };
+		4BBC1CA4D662427F356FAC21 /* BuckBorrisScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuckBorrisScene.swift; sourceTree = "<group>"; };
+		4C195D2033E5B3E035D1D1BB /* SpriteKitContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpriteKitContainer.swift; sourceTree = "<group>"; };
+		62BCE200B9CC22347F7F5360 /* dino_doux.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = dino_doux.png; sourceTree = "<group>"; };
+		640DA131CE988EE2B0E18D0A /* attacks_80x32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = attacks_80x32.png; sourceTree = "<group>"; };
+		64B9702A47C7CEE4FDA11A6D /* bird_glide.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bird_glide.png; sourceTree = "<group>"; };
+		64EBAA6D0CE62451163AC46F /* PrismcadeMacApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrismcadeMacApp.swift; sourceTree = "<group>"; };
+		6BE49507483AA3C771B2E989 /* run_03.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = run_03.png; sourceTree = "<group>"; };
+		6FE41F0707AD91F78CB9D55F /* jump_00.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = jump_00.png; sourceTree = "<group>"; };
+		92209D2733578BF952BD4AFE /* damaged_01.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = damaged_01.png; sourceTree = "<group>"; };
+		931B5E3C57F325F89A699600 /* roll_96x32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = roll_96x32.png; sourceTree = "<group>"; };
+		9D0961EF58CC1D6688353161 /* damaged_00.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = damaged_00.png; sourceTree = "<group>"; };
+		9D098071531D1EA3543E8373 /* PrismcadeiOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PrismcadeiOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9FB1B091305CD13DEF1B7DCD /* PrismcadeState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrismcadeState.swift; sourceTree = "<group>"; };
+		B380E4A6AE29067ADEC6273C /* run_02.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = run_02.png; sourceTree = "<group>"; };
+		BC3D69FEC8804B198E88306C /* idle_04.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = idle_04.png; sourceTree = "<group>"; };
+		C818C42CC10B041AC983CBE7 /* dino_tard.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = dino_tard.png; sourceTree = "<group>"; };
+		C9AD7985F0D61756F149AB0C /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		CEAEEAFD764DE535A6FF210B /* dino_mort.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = dino_mort.png; sourceTree = "<group>"; };
+		D02891F6D1519F051CB207A6 /* jump_32x32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = jump_32x32.png; sourceTree = "<group>"; };
+		D32DEA7EEA27EB95A672D27D /* idle_02.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = idle_02.png; sourceTree = "<group>"; };
+		E074B9922B61E10A60094254 /* run_01.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = run_01.png; sourceTree = "<group>"; };
+		E3577D2CE2A9A2CC9CC87C2E /* FlappyPixelScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlappyPixelScene.swift; sourceTree = "<group>"; };
+		F1ABDAADD9EDDD34F2168497 /* idle_01.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = idle_01.png; sourceTree = "<group>"; };
+		F49CC13D244239AA4E4528FA /* idle_03.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = idle_03.png; sourceTree = "<group>"; };
+		FE48DBF8432C04B78C5BECA9 /* PrismcadeiOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrismcadeiOSApp.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		19A2E335653F75328ACC61E7 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9D098071531D1EA3543E8373 /* PrismcadeiOS.app */,
+				32B2FF15249C371E4DB4DC8C /* PrismcadeMac.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		1C6AF85E1A770BC368F0282F /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				C9AD7985F0D61756F149AB0C /* RootView.swift */,
+				4C195D2033E5B3E035D1D1BB /* SpriteKitContainer.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		2C3CC392CC5E4840E1BF8699 = {
+			isa = PBXGroup;
+			children = (
+				E7374F573F45413D04C20F70 /* iOSApp */,
+				69A4F299DBE4D8AAFC58B761 /* MacApp */,
+				57463A6B8DE1767E26A0BD55 /* Shared */,
+				19A2E335653F75328ACC61E7 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		368701A9C5A262AE59AF13D0 /* FlappyPixel */ = {
+			isa = PBXGroup;
+			children = (
+				4938676045B16F6780F13F5E /* bird_flap_down.png */,
+				1CDA341D950C4FD717F84B8F /* bird_flap_up.png */,
+				64B9702A47C7CEE4FDA11A6D /* bird_glide.png */,
+			);
+			path = FlappyPixel;
+			sourceTree = "<group>";
+		};
+		57463A6B8DE1767E26A0BD55 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				F409E543AB066F236DF780E9 /* Models */,
+				7A9A1F83B1E7B25F05896667 /* Resources */,
+				84638E2611FA035283624BAF /* Scenes */,
+				1C6AF85E1A770BC368F0282F /* Views */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		5BB36579D957B8D36E7FABA1 /* BuckBorris */ = {
+			isa = PBXGroup;
+			children = (
+				640DA131CE988EE2B0E18D0A /* attacks_80x32.png */,
+				9D0961EF58CC1D6688353161 /* damaged_00.png */,
+				92209D2733578BF952BD4AFE /* damaged_01.png */,
+				03CF5A2E52723AE48C2856C1 /* idle_00.png */,
+				F1ABDAADD9EDDD34F2168497 /* idle_01.png */,
+				D32DEA7EEA27EB95A672D27D /* idle_02.png */,
+				F49CC13D244239AA4E4528FA /* idle_03.png */,
+				BC3D69FEC8804B198E88306C /* idle_04.png */,
+				3206928B792802BD8BDD4FA5 /* idle_32x32.png */,
+				6FE41F0707AD91F78CB9D55F /* jump_00.png */,
+				D02891F6D1519F051CB207A6 /* jump_32x32.png */,
+				931B5E3C57F325F89A699600 /* roll_96x32.png */,
+				41DA31726DE425F5AE05CF87 /* run_00.png */,
+				E074B9922B61E10A60094254 /* run_01.png */,
+				B380E4A6AE29067ADEC6273C /* run_02.png */,
+				6BE49507483AA3C771B2E989 /* run_03.png */,
+				4AD65FA4B1DB441983D1018D /* run_32x32.png */,
+			);
+			path = BuckBorris;
+			sourceTree = "<group>";
+		};
+		69A4F299DBE4D8AAFC58B761 /* MacApp */ = {
+			isa = PBXGroup;
+			children = (
+				25BF31C2A7386D6444EACC5B /* Info.plist */,
+				64EBAA6D0CE62451163AC46F /* PrismcadeMacApp.swift */,
+			);
+			path = MacApp;
+			sourceTree = "<group>";
+		};
+		7A9A1F83B1E7B25F05896667 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				D79439E8DC9211676E0AF686 /* Art */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		84638E2611FA035283624BAF /* Scenes */ = {
+			isa = PBXGroup;
+			children = (
+				4BBC1CA4D662427F356FAC21 /* BuckBorrisScene.swift */,
+				1F529CE85E11C9C737245AF6 /* DinoDashScene.swift */,
+				E3577D2CE2A9A2CC9CC87C2E /* FlappyPixelScene.swift */,
+			);
+			path = Scenes;
+			sourceTree = "<group>";
+		};
+		CDD9E8132079D5FEB678C4EF /* DinoDash */ = {
+			isa = PBXGroup;
+			children = (
+				62BCE200B9CC22347F7F5360 /* dino_doux.png */,
+				CEAEEAFD764DE535A6FF210B /* dino_mort.png */,
+				C818C42CC10B041AC983CBE7 /* dino_tard.png */,
+				15B8B9BAD7393F0B71ADA738 /* dino_vita.png */,
+			);
+			path = DinoDash;
+			sourceTree = "<group>";
+		};
+		D79439E8DC9211676E0AF686 /* Art */ = {
+			isa = PBXGroup;
+			children = (
+				5BB36579D957B8D36E7FABA1 /* BuckBorris */,
+				CDD9E8132079D5FEB678C4EF /* DinoDash */,
+				368701A9C5A262AE59AF13D0 /* FlappyPixel */,
+			);
+			path = Art;
+			sourceTree = "<group>";
+		};
+		E7374F573F45413D04C20F70 /* iOSApp */ = {
+			isa = PBXGroup;
+			children = (
+				2F77438CB5EE5C91F95D6730 /* Info.plist */,
+				FE48DBF8432C04B78C5BECA9 /* PrismcadeiOSApp.swift */,
+			);
+			path = iOSApp;
+			sourceTree = "<group>";
+		};
+		F409E543AB066F236DF780E9 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				9FB1B091305CD13DEF1B7DCD /* PrismcadeState.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		17E72EAA5992BCF79A6577D0 /* PrismcadeiOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 64A85A2EBA63E3773268FC80 /* Build configuration list for PBXNativeTarget "PrismcadeiOS" */;
+			buildPhases = (
+				76E2EA2AC8FA0A6C09883514 /* Sources */,
+				C1C61FCEC30DB7B18DD12B66 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PrismcadeiOS;
+			packageProductDependencies = (
+			);
+			productName = PrismcadeiOS;
+			productReference = 9D098071531D1EA3543E8373 /* PrismcadeiOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+		46C508813CFF1E70D7E4D343 /* PrismcadeMac */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3E0083ADF2F287E8F9A97EBC /* Build configuration list for PBXNativeTarget "PrismcadeMac" */;
+			buildPhases = (
+				99B3578712F28FF45696B382 /* Sources */,
+				211856468252D88A156D0EBD /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PrismcadeMac;
+			packageProductDependencies = (
+			);
+			productName = PrismcadeMac;
+			productReference = 32B2FF15249C371E4DB4DC8C /* PrismcadeMac.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		62CB5207A99EDE708FEE1FFF /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = 3B95093E08D95CF509734022 /* Build configuration list for PBXProject "Prismcade" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 2C3CC392CC5E4840E1BF8699;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 19A2E335653F75328ACC61E7 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				46C508813CFF1E70D7E4D343 /* PrismcadeMac */,
+				17E72EAA5992BCF79A6577D0 /* PrismcadeiOS */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		211856468252D88A156D0EBD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1697DC6487770918A3577E53 /* attacks_80x32.png in Resources */,
+				6B7B96B6B908E17B3B589785 /* bird_flap_down.png in Resources */,
+				A1B0184E932CEB773EFD86CC /* bird_flap_up.png in Resources */,
+				B708B6BC6CC11F6034AD2596 /* bird_glide.png in Resources */,
+				0F08BFCD45BCCBD3A227259F /* damaged_00.png in Resources */,
+				29B9237A3FDDA4F35EB8075F /* damaged_01.png in Resources */,
+				910CBEC915A7A7E04F5B3B7D /* dino_doux.png in Resources */,
+				7F346A047F81F52BF18CE0CC /* dino_mort.png in Resources */,
+				D9804179AAC46A3B3FF96C13 /* dino_tard.png in Resources */,
+				3BA9BD70632CD3DDF40A1EF3 /* dino_vita.png in Resources */,
+				0F0BEBE913E168EC6A8B9666 /* idle_00.png in Resources */,
+				CCA008A428DC5262ED17F858 /* idle_01.png in Resources */,
+				0A33A4A238CA3D1C588A28B2 /* idle_02.png in Resources */,
+				3557F3F812F8905C9E32BA10 /* idle_03.png in Resources */,
+				DE5214420093C991A410660E /* idle_04.png in Resources */,
+				81BB930C9AE36188BB9FB2B0 /* idle_32x32.png in Resources */,
+				ED3AD6C2C5374F3832B267CB /* jump_00.png in Resources */,
+				E67BD1035B72DB425B031C8F /* jump_32x32.png in Resources */,
+				56EE91DE8632E3D80315B483 /* roll_96x32.png in Resources */,
+				60C595D7A71EF52A25BE653A /* run_00.png in Resources */,
+				B30BC695031FA930E9F8D119 /* run_01.png in Resources */,
+				71AADAAB84C30FB862A6941D /* run_02.png in Resources */,
+				B69F912A776817E43952515D /* run_03.png in Resources */,
+				E0B781248BB527EB7B7B6E26 /* run_32x32.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C1C61FCEC30DB7B18DD12B66 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				37ABE4818B599E0E73551A3F /* attacks_80x32.png in Resources */,
+				3A13DFEE92663C458E8E225B /* bird_flap_down.png in Resources */,
+				397F049DC7E5308A0AF013DA /* bird_flap_up.png in Resources */,
+				68E7D913CE3BF2E1A1EFF15F /* bird_glide.png in Resources */,
+				611912B735C6A9E86CBE008E /* damaged_00.png in Resources */,
+				967E1C4EE0BA34A22CDE8C5D /* damaged_01.png in Resources */,
+				4C2C8E3096D7E0F3B81B8E40 /* dino_doux.png in Resources */,
+				CA7A14C0909FEC438F1D7F95 /* dino_mort.png in Resources */,
+				AF72364510AA8C1FE586890E /* dino_tard.png in Resources */,
+				B8A477A9908067A7B6A54A13 /* dino_vita.png in Resources */,
+				B1787F3FED373191BFFBB4DC /* idle_00.png in Resources */,
+				8324123BDA7E114123660653 /* idle_01.png in Resources */,
+				B7ED83E2C41A355359EC1828 /* idle_02.png in Resources */,
+				D800752F82B7D7EEBF81393D /* idle_03.png in Resources */,
+				D80F9E958FD2F0EFD7B106D8 /* idle_04.png in Resources */,
+				8FD6F0DAE093CA8A479AEB4C /* idle_32x32.png in Resources */,
+				6FF773BD6F4B295B873DC69C /* jump_00.png in Resources */,
+				AE78F35FC7F8D208B2ADC053 /* jump_32x32.png in Resources */,
+				6A3597E576D1783E832044D8 /* roll_96x32.png in Resources */,
+				633B153EEC109B260508D871 /* run_00.png in Resources */,
+				EB7E88488A94E49FBF8E7013 /* run_01.png in Resources */,
+				2679058B1D119B169DBBCA68 /* run_02.png in Resources */,
+				1512C033459BEF1C261AE350 /* run_03.png in Resources */,
+				9E26947F37506DC1B0D21D51 /* run_32x32.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		76E2EA2AC8FA0A6C09883514 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E4966B0559AE3BB751F9734A /* BuckBorrisScene.swift in Sources */,
+				166240BA1EF3B2598ACC58F6 /* DinoDashScene.swift in Sources */,
+				363CD382F8D90F449DE108AB /* FlappyPixelScene.swift in Sources */,
+				83F84C0691679D398CE80219 /* PrismcadeState.swift in Sources */,
+				394EE468BB3404E2A913E893 /* PrismcadeiOSApp.swift in Sources */,
+				0FE80FD70B2EB60F09B53DCE /* RootView.swift in Sources */,
+				E6DD9C7244401ECC166F27D1 /* SpriteKitContainer.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		99B3578712F28FF45696B382 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D60FF239078F904036894CE2 /* BuckBorrisScene.swift in Sources */,
+				DB968E0E2EF3C67B566B54B3 /* DinoDashScene.swift in Sources */,
+				43540529C81C1123EF4822BA /* FlappyPixelScene.swift in Sources */,
+				7D4933F21BC5F10A1636FBA3 /* PrismcadeMacApp.swift in Sources */,
+				2D8A04362F450CF8F0586BF5 /* PrismcadeState.swift in Sources */,
+				796DAB1DF626F2CC3E93E147 /* RootView.swift in Sources */,
+				F37E8BE922505266A2EB1BC3 /* SpriteKitContainer.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1CE1574DD0A4C176F21B5184 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		4689AABFFDA9B4EC8B7809B8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = MacApp/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.prismtek.PrismcadeMac;
+				PRODUCT_NAME = Prismcade;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		5111F1242B099AC39E3B6352 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = iOSApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.prismtek.PrismcadeiOS;
+				PRODUCT_NAME = Prismcade;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		61D270116805D9FFBDC7D465 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = iOSApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.prismtek.PrismcadeiOS;
+				PRODUCT_NAME = Prismcade;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		AC302573B1D71344BAE6E022 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = MacApp/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.prismtek.PrismcadeMac;
+				PRODUCT_NAME = Prismcade;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		D245498F7ABDCBC7036E2358 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3B95093E08D95CF509734022 /* Build configuration list for PBXProject "Prismcade" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1CE1574DD0A4C176F21B5184 /* Debug */,
+				D245498F7ABDCBC7036E2358 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		3E0083ADF2F287E8F9A97EBC /* Build configuration list for PBXNativeTarget "PrismcadeMac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AC302573B1D71344BAE6E022 /* Debug */,
+				4689AABFFDA9B4EC8B7809B8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		64A85A2EBA63E3773268FC80 /* Build configuration list for PBXNativeTarget "PrismcadeiOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5111F1242B099AC39E3B6352 /* Debug */,
+				61D270116805D9FFBDC7D465 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 62CB5207A99EDE708FEE1FFF /* Project object */;
+}

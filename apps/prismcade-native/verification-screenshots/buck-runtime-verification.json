@@ -1,0 +1,11 @@
+{
+  "buckAsset" : "Buck Borris sensible_frames run_00-run_03",
+  "buckSpriteVisible" : true,
+  "game" : "Buck Borris Mini-Game",
+  "gameOverTriggered" : true,
+  "hazardsSpawned" : true,
+  "jumpWorked" : true,
+  "pickupCollected" : true,
+  "restartWorked" : true,
+  "scoreChanged" : true
+}
