@@ -28,6 +28,37 @@ an explicit non-commercial license.
 | interior free | `~/Downloads/interior free` | 2 | 1 | `read me.txt` (free, no terms) | yes | interior decor (future) | owner-stated ship-safe |
 | mini-timekeeper | `~/Downloads/mini-timekeeper` | 4 | 0 | none | yes | non-art / tool reference | owner-stated ship-safe; **0 images** (non-art/tool) |
 
+## Imported this PR (bundled into the app)
+
+The interactive pixel-art room ships 10 small hard-edged PNG sprites under
+`apps/prismtek-buddies-native/Shared/Resources/RoomArt/`. All are ship-safe.
+Slicing method for the `interior free` set: **connected-component extraction**
+from `interior free.png` (separate the discrete props by alpha-connected
+regions), then verified hard-edged (no anti-alias halo, integer pixels). The
+four Prismtek props were authored this pass as original license-free pixel art.
+
+| File | Dims (px) | Source | Safe to ship | Notes |
+|---|---|---|---|---|
+| `chair.png` | 13×19 | slice of `interior free` pack | yes | owner-attested ship-safe |
+| `couch.png` | 30×37 | slice of `interior free` pack | yes | owner-attested ship-safe |
+| `picture.png` | 13×16 | slice of `interior free` pack | yes | owner-attested ship-safe |
+| `plant.png` | 14×32 | slice of `interior free` pack | yes | owner-attested ship-safe |
+| `shelf.png` | 16×15 | slice of `interior free` pack | yes | owner-attested ship-safe |
+| `window.png` | 48×64 | slice of `interior free` pack | yes | owner-attested ship-safe |
+| `computer.png` | 22×22 | **original Prismtek prop** (this pass) | yes | own IP, license-free |
+| `desk.png` | 40×24 | **original Prismtek prop** (this pass) | yes | own IP, license-free |
+| `music_player.png` | 24×16 | **original Prismtek prop** (this pass) | yes | own IP, license-free |
+| `rug.png` | 48×20 | **original Prismtek prop** (this pass) | yes | own IP, license-free |
+
+Notes:
+- The 6 `interior free` slices are committed as **renamed semantic files**
+  (chair/couch/picture/plant/shelf/window) — not the full pack. No other
+  `interior free` files are imported.
+- `_preview.png` from the slicing scratch dir is **not** committed.
+- `fishing_free` (non-commercial) remains excluded; no full packs are bundled.
+- Dims verified with `file` on 2026-06-20; all confirmed `PNG image data` and
+  hard-edged at small sizes.
+
 ## Owner-IP and integrated assets (SAFE — own IP)
 
 | Name | Path | Safe to ship | Notes |

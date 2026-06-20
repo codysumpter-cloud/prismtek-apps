@@ -1,10 +1,14 @@
-# Prismtek Buddies (native, cozy room v0)
+# Prismtek Buddies (native, interactive pixel-art room)
 
 A small native SwiftUI app for macOS and iOS: a cozy productivity room with Bitbud, a
 focus timer, tasks, a memo pad, ambience toggles, a mini mode, and an XP/progression stub.
+The room is now an **interactive pixel-art scene** — clickable furniture moves Bitbud
+around and triggers reactions.
 
-Original SwiftUI art only. The only bitmap asset shipped is Bitbud, sliced from Cody's own
-`bitbud` pet atlas (his asset). No third-party packs, no PixelLab, no network image gen.
+Bitmap assets shipped: Bitbud (sliced from Cody's own `bitbud` pet atlas) plus 10 small
+hard-edged room sprites under `Shared/Resources/RoomArt/` — 6 slices from the owner-attested
+ship-safe `interior free` pack and 4 original Prismtek pixel props. No full third-party
+packs, no PixelLab, no network image gen. Provenance: `docs/prismtek-buddies/asset-inventory.md`.
 
 ## Layout
 
@@ -83,10 +87,18 @@ To re-slice:
 python3 scripts/extract_bitbud_frames.py
 ```
 
-## Features (v0)
+## Features
 
-- Cozy room scene (original SwiftUI shapes/gradients): wall, floor, desk, shelf, window,
-  rug, pet zone.
+- **Interactive pixel-art room**: flat theme-colored wall/floor blocks (no gradients) with
+  hard-edged sprite furniture rendered via `.interpolation(.none)`. The room is built from a
+  `RoomObject` registry (`Shared/Resources/default-room-objects.json`): chair, couch, desk,
+  computer, shelf, picture, plant, window, rug, music player.
+- **Clickable furniture**: tapping an object selects it (accent outline + slight scale),
+  moves Bitbud to that object's anchor (animated), sets a Buddy animation state, and shows an
+  action label (e.g. "Bitbud is sitting").
+- **Manual emote buttons** (Wave / Celebrate / Think / Work / Wait / Sit / Sad) and a
+  **"What can Buddy do?"** panel listing current actions + a future roadmap. See
+  `docs/prismtek-buddies/buddy-actions.md` and `docs/prismtek-buddies/interactive-room-plan.md`.
 - Bitbud renderer with state mapping: idle / waving / waiting / running / review / failed /
   jumping.
 - Focus timer: Pomodoro (25/5) + count-up, start/pause/reset. Completing a focus block

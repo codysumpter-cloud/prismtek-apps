@@ -47,6 +47,8 @@ private struct MacRootView: View {
                     RoomThemePicker()
                         .padding(.horizontal)
 
+                    BuddyActionsView()
+                    Divider()
                     FocusTimerView()
                     Divider()
                     TasksView()
@@ -99,6 +101,8 @@ private struct iOSRootView: View {
                 .padding(.horizontal)
                 .padding(.vertical, 6)
             TabView {
+                ScrollView { BuddyActionsView() }
+                    .tabItem { Label("Buddy", systemImage: "face.smiling") }
                 ScrollView { FocusTimerView() }
                     .tabItem { Label("Focus", systemImage: "timer") }
                 ScrollView { TasksView() }

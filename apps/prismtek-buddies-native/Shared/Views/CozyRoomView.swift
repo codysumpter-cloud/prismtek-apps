@@ -5,10 +5,16 @@ import AppKit
 import UIKit
 #endif
 
-/// Original SwiftUI cozy room scene — all shapes/gradients, no third-party art.
-/// Zones: wall, floor, desk/workstation, shelf/decor, window/ambience, pet placement.
-/// Wall/floor/accent colors and desk/decor labels are driven by the selected
-/// `BuddyRoomTheme` (persisted via @AppStorage, default Cozy Desk).
+/// Interactive PIXEL-ART cozy room.
+///
+/// Renders the room from the `RoomObject` registry (loaded from
+/// `default-room-objects.json`) as hard-edged sprite images. The wall/floor are FLAT
+/// theme-colored pixel blocks (no gradients). Each object is tappable: tapping moves
+/// Bitbud to the object's `buddyAnchor`, sets a Buddy animation state, and shows an
+/// action label.
+///
+/// All sprites + Bitbud render with `.interpolation(.none)` for crisp pixels.
+/// `BuddyRoomTheme` (wall/floor/accent) still drives the palette.
 struct CozyRoomView: View {
     @EnvironmentObject var appState: AppState
     @AppStorage("buddy.room.theme") private var themeID: String = BuddyRoomTheme.defaultID
@@ -20,171 +26,132 @@ struct CozyRoomView: View {
         GeometryReader { geo in
             let w = geo.size.width
             let h = geo.size.height
-            let floorY = h * 0.66
+            let floorTop = h * 0.66
 
-            ZStack {
-                // Wall (theme-driven)
-                LinearGradient(
-                    colors: [theme.wallColor,
-                             theme.wallColor.darkened(by: 0.18)],
-                    startPoint: .top, endPoint: .bottom
-                )
+            ZStack(alignment: .topLeading) {
+                // Flat wall band (no gradient).
+                theme.wallColor
+                    .frame(width: w, height: floorTop)
 
-                // Floor (theme-driven)
-                VStack(spacing: 0) {
-                    Spacer()
-                    LinearGradient(
-                        colors: [theme.floorColor,
-                                 theme.floorColor.darkened(by: 0.18)],
-                        startPoint: .top, endPoint: .bottom
+                // Flat floor band (no gradient).
+                theme.floorColor
+                    .frame(width: w, height: h - floorTop)
+                    .offset(y: floorTop)
+
+                // 2px pixel skirting line in the accent color at the wall/floor seam.
+                theme.accentColor
+                    .frame(width: w, height: 2)
+                    .offset(y: floorTop - 1)
+
+                // Room objects (sorted by zIndex), then Bitbud layered by its own anchor.
+                ForEach(appState.roomObjects.sorted { $0.zIndex < $1.zIndex }) { object in
+                    RoomObjectSprite(
+                        object: object,
+                        roomSize: geo.size,
+                        accent: theme.accentColor,
+                        isSelected: appState.selectedObjectID == object.id
                     )
-                    .frame(height: h - floorY)
+                    .zIndex(object.zIndex)
+                    .onTapGesture { appState.interact(with: object) }
                 }
 
-                // Window / ambience zone (top-right)
-                WindowZone(active: anyAmbienceOn, accent: theme.accentColor)
-                    .frame(width: w * 0.26, height: h * 0.30)
-                    .position(x: w * 0.80, y: h * 0.24)
-
-                // Shelf / decor zone (top-left)
-                ShelfZone(label: theme.decorLabel, accent: theme.accentColor)
-                    .frame(width: w * 0.30, height: h * 0.22)
-                    .position(x: w * 0.20, y: h * 0.20)
-
-                // Desk / workstation zone (lower-left on floor)
-                DeskZone(working: appState.buddyState == .running,
-                         label: theme.deskLabel,
-                         accent: theme.accentColor)
-                    .frame(width: w * 0.34, height: h * 0.28)
-                    .position(x: w * 0.26, y: floorY + (h - floorY) * 0.32)
-
-                // Rug under pet
-                Ellipse()
-                    .fill(theme.accentColor.opacity(0.35))
-                    .frame(width: w * 0.30, height: h * 0.10)
-                    .position(x: w * 0.66, y: floorY + (h - floorY) * 0.45)
-
-                // Pet placement zone
+                // Bitbud — moves to the active buddyAnchor, animated.
                 BitbudRenderer(state: appState.buddyState, pixelScale: petScale(for: w))
-                    .position(x: w * 0.66, y: floorY + (h - floorY) * 0.20)
-                    .shadow(color: .black.opacity(0.25), radius: 6, y: 6)
+                    .frame(width: 96 * petScale(for: w), height: 104 * petScale(for: w))
+                    .position(x: appState.buddyAnchor.x * w,
+                              y: appState.buddyAnchor.y * h - 52 * petScale(for: w))
+                    .zIndex(50)
+                    .animation(.easeInOut(duration: 0.45), value: appState.buddyAnchor)
+
+                // Action label (flat pixel-style chip, top-left).
+                if !appState.actionLabel.isEmpty {
+                    Text(appState.actionLabel)
+                        .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color.black.opacity(0.55))
+                        .padding(8)
+                        .zIndex(100)
+                }
             }
+            .frame(width: w, height: h)
             .clipped()
         }
     }
 
-    private var anyAmbienceOn: Bool {
-        appState.rainOn || appState.keyboardOn || appState.fireplaceOn || appState.cafeOn
-    }
-
     private func petScale(for width: CGFloat) -> CGFloat {
-        max(0.9, min(1.6, width / 520))
+        max(0.7, min(1.4, width / 600))
     }
 }
 
-private struct WindowZone: View {
-    let active: Bool
+/// A single hard-edged room sprite. Falls back to a flat accent block if the PNG
+/// can't load, so the room layout stays intact. Shows a subtle selected state
+/// (accent outline + slight scale).
+private struct RoomObjectSprite: View {
+    let object: RoomObject
+    let roomSize: CGSize
     let accent: Color
+    let isSelected: Bool
+
     var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 10)
-                .fill(Color(red: 0.20, green: 0.17, blue: 0.30))
-            RoundedRectangle(cornerRadius: 6)
-                .fill(
-                    LinearGradient(
-                        colors: active
-                            ? [Color(red: 0.55, green: 0.75, blue: 0.95), Color(red: 0.30, green: 0.45, blue: 0.70)]
-                            : [Color(red: 0.18, green: 0.22, blue: 0.40), Color(red: 0.10, green: 0.12, blue: 0.24)],
-                        startPoint: .top, endPoint: .bottom
-                    )
-                )
-                .padding(8)
-            // Mullions
-            Rectangle().fill(Color(red: 0.20, green: 0.17, blue: 0.30)).frame(width: 4)
-            Rectangle().fill(Color(red: 0.20, green: 0.17, blue: 0.30)).frame(height: 4)
-            if active {
-                Circle().fill(accent.opacity(0.85)).frame(width: 18, height: 18)
-                    .offset(x: 20, y: -16)
+        let w = roomSize.width
+        let h = roomSize.height
+        let spriteW = object.size.width * w
+        let spriteH = object.size.height * h
+
+        Group {
+            if let name = object.assetName, let img = RoomArt.image(named: name) {
+                Image(platformImage: img)
+                    .interpolation(.none)   // hard-edged pixels, no blur
+                    .resizable()
+                    .scaledToFit()
+            } else {
+                // Fallback flat block keeps the layout readable if art is missing.
+                Rectangle().fill(accent.opacity(0.5))
             }
         }
-    }
-}
-
-private struct ShelfZone: View {
-    let label: String
-    let accent: Color
-    var body: some View {
-        VStack(spacing: 4) {
-            ForEach(0..<2, id: \.self) { _ in
-                ZStack(alignment: .bottom) {
-                    HStack(spacing: 6) {
-                        RoundedRectangle(cornerRadius: 2).fill(Color(red: 0.70, green: 0.35, blue: 0.35)).frame(width: 10, height: 26)
-                        RoundedRectangle(cornerRadius: 2).fill(Color(red: 0.35, green: 0.55, blue: 0.45)).frame(width: 10, height: 32)
-                        RoundedRectangle(cornerRadius: 2).fill(accent).frame(width: 10, height: 22)
-                        Circle().fill(Color(red: 0.55, green: 0.70, blue: 0.45)).frame(width: 16, height: 16)
-                    }
-                    Rectangle().fill(Color(red: 0.45, green: 0.32, blue: 0.25)).frame(height: 5)
-                }
+        .frame(width: spriteW, height: spriteH)
+        .scaleEffect(isSelected ? 1.08 : 1.0)
+        .overlay {
+            if isSelected {
+                Rectangle()
+                    .strokeBorder(accent, lineWidth: 2)
+                    .frame(width: spriteW + 4, height: spriteH + 4)
             }
-            Text(label)
-                .font(.system(size: 9, weight: .semibold))
-                .foregroundStyle(.white.opacity(0.65))
         }
+        .animation(.easeInOut(duration: 0.15), value: isSelected)
+        .position(x: object.position.x * w, y: object.position.y * h)
+        .contentShape(Rectangle())
     }
 }
 
-private struct DeskZone: View {
-    let working: Bool
-    let label: String
-    let accent: Color
-    var body: some View {
-        ZStack(alignment: .bottom) {
-            // Desk top + legs
-            VStack(spacing: 0) {
-                RoundedRectangle(cornerRadius: 4)
-                    .fill(Color(red: 0.45, green: 0.32, blue: 0.25))
-                    .frame(height: 14)
-                HStack {
-                    Rectangle().fill(Color(red: 0.38, green: 0.27, blue: 0.21)).frame(width: 10)
-                    Spacer()
-                    Rectangle().fill(Color(red: 0.38, green: 0.27, blue: 0.21)).frame(width: 10)
-                }
-            }
-            // Desk label
-            Text(label)
-                .font(.system(size: 9, weight: .semibold))
-                .foregroundStyle(.white.opacity(0.65))
-                .offset(y: -2)
-            // Monitor on desk
-            VStack(spacing: 0) {
-                RoundedRectangle(cornerRadius: 4)
-                    .fill(working ? accent : Color(red: 0.15, green: 0.18, blue: 0.24))
-                    .frame(width: 54, height: 34)
-                Rectangle().fill(Color(red: 0.20, green: 0.20, blue: 0.22)).frame(width: 8, height: 8)
-            }
-            .offset(y: -22)
-        }
+/// RoomArt PNG loader/cache. Mirrors BitbudFrames: loads bundled PNGs from
+/// Resources/RoomArt (added via XcodeGen as flat resources).
+enum RoomArt {
+    private static var cache: [String: PlatformImage?] = [:]
+
+    static func image(named: String) -> PlatformImage? {
+        if let cached = cache[named] { return cached }
+        let img = load(named)
+        cache[named] = img
+        return img
     }
-}
 
-// MARK: - Color helper
-
-private extension Color {
-    /// Returns a darker variant by scaling RGB components toward black.
-    /// Cross-platform (resolves via the platform's native color).
-    func darkened(by amount: Double) -> Color {
-        let factor = max(0, 1 - amount)
+    private static func load(_ named: String) -> PlatformImage? {
         #if os(macOS)
-        let native = NSColor(self).usingColorSpace(.sRGB) ?? NSColor(self)
-        return Color(red: Double(native.redComponent) * factor,
-                     green: Double(native.greenComponent) * factor,
-                     blue: Double(native.blueComponent) * factor)
+        if let url = Bundle.main.url(forResource: named, withExtension: "png"),
+           let img = NSImage(contentsOf: url) {
+            return img
+        }
+        return NSImage(named: named)
         #else
-        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
-        UIColor(self).getRed(&r, green: &g, blue: &b, alpha: &a)
-        return Color(red: Double(r) * factor,
-                     green: Double(g) * factor,
-                     blue: Double(b) * factor)
+        if let img = UIImage(named: named) { return img }
+        if let url = Bundle.main.url(forResource: named, withExtension: "png"),
+           let data = try? Data(contentsOf: url) {
+            return UIImage(data: data)
+        }
+        return nil
         #endif
     }
 }
