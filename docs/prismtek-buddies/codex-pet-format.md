@@ -1,14 +1,12 @@
-# Codex Pet Package Format Notes
+# Pet Package Format Notes
 
 These notes capture the working Bitbud package contract used by `apps/prismtek-buddies-desktop`.
 
+See `product-direction.md` for the cozy room and productivity layer.
+
 ## Package location
 
-A Codex pet package lives under:
-
-```text
-~/.codex/pets/<pet-id>/
-```
+A pet package lives under `~/.codex/pets/<pet-id>/`.
 
 Bitbud example:
 
@@ -54,8 +52,8 @@ Bitbud example:
 
 ## Product rule
 
-Prismtek Buddies should load Codex pet packages without mutating them. The app may preview, animate, and map states to workflow events, but package generation and validation remain separate tooling concerns.
+Prismtek Buddies should load pet packages without mutating them. The app may preview, animate, and map states to workflow events, but package generation and validation remain separate tooling concerns.
 
 ## Future states
 
-Future pets may add richer metadata, alternate atlases, multiple sprite scales, or named animation definitions. Until that contract exists, Prismtek Buddies treats the Bitbud profile above as the default Codex pet atlas profile.
+Future pets may add richer metadata, alternate atlases, multiple sprite scales, or named animation definitions. Until that contract exists, Prismtek Buddies treats the Bitbud profile above as the default pet atlas profile.
