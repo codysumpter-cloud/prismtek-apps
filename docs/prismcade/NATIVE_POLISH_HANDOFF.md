@@ -8,7 +8,7 @@ The merged native Prismcade foundation exists at `apps/prismcade-native/` and cu
 
 - `Flappy Pixel`
 - `Prismtek Dino Dash`
-- `Buck Borris Mini-Game`
+- Buck Borris prototype, with `Beat Em Up Buck` as the canonical target direction
 
 The next pass should polish these into launch-quality Prismcade entries, with special emphasis on:
 
@@ -44,4 +44,4 @@ Local Codex is still needed for:
 
 - Flappy Pixel uses real bird frames, faces the correct direction, visibly flaps, flies upward on input, falls under gravity, scores, collides, restarts, and has coherent pixel background/obstacles.
 - Dino Dash uses real `doux`, `mort`, `tard`, and `vita` sprites at consistent scale, with working character select, jump, scoring, collision, and restart.
-- Buck Borris becomes `Beat Em Up Buck`, with Buck as a real sprite, at least one enemy, movement, attack, hitboxes/hurtboxes, damage, knockback, health, score/KO counter, game-over, restart, and a coherent pixel stage.
+- Beat Em Up Buck exists, with Buck as a real sprite, at least one enemy, movement, attack, hitboxes/hurtboxes, damage, knockback, health, score/KO counter, game-over, restart, and a coherent pixel stage.
