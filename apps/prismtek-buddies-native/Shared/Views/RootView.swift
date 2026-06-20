@@ -44,6 +44,9 @@ private struct MacRootView: View {
                     .padding(.horizontal)
                     .padding(.top)
 
+                    RoomThemePicker()
+                        .padding(.horizontal)
+
                     FocusTimerView()
                     Divider()
                     TasksView()
@@ -92,6 +95,9 @@ private struct iOSRootView: View {
             CozyRoomView()
                 .frame(height: 240)
             if appState.showGiftUnlock { GiftBanner() }
+            RoomThemePicker()
+                .padding(.horizontal)
+                .padding(.vertical, 6)
             TabView {
                 ScrollView { FocusTimerView() }
                     .tabItem { Label("Focus", systemImage: "timer") }
@@ -123,5 +129,26 @@ struct GiftBanner: View {
         }
         .padding(8)
         .background(Color.accentColor.opacity(0.2))
+    }
+}
+
+// MARK: - Room theme picker
+
+/// Selects the cozy-room theme. Persists the chosen id under the same
+/// @AppStorage key `CozyRoomView` reads ("buddy.room.theme"), default Cozy Desk.
+struct RoomThemePicker: View {
+    @AppStorage("buddy.room.theme") private var themeID: String = BuddyRoomTheme.defaultID
+
+    var body: some View {
+        Picker("Room Theme", selection: $themeID) {
+            ForEach(BuddyRoomTheme.presets) { theme in
+                Text(theme.name).tag(theme.id)
+            }
+        }
+        #if os(macOS)
+        .pickerStyle(.menu)
+        #else
+        .pickerStyle(.segmented)
+        #endif
     }
 }

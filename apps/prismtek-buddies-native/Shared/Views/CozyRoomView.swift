@@ -1,53 +1,66 @@
 import SwiftUI
+#if os(macOS)
+import AppKit
+#else
+import UIKit
+#endif
 
 /// Original SwiftUI cozy room scene — all shapes/gradients, no third-party art.
 /// Zones: wall, floor, desk/workstation, shelf/decor, window/ambience, pet placement.
+/// Wall/floor/accent colors and desk/decor labels are driven by the selected
+/// `BuddyRoomTheme` (persisted via @AppStorage, default Cozy Desk).
 struct CozyRoomView: View {
     @EnvironmentObject var appState: AppState
+    @AppStorage("buddy.room.theme") private var themeID: String = BuddyRoomTheme.defaultID
+
+    private var theme: BuddyRoomTheme { BuddyRoomTheme.theme(for: themeID) }
 
     var body: some View {
+        let theme = self.theme
         GeometryReader { geo in
             let w = geo.size.width
             let h = geo.size.height
             let floorY = h * 0.66
 
             ZStack {
-                // Wall
+                // Wall (theme-driven)
                 LinearGradient(
-                    colors: [Color(red: 0.36, green: 0.30, blue: 0.46),
-                             Color(red: 0.27, green: 0.23, blue: 0.38)],
+                    colors: [theme.wallColor,
+                             theme.wallColor.darkened(by: 0.18)],
                     startPoint: .top, endPoint: .bottom
                 )
 
-                // Floor
+                // Floor (theme-driven)
                 VStack(spacing: 0) {
                     Spacer()
                     LinearGradient(
-                        colors: [Color(red: 0.50, green: 0.36, blue: 0.28),
-                                 Color(red: 0.38, green: 0.27, blue: 0.21)],
+                        colors: [theme.floorColor,
+                                 theme.floorColor.darkened(by: 0.18)],
                         startPoint: .top, endPoint: .bottom
                     )
                     .frame(height: h - floorY)
                 }
 
                 // Window / ambience zone (top-right)
-                WindowZone(active: anyAmbienceOn)
+                WindowZone(active: anyAmbienceOn, accent: theme.accentColor)
                     .frame(width: w * 0.26, height: h * 0.30)
                     .position(x: w * 0.80, y: h * 0.24)
 
                 // Shelf / decor zone (top-left)
-                ShelfZone()
+                ShelfZone(label: theme.decorLabel, accent: theme.accentColor)
                     .frame(width: w * 0.30, height: h * 0.22)
                     .position(x: w * 0.20, y: h * 0.20)
 
                 // Desk / workstation zone (lower-left on floor)
-                DeskZone(working: appState.buddyState == .running)
+                DeskZone(working: appState.buddyState == .running,
+                         label: theme.deskLabel,
+                         accent: theme.accentColor)
                     .frame(width: w * 0.34, height: h * 0.28)
                     .position(x: w * 0.26, y: floorY + (h - floorY) * 0.32)
 
                 // Rug under pet
                 Ellipse()
-                    .fill(Color(red: 0.62, green: 0.40, blue: 0.42).opacity(0.55))
+                    .fill(theme.accentColor.opacity(0.35))
                     .frame(width: w * 0.30, height: h * 0.10)
                     .position(x: w * 0.66, y: floorY + (h - floorY) * 0.45)
 
@@ -71,6 +84,7 @@ struct CozyRoomView: View {
 
 private struct WindowZone: View {
     let active: Bool
+    let accent: Color
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 10)
@@ -89,7 +103,7 @@ private struct WindowZone: View {
             Rectangle().fill(Color(red: 0.20, green: 0.17, blue: 0.30)).frame(width: 4)
             Rectangle().fill(Color(red: 0.20, green: 0.17, blue: 0.30)).frame(height: 4)
             if active {
-                Circle().fill(Color.yellow.opacity(0.8)).frame(width: 18, height: 18)
+                Circle().fill(accent.opacity(0.85)).frame(width: 18, height: 18)
                     .offset(x: 20, y: -16)
             }
         }
@@ -97,25 +111,32 @@ private struct WindowZone: View {
 }
 
 private struct ShelfZone: View {
+    let label: String
+    let accent: Color
     var body: some View {
-        VStack(spacing: 6) {
+        VStack(spacing: 4) {
             ForEach(0..<2, id: \.self) { _ in
                 ZStack(alignment: .bottom) {
                     HStack(spacing: 6) {
                         RoundedRectangle(cornerRadius: 2).fill(Color(red: 0.70, green: 0.35, blue: 0.35)).frame(width: 10, height: 26)
                         RoundedRectangle(cornerRadius: 2).fill(Color(red: 0.35, green: 0.55, blue: 0.45)).frame(width: 10, height: 32)
-                        RoundedRectangle(cornerRadius: 2).fill(Color(red: 0.40, green: 0.45, blue: 0.70)).frame(width: 10, height: 22)
+                        RoundedRectangle(cornerRadius: 2).fill(accent).frame(width: 10, height: 22)
                         Circle().fill(Color(red: 0.55, green: 0.70, blue: 0.45)).frame(width: 16, height: 16)
                     }
                     Rectangle().fill(Color(red: 0.45, green: 0.32, blue: 0.25)).frame(height: 5)
                 }
             }
+            Text(label)
+                .font(.system(size: 9, weight: .semibold))
+                .foregroundStyle(.white.opacity(0.65))
         }
     }
 }
 
 private struct DeskZone: View {
     let working: Bool
+    let label: String
+    let accent: Color
     var body: some View {
         ZStack(alignment: .bottom) {
             // Desk top + legs
@@ -129,14 +150,41 @@ private struct DeskZone: View {
                     Rectangle().fill(Color(red: 0.38, green: 0.27, blue: 0.21)).frame(width: 10)
                 }
             }
+            // Desk label
+            Text(label)
+                .font(.system(size: 9, weight: .semibold))
+                .foregroundStyle(.white.opacity(0.65))
+                .offset(y: -2)
             // Monitor on desk
             VStack(spacing: 0) {
                 RoundedRectangle(cornerRadius: 4)
-                    .fill(working ? Color(red: 0.30, green: 0.70, blue: 0.55) : Color(red: 0.15, green: 0.18, blue: 0.24))
+                    .fill(working ? accent : Color(red: 0.15, green: 0.18, blue: 0.24))
                     .frame(width: 54, height: 34)
                 Rectangle().fill(Color(red: 0.20, green: 0.20, blue: 0.22)).frame(width: 8, height: 8)
             }
             .offset(y: -22)
         }
+    }
+}
+
+// MARK: - Color helper
+
+private extension Color {
+    /// Returns a darker variant by scaling RGB components toward black.
+    /// Cross-platform (resolves via the platform's native color).
+    func darkened(by amount: Double) -> Color {
+        let factor = max(0, 1 - amount)
+        #if os(macOS)
+        let native = NSColor(self).usingColorSpace(.sRGB) ?? NSColor(self)
+        return Color(red: Double(native.redComponent) * factor,
+                     green: Double(native.greenComponent) * factor,
+                     blue: Double(native.blueComponent) * factor)
+        #else
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        UIColor(self).getRed(&r, green: &g, blue: &b, alpha: &a)
+        return Color(red: Double(r) * factor,
+                     green: Double(g) * factor,
+                     blue: Double(b) * factor)
+        #endif
     }
 }
