@@ -21,6 +21,16 @@ final class AppState: ObservableObject {
     // MARK: Buddy
     @Published var buddyState: BuddyState = .idle
 
+    // MARK: Interactive room
+    /// Furniture/prop registry loaded from default-room-objects.json at launch.
+    @Published var roomObjects: [RoomObject] = []
+    /// Currently selected object id (for the accent outline / scale state). nil = none.
+    @Published var selectedObjectID: String? = nil
+    /// Selected Buddy's normalized position in the room (feet anchor). Animated on interaction.
+    @Published var buddyAnchor: CGPoint = CGPoint(x: 0.52, y: 0.80)
+    /// Human-readable label of the current action, e.g. "Buddy is sitting". Empty = idle.
+    @Published var actionLabel: String = ""
+
     // MARK: Tasks (JSON-encoded in UserDefaults)
     @Published var tasks: [BuddyTask] = [] {
         didSet { persistTasks() }
@@ -49,6 +59,7 @@ final class AppState: ObservableObject {
     init() {
         loadTasks()
         loadProgression()
+        roomObjects = RoomObject.loadDefaultRoom()
     }
 
     // MARK: - Buddy state transitions
@@ -71,6 +82,76 @@ final class AppState: ObservableObject {
         buddyState = state
     }
 
+    // MARK: - Buddy action controller (object kind -> interaction -> state + label)
+
+    /// Maps a `BuddyInteraction` to the Bitbud animation row that best represents it.
+    /// Some interactions have no dedicated atlas row yet and reuse the closest match
+    /// (see TODOs — a future pet atlas can add sit/sleep/dance/etc.).
+    static func state(for interaction: BuddyInteraction) -> BuddyState {
+        switch interaction {
+        case .sit:        return .waiting   // TODO: dedicated sit animation in future pet atlas
+        case .work:       return .running
+        case .rest:       return .waiting
+        case .wave:       return .waving
+        case .inspect:    return .review
+        case .waterPlant: return .review    // TODO: dedicated watering animation in future pet atlas
+        case .listen:     return .waving    // TODO: dedicated listen/bop animation in future pet atlas
+        case .celebrate:  return .jumping
+        case .wait:       return .waiting
+        }
+    }
+
+    /// Human-readable label for an interaction at a named object.
+    static func label(for interaction: BuddyInteraction, objectName: String) -> String {
+        switch interaction {
+        case .sit:        return "Buddy is sitting"
+        case .work:       return "Buddy is working at the \(objectName.lowercased())"
+        case .rest:       return "Buddy is resting"
+        case .wave:       return "Buddy waves hello"
+        case .inspect:    return "Buddy is inspecting the \(objectName.lowercased())"
+        case .waterPlant: return "Buddy checks the plant"
+        case .listen:     return "Buddy is listening to music"
+        case .celebrate:  return "Buddy is celebrating!"
+        case .wait:       return "Buddy is waiting"
+        }
+    }
+
+    /// Handle a tap on a room object: select it, move Bitbud to its anchor, set the
+    /// animation state, and surface an action label.
+    func interact(with object: RoomObject) {
+        selectedObjectID = object.id
+        buddyAnchor = object.buddyAnchor
+        setBuddy(AppState.state(for: object.interaction))
+        actionLabel = AppState.label(for: object.interaction, objectName: object.name)
+    }
+
+    /// Manual emote (from the emote buttons). Sets the Bitbud state + a label, and
+    /// clears any object selection so the room shows a neutral selected state.
+    func emote(_ interaction: BuddyInteraction) {
+        selectedObjectID = nil
+        let label: String
+        switch interaction {
+        case .wave:       label = "Buddy waves hello"
+        case .celebrate:  label = "Buddy is celebrating!"
+        case .inspect:    label = "Buddy is thinking it over"
+        case .work:       label = "Buddy is working"
+        case .wait:       label = "Buddy is waiting"
+        case .sit:        label = "Buddy is sitting"
+        case .rest:       label = "Buddy is resting"
+        case .listen:     label = "Buddy is listening"
+        case .waterPlant: label = "Buddy checks the plant"
+        }
+        setBuddy(AppState.state(for: interaction))
+        actionLabel = label
+    }
+
+    /// Manual "fail/sad" emote — distinct because it maps to the `.failed` row directly.
+    func emoteFailed() {
+        selectedObjectID = nil
+        setBuddy(.failed)
+        actionLabel = "Buddy feels sad"
+    }
+
     // MARK: - Events (wired from views)
 
     func timerStarted() { setBuddy(.running) }
@@ -83,10 +164,16 @@ final class AppState: ObservableObject {
         if progression.justUnlockedGift(previousSessions: previous) {
             showGiftUnlock = true
         }
+        // focus complete -> celebrate -> jumping
+        selectedObjectID = nil
+        actionLabel = "Buddy celebrates a finished focus session!"
         flash(.jumping, for: 2.5, thenReturnTo: .idle)
     }
 
-    func greeted() { flash(.waving, for: 2.0) }
+    func greeted() {
+        actionLabel = "Buddy waves hello"
+        flash(.waving, for: 2.0)
+    }
 
     func ambienceToggled(on: Bool) {
         if on { flash(.waving, for: 1.5) }
@@ -110,6 +197,9 @@ final class AppState: ObservableObject {
 
     func deleteTask(_ task: BuddyTask) {
         tasks.removeAll { $0.id == task.id }
+        // delete/fail task -> failed
+        selectedObjectID = nil
+        actionLabel = "Buddy reacts to a deleted task"
         flash(.failed, for: 1.5)
     }
 

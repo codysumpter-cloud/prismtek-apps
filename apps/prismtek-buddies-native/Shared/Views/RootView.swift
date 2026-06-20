@@ -22,6 +22,7 @@ import AppKit
 private struct MacRootView: View {
     @EnvironmentObject var appState: AppState
     @State private var miniWindow: NSWindow?
+    @State private var showBuddyStudio = false
 
     var body: some View {
         HSplitView {
@@ -47,6 +48,17 @@ private struct MacRootView: View {
                     RoomThemePicker()
                         .padding(.horizontal)
 
+                    BuddyPickerView()
+                    Divider()
+                    Button {
+                        showBuddyStudio = true
+                    } label: {
+                        Label("Buddy Studio", systemImage: "paintpalette")
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .padding(.horizontal)
+                    BuddyActionsView()
+                    Divider()
                     FocusTimerView()
                     Divider()
                     TasksView()
@@ -58,6 +70,7 @@ private struct MacRootView: View {
             }
             .frame(minWidth: 320, idealWidth: 360)
         }
+        .sheet(isPresented: $showBuddyStudio) { BuddyStudioView() }
         .onAppear { appState.greeted() }
     }
 
@@ -98,7 +111,15 @@ private struct iOSRootView: View {
             RoomThemePicker()
                 .padding(.horizontal)
                 .padding(.vertical, 6)
+            BuddyPickerView()
             TabView {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 0) {
+                        BuddyStudioLauncher()
+                        BuddyActionsView()
+                    }
+                }
+                    .tabItem { Label("Buddy", systemImage: "face.smiling") }
                 ScrollView { FocusTimerView() }
                     .tabItem { Label("Focus", systemImage: "timer") }
                 ScrollView { TasksView() }
@@ -150,5 +171,21 @@ struct RoomThemePicker: View {
         #else
         .pickerStyle(.segmented)
         #endif
+    }
+}
+
+
+private struct BuddyStudioLauncher: View {
+    @State private var showBuddyStudio = false
+
+    var body: some View {
+        Button {
+            showBuddyStudio = true
+        } label: {
+            Label("Buddy Studio", systemImage: "paintpalette")
+        }
+        .buttonStyle(.borderedProminent)
+        .padding()
+        .sheet(isPresented: $showBuddyStudio) { BuddyStudioView() }
     }
 }

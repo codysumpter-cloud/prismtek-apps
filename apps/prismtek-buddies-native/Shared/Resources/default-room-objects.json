@@ -1,0 +1,202 @@
+[
+  {
+    "id": "window",
+    "name": "Window",
+    "kind": "window",
+    "interaction": "rest",
+    "assetName": "window",
+    "position": [
+      0.78,
+      0.25
+    ],
+    "size": [
+      0.17,
+      0.32
+    ],
+    "buddyAnchor": [
+      0.73,
+      0.82
+    ],
+    "zIndex": 5
+  },
+  {
+    "id": "picture",
+    "name": "Picture",
+    "kind": "shelf",
+    "interaction": "inspect",
+    "assetName": "picture",
+    "position": [
+      0.49,
+      0.2
+    ],
+    "size": [
+      0.06,
+      0.09
+    ],
+    "buddyAnchor": [
+      0.5,
+      0.8
+    ],
+    "zIndex": 6
+  },
+  {
+    "id": "shelf",
+    "name": "Bookshelf",
+    "kind": "shelf",
+    "interaction": "inspect",
+    "assetName": "shelf",
+    "position": [
+      0.18,
+      0.33
+    ],
+    "size": [
+      0.14,
+      0.13
+    ],
+    "buddyAnchor": [
+      0.24,
+      0.81
+    ],
+    "zIndex": 8
+  },
+  {
+    "id": "rug",
+    "name": "Rug",
+    "kind": "rug",
+    "interaction": "rest",
+    "assetName": "rug",
+    "position": [
+      0.5,
+      0.83
+    ],
+    "size": [
+      0.34,
+      0.14
+    ],
+    "buddyAnchor": [
+      0.5,
+      0.82
+    ],
+    "zIndex": 18
+  },
+  {
+    "id": "desk",
+    "name": "Desk",
+    "kind": "desk",
+    "interaction": "work",
+    "assetName": "desk",
+    "position": [
+      0.31,
+      0.66
+    ],
+    "size": [
+      0.25,
+      0.17
+    ],
+    "buddyAnchor": [
+      0.39,
+      0.82
+    ],
+    "zIndex": 44
+  },
+  {
+    "id": "computer",
+    "name": "Computer",
+    "kind": "computer",
+    "interaction": "work",
+    "assetName": "computer",
+    "position": [
+      0.29,
+      0.54
+    ],
+    "size": [
+      0.1,
+      0.12
+    ],
+    "buddyAnchor": [
+      0.39,
+      0.82
+    ],
+    "zIndex": 46
+  },
+  {
+    "id": "chair",
+    "name": "Chair",
+    "kind": "chair",
+    "interaction": "sit",
+    "assetName": "chair",
+    "position": [
+      0.42,
+      0.71
+    ],
+    "size": [
+      0.075,
+      0.13
+    ],
+    "buddyAnchor": [
+      0.42,
+      0.83
+    ],
+    "zIndex": 62
+  },
+  {
+    "id": "couch",
+    "name": "Couch",
+    "kind": "chair",
+    "interaction": "sit",
+    "assetName": "couch",
+    "position": [
+      0.73,
+      0.7
+    ],
+    "size": [
+      0.18,
+      0.18
+    ],
+    "buddyAnchor": [
+      0.72,
+      0.83
+    ],
+    "zIndex": 58
+  },
+  {
+    "id": "plant",
+    "name": "Plant",
+    "kind": "plant",
+    "interaction": "waterPlant",
+    "assetName": "plant",
+    "position": [
+      0.61,
+      0.63
+    ],
+    "size": [
+      0.075,
+      0.17
+    ],
+    "buddyAnchor": [
+      0.58,
+      0.82
+    ],
+    "zIndex": 42
+  },
+  {
+    "id": "musicPlayer",
+    "name": "Music Player",
+    "kind": "musicPlayer",
+    "interaction": "listen",
+    "assetName": "music_player",
+    "position": [
+      0.58,
+      0.71
+    ],
+    "size": [
+      0.1,
+      0.08
+    ],
+    "buddyAnchor": [
+      0.56,
+      0.82
+    ],
+    "zIndex": 54
+  }
+]
