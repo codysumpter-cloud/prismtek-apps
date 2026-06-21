@@ -50,7 +50,38 @@ Runtime snapshots regenerated via app-side autoverify (closed-Mac safe path):
 
 ---
 
+### Follow-up pass 2 (assets owner-cleared — landed, builds + runtime verified)
+
+After the owner confirmed the local asset packs are safe to use, the "all three games"
+polish landed:
+
+- **Buck:** replaced the procedural Training Bruiser with the animated **skeleton2** from
+  `Enemy_Animations_Set` (idle/walk/hurt/death, 32×32 strips); composited a real **Desert
+  Mountains** arena backdrop from `BG_DesertMountains` layers into one curated PNG
+  (`buck_desert_background.png`); replaced the flat translucent street with a coherent
+  **tiled sand floor** (top lip, highlight, vertical tile seams, scattered grit). All Buck
+  autoverify combat gates pass.
+- **Flappy:** select grid relaid to **13 columns / 4 rows** with smaller uniform cells (no
+  crowding, in-game bird size unchanged); parallax background uses **3 tiling copies** and
+  re-tiles to current width every layout.
+- **Dino:** ground segments now have **vertical seams + grass tufts** so the floor reads as
+  discrete pixel tiles tied to the hills.
+
+The **"black bar" on Buck's attack** is NOT dark content — measured: the `attacks_80x32`
+frames contain zero near-black pixels. It is the wide horizontal punch pose (80×32 frame
+rendered at 220×88, centred) reading as a thin bar at torso height. Against the new desert
+sand it reads as a brown punching arm. Minor open item: give the attack frames a
+body-anchored anchorPoint and a size consistent with the 128px idle so the punch doesn't
+float / shift Buck.
+
 ## 2. Open Codex items (NOT done here — exact instructions)
+
+### Flappy — right-edge background sliver (capture-env artifact)
+The headless autoverify snapshot shows a thin right-edge strip of the dark `backgroundColor`.
+Measured: the scene `size` is smaller than the offscreen drawable in the closed-Mac capture
+path, so the background layers (sized to `size.width`) don't reach the captured edge. The
+3-node + always-re-tile change makes real-window resizes robust, but this snapshot sliver
+persists because it's a capture-size mismatch, not a scene bug — verify in a real window.
 
 ### Flappy — right-edge background gap (minor)
 The parallax hills layers (`buildBackgroundLayers`, 2 nodes of `width+4`) can leave a thin
