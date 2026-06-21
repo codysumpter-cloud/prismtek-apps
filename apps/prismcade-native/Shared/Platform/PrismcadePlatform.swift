@@ -65,6 +65,8 @@ final class PrismcadePlatform: ObservableObject {
         }
         // Queue for the shared leaderboard (offline-safe; no-op until an API base is configured).
         LeaderboardService.shared.submit(receipt)
+        // Stage to Game Center (no-op unless authenticated + entitlement configured).
+        GameCenterService.shared.submitScore(score, gameID: gameID)
     }
 
     func best(for gameID: String) -> Int { bestScores[gameID] ?? 0 }
