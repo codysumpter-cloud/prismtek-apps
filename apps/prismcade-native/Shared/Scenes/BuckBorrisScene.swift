@@ -126,9 +126,10 @@ final class BuckBorrisScene: SKScene {
         setupWorld()
         showTitle()
         startTimer()
+        if !autoVerifyEnabled { AudioManager.shared.playBGM("buck_bgm") }
     }
 
-    override func willMove(from view: SKView) { gameTimer?.invalidate(); gameTimer = nil }
+    override func willMove(from view: SKView) { gameTimer?.invalidate(); gameTimer = nil; AudioManager.shared.stopBGM() }
 
     override func didChangeSize(_ oldSize: CGSize) {
         layoutLabels(); layoutStage()
