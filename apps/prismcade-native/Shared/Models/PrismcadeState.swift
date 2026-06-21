@@ -56,6 +56,11 @@ final class PrismcadeState: ObservableObject {
         if ProcessInfo.processInfo.environment["PRISMCADE_AUTOVERIFY_PLATFORM"] == "1" {
             writePlatformVerification()
         }
+        // Optional Game Center sign-in (safe/offline-fallback; skipped under autoverify).
+        let underAutoverify = ProcessInfo.processInfo.environment.keys.contains { $0.hasPrefix("PRISMCADE_AUTOVERIFY") }
+        if !underAutoverify {
+            GameCenterService.shared.authenticate()
+        }
         if startGame == "flappy" {
             selectedGame = .flappyPixel
             try? "flappy\n".write(toFile: "/tmp/prismcade-start-game-marker.txt", atomically: true, encoding: .utf8)
