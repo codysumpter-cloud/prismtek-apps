@@ -50,7 +50,7 @@ enum WeatherState: Int, CaseIterable {
         }
     }
     var tintAlpha: CGFloat {
-        switch self { case .clear: return 0; case .wind: return 0.10; case .rain: return 0.22; case .storm: return 0.40; case .autumn: return 0.22; case .snow: return 0.26 }
+        switch self { case .clear: return 0; case .wind: return 0.14; case .rain: return 0.32; case .storm: return 0.52; case .autumn: return 0.30; case .snow: return 0.34 }
     }
 
     // MARK: Flappy physics
@@ -108,10 +108,12 @@ final class WeatherLayer {
         tint.alpha = 0
         tint.zPosition = 14
         scene.addChild(tint)
-        label.fontSize = 14
+        label.fontSize = 15
+        label.fontColor = .white
         label.horizontalAlignmentMode = .center
         label.zPosition = 41
         label.alpha = 0
+        label.text = "Weather: Clear · Spring"
         scene.addChild(label)
         self.labelTopOffset = labelTopOffset
     }
@@ -128,6 +130,9 @@ final class WeatherLayer {
         state = .clear
         tint.removeAllActions(); tint.alpha = 0
         clearParticles()
+        label.removeAllActions()
+        label.text = "Weather: Clear · Spring"
+        label.alpha = 0.85
         layout(size: size)
     }
 
@@ -142,9 +147,11 @@ final class WeatherLayer {
         tint.color = next.tintColor
         tint.run(.fadeAlpha(to: next.tintAlpha, duration: 0.6))
         rebuild(size: size)
+        // Persistent label (always shows the current weather) with a brief emphasis pulse on change.
         label.text = "Weather: \(next.title)"
         label.removeAllActions()
-        label.run(.sequence([.fadeAlpha(to: 0.95, duration: 0.2), .wait(forDuration: 1.6), .fadeAlpha(to: 0.4, duration: 0.5)]))
+        label.run(.sequence([.scale(to: 1.25, duration: 0.15), .scale(to: 1.0, duration: 0.2)]))
+        label.alpha = 0.9
         return true
     }
 
@@ -159,19 +166,19 @@ final class WeatherLayer {
             let f = SKTexture(rect: CGRect(x: CGFloat(i) / CGFloat(spec.frames), y: 0, width: 1 / CGFloat(spec.frames), height: 1), in: sheet)
             f.filteringMode = .nearest; return f
         }
-        let count = spec.falling ? 14 : 4
+        let count = spec.falling ? 22 : 5
         for i in 0..<count {
             let p = SKSpriteNode(texture: frames.first)
             p.zPosition = 13
             if spec.falling {
-                p.size = CGSize(width: 64, height: 64)
-                p.alpha = 0.5
+                p.size = CGSize(width: 84, height: 84)
+                p.alpha = state == .snow ? 0.85 : 0.6
                 p.position = CGPoint(x: CGFloat(i) / CGFloat(count) * size.width, y: CGFloat.random(in: 0...size.height))
             } else {
-                p.size = CGSize(width: 220, height: 16)
+                p.size = CGSize(width: 240, height: 18)
                 p.anchorPoint = CGPoint(x: 0, y: 0.5)
-                p.alpha = 0.22
-                p.position = CGPoint(x: CGFloat(i) * 260, y: size.height * (0.4 + 0.14 * CGFloat(i % 3)))
+                p.alpha = 0.3
+                p.position = CGPoint(x: CGFloat(i) * 230, y: size.height * (0.36 + 0.13 * CGFloat(i % 4)))
             }
             p.run(.repeatForever(.animate(with: frames, timePerFrame: 0.06)))
             scene.addChild(p)

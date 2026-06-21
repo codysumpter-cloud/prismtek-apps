@@ -68,6 +68,8 @@ final class DinoDashScene: SKScene {
     private var autoWroteSelectSnapshot = false
     private var autoWroteGameplaySnapshot = false
     private var autoWroteWeatherSnapshot = false
+    private var autoWroteClearSnapshot = false
+    private var autoWroteSnowSnapshot = false
     private var autoForcedCollision = false
     private let groundY: CGFloat = 92
     private let gravity: CGFloat = -1600
@@ -471,56 +473,42 @@ final class DinoDashScene: SKScene {
     }
 
     private func spawnObstacle() {
-        let tall = Bool.random()
-        let height = CGFloat(tall ? 58 : 42)
-        let obstacle = makeCactus(width: tall ? 30 : 24, height: height)
-        obstacle.anchorPoint = CGPoint(x: 0.5, y: 0)
-        obstacle.position = CGPoint(x: size.width + 44, y: groundY - 38)
-        addChild(obstacle)
-        obstacles.append(Obstacle(node: obstacle))
+        let node = makeObstacleNode(rock: Bool.random())
+        node.position = CGPoint(x: size.width + 44, y: groundY - 38)
+        addChild(node)
+        obstacles.append(Obstacle(node: node))
         autoSawObstacle = true
     }
 
-    private func makeCactus(width: CGFloat, height: CGFloat) -> SKSpriteNode {
-        let cactus = SKSpriteNode(color: SKColor(red: 0.42, green: 0.73, blue: 0.33, alpha: 1), size: CGSize(width: width, height: height))
-        cactus.zPosition = 18
-
-        let highlight = SKSpriteNode(color: SKColor(red: 0.65, green: 0.88, blue: 0.42, alpha: 1), size: CGSize(width: 5, height: max(10, height - 10)))
-        highlight.anchorPoint = CGPoint(x: 0.5, y: 0)
-        highlight.position = CGPoint(x: -width * 0.24, y: 4)
-        highlight.zPosition = 1
-        cactus.addChild(highlight)
-
-        let shadow = SKSpriteNode(color: SKColor(red: 0.20, green: 0.45, blue: 0.24, alpha: 1), size: CGSize(width: 6, height: height))
-        shadow.anchorPoint = CGPoint(x: 0.5, y: 0)
-        shadow.position = CGPoint(x: width * 0.25, y: 0)
-        shadow.zPosition = 1
-        cactus.addChild(shadow)
-
-        let armY = height * 0.48
-        for side in [-1, 1] {
-            let arm = SKSpriteNode(color: SKColor(red: 0.42, green: 0.73, blue: 0.33, alpha: 1), size: CGSize(width: 18, height: 8))
-            arm.position = CGPoint(x: CGFloat(side) * (width * 0.42), y: armY)
-            arm.zPosition = -1
-            cactus.addChild(arm)
-
-            let tip = SKSpriteNode(color: SKColor(red: 0.42, green: 0.73, blue: 0.33, alpha: 1), size: CGSize(width: 8, height: 20))
-            tip.anchorPoint = CGPoint(x: 0.5, y: 0)
-            tip.position = CGPoint(x: CGFloat(side) * (width * 0.42 + 7), y: armY)
-            tip.zPosition = -1
-            cactus.addChild(tip)
+    /// Sprite-backed obstacles: a clean original saguaro cactus or a pixel rock (both nearest-
+    /// neighbour). Collision is inset in `checkCollision` so the obstacles stay fair.
+    private func makeObstacleNode(rock: Bool) -> SKSpriteNode {
+        let node: SKSpriteNode
+        if rock {
+            let t = SKTexture(imageNamed: "dino_rock"); t.filteringMode = .nearest
+            node = SKSpriteNode(texture: t)
+            node.size = CGSize(width: 52, height: 50)
+        } else {
+            let t = SKTexture(imageNamed: "dino_cactus"); t.filteringMode = .nearest
+            node = SKSpriteNode(texture: t)
+            node.size = Bool.random() ? CGSize(width: 40, height: 66) : CGSize(width: 32, height: 52)
         }
-        return cactus
+        node.anchorPoint = CGPoint(x: 0.5, y: 0)
+        node.zPosition = 18
+        return node
     }
 
     private func checkCollision() {
-        let dinoRect = CGRect(x: runner.position.x - 26, y: runner.position.y - 34, width: 52, height: 62)
+        let dinoRect = CGRect(x: runner.position.x - 22, y: runner.position.y - 32, width: 44, height: 56)
         for obstacle in obstacles {
+            // Inset the obstacle hitbox (~62% width, 80% height) so grazes are fair.
+            let w = obstacle.node.size.width * 0.62
+            let h = obstacle.node.size.height * 0.8
             let rect = CGRect(
-                x: obstacle.node.position.x - obstacle.node.size.width / 2,
+                x: obstacle.node.position.x - w / 2,
                 y: obstacle.node.position.y,
-                width: obstacle.node.size.width,
-                height: obstacle.node.size.height
+                width: w,
+                height: h
             )
             if dinoRect.intersects(rect) {
                 endRun()
@@ -573,9 +561,17 @@ final class DinoDashScene: SKScene {
                 autoWroteGameplaySnapshot = true
                 writeSceneSnapshot(path: "/tmp/prismcade-dino-gameplay-snapshot.png")
             }
+            if runTime > 0.4 && runTime < 0.9 && weather?.state == .clear && !autoWroteClearSnapshot {
+                autoWroteClearSnapshot = true
+                writeSceneSnapshot(path: "/tmp/prismcade-dino-clear-snapshot.png")
+            }
             if weather?.state == .storm && !autoWroteWeatherSnapshot {
                 autoWroteWeatherSnapshot = true
-                writeSceneSnapshot(path: "/tmp/prismcade-dino-weather-snapshot.png")
+                writeSceneSnapshot(path: "/tmp/prismcade-dino-storm-snapshot.png")
+            }
+            if weather?.state == .snow && !autoWroteSnowSnapshot {
+                autoWroteSnowSnapshot = true
+                writeSceneSnapshot(path: "/tmp/prismcade-dino-snow-snapshot.png")
             }
             if runner.position.y <= groundY + 2 && (obstacles.first?.node.position.x ?? size.width) - runner.position.x < 160 {
                 jumpOrRestart()
@@ -583,10 +579,9 @@ final class DinoDashScene: SKScene {
             if runTime > 1.0 && obstacles.isEmpty {
                 spawnObstacle()
             }
-            if runTime > 4.2 && !autoForcedCollision {
+            if runTime > 6.0 && !autoForcedCollision {
                 autoForcedCollision = true
-                let obstacle = makeCactus(width: 34, height: 62)
-                obstacle.anchorPoint = CGPoint(x: 0.5, y: 0)
+                let obstacle = makeObstacleNode(rock: false)
                 obstacle.position = CGPoint(x: runner.position.x, y: groundY - 38)
                 addChild(obstacle)
                 obstacles.append(Obstacle(node: obstacle))

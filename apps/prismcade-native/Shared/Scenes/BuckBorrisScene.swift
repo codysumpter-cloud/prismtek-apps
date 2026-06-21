@@ -64,8 +64,11 @@ final class BuckBorrisScene: SKScene {
 
     private var idleFrames: [SKTexture] = []
     private var runFrames: [SKTexture] = []
+    private var jumpFrames: [SKTexture] = []
+    private var chargeFrames: [SKTexture] = []
     private var damagedFrames: [SKTexture] = []
     private var attackFrames: [SKTexture] = []
+    private let buckSize = CGSize(width: 120, height: 120)
     private var enemyIdleFrames: [SKTexture] = []
     private var enemyWalkFrames: [SKTexture] = []
     private var enemyHurtFrames: [SKTexture] = []
@@ -139,14 +142,14 @@ final class BuckBorrisScene: SKScene {
     // MARK: - Assets
 
     private func loadFrames() {
-        idleFrames = (0...4).compactMap { texture(named: "idle_0\($0)") }
-        runFrames = (0...3).compactMap { texture(named: "run_0\($0)") }
-        damagedFrames = (0...1).compactMap { texture(named: "damaged_0\($0)") }
-        let strip = SKTexture(imageNamed: "attacks_80x32"); strip.filteringMode = .nearest
-        attackFrames = (0..<12).map { index in
-            let frame = SKTexture(rect: CGRect(x: 0, y: 1 - CGFloat(index + 1) / 12, width: 1, height: 1 / 12), in: strip)
-            frame.filteringMode = .nearest; return frame
-        }
+        // Uniform 24x24 dino-style Buck sheet (24 frames) — every animation shares the same
+        // canvas, scale and feet baseline, so Buck never changes size between states.
+        idleFrames = uniformBuckFrames(0...4)
+        runFrames = uniformBuckFrames(5...8)
+        jumpFrames = uniformBuckFrames(9...9)
+        damagedFrames = uniformBuckFrames(13...14)
+        chargeFrames = uniformBuckFrames(9...9)        // arms-up pose for charge/energy windup
+        attackFrames = uniformBuckFrames(7...8)        // forward-lean punch poses (same size)
         enemyIdleFrames = sliceStrip("enemy_mummy_idle", count: 4)
         enemyWalkFrames = sliceStrip("enemy_mummy_walk", count: 6)
         enemyHurtFrames = sliceStrip("enemy_mummy_hurt", count: 2)
@@ -160,6 +163,15 @@ final class BuckBorrisScene: SKScene {
 
     private func texture(named name: String) -> SKTexture? {
         let t = SKTexture(imageNamed: name); t.filteringMode = .nearest; return t
+    }
+
+    private func uniformBuckFrames(_ range: ClosedRange<Int>) -> [SKTexture] {
+        let sheet = SKTexture(imageNamed: "buck_uniform"); sheet.filteringMode = .nearest
+        let total = 24
+        return range.map { i in
+            let f = SKTexture(rect: CGRect(x: CGFloat(i) / CGFloat(total), y: 0, width: 1 / CGFloat(total), height: 1), in: sheet)
+            f.filteringMode = .nearest; return f
+        }
     }
 
     private func sliceStrip(_ name: String, count: Int) -> [SKTexture] {
@@ -186,7 +198,7 @@ final class BuckBorrisScene: SKScene {
 
         buck = SKSpriteNode(texture: idleFrames.first)
         buck.name = "buck-borris-player"
-        buck.size = CGSize(width: 128, height: 128); buck.zPosition = 30; addChild(buck)
+        buck.size = buckSize; buck.zPosition = 30; addChild(buck)
 
         for label in [titleLabel, statusLabel, scoreLabel, highScoreLabel, waveLabel, dragonLabel] {
             label.zPosition = 80; addChild(label)
@@ -598,17 +610,24 @@ final class BuckBorrisScene: SKScene {
         guard animationTimer > 0.075 else { return }
         animationTimer = 0; animationFrame += 1
 
+        // Fixed size + uniform frames across every state — Buck never shrinks/grows.
+        buck.size = buckSize
+        let airborne = buckZ > 1
         switch buckState {
-        case .idle: setBuckTexture(idleFrames[animationFrame % max(idleFrames.count, 1)]); buck.size = CGSize(width: 128, height: 128)
-        case .walk: setBuckTexture(runFrames[animationFrame % max(runFrames.count, 1)]); buck.size = CGSize(width: 128, height: 128)
+        case .idle:
+            setBuckTexture(airborne ? jumpFrames.first : idleFrames[animationFrame % max(idleFrames.count, 1)])
+        case .walk:
+            setBuckTexture(airborne ? jumpFrames.first : runFrames[animationFrame % max(runFrames.count, 1)])
         case .charge:
-            setBuckTexture(idleFrames[animationFrame % max(idleFrames.count, 1)]); buck.size = CGSize(width: 128, height: 128)
+            setBuckTexture(chargeFrames.first ?? idleFrames.first)
             buck.colorBlendFactor = 0.6; buck.color = SKColor(red: 0.45, green: 0.82, blue: 1.0, alpha: 1)
         case .attack:
-            let idx = min(attackFrames.count - 1, max(0, Int((0.34 - attackTimer) / 0.034)))
-            setBuckTexture(attackFrames[idx]); buck.size = CGSize(width: 200, height: 80)
-        case .hurt: setBuckTexture(damagedFrames[animationFrame % max(damagedFrames.count, 1)]); buck.size = CGSize(width: 128, height: 128)
-        case .defeated: setBuckTexture(damagedFrames.last)
+            let idx = min(attackFrames.count - 1, max(0, Int((0.34 - attackTimer) / 0.17)))
+            setBuckTexture(attackFrames[idx])
+        case .hurt:
+            setBuckTexture(damagedFrames[animationFrame % max(damagedFrames.count, 1)])
+        case .defeated:
+            setBuckTexture(damagedFrames.last)
         }
         if buckState != .charge { buck.colorBlendFactor = 0 }
 
