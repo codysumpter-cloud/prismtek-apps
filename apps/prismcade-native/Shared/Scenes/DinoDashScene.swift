@@ -250,6 +250,24 @@ final class DinoDashScene: SKScene {
             chipNode.zPosition = 2
             segment.addChild(chipNode)
         }
+
+        // Vertical seams break the strip into discrete pixel tiles.
+        for seamIndex in 1..<3 {
+            let seam = SKSpriteNode(color: SKColor(red: 0.42, green: 0.29, blue: 0.18, alpha: 1), size: CGSize(width: 2, height: 22))
+            seam.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+            seam.position = CGPoint(x: CGFloat(seamIndex) * 60, y: 0)
+            seam.zPosition = 2
+            segment.addChild(seam)
+        }
+
+        // Grass tufts on the surface tie the ground to the green hills backdrop.
+        for tuft in 0..<4 {
+            let blade = SKSpriteNode(color: SKColor(red: 0.40, green: 0.66, blue: 0.36, alpha: 1), size: CGSize(width: 5, height: 6))
+            blade.anchorPoint = CGPoint(x: 0, y: 0)
+            blade.position = CGPoint(x: 24 + CGFloat((tuft * 47 + index * 19) % 150), y: 9)
+            blade.zPosition = 3
+            segment.addChild(blade)
+        }
         return segment
     }
 
