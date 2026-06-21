@@ -14,9 +14,9 @@ See:
 docs/games/beat-em-up-buck.md
 ```
 
-## Current merged prototype
+## Historical prototype
 
-The merged native Prismcade foundation currently contains a Buck Borris jump/dodge/pickup prototype using real Buck Borris frames.
+The merged native Prismcade foundation originally contained a Buck Borris jump/dodge/pickup prototype using real Buck Borris frames.
 
 That prototype verified:
 
@@ -24,11 +24,11 @@ That prototype verified:
 - Small side-scrolling jump/dodge/collect loop.
 - Hazards, pickups, score, game over, restart, local high score.
 
-## Why this is not done
+## Replacement
 
-This prototype is not the final Buck game. The next polish pass should replace it with Beat Em Up Buck: a tiny SpriteKit brawler/fighter with attacks, enemies, hitboxes, health, knockback, and a coherent pixel stage.
+This prototype has been replaced in `apps/prismcade-native/Shared/Scenes/BuckBorrisScene.swift` by Beat Em Up Buck: a tiny SpriteKit brawler/fighter with attacks, an enemy, hitboxes, health, knockback, KO scoring, and a lane stage.
 
-## Previous verification
+## Current verification
 
 Receipt:
 
@@ -36,9 +36,10 @@ Receipt:
 apps/prismcade-native/verification-screenshots/buck-runtime-verification.json
 ```
 
-Snapshot:
+Snapshots:
 
 ```text
+apps/prismcade-native/verification-screenshots/buck-combat-snapshot.png
 apps/prismcade-native/verification-screenshots/buck-runtime-snapshot.png
 ```
 

@@ -1,4 +1,6 @@
 {
+  "backgroundImagesUsed" : true,
+  "dinoFacesRight" : true,
   "dinoSpritesFound" : [
     "doux",
     "mort",
@@ -13,10 +15,14 @@
   ],
   "game" : "Prismtek Dino Dash",
   "gameOverTriggered" : true,
+  "gameplaySpriteSize" : "84x84",
   "jumpWorked" : true,
   "obstaclesSpawned" : true,
+  "pixelStagePolished" : true,
   "realDinoSpritesVisible" : true,
   "restartWorked" : true,
   "scoreChanged" : true,
-  "speedRamped" : true
+  "selectSpriteSize" : "96x96 plus selected-card emphasis",
+  "speedRamped" : true,
+  "spriteScaleConsistent" : true
 }

@@ -4,9 +4,9 @@ Native macOS/iOS Prismcade launcher and runtime built with SwiftUI + SpriteKit.
 
 ## Games
 
-- Flappy Pixel: one-button score chase with curated Onocentaur bird frames.
-- Prismtek Dino Dash: four-character dinosaur runner using `DinoSprites` sheets.
-- Beat Em Up Buck: canonical Buck Borris fighter/brawler direction. The current merged runtime is still the earlier Buck jump/dodge prototype until the next polish pass replaces it.
+- Flappy Pixel: one-button score chase with 50 playable bird characters, visible flapping, no spin, and a pixel mountain stage.
+- Prismtek Dino Dash: four-character dinosaur runner using `DinoSprites` sheets and a layered pixel hills environment.
+- Beat Em Up Buck: tiny native Buck Borris lane brawler with attacks, health bars, knockback, KO scoring, an original Training Bruiser enemy, and a pixel street backdrop.
 
 ## Open
 
@@ -44,10 +44,9 @@ DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer xcodebuild \
 ## Controls
 
 - Hub: choose a game card, then Play.
-- Flappy Pixel: click, tap, or Space to flap/restart.
+- Flappy Pixel: choose a bird with click/tap, arrows/Tab, or Space; click, tap, or Space to flap/restart.
 - Dino Dash: click/tap a dino or press 1-4 on macOS; click, tap, or Space to jump/restart.
-- Current Buck prototype: click, tap, or Space to jump/restart.
-- Beat Em Up Buck target: arrows/WASD to move, Space/J to attack, K to jump if supported, and touch controls on iOS.
+- Beat Em Up Buck: arrows/WASD move, Space/J attacks, K jumps; on iOS the left side moves and the right side attacks/jumps.
 
 ## Catalog parity
 
@@ -69,9 +68,15 @@ apps/prismcade-native/verification-screenshots/
 
 Desktop `screencapture` returned black in this Codex desktop context, so each SpriteKit scene writes its own macOS runtime snapshot during gated verification.
 
-`/Users/prismtek/Prismtek/prismtek-site` was cloned locally before the final merge pass and searched for Flappy Pixel, Dino, Buck/Borris/Boris, Prismcade, and image/source references. The site contains useful Flappy Pixel React/canvas source and Prismcade platform metadata, but the native app keeps the curated local Onocentaur bird, DinoSprites, and Buck Borris assets because they are the best safe native sprites found.
+This polish pass verified the launch set with app-side SpriteKit snapshots:
 
-## Next polish pass
+- Flappy Pixel: `flappy-runtime-verification.json`
+- Prismtek Dino Dash: `dino-runtime-verification.json`
+- Beat Em Up Buck: `buck-runtime-verification.json`
+
+`/Users/prismtek/Prismtek/prismtek-site` was cloned locally before the final merge pass and searched for Flappy Pixel, Dino, Buck/Borris/Boris, Prismcade, and image/source references. The site contains useful Flappy Pixel React/canvas source and Prismcade platform metadata, but the native app keeps the curated local Garden Birds, Onocentaur birds, DinoSprites, Buck Borris, Background Hills, and RTB backdrop assets because they are the best safe native assets found.
+
+## Follow-up references
 
 See:
 

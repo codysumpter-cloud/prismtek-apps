@@ -29,7 +29,7 @@ Do not show duplicate game cards for the same canonical game.
 | --- | --- | --- | --- | --- | --- |
 | Flappy Pixel | Present in site/web references | Should map to web package when available | Present in `apps/prismcade-native` | Must show under Prismcade | Native version should supersede older duplicate Flappy entries. |
 | Prismtek Dino Dash | Pending / native-first | Pending | Present in `apps/prismcade-native` | Must show under Prismcade | Do not use Google/Chrome Dino assets or naming. |
-| Beat Em Up Buck | Pending / native-first | Pending | Target replacement for Buck Borris prototype | Must show under Prismcade once playable | Canonical direction for Buck Borris game. |
+| Beat Em Up Buck | Pending / native-first | Pending | Present in `apps/prismcade-native` | Must show under Prismcade | Canonical Buck Borris brawler direction. |
 | Pixel Fruit Arena | Existing Prismcade-adjacent game | Existing support should be audited | Native parity pending | Should show as playable or planned based on repo truth | Next major polish target. |
 | Prism Sky Hunt | Needs discovery/audit | Needs discovery/audit | Native parity pending | Should show as playable or planned based on repo truth | Next major polish target after Pixel Fruit Arena. |
 

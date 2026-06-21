@@ -20,17 +20,17 @@ enum PrismcadeGame: String, CaseIterable, Identifiable {
 
     var description: String {
         switch self {
-        case .flappyPixel: "One-button Prismcade score chase with a real bird sprite and tight restarts."
-        case .dinoDash: "Four-sprite dinosaur runner with character select and speed ramp."
-        case .buckBorris: "Canonical Buck Borris fighter/brawler direction; current runtime is still the early playable prototype."
+        case .flappyPixel: "One-button Prismcade score chase with 50 playable birds and a pixel mountain stage."
+        case .dinoDash: "Four-sprite dinosaur runner with character select, speed ramp, and a pixel hills stage."
+        case .buckBorris: "Tiny native Buck Borris brawler with lane movement, attacks, health, and KO scoring."
         }
     }
 
     var sourceNote: String {
         switch self {
-        case .flappyPixel: "Art: Onocentaur bird sheet, curated from Documents/Libresprite."
-        case .dinoDash: "Art: DinoSprites doux, mort, tard, vita sheets."
-        case .buckBorris: "Art: Buck Borris frames; next pass upgrades this into a brawler."
+        case .flappyPixel: "Art: Garden Birds, Onocentaur birds, and Background Hills from local LibreSprite packs."
+        case .dinoDash: "Art: DinoSprites doux, mort, tard, vita sheets plus Background Hills layers."
+        case .buckBorris: "Art: Buck Borris frames, RTB backdrop, and an original Training Bruiser enemy."
         }
     }
 }

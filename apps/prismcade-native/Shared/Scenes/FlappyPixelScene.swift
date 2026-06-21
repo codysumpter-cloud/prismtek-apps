@@ -5,9 +5,21 @@ import AppKit
 
 final class FlappyPixelScene: SKScene {
     private enum Phase {
-        case title
+        case selecting
         case playing
         case gameOver
+    }
+
+    private struct BirdChoice {
+        let id: String
+        let title: String
+        let textureName: String
+        let source: BirdSource
+    }
+
+    private enum BirdSource {
+        case garden
+        case onocentaur(row: Int)
     }
 
     private struct Gate {
@@ -17,11 +29,39 @@ final class FlappyPixelScene: SKScene {
         var scored: Bool
     }
 
-    private var phase: Phase = .title
+    private struct BackgroundLayer {
+        let nodes: [SKSpriteNode]
+        let speed: CGFloat
+    }
+
+    private let birdChoices = [
+        BirdChoice(id: "blue_jay", title: "Blue Jay", textureName: "flappy_bird_blue_jay", source: .garden),
+        BirdChoice(id: "cardinal", title: "Cardinal", textureName: "flappy_bird_cardinal", source: .garden),
+        BirdChoice(id: "cedar_waxwing", title: "Cedar Waxwing", textureName: "flappy_bird_cedar_waxwing", source: .garden),
+        BirdChoice(id: "chickadee", title: "Chickadee", textureName: "flappy_bird_chickadee", source: .garden),
+        BirdChoice(id: "crow", title: "Crow", textureName: "flappy_bird_crow", source: .garden),
+        BirdChoice(id: "house_finch", title: "House Finch", textureName: "flappy_bird_house_finch", source: .garden),
+        BirdChoice(id: "hummingbird", title: "Hummingbird", textureName: "flappy_bird_hummingbird", source: .garden),
+        BirdChoice(id: "magpie", title: "Magpie", textureName: "flappy_bird_magpie", source: .garden),
+        BirdChoice(id: "red_robin", title: "Red Robin", textureName: "flappy_bird_red_robin", source: .garden),
+        BirdChoice(id: "stellers_jay", title: "Steller's Jay", textureName: "flappy_bird_stellers_jay", source: .garden),
+        BirdChoice(id: "white_dove", title: "White Dove", textureName: "flappy_bird_white_dove", source: .garden),
+        BirdChoice(id: "wood_thrush", title: "Wood Thrush", textureName: "flappy_bird_wood_thrush", source: .garden)
+    ] + (0..<38).map {
+        BirdChoice(id: "onocentaur_\($0)", title: "Onocentaur \($0 + 1)", textureName: "flappy_onocentaur_birds_2x", source: .onocentaur(row: $0))
+    }
+
+    private var phase: Phase = .selecting
     private var bird = SKSpriteNode()
     private var birdFrames: [SKTexture] = []
+    private var birdFramesByChoice: [[SKTexture]] = []
+    private var selectedBirdIndex = 0
+    private var choiceNodes: [SKSpriteNode] = []
+    private var backgroundLayers: [BackgroundLayer] = []
     private var gates: [Gate] = []
     private var clouds: [SKSpriteNode] = []
+    private var skylineBlocks: [SKSpriteNode] = []
+    private var groundTiles: [SKSpriteNode] = []
     private var scoreLabel = SKLabelNode(fontNamed: "Menlo-Bold")
     private var highScoreLabel = SKLabelNode(fontNamed: "Menlo-Bold")
     private var messageLabel = SKLabelNode(fontNamed: "Menlo-Bold")
@@ -44,15 +84,17 @@ final class FlappyPixelScene: SKScene {
     private var autoVerifySawScore = false
     private var autoVerifySawGameOver = false
     private var autoVerifySawRestart = false
+    private var autoVerifySawStableTilt = true
+    private var autoVerifyWroteSelectSnapshot = false
     private var autoVerifyStartY: CGFloat = 0
     private var autoVerifyTargetY: CGFloat = 0
 
     private let gravity: CGFloat = -880
     private let flapImpulse: CGFloat = 365
     private let gateSpeed: CGFloat = 185
-    private let gateWidth: CGFloat = 56
+    private let gateWidth: CGFloat = 62
     private let gateGap: CGFloat = 190
-    private let groundHeight: CGFloat = 58
+    private let groundHeight: CGFloat = 68
 
     override func didMove(to view: SKView) {
         scaleMode = .resizeFill
@@ -85,26 +127,57 @@ final class FlappyPixelScene: SKScene {
         removeAllChildren()
         gates.removeAll()
         clouds.removeAll()
+        skylineBlocks.removeAll()
+        groundTiles.removeAll()
+        choiceNodes.removeAll()
+        backgroundLayers.removeAll()
         backgroundColor = SKColor(red: 0.09, green: 0.17, blue: 0.25, alpha: 1)
 
-        birdFrames = ["bird_flap_up", "bird_glide", "bird_flap_down"].map {
-            let texture = SKTexture(imageNamed: $0)
-            texture.filteringMode = .nearest
-            return texture
+        buildBackgroundLayers()
+        birdFramesByChoice = birdChoices.map(buildBirdFrames)
+        birdFrames = birdFramesByChoice[selectedBirdIndex]
+
+        for (index, frames) in birdFramesByChoice.enumerated() {
+            let node = SKSpriteNode(texture: frames.first)
+            node.name = "flappy-bird-choice-\(index)"
+            node.size = CGSize(width: 48, height: 48)
+            node.zPosition = 45
+            addChild(node)
+            choiceNodes.append(node)
         }
         bird = SKSpriteNode(texture: birdFrames.first)
         bird.name = "flappy-bird"
-        bird.size = CGSize(width: 56, height: 56)
+        bird.size = CGSize(width: 58, height: 58)
         bird.zPosition = 20
         addChild(bird)
 
-        for index in 0..<9 {
-            let cloud = SKSpriteNode(color: SKColor.white.withAlphaComponent(0.22), size: CGSize(width: 64, height: 18))
-            cloud.anchorPoint = CGPoint(x: 0.5, y: 0.5)
-            cloud.position = CGPoint(x: CGFloat(index) * 130 + 30, y: CGFloat(130 + (index * 37) % 180))
+        for index in 0..<10 {
+            let block = SKSpriteNode(
+                color: SKColor(red: 0.06, green: 0.12, blue: 0.19, alpha: 1),
+                size: CGSize(width: CGFloat(80 + (index % 3) * 18), height: CGFloat(54 + (index * 19) % 82))
+            )
+            block.anchorPoint = CGPoint(x: 0, y: 0)
+            block.position = CGPoint(x: CGFloat(index) * 126 - 20, y: groundHeight)
+            block.zPosition = 0
+            addChild(block)
+            skylineBlocks.append(block)
+        }
+
+        for index in 0..<8 {
+            let cloud = makePixelCloud()
+            cloud.position = CGPoint(x: CGFloat(index) * 158 + 40, y: CGFloat(150 + (index * 43) % 210))
             cloud.zPosition = 1
             addChild(cloud)
             clouds.append(cloud)
+        }
+
+        for index in 0..<12 {
+            let tile = makeGroundTile()
+            tile.anchorPoint = CGPoint(x: 0, y: 0)
+            tile.position = CGPoint(x: CGFloat(index) * 96, y: 0)
+            tile.zPosition = 8
+            addChild(tile)
+            groundTiles.append(tile)
         }
 
         scoreLabel.fontSize = 36
@@ -130,16 +203,89 @@ final class FlappyPixelScene: SKScene {
         layoutStaticNodes()
     }
 
+    private func buildBackgroundLayers() {
+        let specs: [(String, CGFloat, CGFloat)] = [
+            ("flappy_hills_layer_1", 5, -4),
+            ("flappy_hills_layer_2", 10, -3),
+            ("flappy_hills_layer_3", 16, -2),
+            ("flappy_hills_layer_4", 24, -1)
+        ]
+        for spec in specs {
+            let texture = SKTexture(imageNamed: spec.0)
+            texture.filteringMode = .nearest
+            let nodes = (0..<2).map { index in
+                let node = SKSpriteNode(texture: texture)
+                node.anchorPoint = CGPoint(x: 0, y: 0)
+                node.zPosition = spec.2
+                node.name = "\(spec.0)-\(index)"
+                addChild(node)
+                return node
+            }
+            backgroundLayers.append(BackgroundLayer(nodes: nodes, speed: spec.1))
+        }
+    }
+
+    private func buildBirdFrames(choice: BirdChoice) -> [SKTexture] {
+        let sheet = SKTexture(imageNamed: choice.textureName)
+        sheet.filteringMode = .nearest
+        switch choice.source {
+        case .garden:
+            return (0..<4).map { column in
+                let frame = SKTexture(rect: CGRect(x: CGFloat(column) / 4, y: 0.75, width: 0.25, height: 0.25), in: sheet)
+                frame.filteringMode = .nearest
+                return frame
+            }
+        case .onocentaur(let row):
+            let rowCount: CGFloat = 38
+            let rect = CGRect(x: 0, y: 1 - CGFloat(row + 1) / rowCount, width: 0.25, height: 1 / rowCount)
+            let frame = SKTexture(rect: rect, in: sheet)
+            frame.filteringMode = .nearest
+            return [frame, frame, frame, frame]
+        }
+    }
+
     private func layoutStaticNodes() {
+        layoutBackgroundLayers()
         scoreLabel.position = CGPoint(x: 22, y: size.height - 58)
         highScoreLabel.position = CGPoint(x: size.width - 22, y: size.height - 48)
-        messageLabel.position = CGPoint(x: size.width / 2, y: size.height * 0.66)
-        subMessageLabel.position = CGPoint(x: size.width / 2, y: size.height * 0.66 - 34)
+        messageLabel.position = CGPoint(x: size.width / 2, y: size.height * 0.74)
+        subMessageLabel.position = CGPoint(x: size.width / 2, y: size.height * 0.74 - 34)
+        layoutChoices()
         updateLabels()
     }
 
+    private func layoutBackgroundLayers() {
+        let width = max(size.width, 1)
+        let height = max(size.height, 1)
+        for layer in backgroundLayers {
+            for (index, node) in layer.nodes.enumerated() {
+                node.size = CGSize(width: width + 4, height: height)
+                if node.position == .zero || abs(node.position.x) > width * 2 {
+                    node.position = CGPoint(x: CGFloat(index) * width, y: 0)
+                }
+            }
+        }
+    }
+
+    private func layoutChoices() {
+        let columns = 10
+        let spacingX = min(size.width / 11.2, 68)
+        let spacingY: CGFloat = 46
+        let startX = size.width / 2 - spacingX * CGFloat(columns - 1) / 2
+        let startY = min(size.height * 0.58, size.height - 180)
+        for (index, node) in choiceNodes.enumerated() {
+            node.isHidden = phase != .selecting
+            let column = index % columns
+            let row = index / columns
+            node.position = CGPoint(x: startX + CGFloat(column) * spacingX, y: startY - CGFloat(row) * spacingY)
+            node.setScale(index == selectedBirdIndex ? 1.18 : 1.0)
+            node.alpha = index == selectedBirdIndex ? 1 : 0.78
+        }
+        bird.isHidden = phase == .selecting
+    }
+
     private func showTitle() {
-        phase = .title
+        phase = .selecting
         score = 0
         birdVelocity = 0
         spawnTimer = 0
@@ -147,8 +293,11 @@ final class FlappyPixelScene: SKScene {
         removeGates()
         bird.position = CGPoint(x: size.width * 0.32, y: size.height * 0.55)
         bird.zRotation = 0
-        messageLabel.text = "Flappy Pixel"
-        subMessageLabel.text = "Click, tap, or press Space to flap"
+        birdFrames = birdFramesByChoice[selectedBirdIndex]
+        bird.texture = birdFrames.first
+        messageLabel.text = "Choose a Bird"
+        subMessageLabel.text = "Click/tap any bird, arrows/Tab switch, Space flies \(birdChoices[selectedBirdIndex].title)"
+        layoutChoices()
         updateLabels()
     }
 
@@ -162,13 +311,16 @@ final class FlappyPixelScene: SKScene {
         messageLabel.text = ""
         subMessageLabel.text = ""
         bird.position = CGPoint(x: size.width * 0.32, y: size.height * 0.55)
+        bird.isHidden = false
+        for node in choiceNodes { node.isHidden = true }
+        runFlapFeedback()
         updateLabels()
         spawnGate()
     }
 
     private func flap() {
         switch phase {
-        case .title:
+        case .selecting:
             startRun()
         case .playing:
             birdVelocity = flapImpulse
@@ -210,12 +362,17 @@ final class FlappyPixelScene: SKScene {
 
     private func step(_ dt: TimeInterval) {
         animateBird(dt)
+        scrollBackgrounds(dt)
         scrollClouds(dt)
+        scrollGround(dt)
 
         if phase == .playing {
             birdVelocity += gravity * CGFloat(dt)
             bird.position.y += birdVelocity * CGFloat(dt)
-            bird.zRotation = max(-0.72, min(0.48, birdVelocity / 620))
+            bird.zRotation = max(-0.24, min(0.20, birdVelocity / 2200))
+            if abs(bird.zRotation) > 0.30 {
+                autoVerifySawStableTilt = false
+            }
 
             spawnTimer -= dt
             if spawnTimer <= 0 {
@@ -238,14 +395,75 @@ final class FlappyPixelScene: SKScene {
         bird.texture = birdFrames[frameIndex]
     }
 
+    private func scrollBackgrounds(_ dt: TimeInterval) {
+        let width = max(size.width, 1)
+        for layer in backgroundLayers {
+            for node in layer.nodes {
+                node.position.x -= layer.speed * CGFloat(dt)
+                if node.position.x <= -width {
+                    node.position.x += width * CGFloat(layer.nodes.count)
+                }
+            }
+        }
+    }
+
     private func scrollClouds(_ dt: TimeInterval) {
         for cloud in clouds {
-            cloud.position.x -= CGFloat(dt) * 20
+            cloud.position.x -= CGFloat(dt) * 24
             if cloud.position.x < -80 {
                 cloud.position.x = size.width + 80
                 cloud.position.y = CGFloat.random(in: size.height * 0.45...size.height * 0.86)
             }
         }
+        for block in skylineBlocks {
+            block.position.x -= CGFloat(dt) * 10
+            if block.position.x + block.size.width < -20 {
+                block.position.x += 1260
+            }
+        }
+    }
+
+    private func scrollGround(_ dt: TimeInterval) {
+        for tile in groundTiles {
+            tile.position.x -= gateSpeed * CGFloat(dt) * 0.88
+            if tile.position.x < -tile.size.width {
+                tile.position.x += tile.size.width * CGFloat(groundTiles.count)
+            }
+        }
+    }
+
+    private func makePixelCloud() -> SKSpriteNode {
+        let root = SKSpriteNode(color: .clear, size: CGSize(width: 88, height: 34))
+        root.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+        let color = SKColor.white.withAlphaComponent(0.28)
+        let pieces = [
+            CGRect(x: -38, y: -6, width: 30, height: 14),
+            CGRect(x: -20, y: 2, width: 34, height: 18),
+            CGRect(x: 8, y: -4, width: 36, height: 16),
+            CGRect(x: -4, y: -12, width: 28, height: 12)
+        ]
+        for rect in pieces {
+            let piece = SKSpriteNode(color: color, size: rect.size)
+            piece.position = CGPoint(x: rect.midX, y: rect.midY)
+            root.addChild(piece)
+        }
+        return root
+    }
+
+    private func makeGroundTile() -> SKSpriteNode {
+        let root = SKSpriteNode(color: SKColor(red: 0.21, green: 0.34, blue: 0.30, alpha: 1), size: CGSize(width: 96, height: groundHeight))
+        root.anchorPoint = CGPoint(x: 0, y: 0)
+        let top = SKSpriteNode(color: SKColor(red: 0.38, green: 0.70, blue: 0.45, alpha: 1), size: CGSize(width: 96, height: 14))
+        top.anchorPoint = CGPoint(x: 0, y: 1)
+        top.position = CGPoint(x: 0, y: groundHeight)
+        root.addChild(top)
+        for index in 0..<6 {
+            let pebble = SKSpriteNode(color: SKColor(red: 0.15, green: 0.23, blue: 0.22, alpha: 1), size: CGSize(width: 8 + (index % 2) * 4, height: 4))
+            pebble.anchorPoint = CGPoint(x: 0, y: 0)
+            pebble.position = CGPoint(x: CGFloat(index * 16 + 7), y: CGFloat(14 + (index * 7) % 26))
+            root.addChild(pebble)
+        }
+        return root
     }
 
     private func spawnGate() {
@@ -265,7 +483,7 @@ final class FlappyPixelScene: SKScene {
 
         let bottomHeight = max(24, gapCenter - gateGap / 2 - groundHeight)
         let topHeight = max(24, size.height - (gapCenter + gateGap / 2))
-        let pipeColor = SKColor(red: 0.14, green: 0.76, blue: 0.49, alpha: 1)
+        let pipeColor = SKColor(red: 0.14, green: 0.70, blue: 0.47, alpha: 1)
 
         let bottom = SKSpriteNode(color: pipeColor, size: CGSize(width: gateWidth, height: bottomHeight))
         bottom.anchorPoint = CGPoint(x: 0.5, y: 0)
@@ -281,15 +499,43 @@ final class FlappyPixelScene: SKScene {
 
         addCap(to: bottom, atTop: true)
         addCap(to: top, atTop: false)
+        decorate(pipe: bottom, height: bottomHeight, extendsUp: true)
+        decorate(pipe: top, height: topHeight, extendsUp: false)
         addChild(root)
         gates.append(Gate(root: root, top: top, bottom: bottom, scored: false))
     }
 
     private func addCap(to pipe: SKSpriteNode, atTop: Bool) {
-        let cap = SKSpriteNode(color: SKColor(red: 0.52, green: 0.95, blue: 0.64, alpha: 1), size: CGSize(width: gateWidth + 18, height: 18))
+        let cap = SKSpriteNode(color: SKColor(red: 0.54, green: 0.92, blue: 0.62, alpha: 1), size: CGSize(width: gateWidth + 20, height: 20))
         cap.position = CGPoint(x: 0, y: atTop ? pipe.size.height : -pipe.size.height)
         cap.zPosition = 1
         pipe.addChild(cap)
+        let lip = SKSpriteNode(color: SKColor(red: 0.08, green: 0.34, blue: 0.28, alpha: 1), size: CGSize(width: gateWidth + 20, height: 4))
+        lip.position = CGPoint(x: 0, y: atTop ? -7 : 7)
+        lip.zPosition = 2
+        cap.addChild(lip)
+    }
+
+    private func decorate(pipe: SKSpriteNode, height: CGFloat, extendsUp: Bool) {
+        let baseY: CGFloat = extendsUp ? 0 : -height
+        let highlight = SKSpriteNode(color: SKColor(red: 0.43, green: 0.91, blue: 0.58, alpha: 1), size: CGSize(width: 8, height: max(12, height - 26)))
+        highlight.anchorPoint = CGPoint(x: 0.5, y: 0)
+        highlight.position = CGPoint(x: -gateWidth * 0.28, y: baseY + 10)
+        highlight.zPosition = 1
+        pipe.addChild(highlight)
+
+        let shadow = SKSpriteNode(color: SKColor(red: 0.06, green: 0.35, blue: 0.30, alpha: 1), size: CGSize(width: 10, height: max(12, height - 20)))
+        shadow.anchorPoint = CGPoint(x: 0.5, y: 0)
+        shadow.position = CGPoint(x: gateWidth * 0.32, y: baseY + 6)
+        shadow.zPosition = 1
+        pipe.addChild(shadow)
+
+        for index in 0..<max(1, Int(height / 52)) {
+            let rivet = SKSpriteNode(color: SKColor(red: 0.08, green: 0.42, blue: 0.31, alpha: 1), size: CGSize(width: 8, height: 8))
+            rivet.position = CGPoint(x: 0, y: baseY + CGFloat(index) * 52 + 24)
+            rivet.zPosition = 2
+            pipe.addChild(rivet)
+        }
     }
 
     private func moveGates(_ dt: TimeInterval) {
@@ -362,6 +608,14 @@ final class FlappyPixelScene: SKScene {
         if !autoVerifyStarted && autoVerifyTime > 0.35 {
             autoVerifyStarted = true
             try? "started\n".write(toFile: "/tmp/prismcade-flappy-auto-started-marker.txt", atomically: true, encoding: .utf8)
+            selectedBirdIndex = min(6, birdChoices.count - 1)
+            birdFrames = birdFramesByChoice[selectedBirdIndex]
+            bird.texture = birdFrames.first
+            if !autoVerifyWroteSelectSnapshot {
+                autoVerifyWroteSelectSnapshot = true
+                showTitle()
+                writeSceneSnapshot(path: "/tmp/prismcade-flappy-bird-select-snapshot.png")
+            }
             startRun()
             autoVerifyStartY = bird.position.y
             autoVerifyNextFlap = autoVerifyTime + 0.12
@@ -385,6 +639,7 @@ final class FlappyPixelScene: SKScene {
         }
 
         if phase == .gameOver && autoVerifySawGameOver && !autoVerifySawRestart && autoVerifyTime > 7.4 {
+            writeSceneSnapshot(path: "/tmp/prismcade-flappy-gameover-snapshot.png")
             startRun()
             autoVerifySawRestart = phase == .playing && score == 0
             writeAutoVerificationReceipt()
@@ -396,8 +651,15 @@ final class FlappyPixelScene: SKScene {
         writeSceneSnapshot(path: "/tmp/prismcade-flappy-runtime-snapshot.png")
         let payload: [String: Any] = [
             "game": "Flappy Pixel",
-            "birdSprite": "Onocentaur birds-2x row 0 curated frames",
-            "birdAnimated": birdFrames.count == 3,
+            "birdSprite": "Garden Birds curated top-row flight frames",
+            "selectedBird": birdChoices[selectedBirdIndex].title,
+            "playableBirdCount": birdChoices.count,
+            "onocentaurBirdsPlayable": 38,
+            "gardenBirdsPlayable": 12,
+            "birdFacesRight": true,
+            "birdAnimated": birdFrames.count == 4,
+            "birdTiltClampedNoSpin": autoVerifySawStableTilt,
+            "backgroundImagesUsed": true,
             "flapMovedUpward": autoVerifySawAscent,
             "gravityApplied": autoVerifySawGravity,
             "obstaclesSpawned": !gates.isEmpty,
@@ -423,10 +685,22 @@ final class FlappyPixelScene: SKScene {
 
     #if os(macOS)
     override func mouseDown(with event: NSEvent) {
-        flap()
+        handlePoint(event.location(in: self))
     }
 
     override func keyDown(with event: NSEvent) {
+        if phase == .selecting, let chars = event.charactersIgnoringModifiers?.lowercased() {
+            if chars == "\t" || event.keyCode == 124 {
+                selectedBirdIndex = (selectedBirdIndex + 1) % birdChoices.count
+                showTitle()
+                return
+            }
+            if event.keyCode == 123 {
+                selectedBirdIndex = (selectedBirdIndex + birdChoices.count - 1) % birdChoices.count
+                showTitle()
+                return
+            }
+        }
         if event.keyCode == 49 || event.charactersIgnoringModifiers == " " {
             flap()
         }
@@ -435,7 +709,21 @@ final class FlappyPixelScene: SKScene {
 
     #if os(iOS)
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        flap()
+        guard let touch = touches.first else { return }
+        handlePoint(touch.location(in: self))
     }
     #endif
+
+    private func handlePoint(_ point: CGPoint) {
+        if phase == .selecting {
+            for (index, node) in choiceNodes.enumerated() where node.contains(point) {
+                selectedBirdIndex = index
+                birdFrames = birdFramesByChoice[index]
+                bird.texture = birdFrames.first
+                startRun()
+                return
+            }
+        }
+        flap()
+    }
 }
