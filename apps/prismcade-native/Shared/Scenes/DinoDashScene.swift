@@ -34,8 +34,8 @@ final class DinoDashScene: SKScene {
     private var runner = SKSpriteNode()
     private var obstacles: [Obstacle] = []
     private var groundSegments: [SKSpriteNode] = []
-    private var ridgeBlocks: [SKSpriteNode] = []
     private var backgroundLayers: [SKSpriteNode] = []
+    private var groundFill = SKSpriteNode()
     private var titleLabel = SKLabelNode(fontNamed: "Menlo-Bold")
     private var statusLabel = SKLabelNode(fontNamed: "Menlo-Bold")
     private var scoreLabel = SKLabelNode(fontNamed: "Menlo-Bold")
@@ -111,7 +111,6 @@ final class DinoDashScene: SKScene {
         choiceNodes.removeAll()
         obstacles.removeAll()
         groundSegments.removeAll()
-        ridgeBlocks.removeAll()
         backgroundLayers.removeAll()
 
         buildBackdrop()
@@ -181,16 +180,13 @@ final class DinoDashScene: SKScene {
             backgroundLayers.append(layer)
         }
 
-        for index in 0..<10 {
-            let width = CGFloat([90, 120, 72, 150, 104][index % 5])
-            let height = CGFloat([38, 54, 30, 62, 44][index % 5])
-            let block = SKSpriteNode(color: SKColor(red: 0.17, green: 0.21, blue: 0.20, alpha: 1), size: CGSize(width: width, height: height))
-            block.anchorPoint = CGPoint(x: 0, y: 0)
-            block.position = CGPoint(x: CGFloat(index) * 156 - 20, y: groundY - 48)
-            block.zPosition = 1
-            addChild(block)
-            ridgeBlocks.append(block)
-        }
+        // Opaque dirt band so the hills backdrop (clouds/foliage near its base)
+        // never shows through underneath the thin scrolling ground strip.
+        groundFill = SKSpriteNode(color: SKColor(red: 0.42, green: 0.29, blue: 0.18, alpha: 1), size: CGSize(width: max(size.width, 1), height: groundY - 23))
+        groundFill.anchorPoint = CGPoint(x: 0, y: 0)
+        groundFill.position = .zero
+        groundFill.zPosition = 4
+        addChild(groundFill)
 
         for index in 0..<6 {
             let cloud = makePixelCloud()
@@ -206,6 +202,9 @@ final class DinoDashScene: SKScene {
         for layer in backgroundLayers {
             layer.position = .zero
             layer.size = CGSize(width: width, height: height)
+        }
+        if groundFill.parent != nil {
+            groundFill.size = CGSize(width: width, height: groundY - 23)
         }
     }
 
@@ -365,12 +364,6 @@ final class DinoDashScene: SKScene {
             segment.position.x -= runSpeed * CGFloat(dt)
             if segment.position.x < -segment.size.width {
                 segment.position.x += segment.size.width * CGFloat(groundSegments.count)
-            }
-        }
-        for block in ridgeBlocks {
-            block.position.x -= runSpeed * CGFloat(dt) * 0.25
-            if block.position.x < -block.size.width {
-                block.position.x += 1560
             }
         }
     }

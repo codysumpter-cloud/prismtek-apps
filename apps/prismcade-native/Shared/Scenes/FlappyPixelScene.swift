@@ -60,7 +60,6 @@ final class FlappyPixelScene: SKScene {
     private var backgroundLayers: [BackgroundLayer] = []
     private var gates: [Gate] = []
     private var clouds: [SKSpriteNode] = []
-    private var skylineBlocks: [SKSpriteNode] = []
     private var groundTiles: [SKSpriteNode] = []
     private var scoreLabel = SKLabelNode(fontNamed: "Menlo-Bold")
     private var highScoreLabel = SKLabelNode(fontNamed: "Menlo-Bold")
@@ -127,7 +126,6 @@ final class FlappyPixelScene: SKScene {
         removeAllChildren()
         gates.removeAll()
         clouds.removeAll()
-        skylineBlocks.removeAll()
         groundTiles.removeAll()
         choiceNodes.removeAll()
         backgroundLayers.removeAll()
@@ -150,18 +148,6 @@ final class FlappyPixelScene: SKScene {
         bird.size = CGSize(width: 58, height: 58)
         bird.zPosition = 20
         addChild(bird)
-
-        for index in 0..<10 {
-            let block = SKSpriteNode(
-                color: SKColor(red: 0.06, green: 0.12, blue: 0.19, alpha: 1),
-                size: CGSize(width: CGFloat(80 + (index % 3) * 18), height: CGFloat(54 + (index * 19) % 82))
-            )
-            block.anchorPoint = CGPoint(x: 0, y: 0)
-            block.position = CGPoint(x: CGFloat(index) * 126 - 20, y: groundHeight)
-            block.zPosition = 0
-            addChild(block)
-            skylineBlocks.append(block)
-        }
 
         for index in 0..<8 {
             let cloud = makePixelCloud()
@@ -236,8 +222,12 @@ final class FlappyPixelScene: SKScene {
                 return frame
             }
         case .onocentaur(let row):
+            // Onocentaur "Birds" sheet = 38 rows x 4 viewing-angle columns (not flap frames).
+            // Columns 0-1 face LEFT, columns 2-3 face RIGHT. Flappy scrolls so the bird
+            // travels right, so use column 3 (the right-facing profile) for every row to
+            // keep all birds facing the direction of travel.
             let rowCount: CGFloat = 38
-            let rect = CGRect(x: 0, y: 1 - CGFloat(row + 1) / rowCount, width: 0.25, height: 1 / rowCount)
+            let rect = CGRect(x: 0.75, y: 1 - CGFloat(row + 1) / rowCount, width: 0.25, height: 1 / rowCount)
             let frame = SKTexture(rect: rect, in: sheet)
             frame.filteringMode = .nearest
             return [frame, frame, frame, frame]
@@ -413,12 +403,6 @@ final class FlappyPixelScene: SKScene {
             if cloud.position.x < -80 {
                 cloud.position.x = size.width + 80
                 cloud.position.y = CGFloat.random(in: size.height * 0.45...size.height * 0.86)
-            }
-        }
-        for block in skylineBlocks {
-            block.position.x -= CGFloat(dt) * 10
-            if block.position.x + block.size.width < -20 {
-                block.position.x += 1260
             }
         }
     }
