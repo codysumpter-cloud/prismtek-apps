@@ -1,32 +1,56 @@
 # Buck Borris Mini-Game
 
-Native Prismcade mini-game using real Buck Borris frames.
+This page is retained as a historical receipt for the first native Buck Borris prototype.
 
-## Controls
+The canonical direction is now:
 
-- Click/tap/Space: jump.
-- After game over: click/tap/Space restarts.
+```text
+Beat Em Up Buck
+```
 
-## Built
+See:
+
+```text
+docs/games/beat-em-up-buck.md
+```
+
+## Current merged prototype
+
+The merged native Prismcade foundation currently contains a Buck Borris jump/dodge/pickup prototype using real Buck Borris frames.
+
+That prototype verified:
 
 - Buck Borris visible as the player using real `run_00` through `run_03` frames.
 - Small side-scrolling jump/dodge/collect loop.
 - Hazards, pickups, score, game over, restart, local high score.
 
-## Verification
+## Why this is not done
 
-Receipt: `apps/prismcade-native/verification-screenshots/buck-runtime-verification.json`
+This prototype is not the final Buck game. The next polish pass should replace it with Beat Em Up Buck: a tiny SpriteKit brawler/fighter with attacks, enemies, hitboxes, health, knockback, and a coherent pixel stage.
 
-Snapshot: `apps/prismcade-native/verification-screenshots/buck-runtime-snapshot.png`
+## Previous verification
 
-Verified: Buck sprite visible, jump works, hazards spawn, pickup collection works, score changes, game-over/restart works.
+Receipt:
+
+```text
+apps/prismcade-native/verification-screenshots/buck-runtime-verification.json
+```
+
+Snapshot:
+
+```text
+apps/prismcade-native/verification-screenshots/buck-runtime-snapshot.png
+```
 
 ## Provenance
 
-- Art used: `/Users/prismtek/Documents/Libresprite/Buck Borris/sensible_frames/frames/run/run_00.png`
-- Art used: `/Users/prismtek/Documents/Libresprite/Buck Borris/sensible_frames/frames/run/run_01.png`
-- Art used: `/Users/prismtek/Documents/Libresprite/Buck Borris/sensible_frames/frames/run/run_02.png`
-- Art used: `/Users/prismtek/Documents/Libresprite/Buck Borris/sensible_frames/frames/run/run_03.png`
-- Additional curated Buck strips copied for future animation expansion.
+The prototype used local Buck Borris LibreSprite assets, including:
 
-The final `prismtek-site` pass did not find Buck, Borris, or Boris game assets. The native app uses the local Buck Borris LibreSprite folder assets instead of any placeholder player art.
+```text
+/Users/prismtek/Documents/Libresprite/Buck Borris/sensible_frames/frames/run/run_00.png
+/Users/prismtek/Documents/Libresprite/Buck Borris/sensible_frames/frames/run/run_01.png
+/Users/prismtek/Documents/Libresprite/Buck Borris/sensible_frames/frames/run/run_02.png
+/Users/prismtek/Documents/Libresprite/Buck Borris/sensible_frames/frames/run/run_03.png
+```
+
+The final `prismtek-site` pass did not find Buck, Borris, or Boris game assets. The native app used the local Buck Borris LibreSprite folder assets instead of placeholder player art.

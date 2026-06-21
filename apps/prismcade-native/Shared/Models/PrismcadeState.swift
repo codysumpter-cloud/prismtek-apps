@@ -14,7 +14,7 @@ enum PrismcadeGame: String, CaseIterable, Identifiable {
         switch self {
         case .flappyPixel: "Flappy Pixel"
         case .dinoDash: "Prismtek Dino Dash"
-        case .buckBorris: "Buck Borris Mini-Game"
+        case .buckBorris: "Beat Em Up Buck"
         }
     }
 
@@ -22,7 +22,7 @@ enum PrismcadeGame: String, CaseIterable, Identifiable {
         switch self {
         case .flappyPixel: "One-button Prismcade score chase with a real bird sprite and tight restarts."
         case .dinoDash: "Four-sprite dinosaur runner with character select and speed ramp."
-        case .buckBorris: "Small Buck Borris arcade dodge prototype using the real Buck frame set."
+        case .buckBorris: "Canonical Buck Borris fighter/brawler direction; current runtime is still the early playable prototype."
         }
     }
 
@@ -30,7 +30,7 @@ enum PrismcadeGame: String, CaseIterable, Identifiable {
         switch self {
         case .flappyPixel: "Art: Onocentaur bird sheet, curated from Documents/Libresprite."
         case .dinoDash: "Art: DinoSprites doux, mort, tard, vita sheets."
-        case .buckBorris: "Art: Buck Borris sensible frames and strips."
+        case .buckBorris: "Art: Buck Borris frames; next pass upgrades this into a brawler."
         }
     }
 }
@@ -73,7 +73,7 @@ final class PrismcadeState: ObservableObject {
             "selectedGame": selectedGame?.title ?? NSNull(),
             "verified": titles.contains("Flappy Pixel")
                 && titles.contains("Prismtek Dino Dash")
-                && titles.contains("Buck Borris Mini-Game")
+                && titles.contains("Beat Em Up Buck")
         ]
         if let data = try? JSONSerialization.data(withJSONObject: receipt, options: [.prettyPrinted, .sortedKeys]) {
             try? data.write(to: URL(fileURLWithPath: "/tmp/prismcade-hub-runtime-verification.json"), options: .atomic)
