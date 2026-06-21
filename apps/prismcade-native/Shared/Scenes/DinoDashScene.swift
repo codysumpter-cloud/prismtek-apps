@@ -86,11 +86,13 @@ final class DinoDashScene: SKScene {
             try? "didMove\n".write(toFile: "/tmp/prismcade-dino-didmove-marker.txt", atomically: true, encoding: .utf8)
         }
         startTimer()
+        if !autoVerifyEnabled { AudioManager.shared.playBGM("dino_bgm") }
     }
 
     override func willMove(from view: SKView) {
         gameTimer?.invalidate()
         gameTimer = nil
+        AudioManager.shared.stopBGM()
     }
 
     override func didChangeSize(_ oldSize: CGSize) {

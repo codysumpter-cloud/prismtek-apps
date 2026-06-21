@@ -113,11 +113,13 @@ final class FlappyPixelScene: SKScene {
         setupWorld()
         showTitle()
         startGameTimer()
+        if !autoVerifyEnabled { AudioManager.shared.playBGM("flappy_bgm") }
     }
 
     override func willMove(from view: SKView) {
         gameTimer?.invalidate()
         gameTimer = nil
+        AudioManager.shared.stopBGM()
     }
 
     override func didChangeSize(_ oldSize: CGSize) {
