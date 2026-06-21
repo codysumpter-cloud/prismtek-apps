@@ -39,7 +39,7 @@ enum PrismcadeGame: String, CaseIterable, Identifiable {
         switch self {
         case .flappyPixel: "Art: Garden Birds, Onocentaur birds, and Background Hills from local LibreSprite packs."
         case .dinoDash: "Art: DinoSprites doux, mort, tard, vita sheets plus Background Hills layers."
-        case .buckBorris: "Art: Buck Borris frames, a composited Desert Mountains arena, and a skeleton enemy from the Enemy Animations set."
+        case .buckBorris: "Art: Buck Borris frames, a composited desert arena, and the licensed CraftPix Mummy enemy strips."
         }
     }
 }
@@ -74,10 +74,12 @@ final class PrismcadeState: ObservableObject {
         // Exercise the local-first platform path end-to-end.
         platform.recordResult(gameID: "flappy-pixel", gameTitle: "Flappy Pixel", score: 7)
         platform.recordResult(gameID: "beat-em-up-buck", gameTitle: "Beat Em Up Buck", score: 220)
+        let syncState = LeaderboardService.shared.syncStateDescription
         let receipt: [String: Any] = [
             "screen": "Prismcade platform layer",
-            "catalogLoaded": !PrismcadeCatalog.manifests.isEmpty,
-            "catalogGameCount": PrismcadeCatalog.manifests.count,
+            "catalogLoaded": !PrismcadeCatalog.canonical.isEmpty,
+            "canonicalGameCount": PrismcadeCatalog.canonical.count,
+            "webPlayableCount": PrismcadeCatalog.canonical.filter { $0.web.playable }.count,
             "hubEntryCount": entries.count,
             "playableCount": entries.filter(\.isPlayable).count,
             "plannedCount": entries.filter { !$0.isPlayable }.count,
@@ -85,6 +87,7 @@ final class PrismcadeState: ObservableObject {
             "recordedBestBuck": platform.best(for: "beat-em-up-buck"),
             "matchReceiptCount": platform.receipts.count,
             "leaderboardExportReady": platform.exportLeaderboardJSON() != nil,
+            "leaderboardSyncState": syncState,
             "profileHandle": platform.profileHandle
         ]
         if let data = try? JSONSerialization.data(withJSONObject: receipt, options: [.prettyPrinted, .sortedKeys]) {

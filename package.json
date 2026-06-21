@@ -22,6 +22,7 @@
     "references:validate": "node tools/reference-games/validate-reference-games.mjs",
     "integrations:validate": "node tools/integrations/validate-integration-manifests.mjs",
     "prismcade:validate": "node tools/prismcade/validate-game-manifests.mjs",
+    "prismcade:validate-catalog": "node tools/prismcade/validate-canonical-catalog.mjs",
     "prismcade:validate-characters": "node tools/prismcade/validate-character-templates.mjs",
     "prismcade:check-animation-templates": "node tools/prismcade/check-animation-templates.mjs",
     "prismcade:check-view-modes": "node tools/prismcade/check-view-modes.mjs",

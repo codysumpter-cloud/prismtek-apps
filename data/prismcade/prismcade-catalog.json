@@ -1,0 +1,791 @@
+{
+  "schemaVersion": "prismcade-canonical-catalog-v0",
+  "description": "Canonical Prismcade platform catalog: the union of the web/HTML catalog (prismtek-site), the prismtek-apps game registry, and native macOS/iOS runtimes. Single source of truth for cross-surface parity and the native hub's planned/parity list.",
+  "sources": {
+    "web": "prismtek-site/src/data/game-catalog.js (26 games)",
+    "appsRegistry": "data/prismcade/game-manifests.json (folder-validated apps games)",
+    "native": "apps/prismcade-native (PrismcadeGame runtimes)"
+  },
+  "counts": {
+    "total": 32,
+    "webPlayable": 26,
+    "nativePlayable": 3,
+    "nativePlanned": 29
+  },
+  "games": [
+    {
+      "id": "prismtek-dino-dash",
+      "title": "Prismtek Dino Dash",
+      "categories": [
+        "runner",
+        "arcade",
+        "endless"
+      ],
+      "description": "Four-sprite dinosaur runner with character select, speed ramp, and a pixel hills stage. Original identity \u2014 no Google/Chrome Dino assets or naming.",
+      "web": {
+        "present": false,
+        "playable": false
+      },
+      "website": false,
+      "windows": "none",
+      "apps": {
+        "present": false,
+        "status": "none"
+      },
+      "native": "playable",
+      "canonicalRuntime": "native",
+      "replaces": [],
+      "aliasOf": null
+    },
+    {
+      "id": "beat-em-up-buck",
+      "title": "Beat Em Up Buck",
+      "categories": [
+        "brawler",
+        "action",
+        "arcade"
+      ],
+      "description": "Native SpriteKit micro-brawler: lane movement, attacks, knockback, KO scoring, desert arena. Canonical replacement for the old Buck Borris mini-game prototype.",
+      "web": {
+        "present": false,
+        "playable": false
+      },
+      "website": false,
+      "windows": "none",
+      "apps": {
+        "present": false,
+        "status": "none"
+      },
+      "native": "playable",
+      "canonicalRuntime": "native",
+      "replaces": [
+        "buck-borris-mini-game"
+      ],
+      "aliasOf": null
+    },
+    {
+      "id": "flappy-pixel",
+      "title": "Flappy Pixel",
+      "categories": [
+        "runner",
+        "arcade",
+        "one-button"
+      ],
+      "description": "A premium one-button runner built for quick retries, expressive loadouts, and serious score chasing.",
+      "web": {
+        "present": true,
+        "playable": true
+      },
+      "website": true,
+      "windows": "unverified",
+      "apps": {
+        "present": true,
+        "status": "quick-play-import"
+      },
+      "native": "playable",
+      "canonicalRuntime": "native",
+      "replaces": [],
+      "aliasOf": null
+    },
+    {
+      "id": "crossy-pixel",
+      "title": "Crossy Pixel",
+      "categories": [
+        "arcade",
+        "climber",
+        "survival"
+      ],
+      "description": "Castle-climbing arcade runs with moving platforms, crushers, cannons, treasure, and room-to-room tower score chasing.",
+      "web": {
+        "present": true,
+        "playable": true
+      },
+      "website": true,
+      "windows": "unverified",
+      "apps": {
+        "present": true,
+        "status": "quick-play-import"
+      },
+      "native": "planned",
+      "canonicalRuntime": "apps",
+      "replaces": [],
+      "aliasOf": null
+    },
+    {
+      "id": "boss-lab",
+      "title": "Boss Lab",
+      "categories": [
+        "action",
+        "arena",
+        "arcade"
+      ],
+      "description": "Arena-style browser action with short rounds and solid score-duel hooks.",
+      "web": {
+        "present": true,
+        "playable": true
+      },
+      "website": true,
+      "windows": "none",
+      "apps": {
+        "present": false,
+        "status": "none"
+      },
+      "native": "planned",
+      "canonicalRuntime": "web",
+      "replaces": [],
+      "aliasOf": null
+    },
+    {
+      "id": "byteblade-survivor",
+      "title": "Byteblade Survivor",
+      "categories": [
+        "survival",
+        "action",
+        "arcade"
+      ],
+      "description": "Survival arcade loop built for immediate feedback and escalating crowd pressure.",
+      "web": {
+        "present": true,
+        "playable": true
+      },
+      "website": true,
+      "windows": "none",
+      "apps": {
+        "present": false,
+        "status": "none"
+      },
+      "native": "planned",
+      "canonicalRuntime": "web",
+      "replaces": [],
+      "aliasOf": null
+    },
+    {
+      "id": "crystal-cavern-miner",
+      "title": "Crystal Cavern Miner",
+      "categories": [
+        "arcade",
+        "miner",
+        "strategy"
+      ],
+      "description": "A mining-and-dodge experiment with retro color direction and route-planning pressure.",
+      "web": {
+        "present": true,
+        "playable": true
+      },
+      "website": true,
+      "windows": "none",
+      "apps": {
+        "present": false,
+        "status": "none"
+      },
+      "native": "planned",
+      "canonicalRuntime": "web",
+      "replaces": [],
+      "aliasOf": null
+    },
+    {
+      "id": "dungeon-byte",
+      "title": "Dungeon Byte",
+      "categories": [
+        "dungeon",
+        "action",
+        "roguelite"
+      ],
+      "description": "Compact dungeon pressure with a browser-friendly footprint and clean challenge loops.",
+      "web": {
+        "present": true,
+        "playable": true
+      },
+      "website": true,
+      "windows": "none",
+      "apps": {
+        "present": false,
+        "status": "none"
+      },
+      "native": "planned",
+      "canonicalRuntime": "web",
+      "replaces": [],
+      "aliasOf": null
+    },
+    {
+      "id": "gravity-golf-mini",
+      "title": "Gravity Golf Mini",
+      "categories": [
+        "puzzle",
+        "sports",
+        "arcade"
+      ],
+      "description": "Physics-flavored arcade golf with responsive retry loops and score-duel hooks.",
+      "web": {
+        "present": true,
+        "playable": true
+      },
+      "website": true,
+      "windows": "none",
+      "apps": {
+        "present": false,
+        "status": "none"
+      },
+      "native": "planned",
+      "canonicalRuntime": "web",
+      "replaces": [],
+      "aliasOf": null
+    },
+    {
+      "id": "laser-labyrinth",
+      "title": "Laser Labyrinth",
+      "categories": [
+        "puzzle",
+        "maze",
+        "strategy"
+      ],
+      "description": "A route-planning puzzle built around readable hazards and timing windows.",
+      "web": {
+        "present": true,
+        "playable": true
+      },
+      "website": true,
+      "windows": "none",
+      "apps": {
+        "present": false,
+        "status": "none"
+      },
+      "native": "planned",
+      "canonicalRuntime": "web",
+      "replaces": [],
+      "aliasOf": null
+    },
+    {
+      "id": "meteor-salvage-ops",
+      "title": "Meteor Salvage Ops",
+      "categories": [
+        "arcade",
+        "runner",
+        "space"
+      ],
+      "description": "Salvage run built around quick risk-reward decisions and short action loops.",
+      "web": {
+        "present": true,
+        "playable": true
+      },
+      "website": true,
+      "windows": "none",
+      "apps": {
+        "present": false,
+        "status": "none"
+      },
+      "native": "planned",
+      "canonicalRuntime": "web",
+      "replaces": [],
+      "aliasOf": null
+    },
+    {
+      "id": "neon-stack-master",
+      "title": "Neon Stack Master",
+      "categories": [
+        "puzzle",
+        "arcade",
+        "stacker"
+      ],
+      "description": "A clean stacking loop with strong score-chasing energy and easy async duels.",
+      "web": {
+        "present": true,
+        "playable": true
+      },
+      "website": true,
+      "windows": "none",
+      "apps": {
+        "present": false,
+        "status": "none"
+      },
+      "native": "planned",
+      "canonicalRuntime": "web",
+      "replaces": [],
+      "aliasOf": null
+    },
+    {
+      "id": "neon-tunnel-drift",
+      "title": "Neon Tunnel Drift",
+      "categories": [
+        "runner",
+        "arcade",
+        "racing"
+      ],
+      "description": "Tunnel runner with a bright synthwave lane feel and simple competitive hooks.",
+      "web": {
+        "present": true,
+        "playable": true
+      },
+      "website": true,
+      "windows": "none",
+      "apps": {
+        "present": false,
+        "status": "none"
+      },
+      "native": "planned",
+      "canonicalRuntime": "web",
+      "replaces": [],
+      "aliasOf": null
+    },
+    {
+      "id": "orb-defender-lite",
+      "title": "Orb Defender Lite",
+      "categories": [
+        "defense",
+        "arcade",
+        "strategy"
+      ],
+      "description": "Compact defensive play tuned for browser-first sessions and async competition.",
+      "web": {
+        "present": true,
+        "playable": true
+      },
+      "website": true,
+      "windows": "none",
+      "apps": {
+        "present": false,
+        "status": "none"
+      },
+      "native": "planned",
+      "canonicalRuntime": "web",
+      "replaces": [],
+      "aliasOf": null
+    },
+    {
+      "id": "pixel-blast",
+      "title": "Pixel Blast",
+      "categories": [
+        "shooter",
+        "arcade",
+        "retro"
+      ],
+      "description": "Straightforward retro action with immediate pick-up-and-play value.",
+      "web": {
+        "present": true,
+        "playable": true
+      },
+      "website": true,
+      "windows": "none",
+      "apps": {
+        "present": false,
+        "status": "none"
+      },
+      "native": "planned",
+      "canonicalRuntime": "web",
+      "replaces": [],
+      "aliasOf": null
+    },
+    {
+      "id": "pixel-heist-escape",
+      "title": "Pixel Heist Escape",
+      "categories": [
+        "stealth",
+        "arcade",
+        "escape"
+      ],
+      "description": "Heist-flavored escape play with compact browser pacing.",
+      "web": {
+        "present": true,
+        "playable": true
+      },
+      "website": true,
+      "windows": "none",
+      "apps": {
+        "present": false,
+        "status": "none"
+      },
+      "native": "planned",
+      "canonicalRuntime": "web",
+      "replaces": [],
+      "aliasOf": null
+    },
+    {
+      "id": "pixel-invaders-mini",
+      "title": "Pixel Invaders Mini",
+      "categories": [
+        "shooter",
+        "arcade",
+        "defense"
+      ],
+      "description": "Classic-inspired defense loop with a lightweight footprint and score-duel support.",
+      "web": {
+        "present": true,
+        "playable": true
+      },
+      "website": true,
+      "windows": "none",
+      "apps": {
+        "present": false,
+        "status": "none"
+      },
+      "native": "planned",
+      "canonicalRuntime": "web",
+      "replaces": [],
+      "aliasOf": null
+    },
+    {
+      "id": "pixel-pong",
+      "title": "Pixel Pong",
+      "categories": [
+        "sports",
+        "arcade",
+        "two-player"
+      ],
+      "description": "A Prismtek-flavored evergreen that works on desktop, touch, and fast async duels.",
+      "web": {
+        "present": true,
+        "playable": true
+      },
+      "website": true,
+      "windows": "none",
+      "apps": {
+        "present": false,
+        "status": "none"
+      },
+      "native": "planned",
+      "canonicalRuntime": "web",
+      "replaces": [],
+      "aliasOf": null
+    },
+    {
+      "id": "pixel-position",
+      "title": "Pixel Position",
+      "categories": [
+        "arcade",
+        "precision",
+        "puzzle"
+      ],
+      "description": "Precision-driven play built around placement, timing, and clean challenge loops.",
+      "web": {
+        "present": true,
+        "playable": true
+      },
+      "website": true,
+      "windows": "none",
+      "apps": {
+        "present": false,
+        "status": "none"
+      },
+      "native": "planned",
+      "canonicalRuntime": "web",
+      "replaces": [],
+      "aliasOf": null
+    },
+    {
+      "id": "pixel-snake",
+      "title": "Pixel Snake",
+      "categories": [
+        "arcade",
+        "arena",
+        "survival"
+      ],
+      "description": "Arena snake with boosts, kill pressure, comeback drops, and a stronger score-chasing loop.",
+      "web": {
+        "present": true,
+        "playable": true
+      },
+      "website": true,
+      "windows": "unverified",
+      "apps": {
+        "present": true,
+        "status": "quick-play-import"
+      },
+      "native": "planned",
+      "canonicalRuntime": "apps",
+      "replaces": [],
+      "aliasOf": null
+    },
+    {
+      "id": "neon-brick-breaker",
+      "title": "Neon Brick Breaker",
+      "categories": [
+        "arcade",
+        "breaker",
+        "survival"
+      ],
+      "description": "Fast paddle control, wave pressure, and modifier bursts tuned for short-session score chasing.",
+      "web": {
+        "present": true,
+        "playable": true
+      },
+      "website": true,
+      "windows": "unverified",
+      "apps": {
+        "present": true,
+        "status": "quick-play-import"
+      },
+      "native": "planned",
+      "canonicalRuntime": "apps",
+      "replaces": [],
+      "aliasOf": null
+    },
+    {
+      "id": "pixel-stacker",
+      "title": "Pixel Stacker",
+      "categories": [
+        "arcade",
+        "stacker",
+        "timing"
+      ],
+      "description": "A timing-heavy tower chase where perfect drops keep width and misses shave the stack.",
+      "web": {
+        "present": true,
+        "playable": true
+      },
+      "website": true,
+      "windows": "unverified",
+      "apps": {
+        "present": true,
+        "status": "quick-play-import"
+      },
+      "native": "planned",
+      "canonicalRuntime": "apps",
+      "replaces": [],
+      "aliasOf": null
+    },
+    {
+      "id": "prism-companion-lab",
+      "title": "Prism Companion Lab",
+      "categories": [
+        "lab",
+        "creature",
+        "sandbox"
+      ],
+      "description": "A companion experiment tied into the wider Prismtek ecosystem and progression systems.",
+      "web": {
+        "present": true,
+        "playable": true
+      },
+      "website": true,
+      "windows": "none",
+      "apps": {
+        "present": false,
+        "status": "none"
+      },
+      "native": "planned",
+      "canonicalRuntime": "web",
+      "replaces": [],
+      "aliasOf": null
+    },
+    {
+      "id": "prism-puck-arena",
+      "title": "Prism Puck Arena",
+      "categories": [
+        "sports",
+        "arena",
+        "arcade"
+      ],
+      "description": "Arena puck play with a clean read and energetic visual contrast.",
+      "web": {
+        "present": true,
+        "playable": true
+      },
+      "website": true,
+      "windows": "none",
+      "apps": {
+        "present": false,
+        "status": "none"
+      },
+      "native": "planned",
+      "canonicalRuntime": "web",
+      "replaces": [],
+      "aliasOf": null
+    },
+    {
+      "id": "prism-sky-hunt",
+      "title": "Prism Sky Hunt",
+      "categories": [
+        "arcade",
+        "shooter",
+        "air"
+      ],
+      "description": "Sky-chase action with a lightweight browser profile and score-duel focus.",
+      "web": {
+        "present": true,
+        "playable": true
+      },
+      "website": true,
+      "windows": "none",
+      "apps": {
+        "present": false,
+        "status": "none"
+      },
+      "native": "planned",
+      "canonicalRuntime": "web",
+      "replaces": [],
+      "aliasOf": null
+    },
+    {
+      "id": "reactor-overload",
+      "title": "Reactor Overload",
+      "categories": [
+        "arcade",
+        "survival",
+        "reaction"
+      ],
+      "description": "An overload-pressure concept built around escalating tempo and efficient score chasing.",
+      "web": {
+        "present": true,
+        "playable": true
+      },
+      "website": true,
+      "windows": "none",
+      "apps": {
+        "present": false,
+        "status": "none"
+      },
+      "native": "planned",
+      "canonicalRuntime": "web",
+      "replaces": [],
+      "aliasOf": null
+    },
+    {
+      "id": "signal-scramble",
+      "title": "Signal Scramble",
+      "categories": [
+        "puzzle",
+        "strategy",
+        "logic"
+      ],
+      "description": "A signal-routing concept that fits the site's systems feel and school-safe goals.",
+      "web": {
+        "present": true,
+        "playable": true
+      },
+      "website": true,
+      "windows": "none",
+      "apps": {
+        "present": false,
+        "status": "none"
+      },
+      "native": "planned",
+      "canonicalRuntime": "web",
+      "replaces": [],
+      "aliasOf": null
+    },
+    {
+      "id": "turbo-rail-rider",
+      "title": "Turbo Rail Rider",
+      "categories": [
+        "runner",
+        "arcade",
+        "racing"
+      ],
+      "description": "High-speed browser action with a Prismtek lane aesthetic and async duel support.",
+      "web": {
+        "present": true,
+        "playable": true
+      },
+      "website": true,
+      "windows": "none",
+      "apps": {
+        "present": false,
+        "status": "none"
+      },
+      "native": "planned",
+      "canonicalRuntime": "web",
+      "replaces": [],
+      "aliasOf": null
+    },
+    {
+      "id": "pixel-fruit-arena",
+      "title": "Pixel Fruit Arena",
+      "categories": [
+        "fighter",
+        "platform-fighter",
+        "local-multiplayer",
+        "fruit-powers"
+      ],
+      "description": "Flagship focused Prismcade platform-fighter showcase with local matches, fruit powers, awakening, ring-outs, and character identity.",
+      "web": {
+        "present": false,
+        "playable": false
+      },
+      "website": false,
+      "windows": "partially-verified",
+      "apps": {
+        "present": true,
+        "status": "playable-mvp"
+      },
+      "native": "planned",
+      "canonicalRuntime": "apps",
+      "replaces": [],
+      "aliasOf": null
+    },
+    {
+      "id": "spin-street-showdown",
+      "title": "Spin Street Showdown",
+      "categories": [
+        "top-battle",
+        "pvp",
+        "customization",
+        "physics"
+      ],
+      "description": "Medium Prismcade showcase for customizable battle-top dome clashes with RPM, parts, driver-tip movement, and Bit Beast abilities.",
+      "web": {
+        "present": false,
+        "playable": false
+      },
+      "website": false,
+      "windows": "partially-verified",
+      "apps": {
+        "present": true,
+        "status": "playable-prototype"
+      },
+      "native": "planned",
+      "canonicalRuntime": "apps",
+      "replaces": [],
+      "aliasOf": null
+    },
+    {
+      "id": "tamernet-battle-sandbox",
+      "title": "TamerNet Battle Sandbox",
+      "categories": [
+        "creature-battle",
+        "sandbox",
+        "local-first",
+        "medium-showcase"
+      ],
+      "description": "Medium Prismcade showcase for local creature-command battles with original placeholder creatures.",
+      "web": {
+        "present": false,
+        "playable": false
+      },
+      "website": false,
+      "windows": "partially-verified",
+      "apps": {
+        "present": true,
+        "status": "playable-prototype"
+      },
+      "native": "planned",
+      "canonicalRuntime": "apps",
+      "replaces": [],
+      "aliasOf": null
+    },
+    {
+      "id": "prismwilds-echo-dominion",
+      "title": "Prismwilds: Echo Dominion",
+      "categories": [
+        "survival",
+        "creatures",
+        "large-showcase",
+        "later"
+      ],
+      "description": "Large creature-survival showcase prototype with ecosystem mechanics; catalog honestly but do not make it the first Prismcade blocker.",
+      "web": {
+        "present": false,
+        "playable": false
+      },
+      "website": false,
+      "windows": "unverified",
+      "apps": {
+        "present": true,
+        "status": "large-showcase-prototype"
+      },
+      "native": "planned",
+      "canonicalRuntime": "apps",
+      "replaces": [],
+      "aliasOf": null
+    }
+  ]
+}

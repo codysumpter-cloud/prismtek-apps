@@ -16,6 +16,7 @@
   "game" : "Prismtek Dino Dash",
   "gameOverTriggered" : true,
   "gameplaySpriteSize" : "84x84",
+  "groundCloudArtifactsRemoved" : true,
   "jumpWorked" : true,
   "obstaclesSpawned" : true,
   "pixelStagePolished" : true,
@@ -24,5 +25,6 @@
   "scoreChanged" : true,
   "selectSpriteSize" : "96x96 plus selected-card emphasis",
   "speedRamped" : true,
-  "spriteScaleConsistent" : true
+  "spriteScaleConsistent" : true,
+  "weatherEffectsUsed" : "CraftPix Weather Effects wind textures as dust streaks"
 }

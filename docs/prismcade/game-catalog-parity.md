@@ -27,6 +27,70 @@ Preferred canonical version order:
 
 Do not show duplicate game cards for the same canonical game.
 
+## Canonical catalog (pass 4 — manifest/platform parity PR)
+
+The single source of truth for cross-surface parity is now
+**`data/prismcade/prismcade-catalog.json`** (`schemaVersion: prismcade-canonical-catalog-v0`,
+validated by `npm run prismcade:validate-catalog`). It is the **union** of:
+
+- the web/HTML catalog `prismtek-site/src/data/game-catalog.js` (26 games),
+- the prismtek-apps folder registry `data/prismcade/game-manifests.json` (9 folder-validated games),
+- the native runtimes in `apps/prismcade-native` (Flappy Pixel, Prismtek Dino Dash, Beat Em Up Buck).
+
+Total **32 distinct games**: 26 web-playable, 4 apps-only (Pixel Fruit Arena, Spin Street
+Showdown, TamerNet Battle Sandbox, Prismwilds: Echo Dominion), 2 native-first (Dino Dash, Buck);
+5 overlap web+apps. **3 are native-playable today; 29 are native-planned.**
+
+Why two files: `game-manifests.json` is folder-validated (every entry needs a real
+`games/<slug>/` with README + package.json + entrypoint), so the 21 site-only games cannot live
+there without inventing runtimes. The canonical catalog captures the full platform without faking
+folders; `game-manifests.json` stays the honest apps-folder registry. The native hub and docs
+consume the canonical catalog.
+
+### Full catalog (Game | Canonical ID | Web/HTML | Windows package | Native macOS/iOS | Website | Canonical runtime | Replacement)
+
+| Game | Canonical ID | Web/HTML | Windows package | Native macOS/iOS | Website | Canonical | Replacement |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Prismtek Dino Dash | `prismtek-dino-dash` | — | — | playable | — | native |  |
+| Beat Em Up Buck | `beat-em-up-buck` | — | — | playable | — | native | replaces buck-borris-mini-game |
+| Flappy Pixel | `flappy-pixel` | playable | unverified | playable | yes | native |  |
+| Crossy Pixel | `crossy-pixel` | playable | unverified | planned | yes | apps |  |
+| Boss Lab | `boss-lab` | playable | — | planned | yes | web |  |
+| Byteblade Survivor | `byteblade-survivor` | playable | — | planned | yes | web |  |
+| Crystal Cavern Miner | `crystal-cavern-miner` | playable | — | planned | yes | web |  |
+| Dungeon Byte | `dungeon-byte` | playable | — | planned | yes | web |  |
+| Gravity Golf Mini | `gravity-golf-mini` | playable | — | planned | yes | web |  |
+| Laser Labyrinth | `laser-labyrinth` | playable | — | planned | yes | web |  |
+| Meteor Salvage Ops | `meteor-salvage-ops` | playable | — | planned | yes | web |  |
+| Neon Stack Master | `neon-stack-master` | playable | — | planned | yes | web |  |
+| Neon Tunnel Drift | `neon-tunnel-drift` | playable | — | planned | yes | web |  |
+| Orb Defender Lite | `orb-defender-lite` | playable | — | planned | yes | web |  |
+| Pixel Blast | `pixel-blast` | playable | — | planned | yes | web |  |
+| Pixel Heist Escape | `pixel-heist-escape` | playable | — | planned | yes | web |  |
+| Pixel Invaders Mini | `pixel-invaders-mini` | playable | — | planned | yes | web |  |
+| Pixel Pong | `pixel-pong` | playable | — | planned | yes | web |  |
+| Pixel Position | `pixel-position` | playable | — | planned | yes | web |  |
+| Pixel Snake | `pixel-snake` | playable | unverified | planned | yes | apps |  |
+| Neon Brick Breaker | `neon-brick-breaker` | playable | unverified | planned | yes | apps |  |
+| Pixel Stacker | `pixel-stacker` | playable | unverified | planned | yes | apps |  |
+| Prism Companion Lab | `prism-companion-lab` | playable | — | planned | yes | web |  |
+| Prism Puck Arena | `prism-puck-arena` | playable | — | planned | yes | web |  |
+| Prism Sky Hunt | `prism-sky-hunt` | playable | — | planned | yes | web |  |
+| Reactor Overload | `reactor-overload` | playable | — | planned | yes | web |  |
+| Signal Scramble | `signal-scramble` | playable | — | planned | yes | web |  |
+| Turbo Rail Rider | `turbo-rail-rider` | playable | — | planned | yes | web |  |
+| Pixel Fruit Arena | `pixel-fruit-arena` | — | partially-verified | planned | — | apps |  |
+| Spin Street Showdown | `spin-street-showdown` | — | partially-verified | planned | — | apps |  |
+| TamerNet Battle Sandbox | `tamernet-battle-sandbox` | — | partially-verified | planned | — | apps |  |
+| Prismwilds: Echo Dominion | `prismwilds-echo-dominion` | — | unverified | planned | — | apps |  |
+
+### Required canonical entries (status this PR)
+- **Flappy Pixel** (`flappy-pixel`): web playable + **native playable** (canonical). Native replaces the older duplicate; one card.
+- **Prismtek Dino Dash** (`prismtek-dino-dash`): **native playable**, native-first, original identity — no Google/Chrome Dino assets/naming.
+- **Beat Em Up Buck** (`beat-em-up-buck`): **native playable** (the #205 SpriteKit brawler); `replaces: [buck-borris-mini-game]`.
+- **Pixel Fruit Arena** (`pixel-fruit-arena`): apps `playable-mvp`, native **planned** — next major polish target after platform parity.
+- **Prism Sky Hunt** (`prism-sky-hunt`): exists as a **web** game (prismtek-site), native **planned** — polish target after Pixel Fruit Arena.
+
 ## CORRECTION (2026-06-21, pass 3): the real Windows/HTML catalog lives in `prismtek-site`
 
 The `prismtek-apps/data/prismcade/game-manifests.json` (9 entries) is NOT the shipping

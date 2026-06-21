@@ -15,6 +15,22 @@ Runtime snapshots regenerated via app-side autoverify (closed-Mac safe path):
 
 ---
 
+## #206 supersession note
+
+The issue #206 visual QA pass superseded several Buck and preview recommendations below:
+
+- Buck now uses a desert arena floor/backdrop instead of the earlier sky-only RTB plate.
+- Buck now uses curated CraftPix free desert enemies Mummy idle/walk/hurt/death strips instead
+  of the temporary skeleton2/procedural enemy plan.
+- The native launch cards now use curated app-side runtime preview snapshots instead of
+  symbolic Canvas previews.
+- Curated CraftPix Weather Effects wind/rain/shine sprites are now used in the native
+  launch games; the raw weather zip, PSD files, Blood, Thunder, and Snow were skipped.
+
+The older notes remain below as an audit trail for what was observed before the #206 pass.
+
+---
+
 ## 1. Fixes landed in this follow-up commit (Locally verified)
 
 ### Flappy Pixel — removed the "large black squares"

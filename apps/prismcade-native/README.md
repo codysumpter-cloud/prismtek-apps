@@ -5,8 +5,8 @@ Native macOS/iOS Prismcade launcher and runtime built with SwiftUI + SpriteKit.
 ## Games
 
 - Flappy Pixel: one-button score chase with 50 playable bird characters, visible flapping, no spin, and a pixel mountain stage.
-- Prismtek Dino Dash: four-character dinosaur runner using `DinoSprites` sheets and a layered pixel hills environment.
-- Beat Em Up Buck: tiny native Buck Borris lane brawler with attacks, health bars, knockback, KO scoring, an original Training Bruiser enemy, and a pixel street backdrop.
+- Prismtek Dino Dash: four-character dinosaur runner using `DinoSprites` sheets, weather dust, and a layered pixel hills environment.
+- Beat Em Up Buck: tiny native Buck Borris lane brawler with attacks, weather hit shine, health bars, knockback, KO scoring, a licensed desert Mummy enemy, and a pixel desert arena.
 
 ## Open
 
@@ -74,7 +74,7 @@ This polish pass verified the launch set with app-side SpriteKit snapshots:
 - Prismtek Dino Dash: `dino-runtime-verification.json`
 - Beat Em Up Buck: `buck-runtime-verification.json`
 
-`/Users/prismtek/Prismtek/prismtek-site` was cloned locally before the final merge pass and searched for Flappy Pixel, Dino, Buck/Borris/Boris, Prismcade, and image/source references. The site contains useful Flappy Pixel React/canvas source and Prismcade platform metadata, but the native app keeps the curated local Garden Birds, Onocentaur birds, DinoSprites, Buck Borris, Background Hills, and RTB backdrop assets because they are the best safe native assets found.
+`/Users/prismtek/Prismtek/prismtek-site` was cloned locally before the final merge pass and searched for Flappy Pixel, Dino, Buck/Borris/Boris, Prismcade, and image/source references. The site contains useful Flappy Pixel React/canvas source and Prismcade platform metadata. The native app keeps the curated local Garden Birds, Onocentaur birds, DinoSprites, Buck Borris, Background Hills, Weather Effects, desert arena, and CraftPix Mummy enemy assets because they are the best safe native assets found.
 
 ## Follow-up references
 

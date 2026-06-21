@@ -34,6 +34,7 @@ final class BuckBorrisScene: SKScene {
     private var buckShadow = SKSpriteNode()
     private var enemyShadow = SKSpriteNode()
     private var stageNodes: [SKSpriteNode] = []
+    private var weatherSprites: [SKSpriteNode] = []
     private var cityBackground = SKSpriteNode()
     private var buckHealthBack = SKSpriteNode()
     private var enemyHealthBack = SKSpriteNode()
@@ -141,11 +142,11 @@ final class BuckBorrisScene: SKScene {
             return frame
         }
 
-        // Enemy: skeleton2 from Enemy_Animations_Set, 32x32 horizontal strips.
-        enemyIdleFrames = sliceStrip("enemy_skeleton_idle", count: 6)
-        enemyWalkFrames = sliceStrip("enemy_skeleton_walk", count: 10)
-        enemyHurtFrames = sliceStrip("enemy_skeleton_hurt", count: 5)
-        enemyDeathFrames = sliceStrip("enemy_skeleton_death", count: 15)
+        // Enemy: Mummy from the local CraftPix desert enemies pack, 48x48 horizontal strips.
+        enemyIdleFrames = sliceStrip("enemy_mummy_idle", count: 4)
+        enemyWalkFrames = sliceStrip("enemy_mummy_walk", count: 6)
+        enemyHurtFrames = sliceStrip("enemy_mummy_hurt", count: 2)
+        enemyDeathFrames = sliceStrip("enemy_mummy_death", count: 6)
 
         if idleFrames.isEmpty, let fallback = texture(named: "idle_00") {
             idleFrames = [fallback]
@@ -186,6 +187,7 @@ final class BuckBorrisScene: SKScene {
     private func setupWorld() {
         removeAllChildren()
         stageNodes.removeAll()
+        weatherSprites.removeAll()
 
         buckShadow = SKSpriteNode(color: SKColor(red: 0.02, green: 0.02, blue: 0.03, alpha: 0.40), size: CGSize(width: 58, height: 12))
         buckShadow.zPosition = 4
@@ -203,8 +205,8 @@ final class BuckBorrisScene: SKScene {
         autoSawSprite = true
 
         enemy = SKSpriteNode(texture: enemyIdleFrames.first)
-        enemy.name = "training-skeleton"
-        enemy.size = CGSize(width: 110, height: 110)
+        enemy.name = "desert-mummy-enemy"
+        enemy.size = CGSize(width: 124, height: 124)
         enemy.zPosition = 28
         addChild(enemy)
 
@@ -323,6 +325,25 @@ final class BuckBorrisScene: SKScene {
                 stageNodes.append(speck)
             }
         }
+
+        addWeatherGusts()
+    }
+
+    private func addWeatherGusts() {
+        for index in 0..<3 {
+            let texture = SKTexture(imageNamed: index == 1 ? "weather_wind_2" : "weather_wind_1")
+            texture.filteringMode = .nearest
+            let gust = SKSpriteNode(texture: texture)
+            gust.name = "buck-desert-gust-\(index)"
+            gust.anchorPoint = CGPoint(x: 0, y: 0.5)
+            gust.alpha = 0.18
+            gust.zPosition = 6
+            gust.size = CGSize(width: 230, height: 14)
+            gust.position = CGPoint(x: CGFloat(index) * 280, y: size.height * 0.34 + CGFloat(index * 22))
+            addChild(gust)
+            stageNodes.append(gust)
+            weatherSprites.append(gust)
+        }
     }
 
     private func layoutLabels() {
@@ -399,6 +420,7 @@ final class BuckBorrisScene: SKScene {
         let dt = min(max(now.timeIntervalSince(lastTimerDate), 0), 1.0 / 30.0)
         lastTimerDate = now
         animate(dt)
+        scrollWeather(dt)
         runAutoVerification(dt)
         guard phase == .playing else { return }
         updateBuck(dt)
@@ -555,22 +577,33 @@ final class BuckBorrisScene: SKScene {
     }
 
     private func spawnHitSpark(at point: CGPoint) {
-        let colors = [
-            SKColor(red: 1.0, green: 0.88, blue: 0.30, alpha: 1),
-            SKColor(red: 1.0, green: 0.38, blue: 0.20, alpha: 1),
-            SKColor.white
-        ]
-        for index in 0..<6 {
-            let spark = SKSpriteNode(color: colors[index % colors.count], size: CGSize(width: 10, height: 10))
-            spark.position = point
-            spark.zPosition = 70
-            addChild(spark)
-            let dx = CGFloat(index - 2) * 12
-            let dy = CGFloat((index % 3) + 1) * 10
-            spark.run(.sequence([
-                .group([.moveBy(x: dx, y: dy, duration: 0.18), .fadeOut(withDuration: 0.18)]),
-                .removeFromParent()
-            ]))
+        let shineSheet = SKTexture(imageNamed: "weather_shine_1")
+        shineSheet.filteringMode = .nearest
+        let frames = (0..<6).map { index -> SKTexture in
+            let frame = SKTexture(rect: CGRect(x: CGFloat(index) / 6, y: 0, width: 1 / 6, height: 1), in: shineSheet)
+            frame.filteringMode = .nearest
+            return frame
+        }
+        let spark = SKSpriteNode(texture: frames.first)
+        spark.name = "buck-hit-shine"
+        spark.position = point
+        spark.size = CGSize(width: 78, height: 38)
+        spark.zPosition = 70
+        addChild(spark)
+        spark.run(.sequence([
+            .animate(with: frames, timePerFrame: 0.035),
+            .fadeOut(withDuration: 0.05),
+            .removeFromParent()
+        ]))
+    }
+
+    private func scrollWeather(_ dt: TimeInterval) {
+        for (index, gust) in weatherSprites.enumerated() {
+            gust.position.x -= CGFloat(36 + index * 14) * CGFloat(dt)
+            if gust.position.x < -gust.size.width {
+                gust.position.x = size.width + CGFloat(index * 130)
+                gust.position.y = size.height * 0.34 + CGFloat(index * 22)
+            }
         }
     }
 
@@ -729,8 +762,9 @@ final class BuckBorrisScene: SKScene {
             "engine": "Native SpriteKit micro brawler",
             "buckSpriteVisible": autoSawSprite,
             "buckAsset": "Buck Borris sensible_frames curated idle/run/damaged plus attacks_80x32",
-            "enemyAsset": "Enemy_Animations_Set skeleton2 (idle/walk/hurt/death), 32x32 strips",
+            "enemyAsset": "CraftPix free desert enemies Mummy strips (idle/walk/hurt/death), 48x48 frames",
             "backgroundImageUsed": true,
+            "weatherEffectsUsed": "CraftPix Weather Effects wind gusts plus Shine hit effect",
             "movementWorked": autoSawMove,
             "attackWorked": autoSawAttack,
             "enemyTookDamage": autoSawEnemyDamage,

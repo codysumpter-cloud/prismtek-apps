@@ -47,15 +47,16 @@ These files provide useful Flappy Pixel mechanics, scoring metadata, and Prismca
 - Dino Dash: four `dinoCharactersVersion1/sheets/DinoSprites - *.png` sheets: `doux`, `mort`, `tard`, and `vita`.
 - Dino Dash environment: `/Users/prismtek/Documents/Libresprite/Background_Hills_v1/_PNG/background1.png` through `background4.png`.
 - Beat Em Up Buck: `/Users/prismtek/Documents/Libresprite/Buck Borris/sensible_frames/frames/idle/*.png`, `run/*.png`, `damaged/*.png`, plus `sensible_frames/strips/attacks_80x32.png`.
-- Beat Em Up Buck environment: `/Users/prismtek/Documents/Libresprite/RTB_v1/background.png`.
-- Beat Em Up Buck enemy: original procedural pixel Training Bruiser assembled in SpriteKit.
+- Beat Em Up Buck environment: curated desert arena backdrop from the local LibreSprite desert background set.
+- Beat Em Up Buck enemy: `/Users/prismtek/Documents/Libresprite/free-desert-enemy-sprite-sheets-pixel-art/5 Mummy/Mummy_idle.png`, `Mummy_walk.png`, `Mummy_hurt.png`, and `Mummy_death.png`.
+- Native hub previews: app-side gameplay snapshots copied into `Shared/Resources/Art/Previews/` so cards reflect real gameplay instead of symbolic Canvas art.
 
 ## License / Provenance Notes
 
 - Onocentaur birds: `ABOUT.txt` allows free personal and professional use; attribution appreciated.
 - Garden Birds: user-approved local asset library; no local license file was found in the pack during this pass, so only curated gameplay sheets were imported.
 - Background Hills: `_license.txt` allows personal and commercial use; credit is not required but appreciated.
-- RTB backdrop: `_license.txt` allows personal and commercial use; credit is not required but appreciated.
+- CraftPix desert enemies/backgrounds: local `License.txt` points to `https://craftpix.net/file-licenses/`; CraftPix Freebie terms allow personal/commercial game projects and game distribution, but do not allow redistributing raw art source packs. Only curated runtime PNGs are committed.
 
 ## QA / Contact Sheets
 
@@ -81,7 +82,7 @@ No external fighter engine was integrated. Beat Em Up Buck uses native SpriteKit
 
 - `fishing_free`: excluded by prior non-commercial note.
 - `/Users/prismtek/Documents/Libresprite/Flappy_Bird_assets by kosresetr55.rar`: skipped to avoid copied Flappy Bird assets.
-- Weather Effects Assets Pack Pixel Art: skipped for this pass because the local license file points to external CraftPix license pages rather than embedding a clear reusable license.
+- Weather Effects Assets Pack Pixel Art: curated `Wind1.png`, `Wind2.png`, `Rain/1.png`, and `Shine1.png` were committed for subtle Flappy ambience, Dino dust/wind, Buck desert gusts, and Buck hit shine. Blood, Thunder, Snow, PSDs, and the raw zip were skipped.
 - BG_DesertMountains and other newly added packs without local clear provenance: skipped or deferred.
 - Google/Chrome Dino assets: not used.
 - Streets of Rage, MUGEN, OpenBOR, Ikemen, Sega, Nintendo, franchise, ripped, or unclear fighter assets: not used.

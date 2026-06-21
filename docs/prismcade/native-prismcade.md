@@ -12,14 +12,14 @@ The native app uses SwiftUI for the Prismcade hub and SpriteKit for game runtime
 - Native Prismcade hub with cards for Flappy Pixel, Prismtek Dino Dash, and Beat Em Up Buck.
 - macOS target: `PrismcadeMac`.
 - iOS target: `PrismcadeiOS`.
-- Curated local assets copied into `Shared/Resources/Art`, including Garden Birds, Onocentaur birds, DinoSprites, Buck Borris frames, Background Hills, and the RTB street backdrop.
+- Curated local assets copied into `Shared/Resources/Art`, including Garden Birds, Onocentaur birds, DinoSprites, Buck Borris frames, Background Hills, desert arena art, Weather Effects wind/rain/shine sprites, snapshot hub previews, and CraftPix Mummy enemy strips.
 - Runtime verification receipts and app-side SpriteKit snapshots for all three game scenes.
 
 ## Canonical game direction
 
 The canonical Buck Borris game direction is now **Beat Em Up Buck**.
 
-The native runtime implements Beat Em Up Buck as a SpriteKit micro brawler with Buck Borris as the playable character, an original Training Bruiser enemy, lane movement, attack timing, hitboxes, hurtboxes, damage, hit stun, knockback, health bars, KO/score, game-over, and restart.
+The native runtime implements Beat Em Up Buck as a SpriteKit micro brawler with Buck Borris as the playable character, an animated desert Mummy enemy, lane movement, attack timing, hitboxes, hurtboxes, damage, hit stun, knockback, health bars, KO/score, game-over, and restart.
 
 Related docs:
 
@@ -55,6 +55,22 @@ See:
 docs/prismcade/game-catalog-parity.md
 ```
 
+## Platform layer (manifest/catalog parity PR)
+
+Native now aligns with the canonical manifest-first Prismcade model:
+
+- **Canonical catalog**: `apps/prismcade-native` bundles and reads
+  `data/prismcade/prismcade-catalog.json` (32-game union). The hub shows native-playable games
+  first, then every other catalog game as a clearly-labelled **planned** parity target — no fake
+  playable buttons, no duplicate old/new cards (native canonical builds dedupe their web twin).
+- **Local-first platform hooks** (`PrismcadePlatform`): persisted player handle, per-game best
+  scores, rolling match receipts, and a leaderboard export payload.
+- **GameShell**: a shared results/status bar (best, last result, leaderboard sync state) plus
+  Restart and Return, so games don't reinvent post-game UI.
+- **LeaderboardService**: offline-safe queue that submits match receipts to the shared Prismcade
+  API (`functions/api/prismcade`) when `PRISMCADE_API_BASE` is configured; local-only otherwise.
+- **SFX**: curated event sounds for Flappy, Dino, and Buck.
+
 ## Build status
 
 - macOS: passed with `macosx27.0` during the native launch polish pass.
@@ -63,7 +79,8 @@ docs/prismcade/game-catalog-parity.md
 ## Known limitations
 
 - App-side SpriteKit snapshots were used for verification because desktop screen capture was black in the agent environment.
-- Native Prismcade does not yet read `data/prismcade/game-manifests.json` dynamically.
-- Native Prismcade does not yet submit runs to the web Prismcade/Arcade score APIs found in `prismtek-site`.
-- Audio is not wired yet.
-- Beat Em Up Buck has one enemy and one basic attack timing window; richer move data and enemy sprites are next.
+- Native reads the canonical `prismcade-catalog.json`; the 29 planned games are shown but not yet ported to native scenes.
+- `LeaderboardService` submits to the shared API only when `PRISMCADE_API_BASE` is configured and a `POST /api/prismcade/scores` endpoint exists; otherwise it queues locally.
+- The canonical catalog is regenerated manually (see `docs/prismcade/website-sync.md`); no automatic generator yet.
+- Beat Em Up Buck has one enemy and one basic attack timing window; richer move data is next.
+- The native character creator (portable avatar) is not built yet; assets are staged locally.

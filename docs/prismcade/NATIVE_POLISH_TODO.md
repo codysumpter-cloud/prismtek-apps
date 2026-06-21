@@ -10,11 +10,8 @@ This TODO tracks what remains after the native launch polish pass. It should not
 
 ## Hub preview cleanup
 
-The hub preview cards should eventually use real game/sprite previews instead of Canvas-drawn symbolic previews. Replace them with either:
-
-- real app-side runtime snapshots,
-- real sprite-backed preview composites,
-- or curated static card art produced from the actual game assets.
+Resolved by the #206 visual QA pass: the playable launch cards now use curated app-side
+runtime snapshots instead of Canvas-drawn symbolic previews.
 
 ## Runtime gates
 
@@ -28,7 +25,6 @@ Remaining polish items:
 
 - add audio,
 - add richer Beat Em Up Buck enemy/move data,
-- replace symbolic hub cards with sprite-backed preview art,
 - wire native scores into Prismcade catalog/score services when ready.
 
 ## 2026-06-21 follow-up (Claude/Buddy review of PR #205)
@@ -47,11 +43,9 @@ Open Codex items (details + exact asset paths in
 - Flappy: fix the far-right parallax background gap; consider trimming the 50-bird roster
   (select grid overflows); onocentaur birds are static (pack has angles, no flap frames);
   map real species names from `Birds by Onocentaur/reference.png`.
-- Buck: replace the sky-only `RTB_v1` plate with a real desert/street stage
-  (`BG_DesertMountains/`), tile a real floor (`Starter Tiles Platformer/`), swap the
-  procedural Training Bruiser for `Enemy_Animations_Set/` (skeleton2 or vampire — full
-  idle/walk/attack/hurt/death), clean the `attacks_80x32` frames (the "black bar" on
-  attack), and use `Free Pixel Effects Pack/10_weaponhit` for hit sparks.
+- Buck: resolved the sky-only stage and procedural enemy by using the desert arena floor
+  plus the licensed CraftPix Mummy idle/walk/hurt/death strips. Future polish can add
+  dedicated attack frames and richer hit FX.
 - Confirm/clear license provenance for `Weather Effects Assets Pack Pixel Art` (CraftPix),
   `BG_DesertMountains`, and `dinoCharactersVersion1` before committing curated frames.
 - Make the autoverify cycle an onocentaur bird and assert measured facing (current receipts

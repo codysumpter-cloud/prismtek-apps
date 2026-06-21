@@ -14,7 +14,9 @@ Native SpriteKit version of Flappy Pixel for Prismcade.
   - all 38 birds from the original `Birds by Onocentaur/birds-2x.png` sheet.
 - Garden Birds use top-row flight frames for visible wing animation.
 - Onocentaur sheet columns are directional poses, not flap frames; gameplay uses the right-facing pose for each row so the bird does not spin 360 degrees.
-- Layered `Background_Hills_v1` pixel art, tiled ground, clouds, and decorated gate obstacles were added for a coherent stage.
+- Layered `Background_Hills_v1` pixel art, full-width tiled ground, and decorated gate obstacles were added for a coherent stage.
+- Loose foreground white-square cloud sprites were removed during the visual QA pass because they obscured birds and gates.
+- Curated CraftPix Weather Effects wind/rain sprites add subtle motion without covering gates or birds.
 - Timer-driven gravity/flap loop.
 - Scrolling gates, scoring, collision, game over, restart, local high score.
 
@@ -48,6 +50,10 @@ Verified: bird picker appears, all Garden Birds and all original Onocentaur bird
 - Garden Birds license note: user-approved local asset library; no local license file was found in that pack during this pass, so only curated 64x64 gameplay sheets were committed.
 - Background used: `/Users/prismtek/Documents/Libresprite/Background_Hills_v1/_PNG/background1.png` through `background4.png`
 - Background Hills license note from `_license.txt`: commercial use is allowed; credit is not required but appreciated.
+- Weather used: `/Users/prismtek/Documents/Libresprite/Weather Effects Assets Pack Pixel Art/5 Wind/Wind1.png`
+- Weather used: `/Users/prismtek/Documents/Libresprite/Weather Effects Assets Pack Pixel Art/5 Wind/Wind2.png`
+- Weather used: `/Users/prismtek/Documents/Libresprite/Weather Effects Assets Pack Pixel Art/6 Weather/Rain/1.png`
+- Weather Effects license note from `License.txt`: CraftPix file license.
 - Excluded: `/Users/prismtek/Documents/Libresprite/Flappy_Bird_assets by kosresetr55.rar` to avoid copied Flappy Bird-style assets.
 
 The final `prismtek-site` pass confirmed useful web Flappy mechanics, score metadata, and platform hooks. It did not provide better safe native bird art than the Garden Birds and Onocentaur sheets now curated into the app.
