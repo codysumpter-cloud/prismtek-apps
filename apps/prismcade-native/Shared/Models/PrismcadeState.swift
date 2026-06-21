@@ -30,7 +30,7 @@ enum PrismcadeGame: String, CaseIterable, Identifiable {
         switch self {
         case .flappyPixel: "Art: Garden Birds, Onocentaur birds, and Background Hills from local LibreSprite packs."
         case .dinoDash: "Art: DinoSprites doux, mort, tard, vita sheets plus Background Hills layers."
-        case .buckBorris: "Art: Buck Borris frames, RTB backdrop, and an original Training Bruiser enemy."
+        case .buckBorris: "Art: Buck Borris frames, a composited Desert Mountains arena, and a skeleton enemy from the Enemy Animations set."
         }
     }
 }

@@ -49,6 +49,11 @@ final class BuckBorrisScene: SKScene {
     private var damagedFrames: [SKTexture] = []
     private var attackFrames: [SKTexture] = []
 
+    private var enemyIdleFrames: [SKTexture] = []
+    private var enemyWalkFrames: [SKTexture] = []
+    private var enemyHurtFrames: [SKTexture] = []
+    private var enemyDeathFrames: [SKTexture] = []
+
     private var input = InputState()
     private var buckBase = CGPoint.zero
     private var enemyBase = CGPoint.zero
@@ -135,6 +140,12 @@ final class BuckBorrisScene: SKScene {
             return frame
         }
 
+        // Enemy: skeleton2 from Enemy_Animations_Set, 32x32 horizontal strips.
+        enemyIdleFrames = sliceStrip("enemy_skeleton_idle", count: 6)
+        enemyWalkFrames = sliceStrip("enemy_skeleton_walk", count: 10)
+        enemyHurtFrames = sliceStrip("enemy_skeleton_hurt", count: 5)
+        enemyDeathFrames = sliceStrip("enemy_skeleton_death", count: 15)
+
         if idleFrames.isEmpty, let fallback = texture(named: "idle_00") {
             idleFrames = [fallback]
         }
@@ -153,6 +164,22 @@ final class BuckBorrisScene: SKScene {
         let texture = SKTexture(imageNamed: name)
         texture.filteringMode = .nearest
         return texture
+    }
+
+    private func sliceStrip(_ name: String, count: Int) -> [SKTexture] {
+        let sheet = SKTexture(imageNamed: name)
+        sheet.filteringMode = .nearest
+        guard count > 0 else { return [] }
+        return (0..<count).map { index in
+            let frame = SKTexture(rect: CGRect(x: CGFloat(index) / CGFloat(count), y: 0, width: 1 / CGFloat(count), height: 1), in: sheet)
+            frame.filteringMode = .nearest
+            return frame
+        }
+    }
+
+    private func enemyFrame(_ frames: [SKTexture]) -> SKTexture? {
+        guard !frames.isEmpty else { return nil }
+        return frames[animationFrame % frames.count]
     }
 
     private func setupWorld() {
@@ -174,8 +201,10 @@ final class BuckBorrisScene: SKScene {
         addChild(buck)
         autoSawSprite = true
 
-        enemy = makeTrainingBruiser()
-        enemy.name = "training-bruiser"
+        enemy = SKSpriteNode(texture: enemyIdleFrames.first)
+        enemy.name = "training-skeleton"
+        enemy.size = CGSize(width: 110, height: 110)
+        enemy.zPosition = 28
         addChild(enemy)
 
         titleLabel.fontSize = 30
@@ -201,33 +230,6 @@ final class BuckBorrisScene: SKScene {
         buildHealthBars()
         layoutStage()
         layoutLabels()
-    }
-
-    private func makeTrainingBruiser() -> SKSpriteNode {
-        let body = SKSpriteNode(color: SKColor(red: 0.31, green: 0.72, blue: 0.83, alpha: 1), size: CGSize(width: 40, height: 54))
-        body.zPosition = 28
-
-        let head = SKSpriteNode(color: SKColor(red: 0.65, green: 0.88, blue: 0.90, alpha: 1), size: CGSize(width: 28, height: 20))
-        head.position = CGPoint(x: 0, y: 33)
-        head.zPosition = 1
-        body.addChild(head)
-
-        let visor = SKSpriteNode(color: SKColor(red: 0.08, green: 0.12, blue: 0.18, alpha: 1), size: CGSize(width: 20, height: 6))
-        visor.position = CGPoint(x: -2, y: 35)
-        visor.zPosition = 2
-        body.addChild(visor)
-
-        for side in [-1, 1] {
-            let arm = SKSpriteNode(color: SKColor(red: 0.21, green: 0.54, blue: 0.65, alpha: 1), size: CGSize(width: 12, height: 34))
-            arm.position = CGPoint(x: CGFloat(side) * 26, y: 3)
-            arm.zRotation = CGFloat(side) * 0.16
-            body.addChild(arm)
-
-            let boot = SKSpriteNode(color: SKColor(red: 0.10, green: 0.14, blue: 0.20, alpha: 1), size: CGSize(width: 15, height: 12))
-            boot.position = CGPoint(x: CGFloat(side) * 11, y: -32)
-            body.addChild(boot)
-        }
-        return body
     }
 
     private func buildHealthBars() {
@@ -264,36 +266,62 @@ final class BuckBorrisScene: SKScene {
         for node in stageNodes { node.removeFromParent() }
         stageNodes.removeAll()
 
-        let texture = SKTexture(imageNamed: "buck_city_background")
+        let width = max(size.width, 900)
+
+        let texture = SKTexture(imageNamed: "buck_desert_background")
         texture.filteringMode = .nearest
         cityBackground = SKSpriteNode(texture: texture)
         cityBackground.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         cityBackground.position = CGPoint(x: size.width / 2, y: size.height / 2)
-        cityBackground.size = CGSize(width: max(size.width, 900), height: max(size.height, 506))
+        cityBackground.size = CGSize(width: width, height: max(size.height, 506))
         cityBackground.zPosition = 0
         addChild(cityBackground)
         stageNodes.append(cityBackground)
 
-        let street = SKSpriteNode(color: SKColor(red: 0.16, green: 0.15, blue: 0.18, alpha: 0.88), size: CGSize(width: max(size.width, 900), height: 170))
-        street.anchorPoint = CGPoint(x: 0.5, y: 0)
-        street.position = CGPoint(x: size.width / 2, y: 62)
-        street.zPosition = 2
-        addChild(street)
-        stageNodes.append(street)
+        // Sand arena floor (coherent palette-matched tiles, not a flat bar).
+        let floorTop: CGFloat = 232
+        let sand = SKSpriteNode(color: SKColor(red: 0.80, green: 0.69, blue: 0.46, alpha: 1), size: CGSize(width: width, height: floorTop))
+        sand.anchorPoint = CGPoint(x: 0.5, y: 0)
+        sand.position = CGPoint(x: size.width / 2, y: 0)
+        sand.zPosition = 1
+        addChild(sand)
+        stageNodes.append(sand)
 
-        for lane in 0..<4 {
-            let stripe = SKSpriteNode(color: SKColor(red: 0.34, green: 0.31, blue: 0.35, alpha: 1), size: CGSize(width: max(size.width, 900), height: 4))
-            stripe.position = CGPoint(x: size.width / 2, y: minLaneY + CGFloat(lane) * 28)
-            stripe.zPosition = 3
-            addChild(stripe)
-            stageNodes.append(stripe)
+        // Packed-sand top lip so the arena floor reads as a raised surface.
+        let lip = SKSpriteNode(color: SKColor(red: 0.66, green: 0.53, blue: 0.32, alpha: 1), size: CGSize(width: width, height: 12))
+        lip.anchorPoint = CGPoint(x: 0.5, y: 0)
+        lip.position = CGPoint(x: size.width / 2, y: floorTop - 12)
+        lip.zPosition = 2
+        addChild(lip)
+        stageNodes.append(lip)
+
+        let highlight = SKSpriteNode(color: SKColor(red: 0.90, green: 0.80, blue: 0.56, alpha: 1), size: CGSize(width: width, height: 3))
+        highlight.anchorPoint = CGPoint(x: 0.5, y: 0)
+        highlight.position = CGPoint(x: size.width / 2, y: floorTop)
+        highlight.zPosition = 3
+        addChild(highlight)
+        stageNodes.append(highlight)
+
+        // Vertical tile seams + scattered grit so the floor isn't a flat slab.
+        let tileWidth: CGFloat = 96
+        let columns = Int(width / tileWidth) + 1
+        for column in 0..<columns {
+            let x = -width / 2 + CGFloat(column) * tileWidth + size.width / 2
+            let seam = SKSpriteNode(color: SKColor(red: 0.70, green: 0.58, blue: 0.36, alpha: 0.6), size: CGSize(width: 2, height: floorTop - 12))
+            seam.anchorPoint = CGPoint(x: 0.5, y: 0)
+            seam.position = CGPoint(x: x, y: 0)
+            seam.zPosition = 2
+            addChild(seam)
+            stageNodes.append(seam)
+
+            for grit in 0..<3 {
+                let speck = SKSpriteNode(color: SKColor(red: 0.62, green: 0.50, blue: 0.30, alpha: 0.7), size: CGSize(width: 6, height: 4))
+                speck.position = CGPoint(x: x + CGFloat(((column * 7 + grit * 31) % 70)) - 35, y: CGFloat(28 + (column * 17 + grit * 41) % 170))
+                speck.zPosition = 2
+                addChild(speck)
+                stageNodes.append(speck)
+            }
         }
-
-        let curb = SKSpriteNode(color: SKColor(red: 0.74, green: 0.56, blue: 0.30, alpha: 1), size: CGSize(width: max(size.width, 900), height: 18))
-        curb.position = CGPoint(x: size.width / 2, y: 222)
-        curb.zPosition = 3
-        addChild(curb)
-        stageNodes.append(curb)
     }
 
     private func layoutLabels() {
@@ -563,9 +591,25 @@ final class BuckBorrisScene: SKScene {
             setBuckTexture(damagedFrames.last)
         }
 
+        let enemyTexture: SKTexture?
+        switch enemyState {
+        case .walk:
+            enemyTexture = enemyFrame(enemyWalkFrames)
+        case .hurt:
+            enemyTexture = enemyFrame(enemyHurtFrames.isEmpty ? enemyIdleFrames : enemyHurtFrames)
+        case .defeated:
+            enemyTexture = enemyDeathFrames.last ?? enemyIdleFrames.last
+        default:
+            enemyTexture = enemyFrame(enemyIdleFrames)
+        }
+        if let enemyTexture {
+            enemyTexture.filteringMode = .nearest
+            enemy.texture = enemyTexture
+        }
+
         if enemyState == .hurt {
-            enemy.colorBlendFactor = enemy.colorBlendFactor > 0 ? 0 : 0.65
-            enemy.color = SKColor.white
+            enemy.colorBlendFactor = enemy.colorBlendFactor > 0 ? 0 : 0.6
+            enemy.color = SKColor(red: 1.0, green: 0.4, blue: 0.4, alpha: 1)
         } else {
             enemy.colorBlendFactor = 0
         }
@@ -658,7 +702,7 @@ final class BuckBorrisScene: SKScene {
             "engine": "Native SpriteKit micro brawler",
             "buckSpriteVisible": autoSawSprite,
             "buckAsset": "Buck Borris sensible_frames curated idle/run/damaged plus attacks_80x32",
-            "enemyAsset": "Original procedural pixel Training Bruiser",
+            "enemyAsset": "Enemy_Animations_Set skeleton2 (idle/walk/hurt/death), 32x32 strips",
             "backgroundImageUsed": true,
             "movementWorked": autoSawMove,
             "attackWorked": autoSawAttack,

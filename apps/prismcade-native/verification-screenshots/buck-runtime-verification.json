@@ -4,7 +4,7 @@
   "buckAsset" : "Buck Borris sensible_frames curated idle\/run\/damaged plus attacks_80x32",
   "buckSpriteVisible" : true,
   "buckTookDamage" : true,
-  "enemyAsset" : "Original procedural pixel Training Bruiser",
+  "enemyAsset" : "Enemy_Animations_Set skeleton2 (idle\/walk\/hurt\/death), 32x32 strips",
   "enemyTookDamage" : true,
   "engine" : "Native SpriteKit micro brawler",
   "game" : "Beat Em Up Buck",
