@@ -1,13 +1,15 @@
 {
-  "catalogGameCount" : 9,
+  "canonicalGameCount" : 32,
   "catalogLoaded" : true,
-  "hubEntryCount" : 11,
+  "hubEntryCount" : 32,
   "leaderboardExportReady" : true,
-  "matchReceiptCount" : 2,
-  "plannedCount" : 8,
+  "leaderboardSyncState" : "local-only (set PRISMCADE_API_BASE to sync)",
+  "matchReceiptCount" : 25,
+  "plannedCount" : 29,
   "playableCount" : 3,
   "profileHandle" : "Player One",
   "recordedBestBuck" : 220,
-  "recordedBestFlappy" : 7,
-  "screen" : "Prismcade platform layer"
+  "recordedBestFlappy" : 45,
+  "screen" : "Prismcade platform layer",
+  "webPlayableCount" : 26
 }

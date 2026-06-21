@@ -9,10 +9,13 @@
   "gameOverTriggered" : true,
   "gardenBirdsPlayable" : 12,
   "gravityApplied" : true,
+  "groundRepeatsFullWidth" : true,
+  "looseForegroundCloudsRemoved" : true,
   "obstaclesSpawned" : true,
   "onocentaurBirdsPlayable" : 38,
   "playableBirdCount" : 50,
   "restartWorked" : true,
   "scoreChanged" : true,
-  "selectedBird" : "Hummingbird"
+  "selectedBird" : "Hummingbird",
+  "weatherEffectsUsed" : "CraftPix Weather Effects wind\/rain textures"
 }

@@ -63,6 +63,8 @@ final class PrismcadePlatform: ObservableObject {
         if let data = try? JSONEncoder.iso.encode(receipts) {
             defaults.set(data, forKey: Keys.receipts)
         }
+        // Queue for the shared leaderboard (offline-safe; no-op until an API base is configured).
+        LeaderboardService.shared.submit(receipt)
     }
 
     func best(for gameID: String) -> Int { bestScores[gameID] ?? 0 }

@@ -19,12 +19,12 @@ Implemented in `apps/prismcade-native/Shared/Scenes/BuckBorrisScene.swift` as a 
 - Buck Borris as playable sprite using curated local Buck frames.
 - Native SpriteKit fighter states: idle, walk, attack, hurt, defeated.
 - MUGEN/OpenBOR-inspired frame concepts: attack timing, active hit window, hurtboxes, hit stun, knockback, and lane bounds.
-- One original procedural pixel enemy: Training Bruiser.
+- One animated desert Mummy enemy sourced from the local CraftPix desert enemies pack.
 - Enemy damage and Buck damage.
 - Health bars for Buck and enemy.
 - KO/score counter.
-- Hit sparks.
-- Pixel street backdrop from `RTB_v1`.
+- CraftPix Weather Effects wind gusts and Shine hit animation.
+- Pixel desert arena backdrop and SpriteKit tiled arena floor.
 - Game-over and restart.
 - Return to Prismcade hub through the native game host.
 
@@ -33,7 +33,7 @@ Implemented in `apps/prismcade-native/Shared/Scenes/BuckBorrisScene.swift` as a 
 - Buck idle/run/jump/damaged frames are sourced from `/Users/prismtek/Documents/Libresprite/Buck Borris/sensible_frames/`.
 - Buck attack frames use the curated `attacks_80x32.png` strip.
 - Runtime Buck display size is 128x128 for idle/run/hurt and 220x88 while attacking so the wider punch frames read clearly.
-- The Training Bruiser is original procedural pixel art assembled in SpriteKit; no external fighter, Streets of Rage, MUGEN, OpenBOR, Sega, Nintendo, or ripped/franchise art is used.
+- The Mummy enemy uses curated idle, walk, hurt, and death strips from the local CraftPix free desert enemy sprite sheets. No external fighter, Streets of Rage, MUGEN, OpenBOR, Sega, Nintendo, or ripped/franchise art is used.
 - QA contact sheet: `apps/prismcade-native/verification-screenshots/buck-source-contact-sheet.png`
 
 ## Engine decision
@@ -64,17 +64,24 @@ Verified: Buck sprite appears, movement works, attack works, enemy takes damage,
 - Buck art used: `/Users/prismtek/Documents/Libresprite/Buck Borris/sensible_frames/frames/run/`
 - Buck art used: `/Users/prismtek/Documents/Libresprite/Buck Borris/sensible_frames/frames/damaged/`
 - Buck art used: `/Users/prismtek/Documents/Libresprite/Buck Borris/sensible_frames/strips/attacks_80x32.png`
-- Background used: `/Users/prismtek/Documents/Libresprite/RTB_v1/background.png`
-- RTB license note from `_license.txt`: commercial use is allowed; credit is not required but appreciated.
-- Enemy art: original procedural SpriteKit pixel enemy.
+- Background used: curated desert arena art from the local LibreSprite asset library.
+- Enemy art used: `/Users/prismtek/Documents/LibreSprite/free-desert-enemy-sprite-sheets-pixel-art/5 Mummy/Mummy_idle.png`
+- Enemy art used: `/Users/prismtek/Documents/LibreSprite/free-desert-enemy-sprite-sheets-pixel-art/5 Mummy/Mummy_walk.png`
+- Enemy art used: `/Users/prismtek/Documents/LibreSprite/free-desert-enemy-sprite-sheets-pixel-art/5 Mummy/Mummy_hurt.png`
+- Enemy art used: `/Users/prismtek/Documents/LibreSprite/free-desert-enemy-sprite-sheets-pixel-art/5 Mummy/Mummy_death.png`
+- Weather used: `/Users/prismtek/Documents/Libresprite/Weather Effects Assets Pack Pixel Art/5 Wind/Wind1.png`
+- Weather used: `/Users/prismtek/Documents/Libresprite/Weather Effects Assets Pack Pixel Art/5 Wind/Wind2.png`
+- Hit effect used: `/Users/prismtek/Documents/Libresprite/Weather Effects Assets Pack Pixel Art/2 Shine/Shine1.png`
+- Weather Effects license note from `License.txt`: CraftPix file license.
+- CraftPix freebie license note: commercial game use is allowed; the source art files are not redistributed as standalone art packs.
 - Excluded: Streets of Rage, MUGEN/OpenBOR/Ikemen asset packs, Sega/Nintendo/franchise/ripped assets.
 
 ## Known limitations
 
-- The enemy is a single original Training Bruiser archetype.
+- The enemy is a single animated Mummy archetype.
 - Buck has one basic punch chain timing window rather than a full move list.
 - No audio is wired yet.
 
 ## Future moves
 
-Add fighter data as small structs or JSON records with startup, active, recovery, damage, hit stun, knockback, and per-frame texture names. New enemy sprites can replace the procedural Training Bruiser if a safe Prismtek-owned or clearly licensed enemy sheet is added to the curated asset inventory.
+Add fighter data as small structs or JSON records with startup, active, recovery, damage, hit stun, knockback, and per-frame texture names. Additional enemy sprites can be added from safe Prismtek-owned or clearly licensed sheets and documented in the curated asset inventory.

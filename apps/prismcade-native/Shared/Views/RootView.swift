@@ -174,59 +174,75 @@ private struct PixelPreview: View {
     let game: PrismcadeGame
 
     var body: some View {
-        Canvas { context, size in
-            let sky = Path(CGRect(origin: .zero, size: size))
-            context.fill(sky, with: .color(Color(red: 0.08, green: 0.16, blue: 0.22)))
-            for index in 0..<14 {
-                let x = CGFloat(index) * size.width / 14
-                let y = CGFloat((index * 29) % 72) + 18
-                context.fill(Path(CGRect(x: x, y: y, width: 18, height: 8)), with: .color(.white.opacity(0.18)))
-            }
-            switch game {
-            case .flappyPixel:
-                drawRect(&context, x: 74, y: 52, w: 42, h: 28, color: Color(red: 0.98, green: 0.95, blue: 0.88))
-                drawRect(&context, x: 106, y: 58, w: 18, h: 10, color: .orange)
-                drawRect(&context, x: 148, y: 0, w: 28, h: 48, color: Color(red: 0.18, green: 0.72, blue: 0.50))
-                drawRect(&context, x: 148, y: 91, w: 28, h: 42, color: Color(red: 0.18, green: 0.72, blue: 0.50))
-            case .dinoDash:
-                drawRect(&context, x: 58, y: 72, w: 56, h: 32, color: Color(red: 0.42, green: 0.86, blue: 0.46))
-                drawRect(&context, x: 148, y: 78, w: 18, h: 28, color: Color(red: 0.78, green: 0.92, blue: 0.54))
-                drawRect(&context, x: 0, y: 108, w: size.width, h: 10, color: Color(red: 0.83, green: 0.67, blue: 0.39))
-            case .buckBorris:
-                drawRect(&context, x: 62, y: 48, w: 40, h: 56, color: Color(red: 0.78, green: 0.44, blue: 0.28))
-                drawRect(&context, x: 148, y: 44, w: 34, h: 34, color: Color(red: 0.25, green: 0.78, blue: 0.90))
-                drawRect(&context, x: 0, y: 108, w: size.width, h: 10, color: Color(red: 0.48, green: 0.34, blue: 0.22))
-            }
-        }
+        Image(previewName)
+            .resizable()
+            .interpolation(.none)
+            .scaledToFill()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .clipped()
     }
 
-    private func drawRect(_ context: inout GraphicsContext, x: CGFloat, y: CGFloat, w: CGFloat, h: CGFloat, color: Color) {
-        context.fill(Path(CGRect(x: x, y: y, width: w, height: h)), with: .color(color))
+    private var previewName: String {
+        switch game {
+        case .flappyPixel: "preview_flappy_pixel"
+        case .dinoDash: "preview_dino_dash"
+        case .buckBorris: "preview_beat_em_up_buck"
+        }
     }
 }
 
+/// Shared game shell: a consistent results/status bar (best, last result, leaderboard sync) plus
+/// restart + return, wrapped around any native scene so individual games don't reinvent post-game UI.
 private struct GameHostView: View {
     @EnvironmentObject private var state: PrismcadeState
+    @ObservedObject private var platform = PrismcadePlatform.shared
+    @ObservedObject private var leaderboard = LeaderboardService.shared
     let game: PrismcadeGame
+    @State private var sceneReloadToken = UUID()
+
+    private var best: Int { platform.best(for: game.manifestID) }
+    private var lastResult: MatchReceipt? { platform.recentReceipts(for: game.manifestID, limit: 1).first }
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack {
-                Button("Return to Prismcade") {
-                    state.returnToHub()
-                }
+            shellBar
+            SpriteKitContainer(scene: scene(for: game))
+                .id(sceneReloadToken)
+                .ignoresSafeArea(edges: .bottom)
+        }
+    }
+
+    private var shellBar: some View {
+        HStack(spacing: 12) {
+            Button("Return") { state.returnToHub() }
                 .buttonStyle(.borderedProminent)
                 .tint(Color(red: 0.15, green: 0.75, blue: 0.85))
+            Button("Restart") { sceneReloadToken = UUID() }
+                .buttonStyle(.bordered)
 
-                Text(game.title)
-                    .font(.system(size: 18, weight: .black, design: .rounded))
-                Spacer()
+            Text(game.title)
+                .font(.system(size: 18, weight: .black, design: .rounded))
+
+            Spacer()
+
+            shellStat("Best", "\(best)")
+            if let last = lastResult {
+                shellStat("Last", "\(last.score)")
             }
-            .padding(12)
-            .background(Color.black.opacity(0.28))
+            shellStat("Leaderboard", leaderboard.syncStateDescription)
+        }
+        .padding(12)
+        .background(Color.black.opacity(0.28))
+    }
 
-            SpriteKitContainer(scene: scene(for: game))
-                .ignoresSafeArea(edges: .bottom)
+    private func shellStat(_ label: String, _ value: String) -> some View {
+        VStack(alignment: .trailing, spacing: 1) {
+            Text(label)
+                .font(.system(size: 9, weight: .heavy, design: .monospaced))
+                .foregroundStyle(.white.opacity(0.55))
+            Text(value)
+                .font(.system(size: 13, weight: .bold, design: .monospaced))
+                .foregroundStyle(Color(red: 1.0, green: 0.85, blue: 0.42))
         }
     }
 

@@ -4,7 +4,7 @@
   "buckAsset" : "Buck Borris sensible_frames curated idle\/run\/damaged plus attacks_80x32",
   "buckSpriteVisible" : true,
   "buckTookDamage" : true,
-  "enemyAsset" : "Enemy_Animations_Set skeleton2 (idle\/walk\/hurt\/death), 32x32 strips",
+  "enemyAsset" : "CraftPix free desert enemies Mummy strips (idle\/walk\/hurt\/death), 48x48 frames",
   "enemyTookDamage" : true,
   "engine" : "Native SpriteKit micro brawler",
   "game" : "Beat Em Up Buck",
@@ -14,5 +14,6 @@
   "koRegistered" : true,
   "movementWorked" : true,
   "restartWorked" : true,
-  "scoreChanged" : true
+  "scoreChanged" : true,
+  "weatherEffectsUsed" : "CraftPix Weather Effects wind gusts plus Shine hit effect"
 }

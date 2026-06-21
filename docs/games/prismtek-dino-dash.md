@@ -11,7 +11,7 @@ Original native Prismcade dinosaur runner using the four local DinoSprites sheet
 ## Built
 
 - Character select with four real dinos: `doux`, `mort`, `tard`, `vita`.
-- Side-scrolling runner with animated selected dino, jump, styled cactus obstacles, pixel ground scroll, layered `Background_Hills_v1` image backdrop, score, speed ramp, collision, restart, local high score.
+- Side-scrolling runner with animated selected dino, jump, styled cactus obstacles, pixel ground scroll, layered `Background_Hills_v1` image backdrop, subtle CraftPix Weather Effects wind/dust streaks, score, speed ramp, collision, restart, local high score.
 
 ## Sprite notes
 
@@ -37,6 +37,9 @@ Verified: all four dinos found and selected, real sprites visible, consistent ga
 - Art used: `/Users/prismtek/Documents/Libresprite/dinoCharactersVersion1/sheets/DinoSprites - vita.png`
 - Background used: `/Users/prismtek/Documents/Libresprite/Background_Hills_v1/_PNG/background1.png` through `background4.png`
 - Background Hills license note from `_license.txt`: commercial use is allowed; credit is not required but appreciated.
+- Weather used: `/Users/prismtek/Documents/Libresprite/Weather Effects Assets Pack Pixel Art/5 Wind/Wind1.png`
+- Weather used: `/Users/prismtek/Documents/Libresprite/Weather Effects Assets Pack Pixel Art/5 Wind/Wind2.png`
+- Weather Effects license note from `License.txt`: CraftPix file license.
 - Excluded: copied Google/Chrome Dino assets; none were used.
 
 The final `prismtek-site` pass found only incidental dino-like references in companion/pet content, not a safer or more complete Dino Dash asset set. The native app therefore keeps the four local DinoSprites sheets.

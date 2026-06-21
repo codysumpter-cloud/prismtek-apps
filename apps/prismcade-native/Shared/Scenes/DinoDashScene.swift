@@ -35,6 +35,7 @@ final class DinoDashScene: SKScene {
     private var obstacles: [Obstacle] = []
     private var groundSegments: [SKSpriteNode] = []
     private var backgroundLayers: [SKSpriteNode] = []
+    private var weatherSprites: [SKSpriteNode] = []
     private var groundFill = SKSpriteNode()
     private var titleLabel = SKLabelNode(fontNamed: "Menlo-Bold")
     private var statusLabel = SKLabelNode(fontNamed: "Menlo-Bold")
@@ -113,6 +114,7 @@ final class DinoDashScene: SKScene {
         obstacles.removeAll()
         groundSegments.removeAll()
         backgroundLayers.removeAll()
+        weatherSprites.removeAll()
 
         buildBackdrop()
 
@@ -195,6 +197,24 @@ final class DinoDashScene: SKScene {
             cloud.zPosition = 2
             addChild(cloud)
         }
+
+        buildWeatherEffects()
+    }
+
+    private func buildWeatherEffects() {
+        for index in 0..<3 {
+            let texture = SKTexture(imageNamed: index == 1 ? "weather_wind_2" : "weather_wind_1")
+            texture.filteringMode = .nearest
+            let sprite = SKSpriteNode(texture: texture)
+            sprite.name = "dino-weather-wind-\(index)"
+            sprite.anchorPoint = CGPoint(x: 0, y: 0.5)
+            sprite.alpha = index == 1 ? 0.16 : 0.20
+            sprite.zPosition = 6
+            sprite.size = CGSize(width: 210, height: 13)
+            sprite.position = CGPoint(x: CGFloat(index) * 270, y: groundY + CGFloat(34 + index * 22))
+            addChild(sprite)
+            weatherSprites.append(sprite)
+        }
     }
 
     private func layoutBackgroundLayers() {
@@ -206,6 +226,9 @@ final class DinoDashScene: SKScene {
         }
         if groundFill.parent != nil {
             groundFill.size = CGSize(width: width, height: groundY - 23)
+        }
+        for (index, sprite) in weatherSprites.enumerated() where sprite.position.y <= 0 {
+            sprite.position = CGPoint(x: CGFloat(index) * 270, y: groundY + CGFloat(34 + index * 22))
         }
     }
 
@@ -350,6 +373,7 @@ final class DinoDashScene: SKScene {
         let dt = min(max(now.timeIntervalSince(lastTimerDate), 0), 1.0 / 30.0)
         lastTimerDate = now
         animate(dt)
+        scrollWeather(dt)
         runAutoVerification(dt)
         guard phase == .playing else { return }
         runTime += dt
@@ -360,7 +384,7 @@ final class DinoDashScene: SKScene {
             lastPointSoundScore = score
             playSound("dino_point.wav")
         }
-        if runSpeed > 245 { autoSawSpeedRamp = true }
+        if runSpeed > 230 { autoSawSpeedRamp = true }
         updateLabels()
         updateRunner(dt)
         scrollGround(dt)
@@ -395,6 +419,16 @@ final class DinoDashScene: SKScene {
             segment.position.x -= runSpeed * CGFloat(dt)
             if segment.position.x < -segment.size.width {
                 segment.position.x += segment.size.width * CGFloat(groundSegments.count)
+            }
+        }
+    }
+
+    private func scrollWeather(_ dt: TimeInterval) {
+        for (index, sprite) in weatherSprites.enumerated() {
+            sprite.position.x -= (runSpeed * 0.34 + CGFloat(index * 16)) * CGFloat(dt)
+            if sprite.position.x < -sprite.size.width {
+                sprite.position.x = size.width + CGFloat(index * 120)
+                sprite.position.y = groundY + CGFloat(34 + index * 22)
             }
         }
     }
@@ -555,6 +589,8 @@ final class DinoDashScene: SKScene {
             "spriteScaleConsistent": true,
             "pixelStagePolished": true,
             "backgroundImagesUsed": true,
+            "weatherEffectsUsed": "CraftPix Weather Effects wind textures as dust streaks",
+            "groundCloudArtifactsRemoved": true,
             "jumpWorked": autoSawJump,
             "obstaclesSpawned": autoSawObstacle,
             "scoreChanged": autoSawScore,
