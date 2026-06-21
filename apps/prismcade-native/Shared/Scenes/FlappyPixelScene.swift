@@ -138,7 +138,7 @@ final class FlappyPixelScene: SKScene {
         for (index, frames) in birdFramesByChoice.enumerated() {
             let node = SKSpriteNode(texture: frames.first)
             node.name = "flappy-bird-choice-\(index)"
-            node.size = CGSize(width: 48, height: 48)
+            node.size = CGSize(width: 38, height: 38)
             node.zPosition = 45
             addChild(node)
             choiceNodes.append(node)
@@ -199,7 +199,9 @@ final class FlappyPixelScene: SKScene {
         for spec in specs {
             let texture = SKTexture(imageNamed: spec.0)
             texture.filteringMode = .nearest
-            let nodes = (0..<2).map { index in
+            // Three tiling copies so even very wide windows never expose the
+            // dark background colour at the right edge as the layer scrolls.
+            let nodes = (0..<3).map { index in
                 let node = SKSpriteNode(texture: texture)
                 node.anchorPoint = CGPoint(x: 0, y: 0)
                 node.zPosition = spec.2
@@ -249,27 +251,29 @@ final class FlappyPixelScene: SKScene {
         let height = max(size.height, 1)
         for layer in backgroundLayers {
             for (index, node) in layer.nodes.enumerated() {
+                // Re-tile to the current width on every layout so a window resize
+                // can never leave the dark background colour exposed at an edge.
                 node.size = CGSize(width: width + 4, height: height)
-                if node.position == .zero || abs(node.position.x) > width * 2 {
-                    node.position = CGPoint(x: CGFloat(index) * width, y: 0)
-                }
+                node.position = CGPoint(x: CGFloat(index) * width, y: 0)
             }
         }
     }
 
     private func layoutChoices() {
-        let columns = 10
-        let spacingX = min(size.width / 11.2, 68)
-        let spacingY: CGFloat = 46
+        // 13 columns keeps the 50-bird roster to 4 tidy rows that clear the title
+        // and the ground on both narrow and wide windows.
+        let columns = 13
+        let spacingX = min(size.width / 13.8, 46)
+        let spacingY: CGFloat = 40
         let startX = size.width / 2 - spacingX * CGFloat(columns - 1) / 2
-        let startY = min(size.height * 0.58, size.height - 180)
+        let startY = min(size.height * 0.56, size.height - 150)
         for (index, node) in choiceNodes.enumerated() {
             node.isHidden = phase != .selecting
             let column = index % columns
             let row = index / columns
             node.position = CGPoint(x: startX + CGFloat(column) * spacingX, y: startY - CGFloat(row) * spacingY)
-            node.setScale(index == selectedBirdIndex ? 1.18 : 1.0)
-            node.alpha = index == selectedBirdIndex ? 1 : 0.78
+            node.setScale(index == selectedBirdIndex ? 1.3 : 1.0)
+            node.alpha = index == selectedBirdIndex ? 1 : 0.8
         }
         bird.isHidden = phase == .selecting
     }
