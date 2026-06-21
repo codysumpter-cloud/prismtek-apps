@@ -244,7 +244,7 @@ final class FlappyPixelScene: SKScene {
             // travels right, so use column 3 (the right-facing profile) for every row to
             // keep all birds facing the direction of travel.
             let rowCount: CGFloat = 38
-            let rect = CGRect(x: 0.75, y: 1 - CGFloat(row + 1) / rowCount, width: 0.25, height: 1 / rowCount)
+            let rect = CGRect(x: 0.5, y: 1 - CGFloat(row + 1) / rowCount, width: 0.25, height: 1 / rowCount)
             let frame = SKTexture(rect: rect, in: sheet)
             frame.filteringMode = .nearest
             return [frame, frame, frame, frame]
