@@ -581,6 +581,10 @@ final class FlappyPixelScene: SKScene {
             highScore = score
             UserDefaults.standard.set(score, forKey: "Prismcade.FlappyPixel.highScore")
         }
+        if !autoVerifyEnabled {
+            let final = score
+            Task { @MainActor in PrismcadePlatform.shared.recordResult(gameID: "flappy-pixel", gameTitle: "Flappy Pixel", score: final) }
+        }
         messageLabel.text = "Game Over"
         subMessageLabel.text = "Score \(score) - click, tap, or Space to restart"
         updateLabels()

@@ -583,6 +583,10 @@ final class BuckBorrisScene: SKScene {
             highScore = score
             UserDefaults.standard.set(score, forKey: "Prismcade.BeatEmUpBuck.highScore")
         }
+        if !autoVerifyEnabled {
+            let final = score
+            Task { @MainActor in PrismcadePlatform.shared.recordResult(gameID: "beat-em-up-buck", gameTitle: "Beat Em Up Buck", score: final) }
+        }
         titleLabel.text = message
         statusLabel.text = "KOs \(koCount) - J, Space, click, or tap to restart"
         updateLabels()

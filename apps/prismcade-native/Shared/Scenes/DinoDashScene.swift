@@ -482,6 +482,10 @@ final class DinoDashScene: SKScene {
             highScore = score
             UserDefaults.standard.set(score, forKey: "Prismcade.DinoDash.highScore")
         }
+        if !autoVerifyEnabled {
+            let final = score
+            Task { @MainActor in PrismcadePlatform.shared.recordResult(gameID: "prismtek-dino-dash", gameTitle: "Prismtek Dino Dash", score: final) }
+        }
         titleLabel.text = "Dino Down"
         statusLabel.text = "Score \(score) - click/tap/Space to choose again"
         updateLabels()

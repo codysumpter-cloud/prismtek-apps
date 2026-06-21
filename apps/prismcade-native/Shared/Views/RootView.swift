@@ -34,60 +34,118 @@ private struct PrismcadeBackdrop: View {
 
 private struct HubView: View {
     @EnvironmentObject private var state: PrismcadeState
+    @ObservedObject private var platform = PrismcadePlatform.shared
+
+    private var entries: [PrismcadeCatalog.HubEntry] { PrismcadeCatalog.hubEntries }
+    private var playableCount: Int { entries.filter(\.isPlayable).count }
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 22) {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Prismcade")
-                        .font(.system(size: 44, weight: .black, design: .rounded))
-                    Text("Native macOS/iOS launcher and runtime for Prismtek arcade games.")
-                        .font(.system(size: 16, weight: .medium, design: .rounded))
-                        .foregroundStyle(.white.opacity(0.72))
-                }
-                .padding(.top, 26)
-
+                header
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 260), spacing: 16)], spacing: 16) {
-                    ForEach(PrismcadeGame.allCases) { game in
-                        GameCard(game: game) {
-                            state.play(game)
+                    ForEach(entries) { entry in
+                        GameCard(entry: entry, best: platform.best(for: entry.id)) {
+                            if let game = entry.nativeGame { state.play(game) }
                         }
                     }
                 }
+                recentResults
             }
             .padding(28)
             .frame(maxWidth: 1080, alignment: .leading)
         }
     }
+
+    private var header: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Prismcade")
+                .font(.system(size: 44, weight: .black, design: .rounded))
+            Text("Native macOS/iOS launcher and runtime for the Prismtek arcade.")
+                .font(.system(size: 16, weight: .medium, design: .rounded))
+                .foregroundStyle(.white.opacity(0.72))
+            HStack(spacing: 10) {
+                Image(systemName: "person.crop.circle.fill")
+                    .foregroundStyle(Color(red: 0.15, green: 0.75, blue: 0.85))
+                TextField("Handle", text: $platform.profileHandle)
+                    .textFieldStyle(.plain)
+                    .frame(maxWidth: 200)
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                Text("\(playableCount) playable · \(entries.count) in catalog")
+                    .font(.system(size: 12, weight: .semibold, design: .monospaced))
+                    .foregroundStyle(.white.opacity(0.6))
+            }
+            .padding(.top, 4)
+        }
+        .padding(.top, 26)
+    }
+
+    @ViewBuilder private var recentResults: some View {
+        if !platform.receipts.isEmpty {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Recent Results")
+                    .font(.system(size: 20, weight: .black, design: .rounded))
+                ForEach(platform.recentReceipts(limit: 8)) { receipt in
+                    HStack {
+                        Text(receipt.gameTitle)
+                            .font(.system(size: 13, weight: .semibold, design: .rounded))
+                        Spacer()
+                        Text("Score \(receipt.score)")
+                            .font(.system(size: 13, weight: .bold, design: .monospaced))
+                            .foregroundStyle(Color(red: 1.0, green: 0.85, blue: 0.42))
+                    }
+                    .padding(.vertical, 6)
+                    .padding(.horizontal, 12)
+                    .background(Color.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 6))
+                }
+            }
+        }
+    }
 }
 
 private struct GameCard: View {
-    let game: PrismcadeGame
+    let entry: PrismcadeCatalog.HubEntry
+    let best: Int
     let play: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            PixelPreview(game: game)
-                .frame(height: 130)
-                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+        VStack(alignment: .leading, spacing: 12) {
+            Group {
+                if let game = entry.nativeGame {
+                    PixelPreview(game: game)
+                } else {
+                    PlannedPreview()
+                }
+            }
+            .frame(height: 120)
+            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
 
-            Text(game.title)
-                .font(.system(size: 22, weight: .black, design: .rounded))
-            Text(game.description)
-                .font(.system(size: 13, weight: .medium, design: .rounded))
+            HStack {
+                Text(entry.title)
+                    .font(.system(size: 20, weight: .black, design: .rounded))
+                Spacer()
+                if entry.isPlayable && best > 0 {
+                    Text("Best \(best)")
+                        .font(.system(size: 12, weight: .bold, design: .monospaced))
+                        .foregroundStyle(Color(red: 1.0, green: 0.85, blue: 0.42))
+                }
+            }
+            Text(entry.description)
+                .font(.system(size: 12, weight: .medium, design: .rounded))
                 .foregroundStyle(.white.opacity(0.74))
                 .fixedSize(horizontal: false, vertical: true)
-            Text(game.sourceNote)
-                .font(.system(size: 11, weight: .semibold, design: .monospaced))
-                .foregroundStyle(Color(red: 1.0, green: 0.85, blue: 0.42))
+            Text(entry.status)
+                .font(.system(size: 10, weight: .heavy, design: .monospaced))
+                .foregroundStyle(entry.isPlayable ? Color(red: 0.4, green: 0.9, blue: 0.6) : .white.opacity(0.5))
 
             Button(action: play) {
-                Text("Play")
+                Text(entry.isPlayable ? "Play" : "Planned")
                     .font(.system(size: 15, weight: .black, design: .rounded))
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
-            .tint(Color(red: 0.15, green: 0.75, blue: 0.85))
+            .tint(entry.isPlayable ? Color(red: 0.15, green: 0.75, blue: 0.85) : Color.gray)
+            .disabled(!entry.isPlayable)
         }
         .padding(16)
         .background(Color.white.opacity(0.07), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
@@ -95,6 +153,20 @@ private struct GameCard: View {
             RoundedRectangle(cornerRadius: 8, style: .continuous)
                 .stroke(Color.white.opacity(0.16), lineWidth: 1)
         )
+    }
+}
+
+private struct PlannedPreview: View {
+    var body: some View {
+        ZStack {
+            LinearGradient(
+                colors: [Color(red: 0.10, green: 0.13, blue: 0.20), Color(red: 0.07, green: 0.09, blue: 0.14)],
+                startPoint: .top, endPoint: .bottom
+            )
+            Image(systemName: "gamecontroller")
+                .font(.system(size: 34, weight: .bold))
+                .foregroundStyle(.white.opacity(0.28))
+        }
     }
 }
 
