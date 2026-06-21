@@ -1,5 +1,10 @@
 import SpriteKit
 import SwiftUI
+#if os(macOS)
+import AppKit
+#else
+import UIKit
+#endif
 
 struct RootView: View {
     @EnvironmentObject private var state: PrismcadeState
@@ -112,7 +117,7 @@ private struct GameCard: View {
         VStack(alignment: .leading, spacing: 12) {
             Group {
                 if let game = entry.nativeGame {
-                    PixelPreview(game: game)
+                    GamePreview(game: game)
                 } else {
                     PlannedPreview()
                 }
@@ -153,6 +158,34 @@ private struct GameCard: View {
             RoundedRectangle(cornerRadius: 8, style: .continuous)
                 .stroke(Color.white.opacity(0.16), lineWidth: 1)
         )
+    }
+}
+
+/// Real gameplay preview for native games (bundled snapshot), with the symbolic preview as a
+/// fallback if the image is missing.
+private struct GamePreview: View {
+    let game: PrismcadeGame
+
+    var body: some View {
+        if let image = Self.bundledImage(game.previewAsset) {
+            image
+                .resizable()
+                .interpolation(.none)
+                .aspectRatio(contentMode: .fill)
+        } else {
+            PixelPreview(game: game)
+        }
+    }
+
+    static func bundledImage(_ name: String) -> Image? {
+        guard let url = Bundle.main.url(forResource: name, withExtension: "png") else { return nil }
+        #if os(macOS)
+        guard let ns = NSImage(contentsOf: url) else { return nil }
+        return Image(nsImage: ns)
+        #else
+        guard let ui = UIImage(contentsOfFile: url.path) else { return nil }
+        return Image(uiImage: ui)
+        #endif
     }
 }
 
