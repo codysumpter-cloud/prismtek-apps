@@ -27,6 +27,53 @@ Preferred canonical version order:
 
 Do not show duplicate game cards for the same canonical game.
 
+## CORRECTION (2026-06-21, pass 3): the real Windows/HTML catalog lives in `prismtek-site`
+
+The `prismtek-apps/data/prismcade/game-manifests.json` (9 entries) is NOT the shipping
+Windows/HTML catalog. The real web/Windows Prismcade is the **website** (`prismtek-site`),
+whose canonical catalog `src/data/game-catalog.js` lists **26 games**, served through a full
+arcade platform. Native currently ships **3**.
+
+### Web catalog — 26 games (`prismtek-site/src/data/game-catalog.js`), native status
+flappy-pixel ✅native · crossy-pixel · boss-lab · byteblade-survivor · crystal-cavern-miner ·
+dungeon-byte · gravity-golf-mini · laser-labyrinth · meteor-salvage-ops · neon-stack-master ·
+neon-tunnel-drift · orb-defender-lite · pixel-blast · pixel-heist-escape · pixel-invaders-mini ·
+pixel-pong · pixel-position · pixel-snake · neon-brick-breaker · pixel-stacker ·
+prism-companion-lab · prism-puck-arena · **prism-sky-hunt** (exists — correcting earlier note) ·
+reactor-overload · signal-scramble · turbo-rail-rider.
+
+Native-only (not in web catalog): **Prismtek Dino Dash**, **Beat Em Up Buck**.
+
+So: **1 of 26** web games is in native; **25 missing**; native adds 2 of its own.
+
+### Web platform features (also part of parity), all in `prismtek-site/src/arcade/`
+- LeaderboardPanel, RecentActivityFeed, ResultsDialog, GameShell, PlayfieldFrame
+- async challenges, score validation (`scoreValidation` per game), school-safe flags,
+  compatibility matrix, categories/tags, UGC creator + Prismcade API (`functions/api/prismcade`).
+
+Native has **none** of these platform features yet (hub + 3 standalone scenes only).
+
+### Staged native parity plan (realistic — this is a multi-week effort, not one pass)
+1. **Tier A — simple self-contained arcade games** (each ≈ one SpriteKit scene, like the
+   current 3): pixel-snake, pixel-pong, neon-brick-breaker, pixel-stacker, pixel-invaders-mini,
+   crossy-pixel, neon-stack-master. Port these first; each gets SFX + hub entry + autoverify.
+2. **Tier B — medium games**: dungeon-byte, laser-labyrinth, gravity-golf-mini, orb-defender-lite,
+   meteor-salvage-ops, signal-scramble, turbo-rail-rider, neon-tunnel-drift, pixel-blast,
+   reactor-overload, pixel-position, pixel-heist-escape, crystal-cavern-miner.
+3. **Tier C — large/complex**: boss-lab, byteblade-survivor, prism-puck-arena, prism-sky-hunt,
+   prism-companion-lab (+ the `prismtek-apps` heavies pixel-fruit-arena, spin-street-showdown,
+   tamernet-battle-sandbox if they are to be native too).
+4. **Platform layer**: a shared native `GameCatalog` (mirrors `game-catalog.js`), a generic
+   `GameScene` protocol + `GameShell` (score HUD, results, restart), score validation, and a
+   `LeaderboardService` that consumes the existing `functions/api/prismcade` backend (do NOT
+   re-implement the backend natively — native should call the shared API).
+5. **Replacement rule**: for shared identities (flappy-pixel today; any web game later ported),
+   the native build is canonical; retire/alias the older web entry per this doc.
+
+Each Tier-A port is comparable in size to the existing Flappy/Dino/Buck scenes (~300–600 LOC).
+Doing all 25 + the platform layer is realistically dozens of focused commits across multiple
+sessions; it should be sequenced one game (or small batch) at a time, each built + runtime-verified.
+
 ## Sources of truth (verified paths)
 
 - Canonical web catalog manifest: `data/prismcade/game-manifests.json` (9 game entries).
