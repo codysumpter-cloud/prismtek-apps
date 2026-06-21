@@ -1,66 +1,80 @@
 # Beat Em Up Buck
 
-Beat Em Up Buck is the canonical Prismcade name for the Buck Borris game direction.
+Beat Em Up Buck is the native Prismcade Buck Borris brawler.
 
 ## Current status
 
-The merged native Prismcade foundation currently contains a Buck Borris jump/dodge/pickup prototype using real Buck Borris frames. That prototype is useful as proof that the Buck art loads and animates, but it is not the intended final game loop.
+Implemented in `apps/prismcade-native/Shared/Scenes/BuckBorrisScene.swift` as a native SpriteKit micro brawler.
 
-## Target
+## Controls
 
-The next polish pass should replace the prototype with a tiny native SpriteKit brawler/fighter:
+- macOS: arrows or WASD move Buck through the lane stage.
+- macOS: Space or J attacks.
+- macOS: K jumps.
+- iOS: left side touch zones move; right side touch zones attack or jump.
+- After game over: click, tap, Space, or J restarts.
 
-- Buck Borris as the playable character.
-- Side-view or 2.5D lane stage.
-- Left/right movement.
-- Up/down lane movement if feasible.
-- Punch/attack button.
-- At least one enemy.
-- Hitboxes and hurtboxes.
+## Built
+
+- Buck Borris as playable sprite using curated local Buck frames.
+- Native SpriteKit fighter states: idle, walk, attack, hurt, defeated.
+- MUGEN/OpenBOR-inspired frame concepts: attack timing, active hit window, hurtboxes, hit stun, knockback, and lane bounds.
+- One original procedural pixel enemy: Training Bruiser.
 - Enemy damage and Buck damage.
-- Hit stun and knockback.
-- Health bars.
-- KO counter or score.
+- Health bars for Buck and enemy.
+- KO/score counter.
+- Hit sparks.
+- Pixel street backdrop from `RTB_v1`.
 - Game-over and restart.
-- Return to Prismcade hub.
+- Return to Prismcade hub through the native game host.
 
-## Engine direction
+## Sprite notes
 
-Use a native SpriteKit implementation unless a local OpenBOR, MUGEN, or Ikemen-style engine is found, license-compatible, and realistically buildable for both macOS and iOS.
+- Buck idle/run/jump/damaged frames are sourced from `/Users/prismtek/Documents/Libresprite/Buck Borris/sensible_frames/`.
+- Buck attack frames use the curated `attacks_80x32.png` strip.
+- Runtime Buck display size is 128x128 for idle/run/hurt and 220x88 while attacking so the wider punch frames read clearly.
+- The Training Bruiser is original procedural pixel art assembled in SpriteKit; no external fighter, Streets of Rage, MUGEN, OpenBOR, Sega, Nintendo, or ripped/franchise art is used.
+- QA contact sheet: `apps/prismcade-native/verification-screenshots/buck-source-contact-sheet.png`
 
-The design should borrow concepts from MUGEN/OpenBOR-style data, not third-party assets:
+## Engine decision
 
-- fighter states
-- frame data
-- animation states
-- hitboxes
-- hurtboxes
-- attacks
-- knockback
-- stage/lane boundaries
+Local engine/reference search found Prismtek-side evaluation material:
 
-Do not copy Streets of Rage, MUGEN, OpenBOR, Sega, Nintendo, or ripped/franchise assets.
+- `experiments/ikemen-prismtek-fighter/`
+- `experiments/openbor-prismtek-brawler/`
+- `games/prismcade-fighter/`
+- `tools/prismcade-fighter/`
 
-## Current known Buck assets
+Those folders are useful references for fighter data concepts, but this launch polish pass did not integrate OpenBOR, MUGEN, or Ikemen because the native app must build cleanly for both macOS and iOS. Beat Em Up Buck therefore uses native SpriteKit.
 
-The native foundation documented Buck Borris art from:
+## Verification
 
-```text
-/Users/prismtek/Documents/Libresprite/Buck Borris/sensible_frames/
-```
+Receipt: `apps/prismcade-native/verification-screenshots/buck-runtime-verification.json`
 
-The next pass should use LibreSprite and/or Python/Pillow to inspect all Buck frames and identify the best idle, walk/run, jump, hurt, and attack candidates. If dedicated attack frames do not exist, use the best available pose and document that a dedicated attack animation is still needed.
+Snapshots:
 
-## Runtime gate
+- `apps/prismcade-native/verification-screenshots/buck-combat-snapshot.png`
+- `apps/prismcade-native/verification-screenshots/buck-runtime-snapshot.png`
 
-Do not call Beat Em Up Buck done until runtime verification proves:
+Verified: Buck sprite appears, movement works, attack works, enemy takes damage, Buck takes damage, health bars update, knockback works, KO registers, score changes, game-over triggers, restart works.
 
-- Buck appears as a real sprite.
-- Movement works.
-- Attack works.
-- Enemy takes damage.
-- Buck can take damage.
-- Health/KO/score changes.
-- Knockback or hit reaction is visible.
-- Game-over/restart works.
-- App-side snapshot or live screenshot exists.
+## Provenance
+
+- Buck art used: `/Users/prismtek/Documents/Libresprite/Buck Borris/sensible_frames/frames/idle/`
+- Buck art used: `/Users/prismtek/Documents/Libresprite/Buck Borris/sensible_frames/frames/run/`
+- Buck art used: `/Users/prismtek/Documents/Libresprite/Buck Borris/sensible_frames/frames/damaged/`
+- Buck art used: `/Users/prismtek/Documents/Libresprite/Buck Borris/sensible_frames/strips/attacks_80x32.png`
+- Background used: `/Users/prismtek/Documents/Libresprite/RTB_v1/background.png`
+- RTB license note from `_license.txt`: commercial use is allowed; credit is not required but appreciated.
+- Enemy art: original procedural SpriteKit pixel enemy.
+- Excluded: Streets of Rage, MUGEN/OpenBOR/Ikemen asset packs, Sega/Nintendo/franchise/ripped assets.
+
+## Known limitations
+
+- The enemy is a single original Training Bruiser archetype.
+- Buck has one basic punch chain timing window rather than a full move list.
+- No audio is wired yet.
+
+## Future moves
+
+Add fighter data as small structs or JSON records with startup, active, recovery, damage, hit stun, knockback, and per-frame texture names. New enemy sprites can replace the procedural Training Bruiser if a safe Prismtek-owned or clearly licensed enemy sheet is added to the curated asset inventory.

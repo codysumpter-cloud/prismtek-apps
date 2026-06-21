@@ -1,11 +1,18 @@
 {
-  "buckAsset" : "Buck Borris sensible_frames run_00-run_03",
+  "attackWorked" : true,
+  "backgroundImageUsed" : true,
+  "buckAsset" : "Buck Borris sensible_frames curated idle\/run\/damaged plus attacks_80x32",
   "buckSpriteVisible" : true,
-  "game" : "Buck Borris Mini-Game",
+  "buckTookDamage" : true,
+  "enemyAsset" : "Enemy_Animations_Set skeleton2 (idle\/walk\/hurt\/death), 32x32 strips",
+  "enemyTookDamage" : true,
+  "engine" : "Native SpriteKit micro brawler",
+  "game" : "Beat Em Up Buck",
   "gameOverTriggered" : true,
-  "hazardsSpawned" : true,
-  "jumpWorked" : true,
-  "pickupCollected" : true,
+  "healthBarsUpdated" : true,
+  "knockbackWorked" : true,
+  "koRegistered" : true,
+  "movementWorked" : true,
   "restartWorked" : true,
   "scoreChanged" : true
 }

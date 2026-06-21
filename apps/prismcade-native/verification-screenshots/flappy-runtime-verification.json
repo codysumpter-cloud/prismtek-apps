@@ -1,11 +1,18 @@
 {
+  "backgroundImagesUsed" : true,
   "birdAnimated" : true,
-  "birdSprite" : "Onocentaur birds-2x row 0 curated frames",
+  "birdFacesRight" : true,
+  "birdSprite" : "Garden Birds curated top-row flight frames",
+  "birdTiltClampedNoSpin" : true,
   "flapMovedUpward" : true,
   "game" : "Flappy Pixel",
   "gameOverTriggered" : true,
+  "gardenBirdsPlayable" : 12,
   "gravityApplied" : true,
   "obstaclesSpawned" : true,
+  "onocentaurBirdsPlayable" : 38,
+  "playableBirdCount" : 50,
   "restartWorked" : true,
-  "scoreChanged" : true
+  "scoreChanged" : true,
+  "selectedBird" : "Hummingbird"
 }

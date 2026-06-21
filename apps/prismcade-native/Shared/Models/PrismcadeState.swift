@@ -10,6 +10,15 @@ enum PrismcadeGame: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
+    /// Stable catalog id matching `data/prismcade/game-manifests.json` slugs.
+    var manifestID: String {
+        switch self {
+        case .flappyPixel: "flappy-pixel"
+        case .dinoDash: "prismtek-dino-dash"
+        case .buckBorris: "beat-em-up-buck"
+        }
+    }
+
     var title: String {
         switch self {
         case .flappyPixel: "Flappy Pixel"
@@ -20,17 +29,17 @@ enum PrismcadeGame: String, CaseIterable, Identifiable {
 
     var description: String {
         switch self {
-        case .flappyPixel: "One-button Prismcade score chase with a real bird sprite and tight restarts."
-        case .dinoDash: "Four-sprite dinosaur runner with character select and speed ramp."
-        case .buckBorris: "Canonical Buck Borris fighter/brawler direction; current runtime is still the early playable prototype."
+        case .flappyPixel: "One-button Prismcade score chase with 50 playable birds and a pixel mountain stage."
+        case .dinoDash: "Four-sprite dinosaur runner with character select, speed ramp, and a pixel hills stage."
+        case .buckBorris: "Tiny native Buck Borris brawler with lane movement, attacks, health, and KO scoring."
         }
     }
 
     var sourceNote: String {
         switch self {
-        case .flappyPixel: "Art: Onocentaur bird sheet, curated from Documents/Libresprite."
-        case .dinoDash: "Art: DinoSprites doux, mort, tard, vita sheets."
-        case .buckBorris: "Art: Buck Borris frames; next pass upgrades this into a brawler."
+        case .flappyPixel: "Art: Garden Birds, Onocentaur birds, and Background Hills from local LibreSprite packs."
+        case .dinoDash: "Art: DinoSprites doux, mort, tard, vita sheets plus Background Hills layers."
+        case .buckBorris: "Art: Buck Borris frames, a composited Desert Mountains arena, and a skeleton enemy from the Enemy Animations set."
         }
     }
 }
@@ -44,6 +53,9 @@ final class PrismcadeState: ObservableObject {
         if ProcessInfo.processInfo.environment["PRISMCADE_AUTOVERIFY_HUB"] == "1" {
             writeHubVerification()
         }
+        if ProcessInfo.processInfo.environment["PRISMCADE_AUTOVERIFY_PLATFORM"] == "1" {
+            writePlatformVerification()
+        }
         if startGame == "flappy" {
             selectedGame = .flappyPixel
             try? "flappy\n".write(toFile: "/tmp/prismcade-start-game-marker.txt", atomically: true, encoding: .utf8)
@@ -53,6 +65,30 @@ final class PrismcadeState: ObservableObject {
         } else if startGame == "buck" {
             selectedGame = .buckBorris
             try? "buck\n".write(toFile: "/tmp/prismcade-start-game-marker.txt", atomically: true, encoding: .utf8)
+        }
+    }
+
+    private func writePlatformVerification() {
+        let entries = PrismcadeCatalog.hubEntries
+        let platform = PrismcadePlatform.shared
+        // Exercise the local-first platform path end-to-end.
+        platform.recordResult(gameID: "flappy-pixel", gameTitle: "Flappy Pixel", score: 7)
+        platform.recordResult(gameID: "beat-em-up-buck", gameTitle: "Beat Em Up Buck", score: 220)
+        let receipt: [String: Any] = [
+            "screen": "Prismcade platform layer",
+            "catalogLoaded": !PrismcadeCatalog.manifests.isEmpty,
+            "catalogGameCount": PrismcadeCatalog.manifests.count,
+            "hubEntryCount": entries.count,
+            "playableCount": entries.filter(\.isPlayable).count,
+            "plannedCount": entries.filter { !$0.isPlayable }.count,
+            "recordedBestFlappy": platform.best(for: "flappy-pixel"),
+            "recordedBestBuck": platform.best(for: "beat-em-up-buck"),
+            "matchReceiptCount": platform.receipts.count,
+            "leaderboardExportReady": platform.exportLeaderboardJSON() != nil,
+            "profileHandle": platform.profileHandle
+        ]
+        if let data = try? JSONSerialization.data(withJSONObject: receipt, options: [.prettyPrinted, .sortedKeys]) {
+            try? data.write(to: URL(fileURLWithPath: "/tmp/prismcade-platform-verification.json"), options: .atomic)
         }
     }
 

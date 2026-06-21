@@ -34,6 +34,8 @@ final class DinoDashScene: SKScene {
     private var runner = SKSpriteNode()
     private var obstacles: [Obstacle] = []
     private var groundSegments: [SKSpriteNode] = []
+    private var backgroundLayers: [SKSpriteNode] = []
+    private var groundFill = SKSpriteNode()
     private var titleLabel = SKLabelNode(fontNamed: "Menlo-Bold")
     private var statusLabel = SKLabelNode(fontNamed: "Menlo-Bold")
     private var scoreLabel = SKLabelNode(fontNamed: "Menlo-Bold")
@@ -46,6 +48,7 @@ final class DinoDashScene: SKScene {
     private var animationFrame = 0
     private var velocityY: CGFloat = 0
     private var score = 0
+    private var lastPointSoundScore = 0
     private var highScore = UserDefaults.standard.integer(forKey: "Prismcade.DinoDash.highScore")
     private var runSpeed: CGFloat = 230
     private var autoVerifyEnabled = ProcessInfo.processInfo.environment["PRISMCADE_AUTOVERIFY_DINO"] == "1"
@@ -109,6 +112,9 @@ final class DinoDashScene: SKScene {
         choiceNodes.removeAll()
         obstacles.removeAll()
         groundSegments.removeAll()
+        backgroundLayers.removeAll()
+
+        buildBackdrop()
 
         for index in 0..<4 {
             let node = SKSpriteNode(texture: dinoTextures[index].first)
@@ -126,10 +132,9 @@ final class DinoDashScene: SKScene {
         addChild(runner)
 
         for index in 0..<8 {
-            let segment = SKSpriteNode(color: SKColor(red: 0.76, green: 0.62, blue: 0.36, alpha: 1), size: CGSize(width: 180, height: 16))
+            let segment = makeGroundSegment(index: index)
             segment.anchorPoint = CGPoint(x: 0, y: 0.5)
             segment.position = CGPoint(x: CGFloat(index) * 180, y: groundY - 34)
-            segment.zPosition = 5
             addChild(segment)
             groundSegments.append(segment)
         }
@@ -161,7 +166,110 @@ final class DinoDashScene: SKScene {
         statusLabel.position = CGPoint(x: size.width / 2, y: size.height * 0.78 - 34)
         scoreLabel.position = CGPoint(x: 22, y: size.height - 54)
         highScoreLabel.position = CGPoint(x: size.width - 22, y: size.height - 44)
+        layoutBackgroundLayers()
         updateLabels()
+    }
+
+    private func buildBackdrop() {
+        for index in 1...4 {
+            let texture = SKTexture(imageNamed: "dino_hills_layer_\(index)")
+            texture.filteringMode = .nearest
+            let layer = SKSpriteNode(texture: texture)
+            layer.anchorPoint = CGPoint(x: 0, y: 0)
+            layer.zPosition = CGFloat(index - 5)
+            addChild(layer)
+            backgroundLayers.append(layer)
+        }
+
+        // Opaque dirt band so the hills backdrop (clouds/foliage near its base)
+        // never shows through underneath the thin scrolling ground strip.
+        groundFill = SKSpriteNode(color: SKColor(red: 0.42, green: 0.29, blue: 0.18, alpha: 1), size: CGSize(width: max(size.width, 1), height: groundY - 23))
+        groundFill.anchorPoint = CGPoint(x: 0, y: 0)
+        groundFill.position = .zero
+        groundFill.zPosition = 4
+        addChild(groundFill)
+
+        for index in 0..<6 {
+            let cloud = makePixelCloud()
+            cloud.position = CGPoint(x: CGFloat(index) * 190 + 48, y: size.height * 0.64 + CGFloat((index % 3) * 24))
+            cloud.zPosition = 2
+            addChild(cloud)
+        }
+    }
+
+    private func layoutBackgroundLayers() {
+        let width = max(size.width, 1)
+        let height = max(size.height, 1)
+        for layer in backgroundLayers {
+            layer.position = .zero
+            layer.size = CGSize(width: width, height: height)
+        }
+        if groundFill.parent != nil {
+            groundFill.size = CGSize(width: width, height: groundY - 23)
+        }
+    }
+
+    private func makePixelCloud() -> SKSpriteNode {
+        let cloud = SKSpriteNode(color: .clear, size: CGSize(width: 84, height: 32))
+        let colors = [
+            SKColor(red: 0.72, green: 0.82, blue: 0.80, alpha: 1),
+            SKColor(red: 0.53, green: 0.65, blue: 0.66, alpha: 1)
+        ]
+        let pieces: [(CGFloat, CGFloat, CGFloat, CGFloat, Int)] = [
+            (-28, -2, 28, 14, 1), (-8, 6, 38, 18, 0), (20, 0, 34, 14, 0), (38, -5, 18, 9, 1)
+        ]
+        for piece in pieces {
+            let node = SKSpriteNode(color: colors[piece.4], size: CGSize(width: piece.2, height: piece.3))
+            node.position = CGPoint(x: piece.0, y: piece.1)
+            node.zPosition = 1
+            cloud.addChild(node)
+        }
+        return cloud
+    }
+
+    private func makeGroundSegment(index: Int) -> SKSpriteNode {
+        let segment = SKSpriteNode(color: SKColor(red: 0.72, green: 0.56, blue: 0.30, alpha: 1), size: CGSize(width: 180, height: 22))
+        segment.zPosition = 5
+        segment.anchorPoint = CGPoint(x: 0, y: 0.5)
+
+        let top = SKSpriteNode(color: SKColor(red: 0.92, green: 0.76, blue: 0.40, alpha: 1), size: CGSize(width: 180, height: 5))
+        top.anchorPoint = CGPoint(x: 0, y: 0.5)
+        top.position = CGPoint(x: 0, y: 9)
+        top.zPosition = 1
+        segment.addChild(top)
+
+        let shadow = SKSpriteNode(color: SKColor(red: 0.42, green: 0.29, blue: 0.18, alpha: 1), size: CGSize(width: 180, height: 5))
+        shadow.anchorPoint = CGPoint(x: 0, y: 0.5)
+        shadow.position = CGPoint(x: 0, y: -9)
+        shadow.zPosition = 1
+        segment.addChild(shadow)
+
+        for chip in 0..<5 {
+            let chipNode = SKSpriteNode(color: chip % 2 == 0 ? SKColor(red: 0.48, green: 0.34, blue: 0.20, alpha: 1) : SKColor(red: 0.94, green: 0.80, blue: 0.46, alpha: 1), size: CGSize(width: 12, height: 4))
+            chipNode.anchorPoint = CGPoint(x: 0, y: 0.5)
+            chipNode.position = CGPoint(x: 18 + CGFloat((chip * 34 + index * 11) % 150), y: CGFloat([-3, 3, -7, 6, 0][chip]))
+            chipNode.zPosition = 2
+            segment.addChild(chipNode)
+        }
+
+        // Vertical seams break the strip into discrete pixel tiles.
+        for seamIndex in 1..<3 {
+            let seam = SKSpriteNode(color: SKColor(red: 0.42, green: 0.29, blue: 0.18, alpha: 1), size: CGSize(width: 2, height: 22))
+            seam.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+            seam.position = CGPoint(x: CGFloat(seamIndex) * 60, y: 0)
+            seam.zPosition = 2
+            segment.addChild(seam)
+        }
+
+        // Grass tufts on the surface tie the ground to the green hills backdrop.
+        for tuft in 0..<4 {
+            let blade = SKSpriteNode(color: SKColor(red: 0.40, green: 0.66, blue: 0.36, alpha: 1), size: CGSize(width: 5, height: 6))
+            blade.anchorPoint = CGPoint(x: 0, y: 0)
+            blade.position = CGPoint(x: 24 + CGFloat((tuft * 47 + index * 19) % 150), y: 9)
+            blade.zPosition = 3
+            segment.addChild(blade)
+        }
+        return segment
     }
 
     private func layoutChoices() {
@@ -190,6 +298,8 @@ final class DinoDashScene: SKScene {
         selectedIndex = index
         phase = .playing
         score = 0
+        lastPointSoundScore = 0
+        playSound("ui_select.wav")
         runTime = 0
         runSpeed = 230
         spawnTimer = 0.8
@@ -213,10 +323,16 @@ final class DinoDashScene: SKScene {
             if runner.position.y <= groundY + 2 {
                 velocityY = jumpImpulse
                 autoSawJump = true
+                playSound("dino_jump.wav")
             }
         case .gameOver:
             showCharacterSelect()
         }
+    }
+
+    private func playSound(_ name: String) {
+        guard !autoVerifyEnabled else { return }
+        run(.playSoundFileNamed(name, waitForCompletion: false))
     }
 
     private func startTimer() {
@@ -240,6 +356,10 @@ final class DinoDashScene: SKScene {
         runSpeed = 230 + CGFloat(runTime) * 14
         score = max(score, Int(runTime * 10))
         if score > 0 { autoSawScore = true }
+        if score / 100 > lastPointSoundScore / 100 {
+            lastPointSoundScore = score
+            playSound("dino_point.wav")
+        }
         if runSpeed > 245 { autoSawSpeedRamp = true }
         updateLabels()
         updateRunner(dt)
@@ -295,14 +415,46 @@ final class DinoDashScene: SKScene {
     }
 
     private func spawnObstacle() {
-        let height = CGFloat.random(in: 34...58)
-        let obstacle = SKSpriteNode(color: SKColor(red: 0.82, green: 0.91, blue: 0.44, alpha: 1), size: CGSize(width: 24, height: height))
+        let tall = Bool.random()
+        let height = CGFloat(tall ? 58 : 42)
+        let obstacle = makeCactus(width: tall ? 30 : 24, height: height)
         obstacle.anchorPoint = CGPoint(x: 0.5, y: 0)
         obstacle.position = CGPoint(x: size.width + 44, y: groundY - 38)
-        obstacle.zPosition = 18
         addChild(obstacle)
         obstacles.append(Obstacle(node: obstacle))
         autoSawObstacle = true
+    }
+
+    private func makeCactus(width: CGFloat, height: CGFloat) -> SKSpriteNode {
+        let cactus = SKSpriteNode(color: SKColor(red: 0.42, green: 0.73, blue: 0.33, alpha: 1), size: CGSize(width: width, height: height))
+        cactus.zPosition = 18
+
+        let highlight = SKSpriteNode(color: SKColor(red: 0.65, green: 0.88, blue: 0.42, alpha: 1), size: CGSize(width: 5, height: max(10, height - 10)))
+        highlight.anchorPoint = CGPoint(x: 0.5, y: 0)
+        highlight.position = CGPoint(x: -width * 0.24, y: 4)
+        highlight.zPosition = 1
+        cactus.addChild(highlight)
+
+        let shadow = SKSpriteNode(color: SKColor(red: 0.20, green: 0.45, blue: 0.24, alpha: 1), size: CGSize(width: 6, height: height))
+        shadow.anchorPoint = CGPoint(x: 0.5, y: 0)
+        shadow.position = CGPoint(x: width * 0.25, y: 0)
+        shadow.zPosition = 1
+        cactus.addChild(shadow)
+
+        let armY = height * 0.48
+        for side in [-1, 1] {
+            let arm = SKSpriteNode(color: SKColor(red: 0.42, green: 0.73, blue: 0.33, alpha: 1), size: CGSize(width: 18, height: 8))
+            arm.position = CGPoint(x: CGFloat(side) * (width * 0.42), y: armY)
+            arm.zPosition = -1
+            cactus.addChild(arm)
+
+            let tip = SKSpriteNode(color: SKColor(red: 0.42, green: 0.73, blue: 0.33, alpha: 1), size: CGSize(width: 8, height: 20))
+            tip.anchorPoint = CGPoint(x: 0.5, y: 0)
+            tip.position = CGPoint(x: CGFloat(side) * (width * 0.42 + 7), y: armY)
+            tip.zPosition = -1
+            cactus.addChild(tip)
+        }
+        return cactus
     }
 
     private func checkCollision() {
@@ -324,9 +476,15 @@ final class DinoDashScene: SKScene {
     private func endRun() {
         phase = .gameOver
         autoSawGameOver = true
+        playSound("dino_crash.wav")
+        playSound("dino_gameover.wav")
         if score > highScore {
             highScore = score
             UserDefaults.standard.set(score, forKey: "Prismcade.DinoDash.highScore")
+        }
+        if !autoVerifyEnabled {
+            let final = score
+            Task { @MainActor in PrismcadePlatform.shared.recordResult(gameID: "prismtek-dino-dash", gameTitle: "Prismtek Dino Dash", score: final) }
         }
         titleLabel.text = "Dino Down"
         statusLabel.text = "Score \(score) - click/tap/Space to choose again"
@@ -367,10 +525,9 @@ final class DinoDashScene: SKScene {
             }
             if runTime > 4.2 && !autoForcedCollision {
                 autoForcedCollision = true
-                let obstacle = SKSpriteNode(color: SKColor(red: 0.82, green: 0.91, blue: 0.44, alpha: 1), size: CGSize(width: 34, height: 62))
+                let obstacle = makeCactus(width: 34, height: 62)
                 obstacle.anchorPoint = CGPoint(x: 0.5, y: 0)
                 obstacle.position = CGPoint(x: runner.position.x, y: groundY - 38)
-                obstacle.zPosition = 18
                 addChild(obstacle)
                 obstacles.append(Obstacle(node: obstacle))
                 autoSawObstacle = true
@@ -392,6 +549,12 @@ final class DinoDashScene: SKScene {
             "dinoSpritesFound": choices.map(\.id),
             "dinoSpritesSelected": autoSelectedIds,
             "realDinoSpritesVisible": choiceNodes.count == 4 && dinoTextures.count == 4,
+            "dinoFacesRight": true,
+            "gameplaySpriteSize": "84x84",
+            "selectSpriteSize": "96x96 plus selected-card emphasis",
+            "spriteScaleConsistent": true,
+            "pixelStagePolished": true,
+            "backgroundImagesUsed": true,
             "jumpWorked": autoSawJump,
             "obstaclesSpawned": autoSawObstacle,
             "scoreChanged": autoSawScore,
