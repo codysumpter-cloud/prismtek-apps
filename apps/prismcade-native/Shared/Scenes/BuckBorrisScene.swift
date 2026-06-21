@@ -62,6 +62,7 @@ final class BuckBorrisScene: SKScene {
     private var buckFacing: CGFloat = 1
     private var enemyFacing: CGFloat = -1
     private var enemyHitStun: TimeInterval = 0
+    private var enemyAttackCooldown: TimeInterval = 0
     private var buckHurtTimer: TimeInterval = 0
     private var attackTimer: TimeInterval = 0
     private var attackConnected = false
@@ -356,6 +357,7 @@ final class BuckBorrisScene: SKScene {
         buckHealth = 100
         enemyHealth = 100
         enemyHitStun = 0
+        enemyAttackCooldown = 0
         buckHurtTimer = 0
         attackTimer = 0
         attackConnected = false
@@ -448,6 +450,7 @@ final class BuckBorrisScene: SKScene {
             enemyState = .defeated
             return
         }
+        if enemyAttackCooldown > 0 { enemyAttackCooldown -= dt }
         if enemyHitStun > 0 {
             enemyHitStun -= dt
             enemyState = .hurt
@@ -464,10 +467,16 @@ final class BuckBorrisScene: SKScene {
             if abs(dy) > 6 {
                 enemyBase.y += (dy > 0 ? 1 : -1) * 48 * CGFloat(dt)
             }
-            if range < 72 && abs(dy) < 34 && buckHurtTimer <= 0 && attackTimer <= 0 {
+            if range < 72 && abs(dy) < 34 && buckHurtTimer <= 0 && attackTimer <= 0 && enemyAttackCooldown <= 0 {
                 buckHealth = max(0, buckHealth - 6)
-                buckHurtTimer = 0.34
+                buckHurtTimer = 0.30
                 buckState = .hurt
+                enemyAttackCooldown = 0.95
+                // Knock Buck clear so a single touch never chain-stuns him in place,
+                // and step the enemy back so it must re-approach before it can hit again.
+                let pushDir: CGFloat = buckBase.x <= enemyBase.x ? -1 : 1
+                buckBase.x = min(max(70, buckBase.x + pushDir * 90), size.width - 70)
+                enemyBase.x -= pushDir * 26
                 autoSawBuckDamage = true
                 if buckHealth <= 0 {
                     endFight(message: "Buck Got Clipped")
@@ -624,13 +633,15 @@ final class BuckBorrisScene: SKScene {
 
     private func applyActorPositions() {
         buck.position = CGPoint(x: buckBase.x, y: buckBase.y + buckZ)
-        buckShadow.position = buckBase
+        // Shadows sit at the visible feet, not the (centred) sprite origin, so they
+        // read as ground shadows instead of a bar across each fighter's chest.
+        buckShadow.position = CGPoint(x: buckBase.x, y: buckBase.y - 55)
         buck.xScale = buckFacing
         buck.zPosition = 30 + buckBase.y * 0.01
         buckShadow.zPosition = buck.zPosition - 1
 
         enemy.position = enemyBase
-        enemyShadow.position = enemyBase
+        enemyShadow.position = CGPoint(x: enemyBase.x, y: enemyBase.y - 42)
         enemy.xScale = enemyFacing
         enemy.zPosition = 28 + enemyBase.y * 0.01
         enemyShadow.zPosition = enemy.zPosition - 1
