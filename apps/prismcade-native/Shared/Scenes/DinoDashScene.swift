@@ -439,7 +439,10 @@ final class DinoDashScene: SKScene {
     }
 
     private func updateWeather(_ dt: TimeInterval) {
-        if weather?.update(score: score, size: size, dt: dt) == true {
+        // Pace weather on elapsed run time, not the fast 10/sec score, so it starts Clear and
+        // progresses gradually (~2s per season) instead of jumping straight to snow.
+        let weatherScore = Int(runTime * 5)
+        if weather?.update(score: weatherScore, size: size, dt: dt) == true {
             weatherSwaps += 1
             weatherBonusTotal += (weather?.state.survivalBonus ?? 0) * 4
             autoWeatherPeak = max(autoWeatherPeak, weather?.state.rawValue ?? 0)
@@ -499,6 +502,9 @@ final class DinoDashScene: SKScene {
     }
 
     private func checkCollision() {
+        // During autoverify, stay invincible until the forced-collision window so the run lives
+        // long enough to capture the full weather progression (clear → storm → snow).
+        if autoVerifyEnabled && runTime < 11.5 { return }
         let dinoRect = CGRect(x: runner.position.x - 22, y: runner.position.y - 32, width: 44, height: 56)
         for obstacle in obstacles {
             // Inset the obstacle hitbox (~62% width, 80% height) so grazes are fair.
@@ -579,7 +585,7 @@ final class DinoDashScene: SKScene {
             if runTime > 1.0 && obstacles.isEmpty {
                 spawnObstacle()
             }
-            if runTime > 6.0 && !autoForcedCollision {
+            if runTime > 11.5 && !autoForcedCollision {
                 autoForcedCollision = true
                 let obstacle = makeObstacleNode(rock: false)
                 obstacle.position = CGPoint(x: runner.position.x, y: groundY - 38)

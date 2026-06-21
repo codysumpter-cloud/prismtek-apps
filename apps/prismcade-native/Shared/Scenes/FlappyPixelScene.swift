@@ -72,6 +72,7 @@ final class FlappyPixelScene: SKScene {
     private var lastTimerDate = Date()
     private var gameTimer: Timer?
     private var spawnTimer: TimeInterval = 0
+    private var lastGapCenter: CGFloat = 0
     private var animationTimer: TimeInterval = 0
     private var frameIndex = 0
     private var birdVelocity: CGFloat = 0
@@ -337,6 +338,7 @@ final class FlappyPixelScene: SKScene {
         weatherSwaps = 0
         weather?.reset(size: size)
         birdVelocity = flapImpulse
+        lastGapCenter = size.height * 0.55
         spawnTimer = 0.85
         lastUpdate = 0
         removeGates()
@@ -521,12 +523,18 @@ final class FlappyPixelScene: SKScene {
             gapCenter = min(max(size.height * 0.56, minCenter), maxCenter)
             autoVerifyTargetY = gapCenter
         } else {
-            gapCenter = CGFloat.random(in: minCenter...maxCenter)
+            // Clamp each gate's gap to within a reachable vertical step of the previous gate so
+            // consecutive gates are always passable (consistent, fair difficulty).
+            let maxStep = size.height * 0.26
+            let lower = max(minCenter, lastGapCenter - maxStep)
+            let upper = min(maxCenter, lastGapCenter + maxStep)
+            gapCenter = lower < upper ? CGFloat.random(in: lower...upper) : (lower + upper) / 2
         }
+        lastGapCenter = gapCenter
 
         let bottomHeight = max(24, gapCenter - effectiveGateGap / 2 - groundHeight)
         let topHeight = max(24, size.height - (gapCenter + effectiveGateGap / 2))
-        let pipeColor = SKColor(red: 0.14, green: 0.70, blue: 0.47, alpha: 1)
+        let pipeColor = SKColor(red: 0.18, green: 0.62, blue: 0.36, alpha: 1)
 
         let bottom = SKSpriteNode(color: pipeColor, size: CGSize(width: gateWidth, height: bottomHeight))
         bottom.anchorPoint = CGPoint(x: 0.5, y: 0)
@@ -552,35 +560,47 @@ final class FlappyPixelScene: SKScene {
     }
 
     private func addCap(to pipe: SKSpriteNode, atTop: Bool) {
-        let cap = SKSpriteNode(color: SKColor(red: 0.54, green: 0.92, blue: 0.62, alpha: 1), size: CGSize(width: gateWidth + 20, height: 20))
-        cap.position = CGPoint(x: 0, y: atTop ? pipe.size.height : -pipe.size.height)
-        cap.zPosition = 1
+        // Classic chunky pipe mouth: wider cap, bright top band, dark mouth lip, dark side edges.
+        let capW = gateWidth + 22
+        let cap = SKSpriteNode(color: SKColor(red: 0.20, green: 0.66, blue: 0.40, alpha: 1), size: CGSize(width: capW, height: 26))
+        cap.position = CGPoint(x: 0, y: atTop ? pipe.size.height + 1 : -pipe.size.height - 1)
+        cap.zPosition = 3
         pipe.addChild(cap)
-        let lip = SKSpriteNode(color: SKColor(red: 0.08, green: 0.34, blue: 0.28, alpha: 1), size: CGSize(width: gateWidth + 20, height: 4))
-        lip.position = CGPoint(x: 0, y: atTop ? -7 : 7)
-        lip.zPosition = 2
+
+        let topBand = SKSpriteNode(color: SKColor(red: 0.52, green: 0.90, blue: 0.58, alpha: 1), size: CGSize(width: capW - 6, height: 6))
+        topBand.position = CGPoint(x: -2, y: 8)
+        cap.addChild(topBand)
+
+        let lip = SKSpriteNode(color: SKColor(red: 0.05, green: 0.26, blue: 0.18, alpha: 1), size: CGSize(width: capW, height: 4))
+        lip.position = CGPoint(x: 0, y: atTop ? -11 : 11)
         cap.addChild(lip)
+
+        for side in [-1.0, 1.0] {
+            let edge = SKSpriteNode(color: SKColor(red: 0.04, green: 0.22, blue: 0.16, alpha: 1), size: CGSize(width: 3, height: 26))
+            edge.position = CGPoint(x: CGFloat(side) * (capW / 2 - 1.5), y: 0)
+            cap.addChild(edge)
+        }
     }
 
     private func decorate(pipe: SKSpriteNode, height: CGFloat, extendsUp: Bool) {
         let baseY: CGFloat = extendsUp ? 0 : -height
-        let highlight = SKSpriteNode(color: SKColor(red: 0.43, green: 0.91, blue: 0.58, alpha: 1), size: CGSize(width: 8, height: max(12, height - 26)))
+        let h = max(8, height)
+        // Bright highlight band (left), dark shade band (right), dark outline edges.
+        let highlight = SKSpriteNode(color: SKColor(red: 0.46, green: 0.86, blue: 0.54, alpha: 1), size: CGSize(width: 12, height: h))
         highlight.anchorPoint = CGPoint(x: 0.5, y: 0)
-        highlight.position = CGPoint(x: -gateWidth * 0.28, y: baseY + 10)
-        highlight.zPosition = 1
+        highlight.position = CGPoint(x: -gateWidth * 0.24, y: baseY)
         pipe.addChild(highlight)
 
-        let shadow = SKSpriteNode(color: SKColor(red: 0.06, green: 0.35, blue: 0.30, alpha: 1), size: CGSize(width: 10, height: max(12, height - 20)))
-        shadow.anchorPoint = CGPoint(x: 0.5, y: 0)
-        shadow.position = CGPoint(x: gateWidth * 0.32, y: baseY + 6)
-        shadow.zPosition = 1
-        pipe.addChild(shadow)
+        let shade = SKSpriteNode(color: SKColor(red: 0.07, green: 0.37, blue: 0.24, alpha: 1), size: CGSize(width: 14, height: h))
+        shade.anchorPoint = CGPoint(x: 0.5, y: 0)
+        shade.position = CGPoint(x: gateWidth * 0.28, y: baseY)
+        pipe.addChild(shade)
 
-        for index in 0..<max(1, Int(height / 52)) {
-            let rivet = SKSpriteNode(color: SKColor(red: 0.08, green: 0.42, blue: 0.31, alpha: 1), size: CGSize(width: 8, height: 8))
-            rivet.position = CGPoint(x: 0, y: baseY + CGFloat(index) * 52 + 24)
-            rivet.zPosition = 2
-            pipe.addChild(rivet)
+        for side in [-1.0, 1.0] {
+            let edge = SKSpriteNode(color: SKColor(red: 0.04, green: 0.22, blue: 0.16, alpha: 1), size: CGSize(width: 3, height: h))
+            edge.anchorPoint = CGPoint(x: 0.5, y: 0)
+            edge.position = CGPoint(x: CGFloat(side) * (gateWidth / 2 - 1.5), y: baseY)
+            pipe.addChild(edge)
         }
     }
 
