@@ -319,9 +319,15 @@ final class FlappyPixelScene: SKScene {
         case .playing:
             birdVelocity = flapImpulse
             runFlapFeedback()
+            playSound("flappy_flap.wav")
         case .gameOver:
             startRun()
         }
+    }
+
+    private func playSound(_ name: String) {
+        guard !autoVerifyEnabled else { return }
+        run(.playSoundFileNamed(name, waitForCompletion: false))
     }
 
     private func runFlapFeedback() {
@@ -533,6 +539,7 @@ final class FlappyPixelScene: SKScene {
                 gates[index].scored = true
                 score += 1
                 autoVerifySawScore = true
+                playSound("flappy_score.wav")
                 updateLabels()
             }
         }
@@ -568,6 +575,8 @@ final class FlappyPixelScene: SKScene {
     private func endRun() {
         phase = .gameOver
         autoVerifySawGameOver = true
+        playSound("flappy_hit.wav")
+        playSound("flappy_gameover.wav")
         if score > highScore {
             highScore = score
             UserDefaults.standard.set(score, forKey: "Prismcade.FlappyPixel.highScore")

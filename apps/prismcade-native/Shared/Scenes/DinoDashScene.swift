@@ -48,6 +48,7 @@ final class DinoDashScene: SKScene {
     private var animationFrame = 0
     private var velocityY: CGFloat = 0
     private var score = 0
+    private var lastPointSoundScore = 0
     private var highScore = UserDefaults.standard.integer(forKey: "Prismcade.DinoDash.highScore")
     private var runSpeed: CGFloat = 230
     private var autoVerifyEnabled = ProcessInfo.processInfo.environment["PRISMCADE_AUTOVERIFY_DINO"] == "1"
@@ -297,6 +298,8 @@ final class DinoDashScene: SKScene {
         selectedIndex = index
         phase = .playing
         score = 0
+        lastPointSoundScore = 0
+        playSound("ui_select.wav")
         runTime = 0
         runSpeed = 230
         spawnTimer = 0.8
@@ -320,10 +323,16 @@ final class DinoDashScene: SKScene {
             if runner.position.y <= groundY + 2 {
                 velocityY = jumpImpulse
                 autoSawJump = true
+                playSound("dino_jump.wav")
             }
         case .gameOver:
             showCharacterSelect()
         }
+    }
+
+    private func playSound(_ name: String) {
+        guard !autoVerifyEnabled else { return }
+        run(.playSoundFileNamed(name, waitForCompletion: false))
     }
 
     private func startTimer() {
@@ -347,6 +356,10 @@ final class DinoDashScene: SKScene {
         runSpeed = 230 + CGFloat(runTime) * 14
         score = max(score, Int(runTime * 10))
         if score > 0 { autoSawScore = true }
+        if score / 100 > lastPointSoundScore / 100 {
+            lastPointSoundScore = score
+            playSound("dino_point.wav")
+        }
         if runSpeed > 245 { autoSawSpeedRamp = true }
         updateLabels()
         updateRunner(dt)
@@ -463,6 +476,8 @@ final class DinoDashScene: SKScene {
     private func endRun() {
         phase = .gameOver
         autoSawGameOver = true
+        playSound("dino_crash.wav")
+        playSound("dino_gameover.wav")
         if score > highScore {
             highScore = score
             UserDefaults.standard.set(score, forKey: "Prismcade.DinoDash.highScore")

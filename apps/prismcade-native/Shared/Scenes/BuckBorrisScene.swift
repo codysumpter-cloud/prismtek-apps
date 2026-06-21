@@ -350,6 +350,7 @@ final class BuckBorrisScene: SKScene {
 
     private func startFight() {
         phase = .playing
+        playSound("ui_select.wav")
         titleLabel.text = ""
         statusLabel.text = ""
         score = 0
@@ -478,6 +479,7 @@ final class BuckBorrisScene: SKScene {
                 buckBase.x = min(max(70, buckBase.x + pushDir * 90), size.width - 70)
                 enemyBase.x -= pushDir * 26
                 autoSawBuckDamage = true
+                playSound("buck_hurt.wav")
                 if buckHealth <= 0 {
                     endFight(message: "Buck Got Clipped")
                 }
@@ -493,6 +495,12 @@ final class BuckBorrisScene: SKScene {
     private func jump() {
         guard phase == .playing, buckZ == 0 else { return }
         buckVelocityZ = jumpImpulse
+        playSound("buck_jump.wav")
+    }
+
+    private func playSound(_ name: String) {
+        guard !autoVerifyEnabled else { return }
+        run(.playSoundFileNamed(name, waitForCompletion: false))
     }
 
     private func attack() {
@@ -505,6 +513,7 @@ final class BuckBorrisScene: SKScene {
             attackConnected = false
             buckState = .attack
             autoSawAttack = true
+            playSound("buck_swing.wav")
         case .gameOver:
             startFight()
             autoSawRestart = true
@@ -530,6 +539,7 @@ final class BuckBorrisScene: SKScene {
         score += 35
         autoSawEnemyDamage = true
         autoSawHealthBarsUpdated = true
+        playSound("buck_hit.wav")
         spawnHitSpark(at: CGPoint(x: enemyBase.x - 8 * enemyFacing, y: enemyBase.y + 22))
         if enemyHealth <= 0 {
             koCount += 1
@@ -537,6 +547,7 @@ final class BuckBorrisScene: SKScene {
             enemyState = .defeated
             enemy.alpha = 0.45
             autoSawKO = true
+            playSound("buck_ko.wav")
         }
         if score > 0 {
             autoSawScore = true
@@ -566,6 +577,7 @@ final class BuckBorrisScene: SKScene {
     private func endFight(message: String) {
         phase = .gameOver
         autoSawGameOver = true
+        playSound("buck_gameover.wav")
         input = InputState()
         if score > highScore {
             highScore = score
