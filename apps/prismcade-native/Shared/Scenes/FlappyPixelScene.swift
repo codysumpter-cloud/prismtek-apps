@@ -89,6 +89,8 @@ final class FlappyPixelScene: SKScene {
     private var autoVerifySawStableTilt = true
     private var autoVerifyWroteSelectSnapshot = false
     private var autoVerifyWroteWeatherSnapshot = false
+    private var autoWroteClearSnapshot = false
+    private var autoWroteSnowSnapshot = false
     private var autoWeatherPeak = 0
     private var autoVerifyStartY: CGFloat = 0
     private var autoVerifyTargetY: CGFloat = 0
@@ -689,14 +691,22 @@ final class FlappyPixelScene: SKScene {
             autoVerifySawAscent = true
         }
 
-        // Ramp the score through every weather threshold so the receipt/snapshot prove
-        // weather triggers at score increments, then capture a storm snapshot.
+        // Capture a CLEAR snapshot first, then ramp the score through every weather threshold
+        // so the receipt/snapshots prove weather progression (clear → storm → snow).
+        if phase == .playing && autoVerifyTime > 1.6 && autoVerifyTime < 2.4 && weather?.state == .clear && !autoWroteClearSnapshot {
+            autoWroteClearSnapshot = true
+            writeSceneSnapshot(path: "/tmp/prismcade-flappy-clear-snapshot.png")
+        }
         if phase == .playing && autoVerifyTime > 2.6 && score < 55 {
             score = min(55, score + 1)
         }
         if phase == .playing && weather?.state == .storm && !autoVerifyWroteWeatherSnapshot {
             autoVerifyWroteWeatherSnapshot = true
-            writeSceneSnapshot(path: "/tmp/prismcade-flappy-weather-snapshot.png")
+            writeSceneSnapshot(path: "/tmp/prismcade-flappy-storm-snapshot.png")
+        }
+        if phase == .playing && weather?.state == .snow && !autoWroteSnowSnapshot {
+            autoWroteSnowSnapshot = true
+            writeSceneSnapshot(path: "/tmp/prismcade-flappy-snow-snapshot.png")
         }
 
         if phase == .playing && autoVerifySawScore && autoVerifyTime > 6.0 && weather?.state == .snow {
