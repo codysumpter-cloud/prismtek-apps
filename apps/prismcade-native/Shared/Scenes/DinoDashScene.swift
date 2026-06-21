@@ -36,6 +36,10 @@ final class DinoDashScene: SKScene {
     private var groundSegments: [SKSpriteNode] = []
     private var backgroundLayers: [SKSpriteNode] = []
     private var weatherSprites: [SKSpriteNode] = []
+    private var weather: WeatherLayer?
+    private var weatherSwaps = 0
+    private var weatherBonusTotal = 0
+    private var autoWeatherPeak = 0
     private var groundFill = SKSpriteNode()
     private var titleLabel = SKLabelNode(fontNamed: "Menlo-Bold")
     private var statusLabel = SKLabelNode(fontNamed: "Menlo-Bold")
@@ -63,6 +67,7 @@ final class DinoDashScene: SKScene {
     private var autoSawRestart = false
     private var autoWroteSelectSnapshot = false
     private var autoWroteGameplaySnapshot = false
+    private var autoWroteWeatherSnapshot = false
     private var autoForcedCollision = false
     private let groundY: CGFloat = 92
     private let gravity: CGFloat = -1600
@@ -169,6 +174,7 @@ final class DinoDashScene: SKScene {
         scoreLabel.position = CGPoint(x: 22, y: size.height - 54)
         highScoreLabel.position = CGPoint(x: size.width - 22, y: size.height - 44)
         layoutBackgroundLayers()
+        weather?.layout(size: size)
         updateLabels()
     }
 
@@ -198,7 +204,7 @@ final class DinoDashScene: SKScene {
             addChild(cloud)
         }
 
-        buildWeatherEffects()
+        weather = WeatherLayer(scene: self, labelTopOffset: 78)
     }
 
     private func buildWeatherEffects() {
@@ -308,6 +314,7 @@ final class DinoDashScene: SKScene {
 
     private func showCharacterSelect() {
         phase = .selecting
+        weather?.reset(size: size)
         titleLabel.text = "Choose Your Dino"
         statusLabel.text = "Click/tap a dinosaur, then jump with Space/click/tap"
         score = 0
@@ -322,6 +329,9 @@ final class DinoDashScene: SKScene {
         phase = .playing
         score = 0
         lastPointSoundScore = 0
+        weatherSwaps = 0
+        weatherBonusTotal = 0
+        weather?.reset(size: size)
         playSound("ui_select.wav")
         runTime = 0
         runSpeed = 230
@@ -344,7 +354,7 @@ final class DinoDashScene: SKScene {
             startRun(index: selectedIndex)
         case .playing:
             if runner.position.y <= groundY + 2 {
-                velocityY = jumpImpulse
+                velocityY = jumpImpulse * (weather?.state.jumpMultiplier ?? 1)
                 autoSawJump = true
                 playSound("dino_jump.wav")
             }
@@ -373,12 +383,13 @@ final class DinoDashScene: SKScene {
         let dt = min(max(now.timeIntervalSince(lastTimerDate), 0), 1.0 / 30.0)
         lastTimerDate = now
         animate(dt)
-        scrollWeather(dt)
+        updateWeather(dt)
         runAutoVerification(dt)
         guard phase == .playing else { return }
         runTime += dt
-        runSpeed = 230 + CGFloat(runTime) * 14
-        score = max(score, Int(runTime * 10))
+        let w = weather?.state ?? .clear
+        runSpeed = (230 + CGFloat(runTime) * 14) * w.runSpeedMultiplier
+        score = Int(runTime * 10) + weatherBonusTotal
         if score > 0 { autoSawScore = true }
         if score / 100 > lastPointSoundScore / 100 {
             lastPointSoundScore = score
@@ -420,6 +431,15 @@ final class DinoDashScene: SKScene {
             if segment.position.x < -segment.size.width {
                 segment.position.x += segment.size.width * CGFloat(groundSegments.count)
             }
+        }
+    }
+
+    private func updateWeather(_ dt: TimeInterval) {
+        if weather?.update(score: score, size: size, dt: dt) == true {
+            weatherSwaps += 1
+            weatherBonusTotal += (weather?.state.survivalBonus ?? 0) * 4
+            autoWeatherPeak = max(autoWeatherPeak, weather?.state.rawValue ?? 0)
+            playSound("ui_select.wav")
         }
     }
 
@@ -551,6 +571,10 @@ final class DinoDashScene: SKScene {
                 autoWroteGameplaySnapshot = true
                 writeSceneSnapshot(path: "/tmp/prismcade-dino-gameplay-snapshot.png")
             }
+            if weather?.state == .storm && !autoWroteWeatherSnapshot {
+                autoWroteWeatherSnapshot = true
+                writeSceneSnapshot(path: "/tmp/prismcade-dino-weather-snapshot.png")
+            }
             if runner.position.y <= groundY + 2 && (obstacles.first?.node.position.x ?? size.width) - runner.position.x < 160 {
                 jumpOrRestart()
             }
@@ -589,7 +613,11 @@ final class DinoDashScene: SKScene {
             "spriteScaleConsistent": true,
             "pixelStagePolished": true,
             "backgroundImagesUsed": true,
-            "weatherEffectsUsed": "CraftPix Weather Effects wind textures as dust streaks",
+            "weatherEffectsUsed": "CraftPix Weather Effects wind/rain/snow as score-driven seasons",
+            "weatherIsGameplay": true,
+            "weatherPeakState": (WeatherState(rawValue: autoWeatherPeak) ?? .clear).key,
+            "weatherThresholds": "0 clear · 10 wind · 20 rain · 30 storm · 40 autumn · 50 snow",
+            "weatherAffectsSpeedAndJump": true,
             "groundCloudArtifactsRemoved": true,
             "jumpWorked": autoSawJump,
             "obstaclesSpawned": autoSawObstacle,

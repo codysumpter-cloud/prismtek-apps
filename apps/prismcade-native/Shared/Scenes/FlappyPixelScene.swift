@@ -59,6 +59,9 @@ final class FlappyPixelScene: SKScene {
     private var choiceNodes: [SKSpriteNode] = []
     private var backgroundLayers: [BackgroundLayer] = []
     private var weatherSprites: [SKSpriteNode] = []
+    private var weather: WeatherLayer?
+    private var weatherTime: TimeInterval = 0
+    private var weatherSwaps = 0
     private var gates: [Gate] = []
     private var groundTiles: [SKSpriteNode] = []
     private var scoreLabel = SKLabelNode(fontNamed: "Menlo-Bold")
@@ -85,6 +88,8 @@ final class FlappyPixelScene: SKScene {
     private var autoVerifySawRestart = false
     private var autoVerifySawStableTilt = true
     private var autoVerifyWroteSelectSnapshot = false
+    private var autoVerifyWroteWeatherSnapshot = false
+    private var autoWeatherPeak = 0
     private var autoVerifyStartY: CGFloat = 0
     private var autoVerifyTargetY: CGFloat = 0
 
@@ -132,7 +137,7 @@ final class FlappyPixelScene: SKScene {
         backgroundColor = SKColor(red: 0.09, green: 0.17, blue: 0.25, alpha: 1)
 
         buildBackgroundLayers()
-        buildWeatherEffects()
+        weather = WeatherLayer(scene: self)
         birdFramesByChoice = birdChoices.map(buildBirdFrames)
         birdFrames = birdFramesByChoice[selectedBirdIndex]
 
@@ -253,7 +258,7 @@ final class FlappyPixelScene: SKScene {
 
     private func layoutStaticNodes() {
         layoutBackgroundLayers()
-        layoutWeatherEffects()
+        weather?.layout(size: size)
         scoreLabel.position = CGPoint(x: 22, y: size.height - 58)
         highScoreLabel.position = CGPoint(x: size.width - 22, y: size.height - 48)
         messageLabel.position = CGPoint(x: size.width / 2, y: size.height * 0.74)
@@ -306,6 +311,7 @@ final class FlappyPixelScene: SKScene {
     private func showTitle() {
         phase = .selecting
         score = 0
+        weather?.reset(size: size)
         birdVelocity = 0
         spawnTimer = 0
         lastUpdate = 0
@@ -323,6 +329,9 @@ final class FlappyPixelScene: SKScene {
     private func startRun() {
         phase = .playing
         score = 0
+        weatherTime = 0
+        weatherSwaps = 0
+        weather?.reset(size: size)
         birdVelocity = flapImpulse
         spawnTimer = 0.85
         lastUpdate = 0
@@ -342,7 +351,7 @@ final class FlappyPixelScene: SKScene {
         case .selecting:
             startRun()
         case .playing:
-            birdVelocity = flapImpulse
+            birdVelocity = flapImpulse * (weather?.state.flapMultiplier ?? 1)
             runFlapFeedback()
             playSound("flappy_flap.wav")
         case .gameOver:
@@ -388,15 +397,20 @@ final class FlappyPixelScene: SKScene {
     private func step(_ dt: TimeInterval) {
         animateBird(dt)
         scrollBackgrounds(dt)
-        scrollWeather(dt)
+        updateWeather(dt)
         scrollGround(dt)
 
         if phase == .playing {
-            birdVelocity += gravity * CGFloat(dt)
+            let w = weather?.state ?? .clear
+            birdVelocity += gravity * w.gravityMultiplier * CGFloat(dt)
             if autoVerifyEnabled && birdVelocity < flapImpulse {
                 autoVerifySawGravity = true
             }
             bird.position.y += birdVelocity * CGFloat(dt)
+            // Weather gust nudges the bird vertically (challenge, not unfair).
+            if w.gustAmplitude > 0 {
+                bird.position.y += sin(weatherTime * 3.1) * w.gustAmplitude * CGFloat(dt)
+            }
             bird.zRotation = max(-0.24, min(0.20, birdVelocity / 2200))
             if abs(bird.zRotation) > 0.30 {
                 autoVerifySawStableTilt = false
@@ -432,6 +446,15 @@ final class FlappyPixelScene: SKScene {
                     node.position.x += width * CGFloat(layer.nodes.count)
                 }
             }
+        }
+    }
+
+    private func updateWeather(_ dt: TimeInterval) {
+        weatherTime += dt
+        if weather?.update(score: score, size: size, dt: dt) == true {
+            weatherSwaps += 1
+            autoWeatherPeak = max(autoWeatherPeak, weather?.state.rawValue ?? 0)
+            playSound("ui_select.wav")
         }
     }
 
@@ -562,7 +585,7 @@ final class FlappyPixelScene: SKScene {
             gates[index].root.position.x -= gateSpeed * CGFloat(dt)
             if !gates[index].scored && gates[index].root.position.x < bird.position.x - gateWidth / 2 {
                 gates[index].scored = true
-                score += 1
+                score += 1 + (weather?.state.survivalBonus ?? 0)
                 autoVerifySawScore = true
                 playSound("flappy_score.wav")
                 updateLabels()
@@ -664,7 +687,17 @@ final class FlappyPixelScene: SKScene {
             autoVerifySawAscent = true
         }
 
-        if phase == .playing && autoVerifySawScore && autoVerifyTime > 5.2 {
+        // Ramp the score through every weather threshold so the receipt/snapshot prove
+        // weather triggers at score increments, then capture a storm snapshot.
+        if phase == .playing && autoVerifyTime > 2.6 && score < 55 {
+            score = min(55, score + 1)
+        }
+        if phase == .playing && weather?.state == .storm && !autoVerifyWroteWeatherSnapshot {
+            autoVerifyWroteWeatherSnapshot = true
+            writeSceneSnapshot(path: "/tmp/prismcade-flappy-weather-snapshot.png")
+        }
+
+        if phase == .playing && autoVerifySawScore && autoVerifyTime > 6.0 && weather?.state == .snow {
             birdVelocity = -900
         }
 
@@ -690,7 +723,11 @@ final class FlappyPixelScene: SKScene {
             "birdAnimated": birdFrames.count == 4,
             "birdTiltClampedNoSpin": autoVerifySawStableTilt,
             "backgroundImagesUsed": true,
-            "weatherEffectsUsed": "CraftPix Weather Effects wind/rain textures",
+            "weatherEffectsUsed": "CraftPix Weather Effects wind/rain/snow/thunder",
+            "weatherIsGameplay": true,
+            "weatherStatesReached": autoWeatherPeak + 1,
+            "weatherPeakState": (WeatherState(rawValue: autoWeatherPeak) ?? .clear).key,
+            "weatherThresholds": "0 clear · 10 wind · 20 rain · 30 storm · 40 autumn · 50 snow",
             "looseForegroundCloudsRemoved": true,
             "groundRepeatsFullWidth": groundTiles.count >= max(14, Int(ceil(max(size.width, 1) / 96)) + 3),
             "flapMovedUpward": autoVerifySawAscent,

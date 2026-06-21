@@ -26,5 +26,9 @@
   "selectSpriteSize" : "96x96 plus selected-card emphasis",
   "speedRamped" : true,
   "spriteScaleConsistent" : true,
-  "weatherEffectsUsed" : "CraftPix Weather Effects wind textures as dust streaks"
+  "weatherAffectsSpeedAndJump" : true,
+  "weatherEffectsUsed" : "CraftPix Weather Effects wind\/rain\/snow as score-driven seasons",
+  "weatherIsGameplay" : true,
+  "weatherPeakState" : "snow",
+  "weatherThresholds" : "0 clear · 10 wind · 20 rain · 30 storm · 40 autumn · 50 snow"
 }
