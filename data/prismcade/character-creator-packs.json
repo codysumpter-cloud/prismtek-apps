@@ -1,0 +1,162 @@
+{
+  "schemaVersion": "prismcade-character-creator-packs-v0",
+  "frameSize": [64, 64],
+  "safeExportPolicy": {
+    "starterOutfitRequired": true,
+    "bodyOnlyExport": "blocked",
+    "notes": [
+      "Use unclothed base sprites only as internal construction layers.",
+      "User-facing recipes must include a starter outfit or clothing layer before export.",
+      "Paid/source seller files need a license receipt before public redistribution."
+    ]
+  },
+  "renderLayerOrder": [
+    "backHair",
+    "body",
+    "clothing",
+    "arms",
+    "head",
+    "eyes",
+    "brows",
+    "mouth",
+    "frontHair",
+    "accessory"
+  ],
+  "sourcePacks": [
+    {
+      "id": "female-64-v1-2-body-update",
+      "displayName": "64 Pixel Female Characters 1.2 Body Update",
+      "bodyFamily": "female",
+      "status": "creator_ready_beta",
+      "sourceFiles": [
+        {
+          "kind": "krita-source",
+          "fileName": "64 Pixel Female Characters 1.2 Body Update.kra",
+          "recommendedRepoPath": "packages/prismcade-character-creator-assets/source/krita/64 Pixel Female Characters 1.2 Body Update.kra",
+          "repoStatus": "pending_binary_import"
+        },
+        {
+          "kind": "preview-sheet",
+          "fileName": "64 Pixel Female Characters 1.2 Body Update.png",
+          "recommendedRepoPath": "packages/prismcade-character-creator-assets/source/sheets/64 Pixel Female Characters 1.2 Body Update.png",
+          "repoStatus": "pending_binary_import"
+        }
+      ],
+      "coverage": {
+        "heads": "strong",
+        "eyes": "strong",
+        "brows": "strong",
+        "noseMouth": "strong",
+        "hair": "strong",
+        "emotes": "strong",
+        "bodyParts": "good",
+        "clothing": "starter_present",
+        "animations": ["walking", "breathing"]
+      },
+      "missingBeforePublicCreator": [
+        "Slice source parts into transparent 64x64 normalized frames.",
+        "Record seller license and attribution requirements.",
+        "Attach outfit-safe starter clothing to every export preset."
+      ]
+    },
+    {
+      "id": "male-64-v1-0-alpha",
+      "displayName": "64 Pixel Male Character 1.0",
+      "bodyFamily": "male",
+      "status": "creator_ready_alpha",
+      "sourceFiles": [
+        {
+          "kind": "krita-source",
+          "fileName": "64 Pixel Male Character 1.0.kra",
+          "recommendedRepoPath": "packages/prismcade-character-creator-assets/source/krita/64 Pixel Male Character 1.0.kra",
+          "repoStatus": "pending_binary_import"
+        }
+      ],
+      "coverage": {
+        "heads": "good",
+        "eyes": "good",
+        "brows": "good",
+        "noseMouth": "good",
+        "hair": "strong",
+        "emotes": "good",
+        "bodyParts": "good",
+        "clothing": "missing_from_uploaded_pack",
+        "animations": ["walking_reference", "pose_references"]
+      },
+      "missingBeforePublicCreator": [
+        "Seller clothing update or Prismcade-made starter male wardrobe.",
+        "Normalized idle, walk-front, walk-back, and walk-side strips.",
+        "Transparent 64x64 sliced parts matching the female slot contract."
+      ]
+    }
+  ],
+  "slots": {
+    "bodyPreset": [
+      { "id": "compact", "label": "Compact", "bodyScale": 0.94 },
+      { "id": "standard", "label": "Standard", "bodyScale": 1 },
+      { "id": "athletic", "label": "Athletic", "bodyScale": 1.06 }
+    ],
+    "skinTone": [
+      { "id": "tone-01", "label": "Tone 01", "color": "#f4c68e" },
+      { "id": "tone-02", "label": "Tone 02", "color": "#e7ae78" },
+      { "id": "tone-03", "label": "Tone 03", "color": "#c78253" },
+      { "id": "tone-04", "label": "Tone 04", "color": "#8a5234" },
+      { "id": "tone-05", "label": "Tone 05", "color": "#5e3528" }
+    ],
+    "face": [
+      { "id": "friendly", "label": "Friendly", "eyeStyle": "round", "mouthStyle": "soft-smile" },
+      { "id": "focused", "label": "Focused", "eyeStyle": "calm", "mouthStyle": "flat" },
+      { "id": "mischief", "label": "Mischief", "eyeStyle": "spark", "mouthStyle": "smirk" },
+      { "id": "surprised", "label": "Surprised", "eyeStyle": "wide", "mouthStyle": "open" }
+    ],
+    "hair": [
+      { "id": "purple-bob", "label": "Purple Bob", "color": "#7d4bd6", "shape": "bob", "sourcePackHint": "female-64-v1-2-body-update" },
+      { "id": "teal-short", "label": "Teal Short", "color": "#28c7d9", "shape": "short", "sourcePackHint": "female-64-v1-2-body-update" },
+      { "id": "brown-low-taper", "label": "Brown Low Taper", "color": "#3b2418", "shape": "taper", "sourcePackHint": "male-64-v1-0-alpha" },
+      { "id": "orange-swept", "label": "Orange Swept", "color": "#d56a2a", "shape": "swept", "sourcePackHint": "male-64-v1-0-alpha" },
+      { "id": "white-mop", "label": "White Mop", "color": "#e7e7ef", "shape": "mop", "sourcePackHint": "both" }
+    ],
+    "outfit": [
+      { "id": "starter-blue-hoodie", "label": "Starter Blue Hoodie", "primary": "#2bb7d8", "secondary": "#1d4e6f", "safeForExport": true },
+      { "id": "prismcade-teal-suit", "label": "Prismcade Teal Suit", "primary": "#2fd3b7", "secondary": "#162f3d", "safeForExport": true },
+      { "id": "arcade-orange-fit", "label": "Arcade Orange Fit", "primary": "#f47c33", "secondary": "#43312b", "safeForExport": true },
+      { "id": "shadow-runner-fit", "label": "Shadow Runner Fit", "primary": "#4c4a73", "secondary": "#191827", "safeForExport": true }
+    ],
+    "accessory": [
+      { "id": "none", "label": "None" },
+      { "id": "round-glasses", "label": "Round Glasses", "shape": "glasses" },
+      { "id": "cat-ears", "label": "Cat Ears", "shape": "ears" },
+      { "id": "tiny-crown", "label": "Tiny Crown", "shape": "crown" }
+    ],
+    "emote": [
+      { "id": "neutral", "label": "Neutral" },
+      { "id": "happy", "label": "Happy" },
+      { "id": "angry", "label": "Angry" },
+      { "id": "sad", "label": "Sad" },
+      { "id": "surprised", "label": "Surprised" }
+    ],
+    "animation": [
+      { "id": "idle", "label": "Idle", "fps": 4 },
+      { "id": "breathing", "label": "Breathing", "fps": 3 },
+      { "id": "walk-side", "label": "Walk Side", "fps": 8 },
+      { "id": "walk-front", "label": "Walk Front", "fps": 8 },
+      { "id": "walk-back", "label": "Walk Back", "fps": 8 }
+    ]
+  },
+  "defaultRecipe": {
+    "schemaVersion": "prismcade-character-recipe-v0",
+    "id": "starter-avatar",
+    "displayName": "Starter Avatar",
+    "sourcePackId": "female-64-v1-2-body-update",
+    "slots": {
+      "bodyPreset": "standard",
+      "skinTone": "tone-02",
+      "face": "friendly",
+      "hair": "purple-bob",
+      "outfit": "starter-blue-hoodie",
+      "accessory": "none",
+      "emote": "neutral",
+      "animation": "idle"
+    }
+  }
+}
