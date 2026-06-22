@@ -6,8 +6,9 @@
     "bodyOnlyExport": "blocked",
     "notes": [
       "Use unclothed base sprites only as internal construction layers.",
-      "User-facing recipes must include a starter outfit or clothing layer before export.",
-      "Paid/source seller files need a license receipt before public redistribution."
+      "User-facing public/runtime recipes must include a starter outfit or clothing layer before export.",
+      "Paid/source seller files need a license receipt before public redistribution.",
+      "Local user-provided source files may be inspected for slicing, but raw source packs are not committed by this registry."
     ]
   },
   "renderLayerOrder": [
@@ -22,24 +23,70 @@
     "frontHair",
     "accessory"
   ],
+  "atlasContracts": {
+    "default64": {
+      "schemaVersion": "prismcade-character-atlas-v0",
+      "frameSize": [64, 64],
+      "alpha": "premultiplied-transparent",
+      "imageRendering": "pixelated",
+      "requiredFrames": ["idle", "breathing", "walk-front", "walk-back", "walk-side"],
+      "partFrameShape": {
+        "x": "integer pixel x in source sheet",
+        "y": "integer pixel y in source sheet",
+        "width": "integer source width",
+        "height": "integer source height",
+        "pivot": [32, 48]
+      },
+      "exportedPartsRoot": "packages/prismcade-character-creator-assets/generated/parts"
+    }
+  },
+  "exportContracts": {
+    "recipe": {
+      "schemaVersion": "prismcade-character-recipe-v0",
+      "repoPathPattern": "data/prismcade/character-recipes/{id}.recipe.json",
+      "nextActions": [
+        "Slice chosen source pack into transparent 64x64 parts.",
+        "Replace procedural preview with atlas-backed canvas composition when sliced parts exist.",
+        "Attach seller license receipt before public redistribution.",
+        "Promote exported recipe into Prismcade profile/customization storage."
+      ]
+    },
+    "manifest": {
+      "schemaVersion": "prismcade-character-manifest-v0",
+      "repoPathPattern": "data/prismcade/character-manifests/{id}.manifest.json",
+      "pixelFruitArenaAdapter": "games/pixel-fruit-arena/src/characters/prismcadeCreatorAdapter.js",
+      "publicRuntimeRequires": ["safe outfit", "64x64 frame size", "atlas or procedural fallback refs"]
+    }
+  },
   "sourcePacks": [
     {
       "id": "female-64-v1-2-body-update",
       "displayName": "64 Pixel Female Characters 1.2 Body Update",
       "bodyFamily": "female",
       "status": "creator_ready_beta",
+      "atlasStatus": "pending-slice",
+      "atlasContract": "default64",
       "sourceFiles": [
         {
           "kind": "krita-source",
           "fileName": "64 Pixel Female Characters 1.2 Body Update.kra",
+          "localSourcePath": "/Users/prismtek/Documents/Character Creation/64 Pixel Female Characters 1.2 Body Update.kra",
           "recommendedRepoPath": "packages/prismcade-character-creator-assets/source/krita/64 Pixel Female Characters 1.2 Body Update.kra",
-          "repoStatus": "pending_binary_import"
+          "repoStatus": "local-user-file"
         },
         {
           "kind": "preview-sheet",
           "fileName": "64 Pixel Female Characters 1.2 Body Update.png",
+          "localSourcePath": "/Users/prismtek/Documents/Character Creation/64 Pixel Female Characters 1.2 Body Update.png",
           "recommendedRepoPath": "packages/prismcade-character-creator-assets/source/sheets/64 Pixel Female Characters 1.2 Body Update.png",
-          "repoStatus": "pending_binary_import"
+          "repoStatus": "local-user-file"
+        },
+        {
+          "kind": "preview-sheet",
+          "fileName": "64 Pixel Female Characters.png",
+          "localSourcePath": "/Users/prismtek/Documents/Character Creation/64 Pixel Female Characters.png",
+          "recommendedRepoPath": "packages/prismcade-character-creator-assets/source/sheets/64 Pixel Female Characters.png",
+          "repoStatus": "local-user-file"
         }
       ],
       "coverage": {
@@ -55,8 +102,8 @@
       },
       "missingBeforePublicCreator": [
         "Slice source parts into transparent 64x64 normalized frames.",
-        "Record seller license and attribution requirements.",
-        "Attach outfit-safe starter clothing to every export preset."
+        "Record seller license and attribution requirements before committing raw source art.",
+        "Attach outfit-safe starter clothing to every public/runtime export preset."
       ]
     },
     {
@@ -64,12 +111,15 @@
       "displayName": "64 Pixel Male Character 1.0",
       "bodyFamily": "male",
       "status": "creator_ready_alpha",
+      "atlasStatus": "pending-source-parity",
+      "atlasContract": "default64",
       "sourceFiles": [
         {
           "kind": "krita-source",
           "fileName": "64 Pixel Male Character 1.0.kra",
+          "localSourcePath": "/Users/prismtek/Documents/Character Creation/64 Pixel Male Character 1.0.kra",
           "recommendedRepoPath": "packages/prismcade-character-creator-assets/source/krita/64 Pixel Male Character 1.0.kra",
-          "repoStatus": "pending_binary_import"
+          "repoStatus": "local-user-file"
         }
       ],
       "coverage": {
@@ -92,55 +142,56 @@
   ],
   "slots": {
     "bodyPreset": [
-      { "id": "compact", "label": "Compact", "bodyScale": 0.94 },
-      { "id": "standard", "label": "Standard", "bodyScale": 1 },
-      { "id": "athletic", "label": "Athletic", "bodyScale": 1.06 }
+      { "id": "compact", "label": "Compact", "bodyScale": 0.94, "proceduralFallback": { "kind": "body-scale", "value": 0.94 } },
+      { "id": "standard", "label": "Standard", "bodyScale": 1, "proceduralFallback": { "kind": "body-scale", "value": 1 } },
+      { "id": "athletic", "label": "Athletic", "bodyScale": 1.06, "proceduralFallback": { "kind": "body-scale", "value": 1.06 } }
     ],
     "skinTone": [
-      { "id": "tone-01", "label": "Tone 01", "color": "#f4c68e" },
-      { "id": "tone-02", "label": "Tone 02", "color": "#e7ae78" },
-      { "id": "tone-03", "label": "Tone 03", "color": "#c78253" },
-      { "id": "tone-04", "label": "Tone 04", "color": "#8a5234" },
-      { "id": "tone-05", "label": "Tone 05", "color": "#5e3528" }
+      { "id": "tone-01", "label": "Tone 01", "color": "#f4c68e", "proceduralFallback": { "kind": "fill", "color": "#f4c68e" } },
+      { "id": "tone-02", "label": "Tone 02", "color": "#e7ae78", "proceduralFallback": { "kind": "fill", "color": "#e7ae78" } },
+      { "id": "tone-03", "label": "Tone 03", "color": "#c78253", "proceduralFallback": { "kind": "fill", "color": "#c78253" } },
+      { "id": "tone-04", "label": "Tone 04", "color": "#8a5234", "proceduralFallback": { "kind": "fill", "color": "#8a5234" } },
+      { "id": "tone-05", "label": "Tone 05", "color": "#5e3528", "proceduralFallback": { "kind": "fill", "color": "#5e3528" } }
     ],
     "face": [
-      { "id": "friendly", "label": "Friendly", "eyeStyle": "round", "mouthStyle": "soft-smile" },
-      { "id": "focused", "label": "Focused", "eyeStyle": "calm", "mouthStyle": "flat" },
-      { "id": "mischief", "label": "Mischief", "eyeStyle": "spark", "mouthStyle": "smirk" },
-      { "id": "surprised", "label": "Surprised", "eyeStyle": "wide", "mouthStyle": "open" }
+      { "id": "friendly", "label": "Friendly", "eyeStyle": "round", "mouthStyle": "soft-smile", "proceduralFallback": { "kind": "face", "eyes": "round", "mouth": "soft-smile" } },
+      { "id": "focused", "label": "Focused", "eyeStyle": "calm", "mouthStyle": "flat", "proceduralFallback": { "kind": "face", "eyes": "calm", "mouth": "flat" } },
+      { "id": "mischief", "label": "Mischief", "eyeStyle": "spark", "mouthStyle": "smirk", "proceduralFallback": { "kind": "face", "eyes": "spark", "mouth": "smirk" } },
+      { "id": "surprised", "label": "Surprised", "eyeStyle": "wide", "mouthStyle": "open", "proceduralFallback": { "kind": "face", "eyes": "wide", "mouth": "open" } }
     ],
     "hair": [
-      { "id": "purple-bob", "label": "Purple Bob", "color": "#7d4bd6", "shape": "bob", "sourcePackHint": "female-64-v1-2-body-update" },
-      { "id": "teal-short", "label": "Teal Short", "color": "#28c7d9", "shape": "short", "sourcePackHint": "female-64-v1-2-body-update" },
-      { "id": "brown-low-taper", "label": "Brown Low Taper", "color": "#3b2418", "shape": "taper", "sourcePackHint": "male-64-v1-0-alpha" },
-      { "id": "orange-swept", "label": "Orange Swept", "color": "#d56a2a", "shape": "swept", "sourcePackHint": "male-64-v1-0-alpha" },
-      { "id": "white-mop", "label": "White Mop", "color": "#e7e7ef", "shape": "mop", "sourcePackHint": "both" }
+      { "id": "purple-bob", "label": "Purple Bob", "color": "#7d4bd6", "shape": "bob", "sourcePackHint": "female-64-v1-2-body-update", "proceduralFallback": { "kind": "hair", "shape": "bob", "color": "#7d4bd6" } },
+      { "id": "teal-short", "label": "Teal Short", "color": "#28c7d9", "shape": "short", "sourcePackHint": "female-64-v1-2-body-update", "proceduralFallback": { "kind": "hair", "shape": "short", "color": "#28c7d9" } },
+      { "id": "brown-low-taper", "label": "Brown Low Taper", "color": "#3b2418", "shape": "taper", "sourcePackHint": "male-64-v1-0-alpha", "proceduralFallback": { "kind": "hair", "shape": "taper", "color": "#3b2418" } },
+      { "id": "orange-swept", "label": "Orange Swept", "color": "#d56a2a", "shape": "swept", "sourcePackHint": "male-64-v1-0-alpha", "proceduralFallback": { "kind": "hair", "shape": "swept", "color": "#d56a2a" } },
+      { "id": "white-mop", "label": "White Mop", "color": "#e7e7ef", "shape": "mop", "sourcePackHint": "both", "proceduralFallback": { "kind": "hair", "shape": "mop", "color": "#e7e7ef" } }
     ],
     "outfit": [
-      { "id": "starter-blue-hoodie", "label": "Starter Blue Hoodie", "primary": "#2bb7d8", "secondary": "#1d4e6f", "safeForExport": true },
-      { "id": "prismcade-teal-suit", "label": "Prismcade Teal Suit", "primary": "#2fd3b7", "secondary": "#162f3d", "safeForExport": true },
-      { "id": "arcade-orange-fit", "label": "Arcade Orange Fit", "primary": "#f47c33", "secondary": "#43312b", "safeForExport": true },
-      { "id": "shadow-runner-fit", "label": "Shadow Runner Fit", "primary": "#4c4a73", "secondary": "#191827", "safeForExport": true }
+      { "id": "starter-blue-hoodie", "label": "Starter Blue Hoodie", "primary": "#2bb7d8", "secondary": "#1d4e6f", "safeForExport": true, "proceduralFallback": { "kind": "clothing", "primary": "#2bb7d8", "secondary": "#1d4e6f" } },
+      { "id": "prismcade-teal-suit", "label": "Prismcade Teal Suit", "primary": "#2fd3b7", "secondary": "#162f3d", "safeForExport": true, "proceduralFallback": { "kind": "clothing", "primary": "#2fd3b7", "secondary": "#162f3d" } },
+      { "id": "arcade-orange-fit", "label": "Arcade Orange Fit", "primary": "#f47c33", "secondary": "#43312b", "safeForExport": true, "proceduralFallback": { "kind": "clothing", "primary": "#f47c33", "secondary": "#43312b" } },
+      { "id": "shadow-runner-fit", "label": "Shadow Runner Fit", "primary": "#4c4a73", "secondary": "#191827", "safeForExport": true, "proceduralFallback": { "kind": "clothing", "primary": "#4c4a73", "secondary": "#191827" } },
+      { "id": "construction-body-only", "label": "Construction Body Only", "primary": "#e7ae78", "secondary": "#e7ae78", "safeForExport": false, "internalOnly": true, "proceduralFallback": { "kind": "body-only", "publicExport": "blocked" } }
     ],
     "accessory": [
-      { "id": "none", "label": "None" },
-      { "id": "round-glasses", "label": "Round Glasses", "shape": "glasses" },
-      { "id": "cat-ears", "label": "Cat Ears", "shape": "ears" },
-      { "id": "tiny-crown", "label": "Tiny Crown", "shape": "crown" }
+      { "id": "none", "label": "None", "proceduralFallback": null },
+      { "id": "round-glasses", "label": "Round Glasses", "shape": "glasses", "proceduralFallback": { "kind": "accessory", "shape": "glasses" } },
+      { "id": "cat-ears", "label": "Cat Ears", "shape": "ears", "proceduralFallback": { "kind": "accessory", "shape": "ears" } },
+      { "id": "tiny-crown", "label": "Tiny Crown", "shape": "crown", "proceduralFallback": { "kind": "accessory", "shape": "crown" } }
     ],
     "emote": [
-      { "id": "neutral", "label": "Neutral" },
-      { "id": "happy", "label": "Happy" },
-      { "id": "angry", "label": "Angry" },
-      { "id": "sad", "label": "Sad" },
-      { "id": "surprised", "label": "Surprised" }
+      { "id": "neutral", "label": "Neutral", "proceduralFallback": { "kind": "emote", "value": "neutral" } },
+      { "id": "happy", "label": "Happy", "proceduralFallback": { "kind": "emote", "value": "happy" } },
+      { "id": "angry", "label": "Angry", "proceduralFallback": { "kind": "emote", "value": "angry" } },
+      { "id": "sad", "label": "Sad", "proceduralFallback": { "kind": "emote", "value": "sad" } },
+      { "id": "surprised", "label": "Surprised", "proceduralFallback": { "kind": "emote", "value": "surprised" } }
     ],
     "animation": [
-      { "id": "idle", "label": "Idle", "fps": 4 },
-      { "id": "breathing", "label": "Breathing", "fps": 3 },
-      { "id": "walk-side", "label": "Walk Side", "fps": 8 },
-      { "id": "walk-front", "label": "Walk Front", "fps": 8 },
-      { "id": "walk-back", "label": "Walk Back", "fps": 8 }
+      { "id": "idle", "label": "Idle", "fps": 4, "proceduralFallback": { "kind": "animation", "value": "idle", "fps": 4 } },
+      { "id": "breathing", "label": "Breathing", "fps": 3, "proceduralFallback": { "kind": "animation", "value": "breathing", "fps": 3 } },
+      { "id": "walk-side", "label": "Walk Side", "fps": 8, "proceduralFallback": { "kind": "animation", "value": "walk-side", "fps": 8 } },
+      { "id": "walk-front", "label": "Walk Front", "fps": 8, "proceduralFallback": { "kind": "animation", "value": "walk-front", "fps": 8 } },
+      { "id": "walk-back", "label": "Walk Back", "fps": 8, "proceduralFallback": { "kind": "animation", "value": "walk-back", "fps": 8 } }
     ]
   },
   "defaultRecipe": {

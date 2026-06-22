@@ -159,6 +159,7 @@
 		BDC1342EFE4CDC78E11EE65D /* buck_city_background.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C7E8B03D3D940E4D658E215 /* buck_city_background.png */; };
 		BEDF20D2E8A30F08EF6237BB /* flappy_hills_layer_2.png in Resources */ = {isa = PBXBuildFile; fileRef = BF3502B4A3DB6EE7B3A0635E /* flappy_hills_layer_2.png */; };
 		BF76282A0C7717875CECC34C /* flappy_bird_magpie.png in Resources */ = {isa = PBXBuildFile; fileRef = 7F6A3EC957D2AE5CED52F924 /* flappy_bird_magpie.png */; };
+		C06AD008116098CF6DA2B576 /* character-station-link.json in Resources */ = {isa = PBXBuildFile; fileRef = 1C85F375173F8FCB079C0CAF /* character-station-link.json */; };
 		C21C90E0A8097C1E15B19BEC /* prismcade-catalog.json in Resources */ = {isa = PBXBuildFile; fileRef = 9590B1A61883C386D37226F7 /* prismcade-catalog.json */; };
 		C3A1AA3889C7A40338F75BEC /* buck_bgm.m4a in Resources */ = {isa = PBXBuildFile; fileRef = F2CFF884601C43898F6ABCC7 /* buck_bgm.m4a */; };
 		C833A3427D3EB7A8846C4B3D /* buck_dragon_strip.png in Resources */ = {isa = PBXBuildFile; fileRef = DD16BF3F7B324789FE0BD685 /* buck_dragon_strip.png */; };
@@ -187,6 +188,7 @@
 		E0B781248BB527EB7B7B6E26 /* run_32x32.png in Resources */ = {isa = PBXBuildFile; fileRef = 4AD65FA4B1DB441983D1018D /* run_32x32.png */; };
 		E1F492C0505F688573250DB7 /* flappy_hills_layer_4.png in Resources */ = {isa = PBXBuildFile; fileRef = 7A1B552759CEB8E805C34B0A /* flappy_hills_layer_4.png */; };
 		E4966B0559AE3BB751F9734A /* BuckBorrisScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BBC1CA4D662427F356FAC21 /* BuckBorrisScene.swift */; };
+		E64DBC068728E9AA7B6598A3 /* character-station-link.json in Resources */ = {isa = PBXBuildFile; fileRef = 1C85F375173F8FCB079C0CAF /* character-station-link.json */; };
 		E6727953F0AC81F6110C40B9 /* WeatherSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD2EC78776955A2A5EF38199 /* WeatherSystem.swift */; };
 		E67BD1035B72DB425B031C8F /* jump_32x32.png in Resources */ = {isa = PBXBuildFile; fileRef = D02891F6D1519F051CB207A6 /* jump_32x32.png */; };
 		E6DD9C7244401ECC166F27D1 /* SpriteKitContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C195D2033E5B3E035D1D1BB /* SpriteKitContainer.swift */; };
@@ -223,6 +225,7 @@
 		0D8097970F1BE89FA406C357 /* dino_hills_layer_3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = dino_hills_layer_3.png; sourceTree = "<group>"; };
 		15B8B9BAD7393F0B71ADA738 /* dino_vita.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = dino_vita.png; sourceTree = "<group>"; };
 		19E41642DF62141F9974D56E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		1C85F375173F8FCB079C0CAF /* character-station-link.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "character-station-link.json"; sourceTree = "<group>"; };
 		1CDA341D950C4FD717F84B8F /* bird_flap_up.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bird_flap_up.png; sourceTree = "<group>"; };
 		1CDD39E61B581F9C6CCC8070 /* enemy_mummy_death.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = enemy_mummy_death.png; sourceTree = "<group>"; };
 		1DE495DC1096F70CE028CF4C /* dino_hills_layer_2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = dino_hills_layer_2.png; sourceTree = "<group>"; };
@@ -503,6 +506,7 @@
 				D79439E8DC9211676E0AF686 /* Art */,
 				376778F2F0A63B2B9D9CEB1A /* Audio */,
 				185229A520E3912DF9804A52 /* Catalog */,
+				BED4C07210A7D75BBD3B0A74 /* Creator */,
 				2199BE6A7B9319232386AE76 /* Previews */,
 			);
 			path = Resources;
@@ -516,6 +520,14 @@
 				E3577D2CE2A9A2CC9CC87C2E /* FlappyPixelScene.swift */,
 			);
 			path = Scenes;
+			sourceTree = "<group>";
+		};
+		BED4C07210A7D75BBD3B0A74 /* Creator */ = {
+			isa = PBXGroup;
+			children = (
+				1C85F375173F8FCB079C0CAF /* character-station-link.json */,
+			);
+			path = Creator;
 			sourceTree = "<group>";
 		};
 		CDD9E8132079D5FEB678C4EF /* DinoDash */ = {
@@ -669,6 +681,7 @@
 				27787017DA49311FB3077B65 /* buck_preview.png in Resources */,
 				1C3695462903FA8CDA68DB89 /* buck_swing.wav in Resources */,
 				5088E5A29C76ED18F048B11E /* buck_uniform.png in Resources */,
+				C06AD008116098CF6DA2B576 /* character-station-link.json in Resources */,
 				0F08BFCD45BCCBD3A227259F /* damaged_00.png in Resources */,
 				29B9237A3FDDA4F35EB8075F /* damaged_01.png in Resources */,
 				DD18840E6215F8D4A7084D0C /* dino_bgm.m4a in Resources */,
@@ -764,6 +777,7 @@
 				4ED18C6AC606406736C3F030 /* buck_preview.png in Resources */,
 				2BD7E33F1F1884DCD84A3D21 /* buck_swing.wav in Resources */,
 				4CC30F3731A3B15B0D52426C /* buck_uniform.png in Resources */,
+				E64DBC068728E9AA7B6598A3 /* character-station-link.json in Resources */,
 				611912B735C6A9E86CBE008E /* damaged_00.png in Resources */,
 				967E1C4EE0BA34A22CDE8C5D /* damaged_01.png in Resources */,
 				272F1F7BB2E698027B8E8990 /* dino_bgm.m4a in Resources */,

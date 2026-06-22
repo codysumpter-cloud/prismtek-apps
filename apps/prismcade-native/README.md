@@ -16,7 +16,8 @@ Native macOS/iOS Prismcade launcher and runtime built with SwiftUI + SpriteKit.
 - **Audio**: `AudioManager` looping BGM per game + event SFX (incl. Dino jump).
 - **App icon**: a clean pixel-arcade `AppIcon` asset catalog wired for macOS + iOS. *(Temporary brand icon generated from safe in-repo motifs; replace with final art when available.)*
 - **Game Center readiness** (`GameCenterService`): optional authentication with offline fallback and staged per-game score submission. *Not yet live — needs the Game Center entitlement + App Store Connect leaderboards (IDs staged in `GameCenterService.leaderboardIDs`); gameplay never blocks if unavailable.*
-- **Future**: portable avatar / UGC creator (manifest-first), remote leaderboard sync.
+- **Creator Tools**: the hub links to the Prismcade Character Creation Station for outfit-safe 64x64 avatar recipes and Prismcade character manifests.
+- **Future**: remote leaderboard sync and fully atlas-backed avatar runtime sprites.
 
 ## Open
 
@@ -30,6 +31,27 @@ Schemes:
 
 - `PrismcadeMac`
 - `PrismcadeiOS`
+
+## Character Creation Station
+
+The native hub includes a **Creator Tools** card that opens the local web station:
+
+```text
+http://localhost:4173/apps/prismcade-creator/character-station.html
+```
+
+Start the repo-root server before pressing **Open Creator**:
+
+```bash
+cd /Users/prismtek/Prismtek/prismtek-apps
+python3 -m http.server 4173
+```
+
+The bundled native pointer is:
+
+```text
+Shared/Resources/Creator/character-station-link.json
+```
 
 ## Build
 
