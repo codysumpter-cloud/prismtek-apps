@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "prismcade-character-manifest-v0",
+  "id": "starter-avatar",
+  "displayName": "Starter Avatar",
+  "recipe": "data/prismcade/character-recipes/starter-avatar.recipe.json",
+  "sourcePackId": "female-64-v1-2-body-update",
+  "sourcePackStatus": "creator_ready_beta",
+  "frameSize": {
+    "width": 64,
+    "height": 64
+  },
+  "pixelFruitArena": {
+    "adapter": "games/pixel-fruit-arena/src/characters/prismcadeCreatorAdapter.js",
+    "spriteKey": "creator_starter_avatar",
+    "combatStyle": "duelist",
+    "starterFruit": "flame",
+    "appearanceFromRecipe": true
+  },
+  "render": {
+    "layerOrder": [
+      "backHair",
+      "body",
+      "clothing",
+      "arms",
+      "head",
+      "eyes",
+      "brows",
+      "mouth",
+      "frontHair",
+      "accessory"
+    ],
+    "atlasStatus": "pending-slice",
+    "atlasContract": "default64",
+    "partRefs": {
+      "bodyPreset": {
+        "optionId": "standard",
+        "atlasRef": "female-64-v1-2-body-update:bodyPreset:standard",
+        "fallback": { "kind": "body-scale", "value": 1 }
+      },
+      "skinTone": {
+        "optionId": "tone-02",
+        "atlasRef": "female-64-v1-2-body-update:skinTone:tone-02",
+        "fallback": { "kind": "fill", "color": "#e7ae78" }
+      },
+      "face": {
+        "optionId": "friendly",
+        "atlasRef": "female-64-v1-2-body-update:face:friendly",
+        "fallback": { "kind": "face", "eyes": "round", "mouth": "soft-smile" }
+      },
+      "hair": {
+        "optionId": "purple-bob",
+        "atlasRef": "female-64-v1-2-body-update:hair:purple-bob",
+        "fallback": { "kind": "hair", "shape": "bob", "color": "#7d4bd6" }
+      },
+      "outfit": {
+        "optionId": "starter-blue-hoodie",
+        "atlasRef": "female-64-v1-2-body-update:outfit:starter-blue-hoodie",
+        "fallback": { "kind": "clothing", "primary": "#2bb7d8", "secondary": "#1d4e6f" }
+      },
+      "accessory": {
+        "optionId": "none",
+        "atlasRef": "female-64-v1-2-body-update:accessory:none",
+        "fallback": null
+      },
+      "emote": {
+        "optionId": "neutral",
+        "atlasRef": "female-64-v1-2-body-update:emote:neutral",
+        "fallback": { "kind": "emote", "value": "neutral" }
+      },
+      "animation": {
+        "optionId": "idle",
+        "atlasRef": "female-64-v1-2-body-update:animation:idle",
+        "fallback": { "kind": "animation", "value": "idle", "fps": 4 }
+      }
+    }
+  },
+  "exportPolicy": {
+    "mode": "runtime",
+    "starterOutfitRequired": true,
+    "bodyOnlyExport": "blocked",
+    "exportable": true,
+    "blockedReason": null
+  },
+  "publicPlayable": true,
+  "notes": [
+    "This manifest is consumable as a Prismcade profile/customization record now.",
+    "Runtime animation sheets should be generated from atlas parts before the character becomes a bundled playable fighter."
+  ]
+}

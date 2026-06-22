@@ -1,0 +1,92 @@
+{
+  "schemaVersion": "prismcade-character-recipe-v0",
+  "id": "starter-avatar",
+  "displayName": "Starter Avatar",
+  "sourcePackId": "female-64-v1-2-body-update",
+  "sourcePackStatus": "creator_ready_beta",
+  "frameSize": [64, 64],
+  "renderLayerOrder": [
+    "backHair",
+    "body",
+    "clothing",
+    "arms",
+    "head",
+    "eyes",
+    "brows",
+    "mouth",
+    "frontHair",
+    "accessory"
+  ],
+  "slots": {
+    "bodyPreset": "standard",
+    "skinTone": "tone-02",
+    "face": "friendly",
+    "hair": "purple-bob",
+    "outfit": "starter-blue-hoodie",
+    "accessory": "none",
+    "emote": "neutral",
+    "animation": "idle"
+  },
+  "partRefs": {
+    "bodyPreset": {
+      "optionId": "standard",
+      "atlasRef": "female-64-v1-2-body-update:bodyPreset:standard",
+      "fallback": { "kind": "body-scale", "value": 1 }
+    },
+    "skinTone": {
+      "optionId": "tone-02",
+      "atlasRef": "female-64-v1-2-body-update:skinTone:tone-02",
+      "fallback": { "kind": "fill", "color": "#e7ae78" }
+    },
+    "face": {
+      "optionId": "friendly",
+      "atlasRef": "female-64-v1-2-body-update:face:friendly",
+      "fallback": { "kind": "face", "eyes": "round", "mouth": "soft-smile" }
+    },
+    "hair": {
+      "optionId": "purple-bob",
+      "atlasRef": "female-64-v1-2-body-update:hair:purple-bob",
+      "fallback": { "kind": "hair", "shape": "bob", "color": "#7d4bd6" }
+    },
+    "outfit": {
+      "optionId": "starter-blue-hoodie",
+      "atlasRef": "female-64-v1-2-body-update:outfit:starter-blue-hoodie",
+      "fallback": { "kind": "clothing", "primary": "#2bb7d8", "secondary": "#1d4e6f" }
+    },
+    "accessory": {
+      "optionId": "none",
+      "atlasRef": "female-64-v1-2-body-update:accessory:none",
+      "fallback": null
+    },
+    "emote": {
+      "optionId": "neutral",
+      "atlasRef": "female-64-v1-2-body-update:emote:neutral",
+      "fallback": { "kind": "emote", "value": "neutral" }
+    },
+    "animation": {
+      "optionId": "idle",
+      "atlasRef": "female-64-v1-2-body-update:animation:idle",
+      "fallback": { "kind": "animation", "value": "idle", "fps": 4 }
+    }
+  },
+  "exportPolicy": {
+    "mode": "runtime",
+    "starterOutfitRequired": true,
+    "bodyOnlyExport": "blocked",
+    "exportable": true,
+    "blockedReason": null,
+    "notes": [
+      "Use unclothed base sprites only as internal construction layers.",
+      "User-facing public/runtime recipes must include a starter outfit or clothing layer before export.",
+      "Paid/source seller files need a license receipt before public redistribution.",
+      "Local user-provided source files may be inspected for slicing, but raw source packs are not committed by this registry."
+    ]
+  },
+  "runtimeStatus": "recipe_ready_atlas_slicing_pending",
+  "nextActions": [
+    "Slice chosen source pack into transparent 64x64 parts.",
+    "Replace procedural preview with atlas-backed canvas composition when sliced parts exist.",
+    "Attach seller license receipt before public redistribution.",
+    "Promote exported recipe into Prismcade profile/customization storage."
+  ]
+}

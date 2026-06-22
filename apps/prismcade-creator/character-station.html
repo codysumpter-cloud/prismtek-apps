@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Prismcade Character Creation Station</title>
+<style>
+:root{color-scheme:dark;--bg:#101018;--panel:#17172a;--panel2:#20203a;--line:#2c2c4c;--ink:#f7f7ff;--muted:#a9aac4;--accent:#5ee7ff;--good:#7cff9b;--warn:#ffd166;--hot:#ff5e78}*{box-sizing:border-box}body{margin:0;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:radial-gradient(circle at 8% 0%,rgba(94,231,255,.13),transparent 26rem),var(--bg);color:var(--ink)}main{max-width:1320px;margin:0 auto;padding:28px 18px 48px}.hero,.panel,.card{border:2px solid var(--line);background:var(--panel);padding:18px;margin-bottom:14px;box-shadow:0 3px 0 rgba(0,0,0,.25)}.hero{display:flex;justify-content:space-between;gap:14px;align-items:end}.eyebrow{color:var(--accent);text-transform:uppercase;letter-spacing:.16em;font-size:12px;margin:0 0 8px}h1{margin:0;font-size:clamp(30px,6vw,58px);line-height:.92;text-transform:uppercase}h2,h3{margin:0 0 8px}p{color:var(--muted);line-height:1.5}a{color:var(--accent)}label{display:block;margin:12px 0 5px;color:var(--accent);font-size:13px}input,select,textarea{width:100%;border:2px solid var(--line);background:#101018;color:var(--ink);padding:9px;font:inherit}textarea{min-height:360px}button{border:2px solid var(--line);background:var(--panel2);color:var(--ink);padding:9px 12px;font:inherit;cursor:pointer;margin:8px 8px 0 0}button:hover{border-color:var(--accent);color:var(--accent)}button[disabled]{opacity:.45;cursor:not-allowed}canvas{width:256px;height:256px;max-width:100%;image-rendering:pixelated;image-rendering:crisp-edges;background:repeating-conic-gradient(#1a1b2c 0% 25%,#101018 0% 50%) 50%/18px 18px;border:2px solid #242442}.layout{display:grid;grid-template-columns:minmax(300px,390px) minmax(320px,1fr) minmax(320px,430px);gap:14px;align-items:start}.row,.pills,.slot-grid,.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.slot-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}.pill{border:1px solid #41416b;color:var(--muted);background:#101018;padding:4px 7px;font-size:12px}.good{color:var(--good);border-color:rgba(124,255,155,.5)}.warn{color:var(--warn);border-color:rgba(255,209,102,.5)}.accent{color:var(--accent);border-color:rgba(94,231,255,.5)}.hot{color:var(--hot);border-color:rgba(255,94,120,.5)}.error{border:2px solid var(--hot);padding:12px;color:var(--hot);background:rgba(255,94,120,.08)}.preview{display:grid;place-items:center;padding:18px;border:2px solid #242442;background:#08080f}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}.card{margin:0}.hint,.meta{font-size:12px;color:var(--muted);overflow-wrap:anywhere}.sheet{width:100%;height:auto;max-height:260px;image-rendering:pixelated;background:#08080f;border:2px solid #242442;display:none}.tiny{font-size:11px}.export-mode{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}.export-mode label{color:var(--ink);border:1px solid var(--line);padding:8px;background:#101018}.contract-list{margin:6px 0 0;padding-left:18px;color:var(--muted)}@media(max-width:1080px){.layout,.hero{display:block}}
+</style>
+</head>
+<body>
+<main>
+<section class="hero">
+  <div>
+    <p class="eyebrow">Prismcade Creator</p>
+    <h1>Character Creation Station</h1>
+    <p>Build outfit-safe 64x64 avatar recipes, preview a crisp pixel sprite, and export Prismcade-ready JSON contracts from the female beta and male alpha source packs.</p>
+  </div>
+  <a href="./"><button type="button">Game Manifest Creator</button></a>
+</section>
+<section id="error" class="error" hidden></section>
+<section class="layout">
+  <form class="panel" id="form">
+    <p class="eyebrow">Recipe Controls</p>
+    <label for="name">Character name</label>
+    <input id="name" value="Prismcade Starter" />
+    <label for="pack">Body source pack</label>
+    <select id="pack"></select>
+    <div class="slot-grid" id="slots"></div>
+    <label for="exportMode">Export mode</label>
+    <div class="export-mode" id="exportMode">
+      <label><input name="exportMode" type="radio" value="draft" /> draft</label>
+      <label><input name="exportMode" type="radio" value="public" checked /> public</label>
+      <label><input name="exportMode" type="radio" value="runtime" /> runtime</label>
+    </div>
+    <label><input id="safe" type="checkbox" checked /> require outfit-safe export</label>
+    <p class="hint">Body-only public/runtime exports are blocked. Base body parts are construction layers only.</p>
+    <div class="actions">
+      <button type="button" id="copyRecipe">Copy recipe</button>
+      <button type="button" id="copyManifest">Copy manifest</button>
+      <button type="button" id="downloadRecipe">Download recipe</button>
+      <button type="button" id="downloadManifest">Download manifest</button>
+      <button type="button" id="png">Download 64x64 PNG</button>
+    </div>
+  </form>
+  <section class="panel">
+    <p class="eyebrow">Live Preview</p>
+    <div class="preview"><canvas id="avatar" width="64" height="64"></canvas></div>
+    <div class="pills" id="pills"></div>
+    <p class="hint">The preview uses safe procedural drawing until the seller/source sheets are sliced. Exports already include atlas slot IDs, fallback drawing hints, and Prismcade runtime metadata.</p>
+    <label for="sheetInput">Optional source sheet preview</label>
+    <input id="sheetInput" type="file" accept="image/png,image/webp,image/jpeg" />
+    <canvas id="sheet" class="sheet" width="320" height="180" aria-label="Local source sheet preview"></canvas>
+    <p class="hint">The sheet stays local in your browser. Use this to inspect source PNGs while building recipes.</p>
+  </section>
+  <section class="panel">
+    <p class="eyebrow">Export Contract</p>
+    <label for="contractKind">Visible JSON</label>
+    <select id="contractKind">
+      <option value="recipe">Recipe</option>
+      <option value="manifest">Prismcade manifest</option>
+    </select>
+    <textarea id="out" readonly></textarea>
+  </section>
+</section>
+<section class="panel">
+  <div class="row" style="justify-content:space-between">
+    <div>
+      <p class="eyebrow">Source Pack Status</p>
+      <h2>Female beta now, male alpha until the seller files land</h2>
+      <p>These cards document what can ship safely and what still needs slicing, license receipts, or parity art.</p>
+    </div>
+    <div class="pills" id="stats"></div>
+  </div>
+  <div class="grid" id="cards"></div>
+</section>
+</main>
+<script>
+const registryUrls = [
+  "../../data/prismcade/character-creator-packs.json",
+  "/data/prismcade/character-creator-packs.json",
+  "data/prismcade/character-creator-packs.json"
+];
+let registry;
+
+const $ = (id) => document.getElementById(id);
+const esc = (value) => String(value ?? "").replace(/[&<>'"]/g, (char) => ({
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  "'": "&#39;",
+  "\"": "&quot;"
+})[char]);
+const slug = (value) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "starter-avatar";
+const pill = (text, style = "") => `<span class="pill ${style}">${esc(text)}</span>`;
+const currentPack = () => registry.sourcePacks.find((pack) => pack.id === $("pack").value) || registry.sourcePacks[0];
+const slotOptions = (slot) => registry.slots[slot] || [];
+const opt = (slot, id) => slotOptions(slot).find((entry) => entry.id === id) || slotOptions(slot)[0] || {};
+const exportMode = () => document.querySelector("input[name='exportMode']:checked")?.value || "public";
+
+function displaySlot(slot) {
+  return slot.replace(/([A-Z])/g, " $1").replace(/^./, (char) => char.toUpperCase());
+}
+
+async function fetchRegistry() {
+  const errors = [];
+  for (const url of registryUrls) {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+      const data = await response.json();
+      data.loadedFrom = url;
+      return data;
+    } catch (error) {
+      errors.push(`${url}: ${error.message}`);
+    }
+  }
+  throw new Error(errors.join(" | "));
+}
+
+function selectedSlots() {
+  const slots = {};
+  for (const slot of Object.keys(registry.slots)) {
+    const input = document.querySelector(`[data-slot="${slot}"]`);
+    slots[slot] = input ? input.value : registry.defaultRecipe.slots[slot];
+  }
+  return slots;
+}
+
+function hasSafeOutfit(slots) {
+  return opt("outfit", slots.outfit).safeForExport === true;
+}
+
+function isExportable(slots) {
+  if (!$("safe").checked) return true;
+  if (exportMode() === "draft") return true;
+  return hasSafeOutfit(slots);
+}
+
+function recipe() {
+  const slots = selectedSlots();
+  const pack = currentPack();
+  const exportable = isExportable(slots);
+  const partRefs = Object.fromEntries(
+    Object.keys(slots).map((slot) => [slot, {
+      optionId: slots[slot],
+      atlasRef: `${pack.id}:${slot}:${slots[slot]}`,
+      fallback: opt(slot, slots[slot]).proceduralFallback || null
+    }])
+  );
+
+  return {
+    schemaVersion: "prismcade-character-recipe-v0",
+    id: slug($("name").value),
+    displayName: $("name").value.trim() || "Prismcade Starter",
+    sourcePackId: pack.id,
+    sourcePackStatus: pack.status,
+    frameSize: registry.frameSize,
+    renderLayerOrder: registry.renderLayerOrder,
+    slots,
+    partRefs,
+    exportPolicy: {
+      mode: exportMode(),
+      starterOutfitRequired: $("safe").checked,
+      bodyOnlyExport: registry.safeExportPolicy.bodyOnlyExport,
+      exportable,
+      blockedReason: exportable ? null : "public/runtime exports require an outfit-safe clothing layer",
+      notes: registry.safeExportPolicy.notes
+    },
+    runtimeStatus: pack.atlasStatus === "sliced" ? "runtime_manifest_ready" : "recipe_ready_atlas_slicing_pending",
+    nextActions: registry.exportContracts?.recipe?.nextActions || []
+  };
+}
+
+function manifest() {
+  const r = recipe();
+  return {
+    schemaVersion: "prismcade-character-manifest-v0",
+    id: r.id,
+    displayName: r.displayName,
+    recipe: `data/prismcade/character-recipes/${r.id}.recipe.json`,
+    sourcePackId: r.sourcePackId,
+    sourcePackStatus: r.sourcePackStatus,
+    frameSize: { width: r.frameSize[0], height: r.frameSize[1] },
+    pixelFruitArena: {
+      adapter: "games/pixel-fruit-arena/src/characters/prismcadeCreatorAdapter.js",
+      spriteKey: `creator_${r.id.replace(/-/g, "_")}`,
+      combatStyle: "duelist",
+      starterFruit: "flame",
+      appearanceFromRecipe: true
+    },
+    render: {
+      layerOrder: r.renderLayerOrder,
+      atlasStatus: currentPack().atlasStatus || "pending-slice",
+      atlasContract: currentPack().atlasContract || registry.atlasContracts?.default64,
+      partRefs: r.partRefs
+    },
+    exportPolicy: r.exportPolicy,
+    publicPlayable: r.exportPolicy.exportable,
+    notes: [
+      "This manifest is consumable as a Prismcade profile/customization record now.",
+      "Runtime animation sheets should be generated from atlas parts before the character becomes a bundled playable fighter."
+    ]
+  };
+}
+
+function rect(ctx, x, y, w, h, color) {
+  ctx.fillStyle = color;
+  ctx.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h));
+}
+
+function draw() {
+  const r = recipe();
+  const ctx = $("avatar").getContext("2d");
+  const skin = opt("skinTone", r.slots.skinTone).color || "#e7ae78";
+  const hair = opt("hair", r.slots.hair);
+  const outfit = opt("outfit", r.slots.outfit);
+  const face = opt("face", r.slots.face);
+  const acc = opt("accessory", r.slots.accessory);
+  const pack = currentPack();
+  const scale = opt("bodyPreset", r.slots.bodyPreset).bodyScale || 1;
+  const cx = 32;
+
+  ctx.imageSmoothingEnabled = false;
+  ctx.clearRect(0, 0, 64, 64);
+  rect(ctx, 23, 58, 18, 2, "rgba(0,0,0,.35)");
+  rect(ctx, cx - 7 * scale, 32, 14 * scale, 18, outfit.primary || "#2bb7d8");
+  rect(ctx, cx - 5 * scale, 39, 10 * scale, 12, outfit.secondary || "#1d4e6f");
+  rect(ctx, cx - 12 * scale, 34, 5, 12, skin);
+  rect(ctx, cx + 7 * scale, 34, 5, 12, skin);
+  rect(ctx, cx - 5, 49, 4, 9, skin);
+  rect(ctx, cx + 2, 49, 4, 9, skin);
+  rect(ctx, cx - 6, 57, 5, 2, "#1b1b25");
+  rect(ctx, cx + 2, 57, 5, 2, "#1b1b25");
+  rect(ctx, cx - 7, 27, 14, 6, skin);
+  rect(ctx, cx - 10, 15, 20, 16, skin);
+  rect(ctx, cx - 8, 13, 16, 3, skin);
+
+  const hc = hair.color || "#7d4bd6";
+  if (hair.shape === "bob") {
+    rect(ctx, 22, 12, 20, 8, hc); rect(ctx, 20, 18, 7, 15, hc); rect(ctx, 37, 18, 7, 15, hc);
+  } else if (hair.shape === "taper") {
+    rect(ctx, 22, 10, 20, 7, hc); rect(ctx, 24, 16, 5, 5, hc); rect(ctx, 36, 16, 4, 4, hc);
+  } else if (hair.shape === "swept") {
+    rect(ctx, 22, 11, 19, 7, hc); rect(ctx, 19, 14, 10, 5, hc); rect(ctx, 36, 17, 4, 4, hc);
+  } else {
+    rect(ctx, 21, 10, 22, 8, hc); rect(ctx, 20, 16, 6, 6, hc); rect(ctx, 38, 16, 6, 6, hc);
+  }
+  if (pack.bodyFamily === "male") rect(ctx, 25, 20, 3, 7, hc);
+
+  const eye = face.eyeStyle === "spark" ? "#7df9ff" : "#101018";
+  rect(ctx, 26, 22, 2, 2, eye); rect(ctx, 36, 22, 2, 2, eye);
+  if (face.eyeStyle === "wide") { rect(ctx, 25, 21, 4, 1, "#f7f7ff"); rect(ctx, 35, 21, 4, 1, "#f7f7ff"); }
+  if (face.mouthStyle === "open") rect(ctx, 31, 27, 3, 3, "#7b2d3b");
+  else if (face.mouthStyle === "smirk") rect(ctx, 31, 27, 5, 1, "#7b2d3b");
+  else if (face.mouthStyle === "flat") rect(ctx, 30, 28, 5, 1, "#7b2d3b");
+  else { rect(ctx, 30, 27, 2, 1, "#7b2d3b"); rect(ctx, 32, 28, 3, 1, "#7b2d3b"); }
+
+  if (acc.shape === "glasses") {
+    rect(ctx, 24, 21, 6, 1, "#101018"); rect(ctx, 34, 21, 6, 1, "#101018"); rect(ctx, 30, 22, 4, 1, "#101018");
+  } else if (acc.shape === "ears") {
+    rect(ctx, 22, 8, 4, 5, hc); rect(ctx, 38, 8, 4, 5, hc);
+  } else if (acc.shape === "crown") {
+    rect(ctx, 27, 8, 10, 3, "#ffd166"); rect(ctx, 28, 6, 2, 2, "#ffd166"); rect(ctx, 34, 6, 2, 2, "#ffd166");
+  }
+  ctx.strokeStyle = "#08080f";
+  ctx.lineWidth = 1;
+  ctx.strokeRect(22, 13, 20, 18);
+  ctx.strokeRect(cx - 7 * scale, 32, 14 * scale, 18);
+}
+
+function renderControls() {
+  $("pack").innerHTML = registry.sourcePacks.map((pack) => `<option value="${esc(pack.id)}">${esc(pack.displayName)} · ${esc(pack.status)}</option>`).join("");
+  $("pack").value = registry.defaultRecipe.sourcePackId;
+  $("slots").innerHTML = Object.entries(registry.slots).map(([slot, entries]) => `
+    <div>
+      <label>${esc(displaySlot(slot))}</label>
+      <select data-slot="${esc(slot)}">${entries.map((entry) => `<option value="${esc(entry.id)}">${esc(entry.label || entry.id)}</option>`).join("")}</select>
+    </div>
+  `).join("");
+  for (const [slot, value] of Object.entries(registry.defaultRecipe.slots)) {
+    const input = document.querySelector(`[data-slot="${slot}"]`);
+    if (input) input.value = value;
+  }
+  document.querySelectorAll("input,select").forEach((element) => element.addEventListener("input", renderAll));
+}
+
+function renderCards() {
+  $("stats").innerHTML = [
+    pill(`${registry.sourcePacks.length} source packs`, "accent"),
+    pill(`${registry.frameSize[0]}x${registry.frameSize[1]}`, "good"),
+    pill(registry.safeExportPolicy.bodyOnlyExport, "warn"),
+    pill(`${Object.keys(registry.atlasContracts || {}).length} atlas contracts`, "accent")
+  ].join("");
+
+  $("cards").innerHTML = registry.sourcePacks.map((pack) => {
+    const coverage = Object.entries(pack.coverage || {}).map(([key, value]) => pill(`${key}: ${Array.isArray(value) ? value.join(", ") : value}`)).join("");
+    const files = (pack.sourceFiles || []).map((file) => `<li>${esc(file.fileName)} ${pill(file.repoStatus || "pending", file.repoStatus === "local-user-file" ? "good" : "warn")}</li>`).join("");
+    const missing = (pack.missingBeforePublicCreator || []).map((item) => `<li>${esc(item)}</li>`).join("");
+    return `<article class="card">
+      <div class="pills">${pill(pack.bodyFamily, "accent")}${pill(pack.status, pack.status.includes("beta") ? "good" : "warn")}${pill(pack.atlasStatus || "pending-slice", "warn")}</div>
+      <h3>${esc(pack.displayName)}</h3>
+      <div class="pills">${coverage}</div>
+      <p class="meta">Expected source files:</p><ul class="tiny">${files}</ul>
+      <p class="meta">Before public creator:</p><ul class="tiny">${missing}</ul>
+    </article>`;
+  }).join("");
+}
+
+function renderAll() {
+  draw();
+  const r = recipe();
+  const m = manifest();
+  const pack = currentPack();
+  const exportable = r.exportPolicy.exportable;
+  $("out").value = JSON.stringify($("contractKind").value === "manifest" ? m : r, null, 2);
+  $("pills").innerHTML = [
+    pill(pack.status, pack.status.includes("beta") ? "good" : "warn"),
+    pill(pack.bodyFamily, "accent"),
+    pill(exportable ? "exportable" : "blocked export", exportable ? "good" : "hot"),
+    pill(r.slots.animation),
+    pill(`loaded: ${registry.loadedFrom}`, "accent")
+  ].join("");
+  $("downloadManifest").disabled = !exportable;
+}
+
+async function copyText(text, button, defaultText) {
+  try {
+    if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(text);
+    else {
+      $("out").value = text;
+      $("out").focus();
+      $("out").select();
+      document.execCommand("copy");
+    }
+    button.textContent = "Copied";
+  } catch (error) {
+    button.textContent = "Copy failed";
+  }
+  setTimeout(() => { button.textContent = defaultText; }, 900);
+}
+
+function downloadJson(contract, suffix) {
+  const blob = new Blob([JSON.stringify(contract, null, 2) + "\n"], { type: "application/json" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `${contract.id}.${suffix}.json`;
+  link.click();
+  URL.revokeObjectURL(link.href);
+}
+
+async function start() {
+  try {
+    registry = await fetchRegistry();
+  } catch (error) {
+    $("error").hidden = false;
+    $("error").textContent = `Could not load the character creator pack registry: ${error.message}. Serve the repo root over HTTP.`;
+    return;
+  }
+  renderControls();
+  renderCards();
+  renderAll();
+}
+
+$("copyRecipe").addEventListener("click", () => copyText(JSON.stringify(recipe(), null, 2), $("copyRecipe"), "Copy recipe"));
+$("copyManifest").addEventListener("click", () => copyText(JSON.stringify(manifest(), null, 2), $("copyManifest"), "Copy manifest"));
+$("downloadRecipe").addEventListener("click", () => downloadJson(recipe(), "recipe"));
+$("downloadManifest").addEventListener("click", () => {
+  const m = manifest();
+  if (!m.publicPlayable) return;
+  downloadJson(m, "manifest");
+});
+$("png").addEventListener("click", () => {
+  const link = document.createElement("a");
+  link.href = $("avatar").toDataURL("image/png");
+  link.download = `${recipe().id}-preview-64.png`;
+  link.click();
+});
+$("sheetInput").addEventListener("input", async () => {
+  const file = $("sheetInput").files[0];
+  if (!file) return;
+  const allowedTypes = new Set(["image/png", "image/jpeg", "image/webp"]);
+  if (!allowedTypes.has(file.type)) {
+    $("error").hidden = false;
+    $("error").textContent = "Source sheet preview only accepts PNG, JPEG, or WebP images.";
+    return;
+  }
+  try {
+    const bitmap = await createImageBitmap(file);
+    const canvas = $("sheet");
+    const ctx = canvas.getContext("2d");
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+    ctx.imageSmoothingEnabled = false;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(bitmap, 0, 0);
+    bitmap.close?.();
+    canvas.style.display = "block";
+  } catch (error) {
+    $("error").hidden = false;
+    $("error").textContent = `Could not preview source sheet: ${error.message}`;
+  }
+});
+
+start();
+</script>
+</body>
+</html>

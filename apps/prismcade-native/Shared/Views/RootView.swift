@@ -38,16 +38,19 @@ private struct PrismcadeBackdrop: View {
 }
 
 private struct HubView: View {
+    @Environment(\.openURL) private var openURL
     @EnvironmentObject private var state: PrismcadeState
     @ObservedObject private var platform = PrismcadePlatform.shared
 
     private var entries: [PrismcadeCatalog.HubEntry] { PrismcadeCatalog.hubEntries }
     private var playableCount: Int { entries.filter(\.isPlayable).count }
+    private let characterStationURL = URL(string: "http://localhost:4173/apps/prismcade-creator/character-station.html")!
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 22) {
                 header
+                creatorTools
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 260), spacing: 16)], spacing: 16) {
                     ForEach(entries) { entry in
                         GameCard(entry: entry, best: platform.best(for: entry.id)) {
@@ -83,6 +86,36 @@ private struct HubView: View {
             .padding(.top, 4)
         }
         .padding(.top, 26)
+    }
+
+    private var creatorTools: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Creator Tools")
+                .font(.system(size: 20, weight: .black, design: .rounded))
+            HStack(alignment: .center, spacing: 14) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Character Creation Station")
+                        .font(.system(size: 17, weight: .black, design: .rounded))
+                    Text("Outfit-safe 64x64 avatar recipe and Prismcade manifest exporter. Run `python3 -m http.server 4173` from the repo root, then open from here.")
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                        .foregroundStyle(.white.opacity(0.72))
+                        .fixedSize(horizontal: false, vertical: true)
+                    Text("data/prismcade/character-creator-packs.json")
+                        .font(.system(size: 10, weight: .heavy, design: .monospaced))
+                        .foregroundStyle(Color(red: 0.4, green: 0.9, blue: 0.6))
+                }
+                Spacer()
+                Button("Open Creator") { openURL(characterStationURL) }
+                    .buttonStyle(.borderedProminent)
+                    .tint(Color(red: 0.15, green: 0.75, blue: 0.85))
+            }
+            .padding(16)
+            .background(Color.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .stroke(Color.white.opacity(0.14), lineWidth: 1)
+            )
+        }
     }
 
     @ViewBuilder private var recentResults: some View {
