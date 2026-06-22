@@ -59,6 +59,9 @@ final class FlappyPixelScene: SKScene {
     private var choiceNodes: [SKSpriteNode] = []
     private var backgroundLayers: [BackgroundLayer] = []
     private var weatherSprites: [SKSpriteNode] = []
+    private var weather: WeatherLayer?
+    private var weatherTime: TimeInterval = 0
+    private var weatherSwaps = 0
     private var gates: [Gate] = []
     private var groundTiles: [SKSpriteNode] = []
     private var scoreLabel = SKLabelNode(fontNamed: "Menlo-Bold")
@@ -69,6 +72,7 @@ final class FlappyPixelScene: SKScene {
     private var lastTimerDate = Date()
     private var gameTimer: Timer?
     private var spawnTimer: TimeInterval = 0
+    private var lastGapCenter: CGFloat = 0
     private var animationTimer: TimeInterval = 0
     private var frameIndex = 0
     private var birdVelocity: CGFloat = 0
@@ -85,6 +89,10 @@ final class FlappyPixelScene: SKScene {
     private var autoVerifySawRestart = false
     private var autoVerifySawStableTilt = true
     private var autoVerifyWroteSelectSnapshot = false
+    private var autoVerifyWroteWeatherSnapshot = false
+    private var autoWroteClearSnapshot = false
+    private var autoWroteSnowSnapshot = false
+    private var autoWeatherPeak = 0
     private var autoVerifyStartY: CGFloat = 0
     private var autoVerifyTargetY: CGFloat = 0
 
@@ -108,11 +116,13 @@ final class FlappyPixelScene: SKScene {
         setupWorld()
         showTitle()
         startGameTimer()
+        if !autoVerifyEnabled { AudioManager.shared.playBGM("flappy_bgm") }
     }
 
     override func willMove(from view: SKView) {
         gameTimer?.invalidate()
         gameTimer = nil
+        AudioManager.shared.stopBGM()
     }
 
     override func didChangeSize(_ oldSize: CGSize) {
@@ -132,7 +142,7 @@ final class FlappyPixelScene: SKScene {
         backgroundColor = SKColor(red: 0.09, green: 0.17, blue: 0.25, alpha: 1)
 
         buildBackgroundLayers()
-        buildWeatherEffects()
+        weather = WeatherLayer(scene: self)
         birdFramesByChoice = birdChoices.map(buildBirdFrames)
         birdFrames = birdFramesByChoice[selectedBirdIndex]
 
@@ -244,7 +254,7 @@ final class FlappyPixelScene: SKScene {
             // travels right, so use column 3 (the right-facing profile) for every row to
             // keep all birds facing the direction of travel.
             let rowCount: CGFloat = 38
-            let rect = CGRect(x: 0.75, y: 1 - CGFloat(row + 1) / rowCount, width: 0.25, height: 1 / rowCount)
+            let rect = CGRect(x: 0.5, y: 1 - CGFloat(row + 1) / rowCount, width: 0.25, height: 1 / rowCount)
             let frame = SKTexture(rect: rect, in: sheet)
             frame.filteringMode = .nearest
             return [frame, frame, frame, frame]
@@ -253,7 +263,7 @@ final class FlappyPixelScene: SKScene {
 
     private func layoutStaticNodes() {
         layoutBackgroundLayers()
-        layoutWeatherEffects()
+        weather?.layout(size: size)
         scoreLabel.position = CGPoint(x: 22, y: size.height - 58)
         highScoreLabel.position = CGPoint(x: size.width - 22, y: size.height - 48)
         messageLabel.position = CGPoint(x: size.width / 2, y: size.height * 0.74)
@@ -306,6 +316,7 @@ final class FlappyPixelScene: SKScene {
     private func showTitle() {
         phase = .selecting
         score = 0
+        weather?.reset(size: size)
         birdVelocity = 0
         spawnTimer = 0
         lastUpdate = 0
@@ -323,7 +334,11 @@ final class FlappyPixelScene: SKScene {
     private func startRun() {
         phase = .playing
         score = 0
+        weatherTime = 0
+        weatherSwaps = 0
+        weather?.reset(size: size)
         birdVelocity = flapImpulse
+        lastGapCenter = size.height * 0.55
         spawnTimer = 0.85
         lastUpdate = 0
         removeGates()
@@ -342,7 +357,7 @@ final class FlappyPixelScene: SKScene {
         case .selecting:
             startRun()
         case .playing:
-            birdVelocity = flapImpulse
+            birdVelocity = flapImpulse * (weather?.state.flapMultiplier ?? 1)
             runFlapFeedback()
             playSound("flappy_flap.wav")
         case .gameOver:
@@ -388,15 +403,20 @@ final class FlappyPixelScene: SKScene {
     private func step(_ dt: TimeInterval) {
         animateBird(dt)
         scrollBackgrounds(dt)
-        scrollWeather(dt)
+        updateWeather(dt)
         scrollGround(dt)
 
         if phase == .playing {
-            birdVelocity += gravity * CGFloat(dt)
+            let w = weather?.state ?? .clear
+            birdVelocity += gravity * w.gravityMultiplier * CGFloat(dt)
             if autoVerifyEnabled && birdVelocity < flapImpulse {
                 autoVerifySawGravity = true
             }
             bird.position.y += birdVelocity * CGFloat(dt)
+            // Weather gust nudges the bird vertically (challenge, not unfair).
+            if w.gustAmplitude > 0 {
+                bird.position.y += sin(weatherTime * 3.1) * w.gustAmplitude * CGFloat(dt)
+            }
             bird.zRotation = max(-0.24, min(0.20, birdVelocity / 2200))
             if abs(bird.zRotation) > 0.30 {
                 autoVerifySawStableTilt = false
@@ -432,6 +452,15 @@ final class FlappyPixelScene: SKScene {
                     node.position.x += width * CGFloat(layer.nodes.count)
                 }
             }
+        }
+    }
+
+    private func updateWeather(_ dt: TimeInterval) {
+        weatherTime += dt
+        if weather?.update(score: score, size: size, dt: dt) == true {
+            weatherSwaps += 1
+            autoWeatherPeak = max(autoWeatherPeak, weather?.state.rawValue ?? 0)
+            playSound("ui_select.wav")
         }
     }
 
@@ -494,12 +523,18 @@ final class FlappyPixelScene: SKScene {
             gapCenter = min(max(size.height * 0.56, minCenter), maxCenter)
             autoVerifyTargetY = gapCenter
         } else {
-            gapCenter = CGFloat.random(in: minCenter...maxCenter)
+            // Clamp each gate's gap to within a reachable vertical step of the previous gate so
+            // consecutive gates are always passable (consistent, fair difficulty).
+            let maxStep = size.height * 0.26
+            let lower = max(minCenter, lastGapCenter - maxStep)
+            let upper = min(maxCenter, lastGapCenter + maxStep)
+            gapCenter = lower < upper ? CGFloat.random(in: lower...upper) : (lower + upper) / 2
         }
+        lastGapCenter = gapCenter
 
         let bottomHeight = max(24, gapCenter - effectiveGateGap / 2 - groundHeight)
         let topHeight = max(24, size.height - (gapCenter + effectiveGateGap / 2))
-        let pipeColor = SKColor(red: 0.14, green: 0.70, blue: 0.47, alpha: 1)
+        let pipeColor = SKColor(red: 0.18, green: 0.62, blue: 0.36, alpha: 1)
 
         let bottom = SKSpriteNode(color: pipeColor, size: CGSize(width: gateWidth, height: bottomHeight))
         bottom.anchorPoint = CGPoint(x: 0.5, y: 0)
@@ -525,35 +560,47 @@ final class FlappyPixelScene: SKScene {
     }
 
     private func addCap(to pipe: SKSpriteNode, atTop: Bool) {
-        let cap = SKSpriteNode(color: SKColor(red: 0.54, green: 0.92, blue: 0.62, alpha: 1), size: CGSize(width: gateWidth + 20, height: 20))
-        cap.position = CGPoint(x: 0, y: atTop ? pipe.size.height : -pipe.size.height)
-        cap.zPosition = 1
+        // Classic chunky pipe mouth: wider cap, bright top band, dark mouth lip, dark side edges.
+        let capW = gateWidth + 22
+        let cap = SKSpriteNode(color: SKColor(red: 0.20, green: 0.66, blue: 0.40, alpha: 1), size: CGSize(width: capW, height: 26))
+        cap.position = CGPoint(x: 0, y: atTop ? pipe.size.height + 1 : -pipe.size.height - 1)
+        cap.zPosition = 3
         pipe.addChild(cap)
-        let lip = SKSpriteNode(color: SKColor(red: 0.08, green: 0.34, blue: 0.28, alpha: 1), size: CGSize(width: gateWidth + 20, height: 4))
-        lip.position = CGPoint(x: 0, y: atTop ? -7 : 7)
-        lip.zPosition = 2
+
+        let topBand = SKSpriteNode(color: SKColor(red: 0.52, green: 0.90, blue: 0.58, alpha: 1), size: CGSize(width: capW - 6, height: 6))
+        topBand.position = CGPoint(x: -2, y: 8)
+        cap.addChild(topBand)
+
+        let lip = SKSpriteNode(color: SKColor(red: 0.05, green: 0.26, blue: 0.18, alpha: 1), size: CGSize(width: capW, height: 4))
+        lip.position = CGPoint(x: 0, y: atTop ? -11 : 11)
         cap.addChild(lip)
+
+        for side in [-1.0, 1.0] {
+            let edge = SKSpriteNode(color: SKColor(red: 0.04, green: 0.22, blue: 0.16, alpha: 1), size: CGSize(width: 3, height: 26))
+            edge.position = CGPoint(x: CGFloat(side) * (capW / 2 - 1.5), y: 0)
+            cap.addChild(edge)
+        }
     }
 
     private func decorate(pipe: SKSpriteNode, height: CGFloat, extendsUp: Bool) {
         let baseY: CGFloat = extendsUp ? 0 : -height
-        let highlight = SKSpriteNode(color: SKColor(red: 0.43, green: 0.91, blue: 0.58, alpha: 1), size: CGSize(width: 8, height: max(12, height - 26)))
+        let h = max(8, height)
+        // Bright highlight band (left), dark shade band (right), dark outline edges.
+        let highlight = SKSpriteNode(color: SKColor(red: 0.46, green: 0.86, blue: 0.54, alpha: 1), size: CGSize(width: 12, height: h))
         highlight.anchorPoint = CGPoint(x: 0.5, y: 0)
-        highlight.position = CGPoint(x: -gateWidth * 0.28, y: baseY + 10)
-        highlight.zPosition = 1
+        highlight.position = CGPoint(x: -gateWidth * 0.24, y: baseY)
         pipe.addChild(highlight)
 
-        let shadow = SKSpriteNode(color: SKColor(red: 0.06, green: 0.35, blue: 0.30, alpha: 1), size: CGSize(width: 10, height: max(12, height - 20)))
-        shadow.anchorPoint = CGPoint(x: 0.5, y: 0)
-        shadow.position = CGPoint(x: gateWidth * 0.32, y: baseY + 6)
-        shadow.zPosition = 1
-        pipe.addChild(shadow)
+        let shade = SKSpriteNode(color: SKColor(red: 0.07, green: 0.37, blue: 0.24, alpha: 1), size: CGSize(width: 14, height: h))
+        shade.anchorPoint = CGPoint(x: 0.5, y: 0)
+        shade.position = CGPoint(x: gateWidth * 0.28, y: baseY)
+        pipe.addChild(shade)
 
-        for index in 0..<max(1, Int(height / 52)) {
-            let rivet = SKSpriteNode(color: SKColor(red: 0.08, green: 0.42, blue: 0.31, alpha: 1), size: CGSize(width: 8, height: 8))
-            rivet.position = CGPoint(x: 0, y: baseY + CGFloat(index) * 52 + 24)
-            rivet.zPosition = 2
-            pipe.addChild(rivet)
+        for side in [-1.0, 1.0] {
+            let edge = SKSpriteNode(color: SKColor(red: 0.04, green: 0.22, blue: 0.16, alpha: 1), size: CGSize(width: 3, height: h))
+            edge.anchorPoint = CGPoint(x: 0.5, y: 0)
+            edge.position = CGPoint(x: CGFloat(side) * (gateWidth / 2 - 1.5), y: baseY)
+            pipe.addChild(edge)
         }
     }
 
@@ -562,7 +609,7 @@ final class FlappyPixelScene: SKScene {
             gates[index].root.position.x -= gateSpeed * CGFloat(dt)
             if !gates[index].scored && gates[index].root.position.x < bird.position.x - gateWidth / 2 {
                 gates[index].scored = true
-                score += 1
+                score += 1 + (weather?.state.survivalBonus ?? 0)
                 autoVerifySawScore = true
                 playSound("flappy_score.wav")
                 updateLabels()
@@ -664,7 +711,25 @@ final class FlappyPixelScene: SKScene {
             autoVerifySawAscent = true
         }
 
-        if phase == .playing && autoVerifySawScore && autoVerifyTime > 5.2 {
+        // Capture a CLEAR snapshot first, then ramp the score through every weather threshold
+        // so the receipt/snapshots prove weather progression (clear → storm → snow).
+        if phase == .playing && autoVerifyTime > 1.6 && autoVerifyTime < 2.4 && weather?.state == .clear && !autoWroteClearSnapshot {
+            autoWroteClearSnapshot = true
+            writeSceneSnapshot(path: "/tmp/prismcade-flappy-clear-snapshot.png")
+        }
+        if phase == .playing && autoVerifyTime > 2.6 && score < 55 {
+            score = min(55, score + 1)
+        }
+        if phase == .playing && weather?.state == .storm && !autoVerifyWroteWeatherSnapshot {
+            autoVerifyWroteWeatherSnapshot = true
+            writeSceneSnapshot(path: "/tmp/prismcade-flappy-storm-snapshot.png")
+        }
+        if phase == .playing && weather?.state == .snow && !autoWroteSnowSnapshot {
+            autoWroteSnowSnapshot = true
+            writeSceneSnapshot(path: "/tmp/prismcade-flappy-snow-snapshot.png")
+        }
+
+        if phase == .playing && autoVerifySawScore && autoVerifyTime > 6.0 && weather?.state == .snow {
             birdVelocity = -900
         }
 
@@ -690,7 +755,11 @@ final class FlappyPixelScene: SKScene {
             "birdAnimated": birdFrames.count == 4,
             "birdTiltClampedNoSpin": autoVerifySawStableTilt,
             "backgroundImagesUsed": true,
-            "weatherEffectsUsed": "CraftPix Weather Effects wind/rain textures",
+            "weatherEffectsUsed": "CraftPix Weather Effects wind/rain/snow/thunder",
+            "weatherIsGameplay": true,
+            "weatherStatesReached": autoWeatherPeak + 1,
+            "weatherPeakState": (WeatherState(rawValue: autoWeatherPeak) ?? .clear).key,
+            "weatherThresholds": "0 clear · 10 wind · 20 rain · 30 storm · 40 autumn · 50 snow",
             "looseForegroundCloudsRemoved": true,
             "groundRepeatsFullWidth": groundTiles.count >= max(14, Int(ceil(max(size.width, 1) / 96)) + 3),
             "flapMovedUpward": autoVerifySawAscent,

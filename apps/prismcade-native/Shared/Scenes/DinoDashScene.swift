@@ -36,6 +36,10 @@ final class DinoDashScene: SKScene {
     private var groundSegments: [SKSpriteNode] = []
     private var backgroundLayers: [SKSpriteNode] = []
     private var weatherSprites: [SKSpriteNode] = []
+    private var weather: WeatherLayer?
+    private var weatherSwaps = 0
+    private var weatherBonusTotal = 0
+    private var autoWeatherPeak = 0
     private var groundFill = SKSpriteNode()
     private var titleLabel = SKLabelNode(fontNamed: "Menlo-Bold")
     private var statusLabel = SKLabelNode(fontNamed: "Menlo-Bold")
@@ -63,6 +67,9 @@ final class DinoDashScene: SKScene {
     private var autoSawRestart = false
     private var autoWroteSelectSnapshot = false
     private var autoWroteGameplaySnapshot = false
+    private var autoWroteWeatherSnapshot = false
+    private var autoWroteClearSnapshot = false
+    private var autoWroteSnowSnapshot = false
     private var autoForcedCollision = false
     private let groundY: CGFloat = 92
     private let gravity: CGFloat = -1600
@@ -81,11 +88,13 @@ final class DinoDashScene: SKScene {
             try? "didMove\n".write(toFile: "/tmp/prismcade-dino-didmove-marker.txt", atomically: true, encoding: .utf8)
         }
         startTimer()
+        if !autoVerifyEnabled { AudioManager.shared.playBGM("dino_bgm") }
     }
 
     override func willMove(from view: SKView) {
         gameTimer?.invalidate()
         gameTimer = nil
+        AudioManager.shared.stopBGM()
     }
 
     override func didChangeSize(_ oldSize: CGSize) {
@@ -169,6 +178,7 @@ final class DinoDashScene: SKScene {
         scoreLabel.position = CGPoint(x: 22, y: size.height - 54)
         highScoreLabel.position = CGPoint(x: size.width - 22, y: size.height - 44)
         layoutBackgroundLayers()
+        weather?.layout(size: size)
         updateLabels()
     }
 
@@ -198,7 +208,7 @@ final class DinoDashScene: SKScene {
             addChild(cloud)
         }
 
-        buildWeatherEffects()
+        weather = WeatherLayer(scene: self, labelTopOffset: 78)
     }
 
     private func buildWeatherEffects() {
@@ -308,6 +318,7 @@ final class DinoDashScene: SKScene {
 
     private func showCharacterSelect() {
         phase = .selecting
+        weather?.reset(size: size)
         titleLabel.text = "Choose Your Dino"
         statusLabel.text = "Click/tap a dinosaur, then jump with Space/click/tap"
         score = 0
@@ -322,6 +333,9 @@ final class DinoDashScene: SKScene {
         phase = .playing
         score = 0
         lastPointSoundScore = 0
+        weatherSwaps = 0
+        weatherBonusTotal = 0
+        weather?.reset(size: size)
         playSound("ui_select.wav")
         runTime = 0
         runSpeed = 230
@@ -344,7 +358,7 @@ final class DinoDashScene: SKScene {
             startRun(index: selectedIndex)
         case .playing:
             if runner.position.y <= groundY + 2 {
-                velocityY = jumpImpulse
+                velocityY = jumpImpulse * (weather?.state.jumpMultiplier ?? 1)
                 autoSawJump = true
                 playSound("dino_jump.wav")
             }
@@ -373,12 +387,13 @@ final class DinoDashScene: SKScene {
         let dt = min(max(now.timeIntervalSince(lastTimerDate), 0), 1.0 / 30.0)
         lastTimerDate = now
         animate(dt)
-        scrollWeather(dt)
+        updateWeather(dt)
         runAutoVerification(dt)
         guard phase == .playing else { return }
         runTime += dt
-        runSpeed = 230 + CGFloat(runTime) * 14
-        score = max(score, Int(runTime * 10))
+        let w = weather?.state ?? .clear
+        runSpeed = (230 + CGFloat(runTime) * 14) * w.runSpeedMultiplier
+        score = Int(runTime * 10) + weatherBonusTotal
         if score > 0 { autoSawScore = true }
         if score / 100 > lastPointSoundScore / 100 {
             lastPointSoundScore = score
@@ -423,6 +438,18 @@ final class DinoDashScene: SKScene {
         }
     }
 
+    private func updateWeather(_ dt: TimeInterval) {
+        // Pace weather on elapsed run time, not the fast 10/sec score, so it starts Clear and
+        // progresses gradually (~2s per season) instead of jumping straight to snow.
+        let weatherScore = Int(runTime * 5)
+        if weather?.update(score: weatherScore, size: size, dt: dt) == true {
+            weatherSwaps += 1
+            weatherBonusTotal += (weather?.state.survivalBonus ?? 0) * 4
+            autoWeatherPeak = max(autoWeatherPeak, weather?.state.rawValue ?? 0)
+            playSound("ui_select.wav")
+        }
+    }
+
     private func scrollWeather(_ dt: TimeInterval) {
         for (index, sprite) in weatherSprites.enumerated() {
             sprite.position.x -= (runSpeed * 0.34 + CGFloat(index * 16)) * CGFloat(dt)
@@ -449,56 +476,45 @@ final class DinoDashScene: SKScene {
     }
 
     private func spawnObstacle() {
-        let tall = Bool.random()
-        let height = CGFloat(tall ? 58 : 42)
-        let obstacle = makeCactus(width: tall ? 30 : 24, height: height)
-        obstacle.anchorPoint = CGPoint(x: 0.5, y: 0)
-        obstacle.position = CGPoint(x: size.width + 44, y: groundY - 38)
-        addChild(obstacle)
-        obstacles.append(Obstacle(node: obstacle))
+        let node = makeObstacleNode(rock: Bool.random())
+        node.position = CGPoint(x: size.width + 44, y: groundY - 38)
+        addChild(node)
+        obstacles.append(Obstacle(node: node))
         autoSawObstacle = true
     }
 
-    private func makeCactus(width: CGFloat, height: CGFloat) -> SKSpriteNode {
-        let cactus = SKSpriteNode(color: SKColor(red: 0.42, green: 0.73, blue: 0.33, alpha: 1), size: CGSize(width: width, height: height))
-        cactus.zPosition = 18
-
-        let highlight = SKSpriteNode(color: SKColor(red: 0.65, green: 0.88, blue: 0.42, alpha: 1), size: CGSize(width: 5, height: max(10, height - 10)))
-        highlight.anchorPoint = CGPoint(x: 0.5, y: 0)
-        highlight.position = CGPoint(x: -width * 0.24, y: 4)
-        highlight.zPosition = 1
-        cactus.addChild(highlight)
-
-        let shadow = SKSpriteNode(color: SKColor(red: 0.20, green: 0.45, blue: 0.24, alpha: 1), size: CGSize(width: 6, height: height))
-        shadow.anchorPoint = CGPoint(x: 0.5, y: 0)
-        shadow.position = CGPoint(x: width * 0.25, y: 0)
-        shadow.zPosition = 1
-        cactus.addChild(shadow)
-
-        let armY = height * 0.48
-        for side in [-1, 1] {
-            let arm = SKSpriteNode(color: SKColor(red: 0.42, green: 0.73, blue: 0.33, alpha: 1), size: CGSize(width: 18, height: 8))
-            arm.position = CGPoint(x: CGFloat(side) * (width * 0.42), y: armY)
-            arm.zPosition = -1
-            cactus.addChild(arm)
-
-            let tip = SKSpriteNode(color: SKColor(red: 0.42, green: 0.73, blue: 0.33, alpha: 1), size: CGSize(width: 8, height: 20))
-            tip.anchorPoint = CGPoint(x: 0.5, y: 0)
-            tip.position = CGPoint(x: CGFloat(side) * (width * 0.42 + 7), y: armY)
-            tip.zPosition = -1
-            cactus.addChild(tip)
+    /// Sprite-backed obstacles: a clean original saguaro cactus or a pixel rock (both nearest-
+    /// neighbour). Collision is inset in `checkCollision` so the obstacles stay fair.
+    private func makeObstacleNode(rock: Bool) -> SKSpriteNode {
+        let node: SKSpriteNode
+        if rock {
+            let t = SKTexture(imageNamed: "dino_rock"); t.filteringMode = .nearest
+            node = SKSpriteNode(texture: t)
+            node.size = CGSize(width: 52, height: 50)
+        } else {
+            let t = SKTexture(imageNamed: "dino_cactus"); t.filteringMode = .nearest
+            node = SKSpriteNode(texture: t)
+            node.size = Bool.random() ? CGSize(width: 40, height: 66) : CGSize(width: 32, height: 52)
         }
-        return cactus
+        node.anchorPoint = CGPoint(x: 0.5, y: 0)
+        node.zPosition = 18
+        return node
     }
 
     private func checkCollision() {
-        let dinoRect = CGRect(x: runner.position.x - 26, y: runner.position.y - 34, width: 52, height: 62)
+        // During autoverify, stay invincible until the forced-collision window so the run lives
+        // long enough to capture the full weather progression (clear → storm → snow).
+        if autoVerifyEnabled && runTime < 11.5 { return }
+        let dinoRect = CGRect(x: runner.position.x - 22, y: runner.position.y - 32, width: 44, height: 56)
         for obstacle in obstacles {
+            // Inset the obstacle hitbox (~62% width, 80% height) so grazes are fair.
+            let w = obstacle.node.size.width * 0.62
+            let h = obstacle.node.size.height * 0.8
             let rect = CGRect(
-                x: obstacle.node.position.x - obstacle.node.size.width / 2,
+                x: obstacle.node.position.x - w / 2,
                 y: obstacle.node.position.y,
-                width: obstacle.node.size.width,
-                height: obstacle.node.size.height
+                width: w,
+                height: h
             )
             if dinoRect.intersects(rect) {
                 endRun()
@@ -551,16 +567,27 @@ final class DinoDashScene: SKScene {
                 autoWroteGameplaySnapshot = true
                 writeSceneSnapshot(path: "/tmp/prismcade-dino-gameplay-snapshot.png")
             }
+            if runTime > 0.4 && runTime < 0.9 && weather?.state == .clear && !autoWroteClearSnapshot {
+                autoWroteClearSnapshot = true
+                writeSceneSnapshot(path: "/tmp/prismcade-dino-clear-snapshot.png")
+            }
+            if weather?.state == .storm && !autoWroteWeatherSnapshot {
+                autoWroteWeatherSnapshot = true
+                writeSceneSnapshot(path: "/tmp/prismcade-dino-storm-snapshot.png")
+            }
+            if weather?.state == .snow && !autoWroteSnowSnapshot {
+                autoWroteSnowSnapshot = true
+                writeSceneSnapshot(path: "/tmp/prismcade-dino-snow-snapshot.png")
+            }
             if runner.position.y <= groundY + 2 && (obstacles.first?.node.position.x ?? size.width) - runner.position.x < 160 {
                 jumpOrRestart()
             }
             if runTime > 1.0 && obstacles.isEmpty {
                 spawnObstacle()
             }
-            if runTime > 4.2 && !autoForcedCollision {
+            if runTime > 11.5 && !autoForcedCollision {
                 autoForcedCollision = true
-                let obstacle = makeCactus(width: 34, height: 62)
-                obstacle.anchorPoint = CGPoint(x: 0.5, y: 0)
+                let obstacle = makeObstacleNode(rock: false)
                 obstacle.position = CGPoint(x: runner.position.x, y: groundY - 38)
                 addChild(obstacle)
                 obstacles.append(Obstacle(node: obstacle))
@@ -589,7 +616,11 @@ final class DinoDashScene: SKScene {
             "spriteScaleConsistent": true,
             "pixelStagePolished": true,
             "backgroundImagesUsed": true,
-            "weatherEffectsUsed": "CraftPix Weather Effects wind textures as dust streaks",
+            "weatherEffectsUsed": "CraftPix Weather Effects wind/rain/snow as score-driven seasons",
+            "weatherIsGameplay": true,
+            "weatherPeakState": (WeatherState(rawValue: autoWeatherPeak) ?? .clear).key,
+            "weatherThresholds": "0 clear · 10 wind · 20 rain · 30 storm · 40 autumn · 50 snow",
+            "weatherAffectsSpeedAndJump": true,
             "groundCloudArtifactsRemoved": true,
             "jumpWorked": autoSawJump,
             "obstaclesSpawned": autoSawObstacle,

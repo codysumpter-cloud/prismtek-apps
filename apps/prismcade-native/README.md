@@ -4,9 +4,19 @@ Native macOS/iOS Prismcade launcher and runtime built with SwiftUI + SpriteKit.
 
 ## Games
 
-- Flappy Pixel: one-button score chase with 50 playable bird characters, visible flapping, no spin, and a pixel mountain stage.
-- Prismtek Dino Dash: four-character dinosaur runner using `DinoSprites` sheets, weather dust, and a layered pixel hills environment.
-- Beat Em Up Buck: tiny native Buck Borris lane brawler with attacks, weather hit shine, health bars, knockback, KO scoring, a licensed desert Mummy enemy, and a pixel desert arena.
+- Flappy Pixel: one-button score chase with 50 right-facing playable birds, a clean bird-select grid, a pixel mountain stage, and score-driven weather.
+- Prismtek Dino Dash: four-character dinosaur runner (`DinoSprites`), clean saguaro-cactus + rock obstacles, layered pixel hills, and score-driven weather.
+- Beat Em Up Buck: native SpriteKit beat-em-up — uniform 24×24 Buck (consistent size across states), multi-enemy waves, an energy-wave projectile (L/E) on an energy meter, a dragon-mount power, a desert Mummy enemy, and a desert arena.
+
+## Platform features (current, truthful)
+
+- **Catalog-driven hub** reading the canonical `data/prismcade/prismcade-catalog.json` (32 games; native-playable launch, others shown as planned parity targets).
+- **Local profile + local scores/receipts** (`PrismcadePlatform`), with a portable **leaderboard export** (`LeaderboardService`) for the shared Prismcade API.
+- **Weather/season system** (shared `WeatherSystem`): starts Clear/Spring, escalates Wind→Rain→Storm→Autumn→Snow with score; affects physics and scoring in Flappy + Dino.
+- **Audio**: `AudioManager` looping BGM per game + event SFX (incl. Dino jump).
+- **App icon**: a clean pixel-arcade `AppIcon` asset catalog wired for macOS + iOS. *(Temporary brand icon generated from safe in-repo motifs; replace with final art when available.)*
+- **Game Center readiness** (`GameCenterService`): optional authentication with offline fallback and staged per-game score submission. *Not yet live — needs the Game Center entitlement + App Store Connect leaderboards (IDs staged in `GameCenterService.leaderboardIDs`); gameplay never blocks if unavailable.*
+- **Future**: portable avatar / UGC creator (manifest-first), remote leaderboard sync.
 
 ## Open
 

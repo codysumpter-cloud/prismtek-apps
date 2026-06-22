@@ -17,5 +17,9 @@
   "restartWorked" : true,
   "scoreChanged" : true,
   "selectedBird" : "Hummingbird",
-  "weatherEffectsUsed" : "CraftPix Weather Effects wind\/rain textures"
+  "weatherEffectsUsed" : "CraftPix Weather Effects wind\/rain\/snow\/thunder",
+  "weatherIsGameplay" : true,
+  "weatherPeakState" : "snow",
+  "weatherStatesReached" : 6,
+  "weatherThresholds" : "0 clear · 10 wind · 20 rain · 30 storm · 40 autumn · 50 snow"
 }

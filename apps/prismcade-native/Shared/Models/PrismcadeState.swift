@@ -10,6 +10,15 @@ enum PrismcadeGame: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
+    /// Bundled preview image (real gameplay snapshot) shown on the hub card.
+    var previewAsset: String {
+        switch self {
+        case .flappyPixel: "flappy_preview"
+        case .dinoDash: "dino_preview"
+        case .buckBorris: "buck_preview"
+        }
+    }
+
     /// Stable catalog id matching `data/prismcade/game-manifests.json` slugs.
     var manifestID: String {
         switch self {
@@ -55,6 +64,11 @@ final class PrismcadeState: ObservableObject {
         }
         if ProcessInfo.processInfo.environment["PRISMCADE_AUTOVERIFY_PLATFORM"] == "1" {
             writePlatformVerification()
+        }
+        // Optional Game Center sign-in (safe/offline-fallback; skipped under autoverify).
+        let underAutoverify = ProcessInfo.processInfo.environment.keys.contains { $0.hasPrefix("PRISMCADE_AUTOVERIFY") }
+        if !underAutoverify {
+            GameCenterService.shared.authenticate()
         }
         if startGame == "flappy" {
             selectedGame = .flappyPixel
@@ -186,26 +200,15 @@ final class PrismcadeState: ObservableObject {
     private func drawPreview(for game: PrismcadeGame, in rect: NSRect) {
         NSColor(calibratedRed: 0.08, green: 0.16, blue: 0.22, alpha: 1).setFill()
         NSBezierPath(roundedRect: rect, xRadius: 6, yRadius: 6).fill()
-        switch game {
-        case .flappyPixel:
-            fillPixel(NSRect(x: rect.minX + 58, y: rect.minY + 50, width: 42, height: 28), red: 0.98, green: 0.95, blue: 0.88)
-            fillPixel(NSRect(x: rect.minX + 92, y: rect.minY + 57, width: 18, height: 10), red: 1.0, green: 0.55, blue: 0.12)
-            fillPixel(NSRect(x: rect.minX + 150, y: rect.minY, width: 30, height: 48), red: 0.18, green: 0.72, blue: 0.50)
-            fillPixel(NSRect(x: rect.minX + 150, y: rect.minY + 88, width: 30, height: 42), red: 0.18, green: 0.72, blue: 0.50)
-        case .dinoDash:
-            fillPixel(NSRect(x: rect.minX + 54, y: rect.minY + 34, width: 56, height: 34), red: 0.42, green: 0.86, blue: 0.46)
-            fillPixel(NSRect(x: rect.minX, y: rect.minY + 16, width: rect.width, height: 10), red: 0.83, green: 0.67, blue: 0.39)
-            fillPixel(NSRect(x: rect.minX + 154, y: rect.minY + 24, width: 18, height: 30), red: 0.78, green: 0.92, blue: 0.54)
-        case .buckBorris:
-            fillPixel(NSRect(x: rect.minX + 58, y: rect.minY + 30, width: 42, height: 58), red: 0.78, green: 0.44, blue: 0.28)
-            fillPixel(NSRect(x: rect.minX + 150, y: rect.minY + 60, width: 34, height: 34), red: 0.25, green: 0.78, blue: 0.90)
-            fillPixel(NSRect(x: rect.minX, y: rect.minY + 16, width: rect.width, height: 10), red: 0.48, green: 0.34, blue: 0.22)
+        // Draw the real bundled gameplay preview (same image the live hub shows).
+        if let url = Bundle.main.url(forResource: game.previewAsset, withExtension: "png"),
+           let image = NSImage(contentsOf: url) {
+            let clip = NSBezierPath(roundedRect: rect, xRadius: 6, yRadius: 6)
+            NSGraphicsContext.current?.saveGraphicsState()
+            clip.addClip()
+            image.draw(in: rect, from: .zero, operation: .sourceOver, fraction: 1)
+            NSGraphicsContext.current?.restoreGraphicsState()
         }
-    }
-
-    private func fillPixel(_ rect: NSRect, red: CGFloat, green: CGFloat, blue: CGFloat) {
-        NSColor(calibratedRed: red, green: green, blue: blue, alpha: 1).setFill()
-        NSBezierPath(rect: rect).fill()
     }
     #endif
 }
