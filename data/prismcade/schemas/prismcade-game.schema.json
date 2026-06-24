@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prismtek.dev/schemas/prismcade-game.schema.json",
+  "title": "Prismcade Game Manifest",
+  "description": "Canonical per-game manifest. One file per game lives at games/<id>/data/<id>.manifest.json. The World Builder exports this same shape so a built world IS a valid game with no translation step.",
+  "type": "object",
+  "required": ["schemaVersion", "id", "title", "entrypoint", "runtime", "status"],
+  "properties": {
+    "schemaVersion": { "const": "prismcade-game-v0" },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "description": "Slug-safe identifier, also the games/<id> folder name."
+    },
+    "title": { "type": "string", "minLength": 1 },
+    "tagline": { "type": "string" },
+    "slug": { "type": "string" },
+    "path": { "type": "string", "description": "Repo-relative game folder, e.g. games/prism-grove." },
+    "entrypoint": {
+      "type": "string",
+      "description": "Repo-relative HTML/runtime entrypoint."
+    },
+    "runtime": {
+      "type": "string",
+      "enum": ["static-canvas", "web-bridge", "spritekit", "native", "contract-only"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["playable-mvp", "playable-prototype", "creator-prototype", "quick-play-import", "large-showcase-prototype", "contract-only", "blocked"]
+    },
+    "arcadeRole": { "type": "string" },
+    "description": { "type": "string" },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "controls": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "players": {
+      "type": "object",
+      "properties": {
+        "min": { "type": "number" },
+        "max": { "type": "number" },
+        "modes": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": true
+    },
+    "inputSupport": {
+      "type": "object",
+      "properties": {
+        "keyboard": { "type": "boolean" },
+        "pointer": { "type": "boolean" },
+        "touch": { "type": "boolean" },
+        "gamepad": { "type": "boolean" }
+      },
+      "additionalProperties": true
+    },
+    "platforms": {
+      "type": "object",
+      "description": "Runtime/platform routing. Prefer lowercase macos/ios/windows keys for generated manifests.",
+      "additionalProperties": true
+    },
+    "avatar": { "type": "object", "additionalProperties": true },
+    "localState": { "type": "object", "additionalProperties": true },
+    "data": {
+      "type": "object",
+      "description": "Named repo-relative data dependencies.",
+      "additionalProperties": { "type": "string" }
+    },
+    "creator": { "type": "object", "additionalProperties": true },
+    "assets": { "type": "object", "additionalProperties": true },
+    "nextActions": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "additionalProperties": true
+}
