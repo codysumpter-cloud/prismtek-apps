@@ -1,0 +1,15 @@
+{
+  "name": "@prismtek/prism-grove",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Character-creator-first cozy Prismcade garden MVP.",
+  "scripts": {
+    "dev": "python3 -m http.server 4173",
+    "test": "node tools/validate-prism-grove.mjs && node ../_shared/prismtek-arcade/smoke.mjs .",
+    "build": "npm test",
+    "package:zip": "npm run build && node ../_shared/prismtek-arcade/package-static.mjs ."
+  },
+  "keywords": ["game", "prismcade", "garden", "avatar", "cozy"],
+  "license": "UNLICENSED"
+}

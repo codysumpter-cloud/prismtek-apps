@@ -1,0 +1,9 @@
+[
+  {"id":"starter-hoodie-teal","name":"Starter Teal Hoodie","slot":"top","unlock":"default"},
+  {"id":"garden-overalls","name":"Garden Overalls","slot":"top","unlock":"harvest-5"},
+  {"id":"orange-work-gloves","name":"Orange Work Gloves","slot":"accessory","unlock":"harvest-carrot-3"},
+  {"id":"pumpkin-cap","name":"Pumpkin Cap","slot":"accessory","unlock":"harvest-pumpkin"},
+  {"id":"moon-cloak","name":"Moon Gardener Cloak","slot":"top","unlock":"moonlit-crop"},
+  {"id":"crystal-boots","name":"Crystal Boots","slot":"shoes","unlock":"crystal-crop"},
+  {"id":"prism-pin","name":"Prism Pin","slot":"accessory","unlock":"prism-crop"}
+]

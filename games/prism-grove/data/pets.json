@@ -1,0 +1,7 @@
+[
+  {"id":"brown-bunny","name":"Brown Bunny","ability":"Finds starter seeds after harvest chains."},
+  {"id":"white-bunny","name":"White Bunny","ability":"Slightly improves cozy crop variants."},
+  {"id":"chick","name":"Chick","ability":"Scratches up bonus coins around the garden."},
+  {"id":"duck","name":"Duck","ability":"Keeps watered plots fresh longer."},
+  {"id":"frog","name":"Frog","ability":"Loves rain and weather crops."}
+]
