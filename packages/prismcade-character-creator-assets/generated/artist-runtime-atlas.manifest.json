@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "prismcade-artist-runtime-atlas-v1",
+  "status": "runtime_contract_ready",
+  "licensePolicy": {
+    "commercialProductUse": true,
+    "rawAssetPackRedistribution": false,
+    "notes": [
+      "Prismtek may use the artist assets commercially inside Prismcade products.",
+      "Do not mirror or sell the original raw asset pack as the product itself.",
+      "Commit derived runtime-ready Prismcade atlases and metadata, not raw source packs."
+    ]
+  },
+  "sourcePacks": [
+    {
+      "id": "official-male-creator",
+      "displayName": "Official Male Creator",
+      "kind": "artist-runtime-source",
+      "bodyFamily": "male",
+      "uploadedFile": "Official_Male_Creator.png",
+      "runtimeUse": "canonical male creator alpha source",
+      "availableParts": ["body bases", "heads", "faces", "hair", "accessories", "walking frames", "idle/front/back/side views"],
+      "publicRepoPolicy": "derive runtime atlas; do not mirror untouched source sheet as an asset pack"
+    },
+    {
+      "id": "female-64-v1-2-body-update",
+      "displayName": "64 Pixel Female Characters 1.2 Body Update",
+      "kind": "artist-runtime-source",
+      "bodyFamily": "female",
+      "uploadedFile": "64 Pixel Female Characters 1.2 Body Update(1).kra",
+      "runtimeUse": "female creator beta body base",
+      "availableParts": ["body presets", "heads", "face parts", "walking frames", "breathing frames"],
+      "publicRepoPolicy": "derive runtime atlas; keep raw Krita source private unless redistribution is explicitly allowed"
+    },
+    {
+      "id": "female-64-v1-1-hair-update",
+      "displayName": "64 Pixel Female Characters 1.1 Hair Update",
+      "kind": "artist-runtime-source",
+      "bodyFamily": "female",
+      "uploadedFile": "64 Pixel Female Characters 1.1 Hair Update(2).kra",
+      "runtimeUse": "female creator beta hair expansion",
+      "availableParts": ["hair styles", "hair colors", "head/face compatibility references"],
+      "publicRepoPolicy": "derive runtime atlas; keep raw Krita source private unless redistribution is explicitly allowed"
+    }
+  ],
+  "worldTemplateSources": [
+    {
+      "id": "bar-storefront",
+      "displayName": "Bar",
+      "uploadedFile": "Bar.png",
+      "runtimeUse": "Prismcade town/building template"
+    },
+    {
+      "id": "home-facade",
+      "displayName": "Home",
+      "uploadedFile": "Home.png",
+      "runtimeUse": "Prismcade town/building template"
+    },
+    {
+      "id": "house-balcony",
+      "displayName": "House Balcony",
+      "uploadedFile": "House_Balcony.png",
+      "runtimeUse": "Prismcade town/building template"
+    },
+    {
+      "id": "butcher-shop",
+      "displayName": "Butcher Shop",
+      "uploadedFile": "Butcher_Shop.png",
+      "runtimeUse": "Prismcade town/building template"
+    }
+  ],
+  "slotContract": {
+    "frameSize": [64, 64],
+    "requiredSlots": [
+      "bodyFamily",
+      "bodyPreset",
+      "skinTone",
+      "face",
+      "eyes",
+      "brows",
+      "mouth",
+      "hair",
+      "outfit",
+      "accessory",
+      "emote",
+      "animation"
+    ],
+    "optionalSlots": ["facialHair"],
+    "bodyOnlyPublicRuntimeExport": "blocked"
+  },
+  "runtimeAtlasTargets": {
+    "male": "packages/prismcade-character-creator-assets/generated/male/official-male-creator.atlas.png",
+    "female": "packages/prismcade-character-creator-assets/generated/female/female-creator-v1.atlas.png",
+    "world": "packages/prismcade-world-assets/generated/buildings/prismcade-town-buildings.atlas.png"
+  }
+}

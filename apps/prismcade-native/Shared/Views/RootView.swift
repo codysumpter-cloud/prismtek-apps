@@ -38,13 +38,12 @@ private struct PrismcadeBackdrop: View {
 }
 
 private struct HubView: View {
-    @Environment(\.openURL) private var openURL
     @EnvironmentObject private var state: PrismcadeState
     @ObservedObject private var platform = PrismcadePlatform.shared
+    @State private var showingCharacterStation = false
 
     private var entries: [PrismcadeCatalog.HubEntry] { PrismcadeCatalog.hubEntries }
     private var playableCount: Int { entries.filter(\.isPlayable).count }
-    private let characterStationURL = URL(string: "http://localhost:4173/apps/prismcade-creator/character-station.html")!
 
     var body: some View {
         ScrollView {
@@ -62,6 +61,9 @@ private struct HubView: View {
             }
             .padding(28)
             .frame(maxWidth: 1080, alignment: .leading)
+        }
+        .sheet(isPresented: $showingCharacterStation) {
+            CharacterStationView()
         }
     }
 
@@ -96,16 +98,16 @@ private struct HubView: View {
                 VStack(alignment: .leading, spacing: 6) {
                     Text("Character Creation Station")
                         .font(.system(size: 17, weight: .black, design: .rounded))
-                    Text("Outfit-safe 64x64 avatar recipe and Prismcade manifest exporter. Run `python3 -m http.server 4173` from the repo root, then open from here.")
+                    Text("Bundled in-app character creator for outfit-safe 64x64 avatar recipes, previews, PNG export, and Prismcade manifests. No localhost server required.")
                         .font(.system(size: 12, weight: .medium, design: .rounded))
                         .foregroundStyle(.white.opacity(0.72))
                         .fixedSize(horizontal: false, vertical: true)
-                    Text("data/prismcade/character-creator-packs.json")
+                    Text("Shared/Resources/Creator/character-station.html")
                         .font(.system(size: 10, weight: .heavy, design: .monospaced))
                         .foregroundStyle(Color(red: 0.4, green: 0.9, blue: 0.6))
                 }
                 Spacer()
-                Button("Open Creator") { openURL(characterStationURL) }
+                Button("Open Creator") { showingCharacterStation = true }
                     .buttonStyle(.borderedProminent)
                     .tint(Color(red: 0.15, green: 0.75, blue: 0.85))
             }

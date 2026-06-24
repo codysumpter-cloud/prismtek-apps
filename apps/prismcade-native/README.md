@@ -16,13 +16,13 @@ Native macOS/iOS Prismcade launcher and runtime built with SwiftUI + SpriteKit.
 - **Audio**: `AudioManager` looping BGM per game + event SFX (incl. Dino jump).
 - **App icon**: a clean pixel-arcade `AppIcon` asset catalog wired for macOS + iOS. *(Temporary brand icon generated from safe in-repo motifs; replace with final art when available.)*
 - **Game Center readiness** (`GameCenterService`): optional authentication with offline fallback and staged per-game score submission. *Not yet live — needs the Game Center entitlement + App Store Connect leaderboards (IDs staged in `GameCenterService.leaderboardIDs`); gameplay never blocks if unavailable.*
-- **Creator Tools**: the hub links to the Prismcade Character Creation Station for outfit-safe 64x64 avatar recipes and Prismcade character manifests.
+- **Creator Tools**: the hub opens the bundled Prismcade Character Creation Station in-app for outfit-safe 64x64 avatar recipes and Prismcade character manifests.
 - **Future**: remote leaderboard sync and fully atlas-backed avatar runtime sprites.
 
 ## Open
 
 ```bash
-cd /Users/prismtek/Prismtek/prismtek-apps/apps/prismcade-native
+cd apps/prismcade-native
 xcodegen generate
 open Prismcade.xcodeproj
 ```
@@ -34,23 +34,22 @@ Schemes:
 
 ## Character Creation Station
 
-The native hub includes a **Creator Tools** card that opens the local web station:
+The native hub includes a **Creator Tools** card that opens the Character Creation Station as a bundled in-app sheet. It no longer requires a repo-root HTTP server or a localhost browser window.
+
+Bundled files:
 
 ```text
-http://localhost:4173/apps/prismcade-creator/character-station.html
-```
-
-Start the repo-root server before pressing **Open Creator**:
-
-```bash
-cd /Users/prismtek/Prismtek/prismtek-apps
-python3 -m http.server 4173
-```
-
-The bundled native pointer is:
-
-```text
+Shared/Views/CharacterStationView.swift
+Shared/Resources/Creator/character-station.html
 Shared/Resources/Creator/character-station-link.json
+```
+
+The app path uses `WKWebView` to load the bundled HTML with `Bundle.main.url(...)`. The HTML embeds the starter character registry so the native app can render controls, preview a 64x64 avatar, and export recipe/manifest JSON while offline.
+
+The browser creator still exists for web/dev parity at:
+
+```text
+apps/prismcade-creator/character-station.html
 ```
 
 ## Build
@@ -106,7 +105,7 @@ This polish pass verified the launch set with app-side SpriteKit snapshots:
 - Prismtek Dino Dash: `dino-runtime-verification.json`
 - Beat Em Up Buck: `buck-runtime-verification.json`
 
-`/Users/prismtek/Prismtek/prismtek-site` was cloned locally before the final merge pass and searched for Flappy Pixel, Dino, Buck/Borris/Boris, Prismcade, and image/source references. The site contains useful Flappy Pixel React/canvas source and Prismcade platform metadata. The native app keeps the curated local Garden Birds, Onocentaur birds, DinoSprites, Buck Borris, Background Hills, Weather Effects, desert arena, and CraftPix Mummy enemy assets because they are the best safe native assets found.
+The site contains useful Flappy Pixel React/canvas source and Prismcade platform metadata. The native app keeps the curated local Garden Birds, Onocentaur birds, DinoSprites, Buck Borris, Background Hills, Weather Effects, desert arena, and CraftPix Mummy enemy assets because they are the best safe native assets found.
 
 ## Follow-up references
 
