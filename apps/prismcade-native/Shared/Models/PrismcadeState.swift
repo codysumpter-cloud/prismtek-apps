@@ -1,27 +1,25 @@
 import Foundation
-#if os(macOS)
-import AppKit
-#endif
 
 enum PrismcadeGame: String, CaseIterable, Identifiable {
+    case prismGrove
     case flappyPixel
     case dinoDash
     case buckBorris
 
     var id: String { rawValue }
 
-    /// Bundled preview image (real gameplay snapshot) shown on the hub card.
     var previewAsset: String {
         switch self {
+        case .prismGrove: "prism_grove_preview"
         case .flappyPixel: "flappy_preview"
         case .dinoDash: "dino_preview"
         case .buckBorris: "buck_preview"
         }
     }
 
-    /// Stable catalog id matching `data/prismcade/game-manifests.json` slugs.
     var manifestID: String {
         switch self {
+        case .prismGrove: "prism-grove"
         case .flappyPixel: "flappy-pixel"
         case .dinoDash: "prismtek-dino-dash"
         case .buckBorris: "beat-em-up-buck"
@@ -30,6 +28,7 @@ enum PrismcadeGame: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
+        case .prismGrove: "Prism Grove"
         case .flappyPixel: "Flappy Pixel"
         case .dinoDash: "Prismtek Dino Dash"
         case .buckBorris: "Beat Em Up Buck"
@@ -38,6 +37,7 @@ enum PrismcadeGame: String, CaseIterable, Identifiable {
 
     var description: String {
         switch self {
+        case .prismGrove: "Create a Prismcade avatar, grow a cozy garden, harvest crops, and unlock cosmetics."
         case .flappyPixel: "One-button Prismcade score chase with 50 playable birds and a pixel mountain stage."
         case .dinoDash: "Four-sprite dinosaur runner with character select, speed ramp, and a pixel hills stage."
         case .buckBorris: "Tiny native Buck Borris brawler with lane movement, attacks, health, and KO scoring."
@@ -46,6 +46,7 @@ enum PrismcadeGame: String, CaseIterable, Identifiable {
 
     var sourceNote: String {
         switch self {
+        case .prismGrove: "Art: procedural MVP placeholders; uploaded character/garden packs remain source-only until sliced into runtime layers."
         case .flappyPixel: "Art: Garden Birds, Onocentaur birds, and Background Hills from local LibreSprite packs."
         case .dinoDash: "Art: DinoSprites doux, mort, tard, vita sheets plus Background Hills layers."
         case .buckBorris: "Art: Buck Borris frames, a composited desert arena, and the licensed CraftPix Mummy enemy strips."
@@ -58,157 +59,21 @@ final class PrismcadeState: ObservableObject {
     @Published var selectedGame: PrismcadeGame?
 
     init() {
-        let startGame = ProcessInfo.processInfo.environment["PRISMCADE_START_GAME"]
-        if ProcessInfo.processInfo.environment["PRISMCADE_AUTOVERIFY_HUB"] == "1" {
-            writeHubVerification()
-        }
         if ProcessInfo.processInfo.environment["PRISMCADE_AUTOVERIFY_PLATFORM"] == "1" {
-            writePlatformVerification()
+            PrismcadePlatform.shared.recordResult(gameID: "prism-grove", gameTitle: "Prism Grove", score: 42)
         }
-        // Optional Game Center sign-in (safe/offline-fallback; skipped under autoverify).
-        let underAutoverify = ProcessInfo.processInfo.environment.keys.contains { $0.hasPrefix("PRISMCADE_AUTOVERIFY") }
-        if !underAutoverify {
+        if !ProcessInfo.processInfo.environment.keys.contains(where: { $0.hasPrefix("PRISMCADE_AUTOVERIFY") }) {
             GameCenterService.shared.authenticate()
         }
-        if startGame == "flappy" {
-            selectedGame = .flappyPixel
-            try? "flappy\n".write(toFile: "/tmp/prismcade-start-game-marker.txt", atomically: true, encoding: .utf8)
-        } else if startGame == "dino" {
-            selectedGame = .dinoDash
-            try? "dino\n".write(toFile: "/tmp/prismcade-start-game-marker.txt", atomically: true, encoding: .utf8)
-        } else if startGame == "buck" {
-            selectedGame = .buckBorris
-            try? "buck\n".write(toFile: "/tmp/prismcade-start-game-marker.txt", atomically: true, encoding: .utf8)
+        switch ProcessInfo.processInfo.environment["PRISMCADE_START_GAME"] {
+        case "grove": selectedGame = .prismGrove
+        case "flappy": selectedGame = .flappyPixel
+        case "dino": selectedGame = .dinoDash
+        case "buck": selectedGame = .buckBorris
+        default: break
         }
     }
 
-    private func writePlatformVerification() {
-        let entries = PrismcadeCatalog.hubEntries
-        let platform = PrismcadePlatform.shared
-        // Exercise the local-first platform path end-to-end.
-        platform.recordResult(gameID: "flappy-pixel", gameTitle: "Flappy Pixel", score: 7)
-        platform.recordResult(gameID: "beat-em-up-buck", gameTitle: "Beat Em Up Buck", score: 220)
-        let syncState = LeaderboardService.shared.syncStateDescription
-        let receipt: [String: Any] = [
-            "screen": "Prismcade platform layer",
-            "catalogLoaded": !PrismcadeCatalog.canonical.isEmpty,
-            "canonicalGameCount": PrismcadeCatalog.canonical.count,
-            "webPlayableCount": PrismcadeCatalog.canonical.filter { $0.web.playable }.count,
-            "hubEntryCount": entries.count,
-            "playableCount": entries.filter(\.isPlayable).count,
-            "plannedCount": entries.filter { !$0.isPlayable }.count,
-            "recordedBestFlappy": platform.best(for: "flappy-pixel"),
-            "recordedBestBuck": platform.best(for: "beat-em-up-buck"),
-            "matchReceiptCount": platform.receipts.count,
-            "leaderboardExportReady": platform.exportLeaderboardJSON() != nil,
-            "leaderboardSyncState": syncState,
-            "profileHandle": platform.profileHandle
-        ]
-        if let data = try? JSONSerialization.data(withJSONObject: receipt, options: [.prettyPrinted, .sortedKeys]) {
-            try? data.write(to: URL(fileURLWithPath: "/tmp/prismcade-platform-verification.json"), options: .atomic)
-        }
-    }
-
-    func play(_ game: PrismcadeGame) {
-        selectedGame = game
-    }
-
-    func returnToHub() {
-        selectedGame = nil
-    }
-
-    private func writeHubVerification() {
-        let titles = PrismcadeGame.allCases.map(\.title)
-        let receipt: [String: Any] = [
-            "screen": "Prismcade hub",
-            "gameCards": titles,
-            "cardCount": titles.count,
-            "selectedGame": selectedGame?.title ?? NSNull(),
-            "verified": titles.contains("Flappy Pixel")
-                && titles.contains("Prismtek Dino Dash")
-                && titles.contains("Beat Em Up Buck")
-        ]
-        if let data = try? JSONSerialization.data(withJSONObject: receipt, options: [.prettyPrinted, .sortedKeys]) {
-            try? data.write(to: URL(fileURLWithPath: "/tmp/prismcade-hub-runtime-verification.json"), options: .atomic)
-        }
-        #if os(macOS)
-        writeHubSnapshot(titles: titles)
-        #endif
-    }
-
-    #if os(macOS)
-    private func writeHubSnapshot(titles: [String]) {
-        let size = NSSize(width: 1100, height: 720)
-        let image = NSImage(size: size)
-        image.lockFocus()
-
-        NSColor(calibratedRed: 0.05, green: 0.06, blue: 0.09, alpha: 1).setFill()
-        NSBezierPath(rect: NSRect(origin: .zero, size: size)).fill()
-        NSColor(calibratedRed: 0.10, green: 0.16, blue: 0.19, alpha: 1).setFill()
-        NSBezierPath(rect: NSRect(x: 0, y: 0, width: size.width, height: 260)).fill()
-
-        let titleAttributes: [NSAttributedString.Key: Any] = [
-            .font: NSFont.systemFont(ofSize: 48, weight: .black),
-            .foregroundColor: NSColor.white
-        ]
-        NSString(string: "Prismcade").draw(at: NSPoint(x: 64, y: 620), withAttributes: titleAttributes)
-
-        let subtitleAttributes: [NSAttributedString.Key: Any] = [
-            .font: NSFont.systemFont(ofSize: 18, weight: .medium),
-            .foregroundColor: NSColor(calibratedWhite: 1, alpha: 0.74)
-        ]
-        NSString(string: "Native macOS/iOS launcher and runtime for Prismtek arcade games.")
-            .draw(at: NSPoint(x: 66, y: 590), withAttributes: subtitleAttributes)
-
-        let cardWidth: CGFloat = 300
-        let cardHeight: CGFloat = 310
-        for (index, game) in PrismcadeGame.allCases.enumerated() {
-            let x = CGFloat(index) * (cardWidth + 28) + 64
-            let cardRect = NSRect(x: x, y: 210, width: cardWidth, height: cardHeight)
-            NSColor(calibratedWhite: 1, alpha: 0.08).setFill()
-            NSBezierPath(roundedRect: cardRect, xRadius: 8, yRadius: 8).fill()
-            NSColor(calibratedWhite: 1, alpha: 0.20).setStroke()
-            NSBezierPath(roundedRect: cardRect, xRadius: 8, yRadius: 8).stroke()
-
-            drawPreview(for: game, in: NSRect(x: x + 18, y: 360, width: cardWidth - 36, height: 130))
-
-            NSString(string: game.title).draw(
-                in: NSRect(x: x + 18, y: 320, width: cardWidth - 36, height: 30),
-                withAttributes: [
-                    .font: NSFont.systemFont(ofSize: 21, weight: .black),
-                    .foregroundColor: NSColor.white
-                ]
-            )
-            NSString(string: game.sourceNote).draw(
-                in: NSRect(x: x + 18, y: 246, width: cardWidth - 36, height: 52),
-                withAttributes: [
-                    .font: NSFont.monospacedSystemFont(ofSize: 11, weight: .semibold),
-                    .foregroundColor: NSColor(calibratedRed: 1.0, green: 0.85, blue: 0.42, alpha: 1)
-                ]
-            )
-        }
-
-        image.unlockFocus()
-        guard let tiff = image.tiffRepresentation,
-              let bitmap = NSBitmapImageRep(data: tiff),
-              let png = bitmap.representation(using: .png, properties: [:]) else {
-            return
-        }
-        try? png.write(to: URL(fileURLWithPath: "/tmp/prismcade-hub-runtime-snapshot.png"), options: .atomic)
-    }
-
-    private func drawPreview(for game: PrismcadeGame, in rect: NSRect) {
-        NSColor(calibratedRed: 0.08, green: 0.16, blue: 0.22, alpha: 1).setFill()
-        NSBezierPath(roundedRect: rect, xRadius: 6, yRadius: 6).fill()
-        // Draw the real bundled gameplay preview (same image the live hub shows).
-        if let url = Bundle.main.url(forResource: game.previewAsset, withExtension: "png"),
-           let image = NSImage(contentsOf: url) {
-            let clip = NSBezierPath(roundedRect: rect, xRadius: 6, yRadius: 6)
-            NSGraphicsContext.current?.saveGraphicsState()
-            clip.addClip()
-            image.draw(in: rect, from: .zero, operation: .sourceOver, fraction: 1)
-            NSGraphicsContext.current?.restoreGraphicsState()
-        }
-    }
-    #endif
+    func play(_ game: PrismcadeGame) { selectedGame = game }
+    func returnToHub() { selectedGame = nil }
 }
