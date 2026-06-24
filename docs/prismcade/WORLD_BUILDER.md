@@ -1,22 +1,6 @@
 # Prismcade World Builder
 
-The Prismcade World Builder is a dependency-free web creator surface at:
-
-```text
-apps/prismcade-creator/world-builder.html
-```
-
-Run it from the repo root:
-
-```bash
-python3 -m http.server 4173
-```
-
-Then open:
-
-```text
-http://localhost:4173/apps/prismcade-creator/world-builder.html
-```
+The Prismcade World Builder is a dependency-free web creator surface at `apps/prismcade-creator/world-builder.html`.
 
 ## What it does now
 
@@ -27,39 +11,17 @@ http://localhost:4173/apps/prismcade-creator/world-builder.html
 - Edit object name, position, size, layer, collision, interaction, and notes.
 - Save and load locally with browser storage.
 - Export a `prismcade-world-scene-v0` scene JSON.
-- Export a generated `prismcade-game-manifest-v0` manifest.
+- Export a generated `prismcade-game-v0` manifest.
 
 ## Scene contract
 
-The first fixture is:
-
-```text
-data/prismcade/world-scenes/starter-world.scene.json
-```
-
-Minimum shape:
-
-```json
-{
-  "schemaVersion": "prismcade-world-scene-v0",
-  "id": "starter-world",
-  "title": "Starter World",
-  "worldSize": { "width": 4096, "height": 3072 },
-  "gridSize": 16,
-  "builderStart": { "x": 256, "y": 256 },
-  "objects": []
-}
-```
+The first fixture is `data/prismcade/world-scenes/starter-world.scene.json`.
 
 Each object uses a simple prefab kind such as `spawn`, `block`, `platform`, `wall`, `crate`, `tree`, `house`, `water`, `coin`, `sign`, `enemy`, or `portal`.
 
 ## Native bridge
 
-Native Prismcade can point at the same local web surface through:
-
-```text
-apps/prismcade-native/Shared/Resources/Creator/world-builder-link.json
-```
+Native Prismcade can point at the same local web surface through `apps/prismcade-native/Shared/Resources/Creator/world-builder-link.json`.
 
 That keeps the web, Windows HTML, macOS, and iOS creator path aligned while a later SpriteKit-native editor is built.
 
