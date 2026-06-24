@@ -2,11 +2,12 @@
   "schemaVersion": "prismcade-native-creator-tool-link-v0",
   "id": "character-creation-station",
   "title": "Character Creation Station",
-  "description": "Outfit-safe 64x64 avatar recipe and Prismcade manifest exporter.",
-  "developmentServer": {
-    "command": "python3 -m http.server 4173",
-    "workingDirectory": "/Users/prismtek/Prismtek/prismtek-apps",
-    "url": "http://localhost:4173/apps/prismcade-creator/character-station.html"
+  "description": "Bundled in-app outfit-safe 64x64 avatar recipe and Prismcade manifest exporter.",
+  "bundledAppResource": {
+    "path": "Shared/Resources/Creator/character-station.html",
+    "opensWith": "CharacterStationView",
+    "requiresLocalhost": false,
+    "offlineReady": true
   },
   "dataContracts": {
     "sourcePacks": "data/prismcade/character-creator-packs.json",
@@ -14,5 +15,5 @@
     "sampleManifest": "data/prismcade/character-manifests/starter-avatar.manifest.json",
     "pixelFruitArenaAdapter": "games/pixel-fruit-arena/src/characters/prismcadeCreatorAdapter.js"
   },
-  "nativeIntegration": "Shown as a Creator Tools card in the SwiftUI Prismcade hub; the card opens the local creator URL when the repo root HTTP server is running."
+  "nativeIntegration": "Shown as a Creator Tools card in the SwiftUI Prismcade hub; the card opens a bundled WKWebView sheet and no longer requires localhost."
 }
