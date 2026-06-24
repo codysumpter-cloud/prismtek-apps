@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "prismcade-world-scene-v0",
+  "id": "starter-world",
+  "title": "Starter World",
+  "worldSize": {
+    "width": 4096,
+    "height": 3072
+  },
+  "gridSize": 16,
+  "cameraStart": {
+    "x": 0,
+    "y": 0,
+    "zoom": 1
+  },
+  "builderStart": {
+    "x": 256,
+    "y": 256
+  },
+  "exportTarget": {
+    "web": true,
+    "macOS": true,
+    "iOS": true,
+    "windows": true
+  },
+  "objects": [
+    {
+      "id": "spawn-starter",
+      "kind": "spawn",
+      "name": "Player Spawn",
+      "x": 256,
+      "y": 256,
+      "w": 32,
+      "h": 32,
+      "layer": 1,
+      "solid": false,
+      "interactable": true,
+      "notes": "Default player start point."
+    },
+    {
+      "id": "ground-starter-01",
+      "kind": "block",
+      "name": "Starter Ground 01",
+      "x": 128,
+      "y": 480,
+      "w": 64,
+      "h": 32,
+      "layer": 1,
+      "solid": true,
+      "interactable": false,
+      "notes": "Prototype solid platform block."
+    },
+    {
+      "id": "platform-starter-01",
+      "kind": "platform",
+      "name": "Starter Jump Platform",
+      "x": 424,
+      "y": 360,
+      "w": 96,
+      "h": 16,
+      "layer": 1,
+      "solid": true,
+      "interactable": false,
+      "notes": "Jump-through semantics are runtime-defined by prefab kind."
+    },
+    {
+      "id": "house-starter-01",
+      "kind": "house",
+      "name": "Starter House",
+      "x": 960,
+      "y": 384,
+      "w": 128,
+      "h": 96,
+      "layer": 1,
+      "solid": true,
+      "interactable": true,
+      "notes": "Safe placeholder building shell until asset-backed houses are promoted."
+    },
+    {
+      "id": "portal-starter-01",
+      "kind": "portal",
+      "name": "Goal Portal",
+      "x": 1280,
+      "y": 416,
+      "w": 48,
+      "h": 64,
+      "layer": 1,
+      "solid": false,
+      "interactable": true,
+      "notes": "Exit / teleport target for generated game templates."
+    }
+  ],
+  "receipts": [
+    "prototype-only:no-third-party-assets",
+    "editor:apps/prismcade-creator/world-builder.html"
+  ]
+}
