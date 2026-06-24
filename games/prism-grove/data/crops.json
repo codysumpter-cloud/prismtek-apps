@@ -1,0 +1,10 @@
+[
+  {"id":"carrot","name":"Carrot","seedPrice":10,"baseSellPrice":18,"growthSeconds":90,"stages":4,"color":"#f59f3a","mutationTags":["golden","giant","stormkissed"]},
+  {"id":"strawberry","name":"Strawberry","seedPrice":18,"baseSellPrice":36,"growthSeconds":120,"stages":4,"color":"#ff5e78","mutationTags":["golden","giant","prism"]},
+  {"id":"pumpkin","name":"Pumpkin","seedPrice":60,"baseSellPrice":135,"growthSeconds":300,"stages":5,"color":"#f97316","mutationTags":["golden","giant","crystal"]},
+  {"id":"turnip","name":"Turnip","seedPrice":22,"baseSellPrice":42,"growthSeconds":150,"stages":4,"color":"#f7d7ff","mutationTags":["giant","crystal"]},
+  {"id":"beet","name":"Beet","seedPrice":32,"baseSellPrice":70,"growthSeconds":210,"stages":4,"color":"#a51c54","mutationTags":["golden","moonlit"]},
+  {"id":"bluecap","name":"Bluecap Mushroom","seedPrice":80,"baseSellPrice":180,"growthSeconds":420,"stages":5,"color":"#5ee7ff","mutationTags":["moonlit","crystal","prism"]},
+  {"id":"tomato","name":"Tomato","seedPrice":45,"baseSellPrice":92,"growthSeconds":240,"stages":4,"color":"#ef4444","mutationTags":["golden","stormkissed"]},
+  {"id":"sunflower","name":"Sunflower","seedPrice":120,"baseSellPrice":280,"growthSeconds":600,"stages":5,"color":"#ffe66d","mutationTags":["golden","giant","prism"]}
+]
