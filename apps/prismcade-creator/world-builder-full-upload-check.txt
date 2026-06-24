@@ -1,4 +1,0 @@
-full-upload-check: world-builder(3).html
-sha256: 3f1d2631920b21e3147ae095fc15c80b8960132618e728bfcda4041ffb40ffb9
-bytes: 25804
-intent: replace apps/prismcade-creator/world-builder.html with the exact full uploaded file, not the compact fallback
