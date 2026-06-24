@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "prismcade-creator-source-v0",
+  "status": "artist_sources_registered",
+  "description": "Single source-of-truth manifest for the bundled character creator. Replaces the three stubs (asset-manifest.json, source-contract.json, source-runtime.json), which only carried a schemaVersion + status and no real data.",
+  "atlas": {
+    "manifest": "data/prismcade/generated/artist-runtime-atlas.manifest.json",
+    "builder": "tools/prismcade/build-character-creator-atlas.mjs"
+  },
+  "sourcePacks": [
+    "official-male-creator",
+    "female-body-1-2",
+    "female-hair-1-1"
+  ],
+  "targetFrame": { "width": 64, "height": 64 },
+  "preferredView": "low_top_down",
+  "outputs": {
+    "characterPackSchema": "packages/prismcade-character-pipeline/schemas/character-pack.schema.json"
+  }
+}
