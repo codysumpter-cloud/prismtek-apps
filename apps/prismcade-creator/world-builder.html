@@ -650,25 +650,29 @@
     function manifestExport() {
       const scene = sceneExport();
       const slug = scene.title.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "untitled-prismcade-world";
+      // Emits the CANONICAL per-game manifest (prismcade-game-v0) defined in
+      // data/prismcade/schemas/prismcade-game.schema.json, so an exported world is a
+      // valid Prismcade game with no translation step. Validate with:
+      //   node tools/prismcade/validate-game-manifest.mjs games/<slug>/<slug>.manifest.json
       return {
-        schemaVersion:"prismcade-game-manifest-v0",
+        schemaVersion:"prismcade-game-v0",
         id:slug,
         title:scene.title,
         slug,
         path:`games/${slug}`,
+        entrypoint:`games/${slug}/index.html`,
+        runtime:"static-canvas",
         status:"creator-prototype",
         arcadeRole:"user-generated-world",
-        template:"prismcade-world-builder",
         description:"Generated from the Prismcade World Builder in-world placement prototype.",
         tags:["prismcade", "ugc", "world-builder", "local-first"],
-        entrypoint:`games/${slug}/index.html`,
         controls:["WASD / arrows move", "Click / tap interact", "Creator export supplies scene objects"],
         players:{ min:1, max:4, modes:["local-first generated world"] },
         inputSupport:{ keyboard:true, pointer:true, touch:true, gamepad:false },
-        platformStatus:{ web:"prototype", macOS:"web-bridge", iOS:"web-bridge", windows:"web-bridge" },
+        platforms:{ web:"prototype", macos:"web-bridge", ios:"web-bridge", windows:"web-bridge" },
         creator:{ sceneSchema:scene.schemaVersion, sceneObjectCount:scene.objects.length, source:"apps/prismcade-creator/world-builder.html" },
         assets:{ selectedAssetIds:[], generatedScene:scene },
-        nextActions:["Promote scene JSON into data/prismcade/worlds/.", "Bind prefab kinds to safe Prismcade assets.", "Generate playable game folder from manifest.", "Run smoke tests before release claims."]
+        nextActions:["Promote scene JSON into data/prismcade/world-scenes/.", "Bind prefab kinds to safe Prismcade assets.", "Generate playable game folder from manifest.", "Run smoke tests before release claims."]
       };
     }
 
