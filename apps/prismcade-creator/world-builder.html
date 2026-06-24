@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Prismcade World Builder</title>
+<style>
+:root{--bg:#0d1018;--panel:#151a27;--line:#303a56;--ink:#f7f7ff;--muted:#aeb7d2;--accent:#5ee7ff;--good:#7cff9b;--hot:#ff5e78}
+*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}canvas{display:block;image-rendering:pixelated}
+#bar{position:fixed;inset:0 0 auto 0;height:52px;z-index:5;display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(13,16,24,.94);border-bottom:1px solid var(--line)}
+#brand{font-weight:900;color:var(--accent);line-height:1}#brand small{display:block;color:var(--muted);font-size:9px;letter-spacing:.14em}
+input,button{font:inherit;border:1px solid var(--line);background:#0b0e15;color:var(--ink);border-radius:7px;padding:8px}button{cursor:pointer;font-weight:800}button[data-on=true],button:hover{border-color:var(--accent);color:var(--accent)}#name{width:190px}.spacer{flex:1}
+#tray{position:fixed;left:12px;top:64px;bottom:14px;width:230px;z-index:4;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:auto}.tabs,.tools{display:flex}.tabs button,.tools button{flex:1;border-radius:0}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:10px}.sw{aspect-ratio:1;border:1px solid var(--line);border-radius:9px;background:#0b0e15;display:flex;align-items:center;justify-content:center}.sw[data-on=true]{border-color:var(--accent);box-shadow:0 0 0 2px rgba(94,231,255,.22)}.sw canvas{width:80%;height:80%}
+#ins{position:fixed;right:12px;top:64px;width:210px;z-index:4;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;display:none}.row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:8px 0;color:var(--muted);font-size:12px}#hint{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:4;background:rgba(21,26,39,.92);border:1px solid var(--line);border-radius:999px;padding:9px 16px;color:var(--muted);font-size:12px;white-space:nowrap}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="bar"><div id="brand">PRISMCADE<small>WORLD BUILDER</small></div><input id="name" value="Untitled World"><button id="build" data-on="true">Build</button><button id="play">Play</button><button id="avatar">Drop avatar</button><span class="spacer"></span><button id="out">−</button><span id="zl">2×</span><button id="zin">+</button><button id="save">Save world</button></div>
+<div id="tray"><div class="tabs"><button data-cat="tile" data-on="true">Floor</button><button data-cat="prop">Props</button><button data-cat="char">People</button></div><div class="grid" id="grid"></div><div class="tools"><button id="place" data-on="true">Place</button><button id="select">Select</button><button id="erase">Erase</button></div></div>
+<div id="ins"><b style="color:var(--accent)">Selected</b><div class="row"><span>Name</span><input id="objName"></div><div class="row"><span>Solid</span><button id="solid">toggle</button></div><button id="del" style="width:100%;color:var(--hot);border-color:var(--hot)">Delete</button></div>
+<div id="hint"></div>
+<script>
+'use strict';
+const TILE=16,COLS=96,ROWS=72,cv=document.getElementById('c'),ctx=cv.getContext('2d'),$=id=>document.getElementById(id);
+function can(w,h,draw){const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'));return c}
+function px(g,x,y,w,h,c){g.fillStyle=c;g.fillRect(x,y,w,h)}function dot(g,x,y,c){px(g,x,y,2,2,c)}function asset(id,name,cat,w,h,solid,draw){return{id,name,cat,w,h,solid,canvas:can(w,h,draw)}}
+const A=[
+asset('grass','Grass','tile',16,16,false,g=>{px(g,0,0,16,16,'#3f7d3a');for(let i=0;i<22;i++)px(g,Math.random()*16|0,Math.random()*16|0,1,1,'#56a04d')}),
+asset('path','Path','tile',16,16,false,g=>{px(g,0,0,16,16,'#b79b6a');for(let i=0;i<18;i++)px(g,Math.random()*16|0,Math.random()*16|0,1,1,'#d0b780')}),
+asset('water','Water','tile',16,16,false,g=>{px(g,0,0,16,16,'#2a5fb0');px(g,1,4,14,1,'#5fa0e8');px(g,1,10,14,1,'#3f7fd0')}),
+asset('tree','Tree','prop',16,32,true,g=>{px(g,7,19,2,13,'#5b3a22');g.fillStyle='#3c8a40';g.beginPath();g.arc(8,12,8,0,7);g.fill();dot(g,5,8,'#63bc64')}),
+asset('rock','Rock','prop',16,16,true,g=>{g.fillStyle='#777f91';g.beginPath();g.ellipse(8,11,6,4,0,0,7);g.fill();px(g,6,8,4,1,'#a0a8ba')}),
+asset('chest','Chest','prop',16,16,true,g=>{px(g,3,7,10,7,'#7a4a22');px(g,3,7,10,3,'#96602f');px(g,7,9,2,3,'#ffd166')}),
+asset('sign','Sign','prop',16,16,false,g=>{px(g,7,8,2,8,'#6b4a28');px(g,3,3,10,6,'#a9803f');px(g,4,5,8,1,'#5b3a1e')}),
+asset('hero','Hero','char',16,24,true,g=>{px(g,5,2,6,5,'#e9b27a');px(g,4,1,8,3,'#5b3a22');px(g,5,7,6,8,'#5ee7ff');px(g,5,15,2,7,'#2f3a52');px(g,9,15,2,7,'#2f3a52')}),
+asset('slime','Slime','char',16,16,true,g=>{g.fillStyle='#5fc47f';g.beginPath();g.ellipse(8,11,7,5,0,0,7);g.fill();dot(g,6,9,'#08210f');dot(g,10,9,'#08210f')})
+],by=Object.fromEntries(A.map(a=>[a.id,a]));
+const S={mode:'build',tool:'place',cat:'tile',pick:'grass',cam:{x:520,y:360},z:2,ground:new Map(),objs:[],avatar:null,selected:null,drag:null,keys:new Set()};let uid=1;
+function resize(){cv.width=innerWidth*devicePixelRatio;cv.height=innerHeight*devicePixelRatio;ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);ctx.imageSmoothingEnabled=false}addEventListener('resize',resize);resize();
+function world(x,y){return{x:x/S.z+S.cam.x,y:y/S.z+S.cam.y}}function snap(v){return Math.floor(v/TILE)*TILE}function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function draw(){ctx.fillStyle='#0a0c12';ctx.fillRect(0,0,innerWidth,innerHeight);ctx.save();ctx.translate(-S.cam.x*S.z,-S.cam.y*S.z);ctx.scale(S.z,S.z);ctx.fillStyle='#11151f';ctx.fillRect(0,0,COLS*TILE,ROWS*TILE);let x0=Math.floor(S.cam.x/TILE),y0=Math.floor(S.cam.y/TILE),x1=x0+Math.ceil(innerWidth/S.z/TILE)+2,y1=y0+Math.ceil(innerHeight/S.z/TILE)+2;for(let y=Math.max(0,y0);y<Math.min(ROWS,y1);y++)for(let x=Math.max(0,x0);x<Math.min(COLS,x1);x++){let id=S.ground.get(x+','+y);if(id)ctx.drawImage(by[id].canvas,x*TILE,y*TILE)}if(S.mode==='build'){ctx.strokeStyle='rgba(94,231,255,.08)';ctx.lineWidth=1/S.z;for(let x=x0;x<x1;x++){ctx.beginPath();ctx.moveTo(x*TILE,y0*TILE);ctx.lineTo(x*TILE,y1*TILE);ctx.stroke()}for(let y=y0;y<y1;y++){ctx.beginPath();ctx.moveTo(x0*TILE,y*TILE);ctx.lineTo(x1*TILE,y*TILE);ctx.stroke()}}for(const o of S.objs.sort((a,b)=>a.y-b.y)){let a=by[o.a];ctx.drawImage(a.canvas,o.x,o.y);if(o===S.selected){ctx.strokeStyle='#5ee7ff';ctx.lineWidth=1/S.z;ctx.strokeRect(o.x,o.y,a.w,a.h)}}if(S.avatar)ctx.drawImage(by[S.avatar.a].canvas,S.avatar.x,S.avatar.y);ctx.restore()}
+function tick(){let sp=4/S.z;if(S.mode==='build'){if(S.keys.has('w')||S.keys.has('arrowup'))S.cam.y-=sp;if(S.keys.has('s')||S.keys.has('arrowdown'))S.cam.y+=sp;if(S.keys.has('a')||S.keys.has('arrowleft'))S.cam.x-=sp;if(S.keys.has('d')||S.keys.has('arrowright'))S.cam.x+=sp}else if(S.avatar){let s=2;if(S.keys.has('w')||S.keys.has('arrowup'))S.avatar.y-=s;if(S.keys.has('s')||S.keys.has('arrowdown'))S.avatar.y+=s;if(S.keys.has('a')||S.keys.has('arrowleft'))S.avatar.x-=s;if(S.keys.has('d')||S.keys.has('arrowright'))S.avatar.x+=s;S.cam.x=S.avatar.x-innerWidth/S.z/2;S.cam.y=S.avatar.y-innerHeight/S.z/2}draw();requestAnimationFrame(tick)}
+function itemAt(p){for(let i=S.objs.length-1;i>=0;i--){let o=S.objs[i],a=by[o.a];if(p.x>=o.x&&p.x<o.x+a.w&&p.y>=o.y&&p.y<o.y+a.h)return o}}
+cv.onpointerdown=e=>{if(e.target!==cv)return;let p=world(e.clientX,e.clientY);if(S.mode==='play')return;if(S.tool==='place'){let a=by[S.pick];if(a.cat==='tile')S.ground.set(Math.floor(p.x/TILE)+','+Math.floor(p.y/TILE),a.id);else S.objs.push({id:uid++,a:a.id,x:snap(p.x),y:snap(p.y)-(a.h-TILE),solid:a.solid})}else if(S.tool==='erase'){let o=itemAt(p);if(o)S.objs=S.objs.filter(x=>x!==o);else S.ground.delete(Math.floor(p.x/TILE)+','+Math.floor(p.y/TILE))}else{S.selected=itemAt(p)||null;showIns();if(S.selected)S.drag={o:S.selected,dx:p.x-S.selected.x,dy:p.y-S.selected.y}}};
+cv.onpointermove=e=>{if(!S.drag)return;let p=world(e.clientX,e.clientY);S.drag.o.x=snap(p.x-S.drag.dx);S.drag.o.y=snap(p.y-S.drag.dy);showIns()};onpointerup=()=>S.drag=null;
+function buildTray(){grid.innerHTML='';A.filter(a=>a.cat===S.cat).forEach(a=>{let d=document.createElement('button');d.className='sw';d.dataset.on=String(S.pick===a.id);let c=document.createElement('canvas');c.width=a.w;c.height=a.h;c.getContext('2d').drawImage(a.canvas,0,0);d.append(c);d.title=a.name;d.onclick=()=>{S.pick=a.id;setTool('place');buildTray()};grid.append(d)})}
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.dataset.on='false');b.dataset.on='true';S.cat=b.dataset.cat;buildTray()});
+function setTool(t){S.tool=t;['place','select','erase'].forEach(x=>$(x).dataset.on=String(x===t));hint.textContent=S.mode==='play'?'Play · walk with WASD/arrows':`Build · ${t} · choose sprites from the tray`}place.onclick=()=>setTool('place');select.onclick=()=>setTool('select');erase.onclick=()=>setTool('erase');
+build.onclick=()=>{S.mode='build';build.dataset.on='true';play.dataset.on='false';tray.style.display='block';setTool(S.tool)};play.onclick=()=>{S.mode='play';build.dataset.on='false';play.dataset.on='true';tray.style.display='none';if(!S.avatar)dropAvatar();setTool(S.tool)};
+function dropAvatar(){S.avatar={a:S.cat==='char'?S.pick:'hero',x:S.cam.x+200,y:S.cam.y+160}}avatar.onclick=()=>{S.avatar?S.avatar=null:dropAvatar()};
+zin.onclick=()=>{S.z=clamp(S.z+1,1,5);zl.textContent=S.z+'×'};out.onclick=()=>{S.z=clamp(S.z-1,1,5);zl.textContent=S.z+'×'};
+function showIns(){if(!S.selected){ins.style.display='none';return}ins.style.display='block';objName.value=S.selected.name||by[S.selected.a].name;solid.textContent=S.selected.solid?'solid':'not solid'}objName.oninput=()=>{if(S.selected)S.selected.name=objName.value};solid.onclick=()=>{if(S.selected){S.selected.solid=!S.selected.solid;showIns()}};del.onclick=()=>{S.objs=S.objs.filter(o=>o!==S.selected);S.selected=null;showIns()};
+save.onclick=()=>{let id=(name.value||'untitled-world').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'untitled-world';let scene={schemaVersion:'prismcade-world-scene-v0',id,title:name.value||'Untitled World',worldSize:{width:COLS*TILE,height:ROWS*TILE},gridSize:TILE,ground:[...S.ground].map(([k,a])=>{let[cx,cy]=k.split(',').map(Number);return{cx,cy,asset:a}}),objects:S.objs.map(o=>({id:o.id,asset:o.a,x:o.x,y:o.y,solid:o.solid}))};let manifest={schemaVersion:'prismcade-game-v0',id,title:scene.title,entrypoint:`games/${id}/index.html`,runtime:'static-canvas',status:'creator-prototype'};let blob=new Blob([JSON.stringify({scene,manifest},null,2)+'\n'],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=id+'.prismcade-world.json';a.click();URL.revokeObjectURL(a.href)};
+onkeydown=e=>{if(e.target.tagName==='INPUT')return;S.keys.add(e.key.toLowerCase())};onkeyup=e=>S.keys.delete(e.key.toLowerCase());
+for(let y=24;y<48;y++)for(let x=32;x<64;x++)S.ground.set(x+','+y,'grass');buildTray();setTool('place');tick();
+</script>
+</body>
+</html>

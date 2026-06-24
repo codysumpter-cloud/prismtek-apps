@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "prismcade-native-creator-tool-link-v0",
+  "id": "world-builder",
+  "title": "World Builder",
+  "description": "Roblox-like in-world builder for moving through a Prismcade scene, placing objects, editing them, and exporting a scene manifest.",
+  "developmentServer": {
+    "command": "python3 -m http.server 4173",
+    "workingDirectory": "/Users/prismtek/Prismtek/prismtek-apps",
+    "url": "http://localhost:4173/apps/prismcade-creator/world-builder.html"
+  },
+  "dataContracts": {
+    "sceneSchema": "prismcade-world-scene-v0",
+    "sampleScene": "data/prismcade/world-scenes/starter-world.scene.json",
+    "webSurface": "apps/prismcade-creator/world-builder.html"
+  },
+  "nativeIntegration": "Can be opened from the native Prismcade hub as a local web creator surface while the SpriteKit-native editor catches up."
+}
