@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" role="img" aria-label="Prism Grove thumbnail">
+  <rect width="320" height="180" fill="#101018"/>
+  <rect y="104" width="320" height="76" fill="#17351f"/>
+  <g shape-rendering="crispEdges">
+    <rect x="42" y="72" width="44" height="30" fill="#8b6445"/><rect x="96" y="72" width="44" height="30" fill="#5f473a"/><rect x="150" y="72" width="44" height="30" fill="#8b6445"/>
+    <rect x="54" y="82" width="8" height="14" fill="#f59f3a"/><rect x="108" y="78" width="10" height="18" fill="#ff5e78"/><rect x="162" y="76" width="12" height="20" fill="#ffe66d"/>
+    <rect x="226" y="52" width="38" height="46" fill="#13b7c7"/><rect x="232" y="28" width="26" height="26" fill="#f0c7a8"/><rect x="229" y="24" width="32" height="10" fill="#362015"/>
+    <rect x="232" y="96" width="10" height="24" fill="#171729"/><rect x="250" y="96" width="10" height="24" fill="#171729"/>
+    <rect x="24" y="124" width="272" height="8" fill="#224a2a"/><rect x="24" y="140" width="272" height="8" fill="#224a2a"/>
+  </g>
+  <text x="18" y="34" fill="#5ee7ff" font-family="monospace" font-size="22" font-weight="900">PRISM GROVE</text>
+  <text x="18" y="54" fill="#f7f7ff" font-family="monospace" font-size="10">Create. Plant. Unlock.</text>
+</svg>
