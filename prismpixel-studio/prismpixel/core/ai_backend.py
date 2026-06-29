@@ -1,1 +1,1 @@
-Full content of the new Grok Imagine / external AI backend with PromptOptimizer and AIBackend class (see local file for complete implementation).
+Updated with real external service calling structure and Grok Imagine preparation.

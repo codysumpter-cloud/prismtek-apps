@@ -1,1 +1,1 @@
-New deep integration dock for in-editor generation requests.
+Expanded dock with direct Python subprocess and HTTP fallback for generation triggering from Godot.
