@@ -1,0 +1,1 @@
+Updated plugin with dock registration and runtime helpers.

@@ -1,0 +1,1 @@
+New deep integration dock for in-editor generation requests.

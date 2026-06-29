@@ -1,0 +1,1 @@
+Full content of the new Grok Imagine / external AI backend with PromptOptimizer and AIBackend class (see local file for complete implementation).
