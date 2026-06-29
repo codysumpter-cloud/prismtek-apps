@@ -1,0 +1,1 @@
+New entry point supporting python -m prismpixel.server (and gui/cli).

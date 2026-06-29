@@ -1,0 +1,1 @@
+Expanded dock with direct Python subprocess and HTTP fallback for generation triggering from Godot.

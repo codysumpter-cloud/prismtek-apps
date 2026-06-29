@@ -1,0 +1,1 @@
+FastAPI server stub so Godot dock HTTP trigger works out of the box.
